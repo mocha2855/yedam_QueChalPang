@@ -1,0 +1,16 @@
+[
+  {
+    "no": 1,
+    "title": "제목1",
+    "writer": "작성자1",
+    "created_date": "2024-06-01T10:00:00",
+    "comment_count": 2
+  },
+  {
+    "no": 2,
+    "title": "제목2",
+    "writer": "작성자2",
+    "created_date": "2024-06-02T11:30:00",
+    "comment_count": 0
+  }
+]
