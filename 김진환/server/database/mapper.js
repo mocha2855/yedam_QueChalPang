@@ -21,7 +21,7 @@ const query = async (selected, values) => {
     console.log(err);
     throw err;
   } finally {
-    if (conn) conn.release;
+    if (conn) conn.release();
   }
 };
 

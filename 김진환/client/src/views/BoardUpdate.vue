@@ -31,18 +31,21 @@ import axios from "axios";
 const route = useRoute();
 const router = useRouter();
 
-console.log(route.params.id);
-
-let date = dateFormat(new Date(), "yyyy-MM-dd");
+let date = ref(dateFormat(new Date(), "yyyy-MM-dd"));
 console.log(date);
 
-let boardInfo = ref();
+let boardInfo = ref({
+  no: "",
+  title: "",
+  writer: "",
+  content: "",
+});
 
 axios //
   .get("/api/boards/" + route.params.id)
   .then((result) => {
-    console.log(result.data);
     boardInfo.value = result.data;
+    console.log(boardInfo.value);
   });
 
 const addBoard = () => {
@@ -53,11 +56,17 @@ const addBoard = () => {
 
   let board_id = route.params.id;
 
+  payload = ref({
+    writer: boardInfo.value.writer,
+    title: boardInfo.value.title,
+    content: boardInfo.value.content,
+  });
+
   axios //
-    .put(`/api/boards/${board_id}`, boardInfo)
+    .put(`/api/boards/${board_id}`, payload)
     .then((result) => {
       alert("수정완료");
-      router.push({ path: "/boardInfo/" + result });
+      router.push({ path: "/boardInfo/" + board_id });
     });
 };
 </script>

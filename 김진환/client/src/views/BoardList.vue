@@ -36,16 +36,23 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 
-let posts = ref([]);
-
-onMounted(() => {
-  axios //
-    .get(`/api/boards`)
-    .then((result) => {
-      console.log(result.data);
-      posts.value = result.data;
-    });
+let posts = ref({
+  no: "",
+  title: "",
+  writer: "",
+  comments: "",
 });
+
+const fetchPost = async () => {
+  try {
+    const res = await axios.get(`/api/boards`);
+    posts.value = res.data;
+  } catch (err) {
+    console.log("조회중 호출 불가.");
+  }
+};
+
+onMounted(fetchPost);
 
 const goToBoardInfo = (id) => {
   router.push({ name: "boardInfo", params: { id: id } });

@@ -42,7 +42,13 @@ import { ref } from "vue";
 const route = useRoute();
 const router = useRouter();
 
-let posts = ref();
+let posts = ref({
+  no: "",
+  created_dt: "",
+  title: "",
+  writer: "",
+  content: "",
+});
 axios //
   .get("/api/boards/" + route.params.id)
   .then((result) => {

@@ -44,7 +44,7 @@ const addBoard = async () => {
   await axios //
     .post(`/api/boards`, boardInfo)
     .then((result) => {
-      router.push({ path: "/boardInfo/" + result });
+      router.push({ name: "boardInfo", params: { id: result.data } });
     });
 };
 </script>
