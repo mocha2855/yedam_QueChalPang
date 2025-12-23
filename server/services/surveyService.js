@@ -93,21 +93,16 @@ const modifySurvey = async (no, data) => {
     }
   }
   // 3. 버전업데이트
+  // 3. 버전업데이트
   if (subtitles || qitems) {
-    const current = await mysql.squery(
-      "SELECT survey_version FROM survey WHERE survey_no = ?",
-      [survey_no]
-    );
-    const newVersion = (parseFloat(current[0].survey_version) + 0.1).toFixed(1);
-    await mysql.squery(
-      "UPDATE survey SET survey_version = ? WHERE survey_no = ?",
-      [newVersion, survey_no]
-    );
+    await mysql.squery("updateSurveyVersion", [survey_no]);
   }
+  return result;
 };
 
 module.exports = {
   findAll,
   findByNo,
   addSurvey,
+  modifySurvey,
 };
