@@ -16,8 +16,7 @@ const pool = mysql.createPool({
   connectionLimit: process.env.MARIADB_LIMIT,
 });
 
-
-//reservation - managerID, Date 두개 값 받아와야 함
+//reservation
 const rquery = async (sql, params = []) => {
   let conn = null;
   try {
@@ -29,15 +28,23 @@ const rquery = async (sql, params = []) => {
   }
 };
 
-
-
 //-----------------------------------------------
 const bquery = async (selected, values) => {
   let conn = null;
   try {
     conn = await pool.getConnection();
-    let executeSql = boardSql[selected];
-    console.log(executeSql);
+    let executeSql = sqlList[selected];
+    console.info(selected, executeSql);
+    let result = (await conn.query(executeSql, values))[0];
+    return result;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  } finally {
+    if (conn) conn.release(); //release: 반환
+  }
+};
+
 //survey 쿼리
 const squery = async (selected, values) => {
   let conn = null;
@@ -50,6 +57,5 @@ const squery = async (selected, values) => {
     if (conn) conn.release(); // pool로 반환.
   }
 };
-
 
 module.exports = { bquery, rquery, squery };
