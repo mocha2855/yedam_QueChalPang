@@ -16,12 +16,14 @@ app.listen(port, () => {
 app.get("/", (req, res) => {
   res.send("Welcome! Rest Server");
 });
-
-const boardRouter = require("./routers/boardRouter.js");
+const applicationRouter = require("./routers/applicationRouter.js");
+const memberRouter = require("./routers/memberRouter.js"); // member의 라우터
+const centerRouter = require("./routers/centerRouter.js"); // center의 라우터
 const reservationRouter = require("./routers/reservationRouter.js");
 const surveyRouter = require("./routers/surveyRouter.js");
 
-app.use("/", reservationRouter); 
-app.use("/api", boardRouter); // http://localhost:3000/api/boards
+app.use("/", reservationRouter);
+app.use("/api", applicationRouter); // http://localhost:3000/api/application
+app.use("/api", memberRouter); // http://localhost:3000/api/members
+app.use("/api", centerRouter); // http://localhost:3000/api/members
 app.use("/api", surveyRouter); // http://localhost:3000/api/comments
-
