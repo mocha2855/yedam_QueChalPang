@@ -1,31 +1,55 @@
 <script setup>
-import { computed, ref } from "vue";
-import { useStore } from "vuex";
-import { useRoute } from "vue-router";
-import Breadcrumbs from "../Breadcrumbs.vue";
+import { computed, ref } from 'vue'
+import { useStore } from 'vuex'
+import { useRoute } from 'vue-router'
+import Breadcrumbs from '../Breadcrumbs.vue'
+import { useCounterStore } from '@/stores/member'
+const counterStore = useCounterStore()
+import { storeToRefs } from 'pinia'
+const { isLogIn } = storeToRefs(counterStore)
 
-const showMenu = ref(false);
-const store = useStore();
-const isRTL = computed(() => store.state.isRTL);
+const showMenu = ref(false)
+const store = useStore()
+const isRTL = computed(() => store.state.isRTL)
 
-const route = useRoute();
+const route = useRoute()
 
 const currentRouteName = computed(() => {
-  return route.name;
-});
+  return route.name
+})
 const currentDirectory = computed(() => {
-  let dir = route.path.split("/")[1];
-  return dir.charAt(0).toUpperCase() + dir.slice(1);
-});
+  let dir = route.path.split('/')[1]
+  return dir.charAt(0).toUpperCase() + dir.slice(1)
+})
 
-const minimizeSidebar = () => store.commit("sidebarMinimize");
-const toggleConfigurator = () => store.commit("toggleConfigurator");
+const minimizeSidebar = () => store.commit('sidebarMinimize')
+const toggleConfigurator = () => store.commit('toggleConfigurator')
 
 const closeMenu = () => {
   setTimeout(() => {
-    showMenu.value = false;
-  }, 100);
-};
+    showMenu.value = false
+  }, 100)
+}
+const priority = (auth) => {
+  if (isLogIn.value.isLogIn) {
+    if (auth == 'a1') {
+      return '일반사용자'
+    } else if (auth == 'a2') {
+      return '담당자'
+    } else if (auth == 'a3') {
+      return '관리자'
+    } else if (auth == 'a4') {
+      return '시스템 관리자'
+    }
+  } else {
+    return ''
+  }
+}
+const clearInfo = () => {
+  isLogIn.value.isLogIn = false
+  isLogIn.value.info = { member_authority: '', member_name: '' }
+  location.reload()
+}
 </script>
 <template>
   <nav
@@ -36,20 +60,14 @@ const closeMenu = () => {
     data-scroll="true"
   >
     <div class="px-3 py-1 container-fluid">
-      <breadcrumbs
-        :current-page="currentRouteName"
-        :current-directory="currentDirectory"
-      />
+      <breadcrumbs :current-page="currentRouteName" :current-directory="currentDirectory" />
 
       <div
         class="mt-2 collapse navbar-collapse mt-sm-0 me-md-0 me-sm-4"
         :class="isRTL ? 'px-0' : 'me-sm-4'"
         id="navbar"
       >
-        <div
-          class="pe-md-3 d-flex align-items-center"
-          :class="isRTL ? 'me-md-auto' : 'ms-md-auto'"
-        >
+        <div class="pe-md-3 d-flex align-items-center" :class="isRTL ? 'me-md-auto' : 'ms-md-auto'">
           <div class="input-group">
             <span class="input-group-text text-body">
               <i class="fas fa-search" aria-hidden="true"></i>
@@ -64,14 +82,31 @@ const closeMenu = () => {
         <ul class="navbar-nav justify-content-end">
           <li class="nav-item d-flex align-items-center">
             <router-link
+              v-if="!isLogIn.isLogIn"
               :to="{ name: 'Signin' }"
               class="px-0 nav-link font-weight-bold text-white"
-              target="_blank"
             >
               <i class="fa fa-user" :class="isRTL ? 'ms-sm-2' : 'me-sm-2'"></i>
               <span v-if="isRTL" class="d-sm-inline d-none">يسجل دخول</span>
-              <span v-else class="d-sm-inline d-none">Sign In</span>
+
+              <span v-else class="d-sm-inline d-none">로그인</span>
             </router-link>
+            <span v-else>
+              <router-link :to="{ name: '/' }" class="px-0 nav-link font-weight-bold text-white">
+                <i class="fa fa-user" :class="isRTL ? 'ms-sm-2' : 'me-sm-2'"></i>
+
+                <span class="d-sm-inline d-none">
+                  {{ priority(isLogIn.info?.member_authority) }}
+                  {{ isLogIn.info?.member_name }}님 어서오세요!
+                </span>
+              </router-link>
+              <span
+                class="cursor-pointer d-flex justify-content-center px-0 nav-link font-weight-bold text-white"
+                v-on:click.prevent="clearInfo()"
+              >
+                <span class="d-sm-inline d-none">로그아웃</span>
+              </span>
+            </span>
           </li>
           <li class="nav-item d-xl-none ps-3 d-flex align-items-center">
             <a
@@ -92,10 +127,7 @@ const closeMenu = () => {
               <i class="cursor-pointer fa fa-cog fixed-plugin-button-nav"></i>
             </a>
           </li>
-          <li
-            class="nav-item dropdown d-flex align-items-center"
-            :class="isRTL ? 'ps-2' : 'pe-2'"
-          >
+          <li class="nav-item dropdown d-flex align-items-center" :class="isRTL ? 'ps-2' : 'pe-2'">
             <a
               href="#"
               class="p-0 nav-link text-white"
@@ -125,8 +157,7 @@ const closeMenu = () => {
                     </div>
                     <div class="d-flex flex-column justify-content-center">
                       <h6 class="mb-1 text-sm font-weight-normal">
-                        <span class="font-weight-bold">New message</span> from
-                        Laur
+                        <span class="font-weight-bold">New message</span> from Laur
                       </h6>
                       <p class="mb-0 text-xs text-secondary">
                         <i class="fa fa-clock me-1"></i>
@@ -148,8 +179,7 @@ const closeMenu = () => {
                     </div>
                     <div class="d-flex flex-column justify-content-center">
                       <h6 class="mb-1 text-sm font-weight-normal">
-                        <span class="font-weight-bold">New album</span> by
-                        Travis Scott
+                        <span class="font-weight-bold">New album</span> by Travis Scott
                       </h6>
                       <p class="mb-0 text-xs text-secondary">
                         <i class="fa fa-clock me-1"></i>
@@ -162,9 +192,7 @@ const closeMenu = () => {
               <li>
                 <a class="dropdown-item border-radius-md" href="javascript:;">
                   <div class="py-1 d-flex">
-                    <div
-                      class="my-auto avatar avatar-sm bg-gradient-secondary me-3"
-                    >
+                    <div class="my-auto avatar avatar-sm bg-gradient-secondary me-3">
                       <svg
                         width="12px"
                         height="12px"
@@ -174,12 +202,7 @@ const closeMenu = () => {
                         xmlns:xlink="http://www.w3.org/1999/xlink"
                       >
                         <title>credit-card</title>
-                        <g
-                          stroke="none"
-                          stroke-width="1"
-                          fill="none"
-                          fill-rule="evenodd"
-                        >
+                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                           <g
                             transform="translate(-2169.000000, -745.000000)"
                             fill="#FFFFFF"
