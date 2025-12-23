@@ -1,44 +1,44 @@
 <script setup>
-import MiniStatisticsCard from "@/examples/Cards/MiniStatisticsCard.vue";
-import GradientLineChart from "@/examples/Charts/GradientLineChart.vue";
-import Carousel from "./components/Carousel.vue";
-import CategoriesList from "./components/CategoriesList.vue";
+import MiniStatisticsCard from '@/examples/Cards/MiniStatisticsCard.vue'
+import GradientLineChart from '@/examples/Charts/GradientLineChart.vue'
+import Carousel from './components/Carousel.vue'
+import CategoriesList from './components/CategoriesList.vue'
 
-import US from "@/assets/img/icons/flags/US.png";
-import DE from "@/assets/img/icons/flags/DE.png";
-import GB from "@/assets/img/icons/flags/GB.png";
-import BR from "@/assets/img/icons/flags/BR.png";
+import US from '@/assets/img/icons/flags/US.png'
+import DE from '@/assets/img/icons/flags/DE.png'
+import GB from '@/assets/img/icons/flags/GB.png'
+import BR from '@/assets/img/icons/flags/BR.png'
 
 const sales = {
   us: {
-    country: "United States",
+    country: 'United States',
     sales: 2500,
-    value: "$230,900",
-    bounce: "29.9%",
+    value: '$230,900',
+    bounce: '29.9%',
     flag: US,
   },
   germany: {
-    country: "Germany",
-    sales: "3.900",
-    value: "$440,000",
-    bounce: "40.22%",
+    country: 'Germany',
+    sales: '3.900',
+    value: '$440,000',
+    bounce: '40.22%',
     flag: DE,
   },
   britain: {
-    country: "Great Britain",
-    sales: "1.400",
-    value: "$190,700",
-    bounce: "23.44%",
+    country: 'Great Britain',
+    sales: '1.400',
+    value: '$190,700',
+    bounce: '23.44%',
     flag: GB,
   },
   brasil: {
-    country: "Brasil",
-    sales: "562",
-    value: "$143,960",
-    bounce: "32.14%",
+    country: 'Brasil',
+    sales: '562',
+    value: '$143,960',
+    bounce: '32.14%',
     flag: BR,
   },
-};
+}
 </script>
 <template>
   <div class="py-4 container-fluid">
@@ -112,17 +112,7 @@ const sales = {
                 description="<i class='fa fa-arrow-up text-success'></i>
       <span class='font-weight-bold'>4% more</span> in 2021"
                 :chart="{
-                  labels: [
-                    'Apr',
-                    'May',
-                    'Jun',
-                    'Jul',
-                    'Aug',
-                    'Sep',
-                    'Oct',
-                    'Nov',
-                    'Dec',
-                  ],
+                  labels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                   datasets: [
                     {
                       label: 'Mobile Apps',
@@ -155,9 +145,7 @@ const sales = {
                             <img :src="sale.flag" alt="Country flag" />
                           </div>
                           <div class="ms-4">
-                            <p class="mb-0 text-xs font-weight-bold">
-                              Country:
-                            </p>
+                            <p class="mb-0 text-xs font-weight-bold">Country:</p>
                             <h6 class="mb-0 text-sm">{{ sale.country }}</h6>
                           </div>
                         </div>

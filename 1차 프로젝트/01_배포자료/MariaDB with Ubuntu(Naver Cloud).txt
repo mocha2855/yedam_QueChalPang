@@ -1,0 +1,63 @@
+*** 참고사이트
+1) 네이버 서버 구축 : https://devmg.tistory.com/346
+2) Ubuntu 기반 MariaDB 설치 : https://velog.io/@sirius506775/How-to-install-MariaDB-in-Ubuntu-22.04-server
+
+
+# 패키지 업데이트
+sudo apt update
+
+# mariadb 설치
+sudo apt install mariadb-server
+
+# mariadb 실행
+sudo mariadb
+
+# mairadb 보안 설정
+sudo mariadb-secure-installation
+
+# mairadb 접속
+mariadb -u root -p
+
+# 설정 변경 
+# 1) port 추가 및 테이블 대소문자 구분(적용X)
+sudo vi /etc/mysql/mariadb.conf.d/50-server.cnf
+위의 파일을 수정해야하는데 이파일은 마리아db의 설정파일임
+-- 추가
+port = 3306
+lower_case_table_names = 1
+
+# 2) 데이터베이스 바인딩 주소 주석처리
+sudo vim /etc/mysql/mariadb.conf.d/50-server.cnf
+
+--주석처리
+bind-address              = 127.0.0.1
+=> :wq(쓰고 저장)
+
+# mariadb 재시작
+sudo service mariadb restart
+
+# port 접속 확인
+telnet localhost 3306
+
+# mariadb 접속
+sudo mariadb
+
+# lower_case_table_names 확인
+show variables like 'lower_case_table_names';
+
+*** 인바운드 규칙 변경
+
+# mairadb 접속
+mariadb -u root -p
+=> user password
+
+# 새로운 데이터베이스 및 계정 생성, 권한 부여
+CREATE DATABASE `dev` DEFAULT CHARACTER SET utf8 collate utf8_general_ci;
+CREATE USER 'dev01'@'%' IDENTIFIED BY '1234';
+GRANT ALL PRIVILEGES ON dev.* TO 'dev01'@'%' IDENTIFIED BY '1234' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON dev.* TO 'dev01'@'localhost' IDENTIFIED BY '1234' WITH GRANT OPTION;
+=> 내부 접속에 대한 권한 부여
+FLUSH PRIVILEGES;
+
+# 새로운 계정 접속확인
+mariadb -u dev01 -p
