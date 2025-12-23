@@ -14,6 +14,6 @@ app.get("/", (req, res) => {
   res.send("Welcome! Rest Server");
 });
 const boardRouter = require("./routers/boardRouter.js");
-const commentRouter = require("./routers/commentRouter.js");
+const surveyRouter = require("./routers/surveyRouter.js");
 app.use("/api", boardRouter); // http://localhost:3000/api/boards
-app.use("/api", commentRouter); // http://localhost:3000/api/comments
+app.use("/api", surveyRouter); // http://localhost:3000/api/comments
