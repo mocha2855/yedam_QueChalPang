@@ -1,5 +1,5 @@
 //services/surveyService.js
-const mysql = require("../database/mapper.js");
+const mysql = require("../database/applicationMapper.js");
 
 //survey 전체 조회
 const findAll = async () => {
