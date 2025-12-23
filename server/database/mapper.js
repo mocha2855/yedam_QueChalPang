@@ -3,7 +3,8 @@ require("dotenv").config();
 
 const mysql = require("mysql2/promise");
 const boardSql = require("./sqls/boards");
-const commentSql = require("./sqls/comments");
+const surveySql = require("./sqls/survey");
+
 console.log(process.env.MARIADB_HOST);
 const pool = mysql.createPool({
   host: process.env.MARIADB_HOST,
@@ -25,11 +26,12 @@ const bquery = async (selected, values) => {
     if (conn) conn.release(); // pool로 반환.
   }
 };
-const cquery = async (selected, values) => {
+//survey 쿼리
+const squery = async (selected, values) => {
   let conn = null;
   try {
     conn = await pool.getConnection();
-    let executeSql = commentSql[selected];
+    let executeSql = surveySql[selected];
     let result = (await conn.query(executeSql, values))[0];
     return result;
   } finally {
@@ -37,4 +39,4 @@ const cquery = async (selected, values) => {
   }
 };
 
-module.exports = { bquery, cquery };
+module.exports = { bquery, squery };
