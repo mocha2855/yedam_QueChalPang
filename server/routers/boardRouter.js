@@ -1,7 +1,7 @@
 // boardRouter.js
 const express = require("express");
 const router = express.Router();
-const boardService = require("../services/boardService.js");
+const boardService = require("../services/applicationServiceJH.js");
 
 router.get(`/boards`, async (req, res) => {
   let list = await boardService.findAll();
@@ -11,7 +11,7 @@ router.get(`/boards`, async (req, res) => {
 });
 router.get(`/boards/:no`, async (req, res) => {
   let no = req.params.no;
-  let post = await boardService.findByNo(no);
+  let post = await boardService.findById(no);
   res.send(post);
 });
 router.post(`/boards`, async (req, res) => {
