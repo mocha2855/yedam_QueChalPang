@@ -15,12 +15,24 @@ Coded by www.creative-tim.com
 <script setup>
 import { computed } from 'vue'
 import { useStore } from 'vuex'
+<<<<<<< HEAD
+=======
+import { useCounterStore } from '@/stores/member'
+>>>>>>> main
 import Sidenav from './examples/Sidenav'
 import Configurator from '@/examples/Configurator.vue'
 import Navbar from '@/examples/Navbars/Navbar.vue'
 import AppFooter from '@/examples/Footer.vue'
+<<<<<<< HEAD
 
 const store = useStore()
+=======
+import { storeToRefs } from 'pinia'
+
+const counterStore = useCounterStore()
+const store = useStore()
+const { isLogIn } = storeToRefs(counterStore)
+>>>>>>> main
 const isNavFixed = computed(() => store.state.isNavFixed)
 const darkMode = computed(() => store.state.darkMode)
 const isAbsolute = computed(() => store.state.isAbsolute)
@@ -40,6 +52,10 @@ const navClasses = computed(() => {
     'px-0 mx-4': !isAbsolute.value,
   }
 })
+<<<<<<< HEAD
+=======
+console.log(isLogIn)
+>>>>>>> main
 </script>
 <template>
   <div

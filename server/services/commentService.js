@@ -1,7 +1,7 @@
 // services/commentService.js
 const mysql = require("../database/mapper.js");
 
-const findComments = async bno => {
+const findComments = async (bno) => {
   let list = await mysql.cquery("selectAllComment", bno);
   return list;
 };
