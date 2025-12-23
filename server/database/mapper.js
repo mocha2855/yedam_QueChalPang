@@ -2,7 +2,6 @@
 require("dotenv").config();
 
 const mysql = require("mysql2/promise");
-const boardSql = require("./sqls/boards");
 const resvSql = require("./sqls/reservation");
 const surveySql = require("./sqls/survey");
 
@@ -31,13 +30,6 @@ const rquery = async (sql, params = []) => {
 
 
 
-//-----------------------------------------------
-const bquery = async (selected, values) => {
-  let conn = null;
-  try {
-    conn = await pool.getConnection();
-    let executeSql = boardSql[selected];
-    console.log(executeSql);
 //survey 쿼리
 const squery = async (selected, values) => {
   let conn = null;
@@ -52,4 +44,4 @@ const squery = async (selected, values) => {
 };
 
 
-module.exports = { bquery, rquery, squery };
+module.exports = { rquery, squery };
