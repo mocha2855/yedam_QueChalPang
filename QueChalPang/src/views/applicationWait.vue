@@ -2,12 +2,12 @@
   <!-- <div class="container"> -->
   <div class="container" v-if="dependantWait.resv_status == 'f3' && dependantWait.status == 'e1'">
     <p>최강희님의 대기 단계를 설정해주세요.</p>
-    <div class="three" v-for="statu in status" v-bind:key="statu" v-on:click="showStatus">
+    <div class="three" v-for="statu in status" v-bind:key="statu" v-on:click="showStatus(statu)">
       <p>{{ statu }}</p>
     </div>
     <button v-on:click="modalOpen">관리자 선택</button>
 
-    <rejecterModalLayout class="modal-wrap" v-if="true">
+    <rejecterModalLayout class="modal-wrap" v-show="checked">
       <template v-slot:header>승인요청 받을 기관관리자를 선택해주세요.</template>
       <template v-slot:body>
         <select name="rejector" id="rejector" v-on:change="showValue()">
@@ -32,17 +32,22 @@
 </template>
 <script setup>
 import { useRoute } from 'vue-router'
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import axios from 'axios'
 import rejecterModalLayout from './layouts/rejecterModalLayout.vue'
 
 const route = useRoute()
 
+// 대기단계 보낼 값
+let result = reactive({ status: '' })
+
 // 대기단계 선택 값 출력
 let status = ref(['계획', '중점', '긴급'])
 
-const showStatus = () => {
-  console.log(event.target)
+const showStatus = (req) => {
+  console.log(req)
+  result.value.push(req)
+  console.log(result)
 }
 
 // 대기 단계 상태 파악
@@ -57,9 +62,15 @@ axios //
     dependantWait.value = result[0]
   })
 
+// 관리자 선택 버튼
+let checked = ref(false)
+
+const modalOpen = () => {
+  checked.value = true
+}
+
 // 결재자 정보
 let rejected = ref([])
-
 axios //
   .get('/api/rejectApplication/')
   .then((res) => {
@@ -74,6 +85,8 @@ axios //
 const showValue = () => {
   console.log(event.target.value)
 }
+
+// 최종제출 버튼
 </script>
 <style scoped>
 div {

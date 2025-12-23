@@ -7,10 +7,7 @@ import RTL from '../views/Rtl.vue'
 import Profile from '../views/Profile.vue'
 import Signup from '../views/Signup.vue'
 import Signin from '../views/Signin.vue'
-<<<<<<< HEAD
 import applicationWait from '../views/applicationWait.vue'
-=======
->>>>>>> main
 
 const routes = [
   {
@@ -58,14 +55,11 @@ const routes = [
     name: 'Signup',
     component: Signup,
   },
-<<<<<<< HEAD
   {
     path: '/applicationWait/:id',
     name: 'applicationWait',
     component: applicationWait,
   },
-=======
->>>>>>> main
 ]
 
 const router = createRouter({
