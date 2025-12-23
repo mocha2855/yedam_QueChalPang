@@ -3,7 +3,8 @@ require("dotenv").config();
 
 const mysql = require("mysql2/promise");
 const boardSql = require("./sqls/boards");
-const commentSql = require("./sqls/comments");
+const memberSql = require("./sqls/member.js");
+const centerSql = require("./sqls/center.js");
 console.log(process.env.MARIADB_HOST);
 const pool = mysql.createPool({
   host: process.env.MARIADB_HOST,
@@ -25,16 +26,28 @@ const bquery = async (selected, values) => {
     if (conn) conn.release(); // pool로 반환.
   }
 };
-const cquery = async (selected, values) => {
+const memberQuery = async (selected, values) => {
   let conn = null;
   try {
     conn = await pool.getConnection();
-    let executeSql = commentSql[selected];
+    let executeSql = memberSql[selected];
     let result = (await conn.query(executeSql, values))[0];
     return result;
   } finally {
     if (conn) conn.release(); // pool로 반환.
   }
 };
-
-module.exports = { bquery, cquery };
+const centerQuery = async (selected, values) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    let executeSql = centerSql[selected];
+    console.log("sql:", executeSql);
+    console.log("value:", values);
+    let result = (await conn.query(executeSql, values))[0];
+    return result;
+  } finally {
+    if (conn) conn.release(); // pool로 반환.
+  }
+};
+module.exports = { bquery, memberQuery, centerQuery };

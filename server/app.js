@@ -14,6 +14,8 @@ app.get("/", (req, res) => {
   res.send("Welcome! Rest Server");
 });
 const boardRouter = require("./routers/boardRouter.js");
-const commentRouter = require("./routers/commentRouter.js");
+const memberRouter = require("./routers/memberRouter.js"); // member의 라우터
+const centerRouter = require("./routers/centerRouter.js"); // center의 라우터
 app.use("/api", boardRouter); // http://localhost:3000/api/boards
-app.use("/api", commentRouter); // http://localhost:3000/api/comments
+app.use("/api", memberRouter); // http://localhost:3000/api/members
+app.use("/api", centerRouter); // http://localhost:3000/api/members
