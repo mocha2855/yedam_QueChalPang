@@ -2,7 +2,7 @@
 require("dotenv").config();
 
 const mysql = require("mysql2/promise");
-const boardSql = require("./sqls/meetings");
+const boardSql = require("./sqls/boards");
 const commentSql = require("./sqls/comments");
 console.log(process.env.MARIADB_HOST);
 const pool = mysql.createPool({
