@@ -51,6 +51,60 @@ const addSurvey = async (data) => {
 };
 
 //survey 수정
+const modifySurvey = async (no, data) => {
+  //수정이력 먼저 저장
+  const {
+    survey_title_no,
+    survey_title,
+    survey_no,
+    person,
+    reason,
+    subtitles,
+    qitems,
+  } = data;
+
+  //수정이력 저장
+  let result = await mysql.squery("insertSurveyHistory", [
+    null, // AUTO_INCREMENT면 생략 가능
+    survey_no,
+    person,
+    reason,
+  ]);
+  // 2. 실제 데이터 수정
+  if (survey_title) {
+    await mysql.squery("updateTitle", [survey_title, survey_title_no]);
+  }
+  if (subtitles) {
+    for (const subtitle of subtitles) {
+      await mysql.squery("updateSubtitle", [
+        subtitle.survey_subtitle,
+        subtitle.survey_subtitle_detail,
+        subtitle.survey_subtitle_no,
+      ]);
+    }
+  }
+  if (qitems) {
+    for (const qitem of qitems) {
+      await mysql.squery("updateQitem", [
+        qitem.survey_qitem_question,
+        qitem.survey_qitem_type,
+        qitem.survey_qitem_no,
+      ]);
+    }
+  }
+  // 3. 버전업데이트
+  if (subtitles || qitems) {
+    const current = await mysql.squery(
+      "SELECT survey_version FROM survey WHERE survey_no = ?",
+      [survey_no]
+    );
+    const newVersion = (parseFloat(current[0].survey_version) + 0.1).toFixed(1);
+    await mysql.squery(
+      "UPDATE survey SET survey_version = ? WHERE survey_no = ?",
+      [newVersion, survey_no]
+    );
+  }
+};
 
 module.exports = {
   findAll,
