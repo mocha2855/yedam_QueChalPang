@@ -2,6 +2,9 @@
 require("dotenv").config();
 
 const mysql = require("mysql2/promise");
+const boardSql = require("./sqls/boards");
+const memberSql = require("./sqls/member.js");
+const centerSql = require("./sqls/center.js");
 const resvSql = require("./sqls/reservation");
 const surveySql = require("./sqls/survey");
 
@@ -27,6 +30,18 @@ const rquery = async (sql, params = []) => {
   }
 };
 
+const bquery = async (selected, values) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    let executeSql = boardSql[selected];
+    console.log(executeSql);
+    let result = (await conn.query(executeSql, values))[0];
+    return result;
+  } finally {
+    if (conn) conn.release(); // pool로 반환.
+  }
+};
 //survey 쿼리
 const squery = async (selected, values) => {
   let conn = null;
@@ -39,5 +54,29 @@ const squery = async (selected, values) => {
     if (conn) conn.release(); // pool로 반환.
   }
 };
+const centerQuery = async (selected, values) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    let executeSql = centerSql[selected];
+    console.log("sql:", executeSql);
+    console.log("value:", values);
+    let result = (await conn.query(executeSql, values))[0];
+    return result;
+  } finally {
+    if (conn) conn.release(); // pool로 반환.
+  }
+};
+const memberQuery = async (selected, values) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    let executeSql = memberSql[selected];
+    let result = (await conn.query(executeSql, values))[0];
+    return result;
+  } finally {
+    if (conn) conn.release(); // pool로 반환.
+  }
+};
 
-module.exports = { rquery, squery };
+module.exports = { bquery, rquery, squery, memberQuery, centerQuery };
