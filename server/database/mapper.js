@@ -26,6 +26,7 @@ const bquery = async (selected, values) => {
     if (conn) conn.release(); // pool로 반환.
   }
 };
+
 //survey 쿼리
 const squery = async (selected, values) => {
   let conn = null;
