@@ -1,14 +1,16 @@
 // mapper.js
+require("dotenv").config();
+
 const mysql = require("mysql2/promise");
 const boardSql = require("./sqls/boards");
 const commentSql = require("./sqls/comments");
-
+console.log(process.env.MARIADB_HOST);
 const pool = mysql.createPool({
-  host: `49.50.139.38`,
-  user: `yedam01`,
-  password: `yedam01`,
-  database: `project`, //scheme 지정.
-  connectionLimit: 5,
+  host: process.env.MARIADB_HOST,
+  user: process.env.MARIADB_USERNAME,
+  password: process.env.MARIADB_PASSWORD,
+  database: process.env.MARIADB_DB, //scheme 지정.
+  connectionLimit: process.env.MARIADB_LIMIT,
 });
 
 const bquery = async (selected, values) => {
