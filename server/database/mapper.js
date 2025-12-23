@@ -4,6 +4,7 @@ require("dotenv").config();
 const mysql = require("mysql2/promise");
 const boardSql = require("./sqls/boards");
 const resvSql = require("./sqls/reservation");
+const surveySql = require("./sqls/survey");
 
 console.log(process.env.MARIADB_HOST);
 
@@ -37,6 +38,12 @@ const bquery = async (selected, values) => {
     conn = await pool.getConnection();
     let executeSql = boardSql[selected];
     console.log(executeSql);
+//survey 쿼리
+const squery = async (selected, values) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    let executeSql = surveySql[selected];
     let result = (await conn.query(executeSql, values))[0];
     return result;
   } finally {
@@ -45,4 +52,4 @@ const bquery = async (selected, values) => {
 };
 
 
-module.exports = { bquery, rquery };
+module.exports = { bquery, rquery, squery };

@@ -19,6 +19,9 @@ app.get("/", (req, res) => {
 
 const boardRouter = require("./routers/boardRouter.js");
 const reservationRouter = require("./routers/reservationRouter.js");
+const surveyRouter = require("./routers/surveyRouter.js");
 
-app.use("/", boardRouter); // http://localhost:3000/boards
 app.use("/", reservationRouter); 
+app.use("/api", boardRouter); // http://localhost:3000/api/boards
+app.use("/api", surveyRouter); // http://localhost:3000/api/comments
+
