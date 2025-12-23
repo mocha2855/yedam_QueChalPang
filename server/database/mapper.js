@@ -18,7 +18,7 @@ const pool = mysql.createPool({
   connectionLimit: process.env.MARIADB_LIMIT,
 });
 
-//reservation - managerID, Date 두개 값 받아와야 함
+//reservation
 const rquery = async (sql, params = []) => {
   let conn = null;
   try {
