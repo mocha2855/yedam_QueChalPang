@@ -2,7 +2,7 @@
 require("dotenv").config();
 
 const mysql = require("mysql2/promise");
-const boardSql = require("./sqls/boards");
+const applicationSql = require("./sqls/applicationJH.js");
 const memberSql = require("./sqls/member.js");
 const centerSql = require("./sqls/center.js");
 const resvSql = require("./sqls/reservation");
@@ -18,7 +18,7 @@ const pool = mysql.createPool({
   connectionLimit: process.env.MARIADB_LIMIT,
 });
 
-//reservation - managerID, Date 두개 값 받아와야 함
+//reservation
 const rquery = async (sql, params = []) => {
   let conn = null;
   try {
@@ -30,11 +30,12 @@ const rquery = async (sql, params = []) => {
   }
 };
 
+// 대기단계
 const bquery = async (selected, values) => {
   let conn = null;
   try {
     conn = await pool.getConnection();
-    let executeSql = boardSql[selected];
+    let executeSql = applicationSql[selected];
     console.log(executeSql);
     let result = (await conn.query(executeSql, values))[0];
     return result;

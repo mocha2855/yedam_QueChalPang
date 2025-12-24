@@ -1,4 +1,4 @@
-const mysql = require("../database/mapper.js");
+const mysql = require("../database/applicationMapper.js");
 
 // 전체 센터 목록
 const findAllCenter = async (key, value) => {

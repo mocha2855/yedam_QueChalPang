@@ -1,4 +1,4 @@
-const mysql = require("../database/mapper.js");
+const mysql = require("../database/applicationMapper.js");
 
 // 회원목록
 const findAllMember = async () => {

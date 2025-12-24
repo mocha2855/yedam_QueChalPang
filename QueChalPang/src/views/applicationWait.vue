@@ -2,12 +2,12 @@
   <!-- <div class="container"> -->
   <div class="container" v-if="dependantWait.resv_status == 'f3' && dependantWait.status == 'e1'">
     <p>최강희님의 대기 단계를 설정해주세요.</p>
-    <div class="three" v-for="statu in status" v-bind:key="statu" v-on:click="showStatus">
+    <div class="three" v-for="statu in status" v-bind:key="statu" v-on:click="showStatus(statu)">
       <p>{{ statu }}</p>
     </div>
     <button v-on:click="modalOpen">관리자 선택</button>
 
-    <rejecterModalLayout class="modal-wrap" v-if="true">
+    <rejecterModalLayout class="modal-wrap" v-show="checked">
       <template v-slot:header>승인요청 받을 기관관리자를 선택해주세요.</template>
       <template v-slot:body>
         <select name="rejector" id="rejector" v-on:change="showValue()">
@@ -18,8 +18,8 @@
         </select>
       </template>
       <template v-slot:footer>
-        <button>최종제출</button>
-        <button>취소</button>
+        <button v-on:click="realResult">최종제출</button>
+        <button v-on:click="notChecked">취소</button>
       </template>
     </rejecterModalLayout>
   </div>
@@ -32,18 +32,15 @@
 </template>
 <script setup>
 import { useRoute } from 'vue-router'
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import axios from 'axios'
 import rejecterModalLayout from './layouts/rejecterModalLayout.vue'
 
 const route = useRoute()
 
-// 대기단계 선택 값 출력
-let status = ref(['계획', '중점', '긴급'])
-
-const showStatus = () => {
-  console.log(event.target)
-}
+// 대기단계 보낼 값
+let result = reactive({ status: '' })
+//let result = reactive({ status: '', rejecor: '' })
 
 // 대기 단계 상태 파악
 let dependantWait = ref([])
@@ -52,14 +49,29 @@ axios //
   .get('/api/application/' + route.params.id)
   .then((res) => {
     console.log(res)
-    let result = res.data
-    console.log(result[0])
-    dependantWait.value = result[0]
+    let data = res.data
+    console.log(data[0].application_no)
+    dependantWait.value = data[0]
+    result.dependant_id = data[0].application_no
   })
+// 대기단계 선택 값 출력
+let status = ref(['계획', '중점', '긴급'])
+
+const showStatus = (req) => {
+  console.log(req)
+  result.status = req
+  console.log(result)
+}
+
+// 관리자 선택 버튼
+let checked = ref(false)
+
+const modalOpen = () => {
+  checked.value = true
+}
 
 // 결재자 정보
 let rejected = ref([])
-
 axios //
   .get('/api/rejectApplication/')
   .then((res) => {
@@ -73,6 +85,32 @@ axios //
 
 const showValue = () => {
   console.log(event.target.value)
+  // result.rejector = event.target.value
+  //console.log(result)
+}
+
+// 최종제출 버튼
+const realResult = async () => {
+  if (result.status == '계획') {
+    result.status = 'e3'
+  } else if (result.status == '중점') {
+    result.status = 'e4'
+  } else {
+    result.status = 'e5'
+  }
+
+  await axios //
+    .put('/api/compApplication/' + route.params.id, {
+      status: result.status,
+    })
+    .then((res) => {
+      console.log(res)
+    })
+}
+
+// 취소버튼
+const notChecked = () => {
+  checked.value = false
 }
 </script>
 <style scoped>
