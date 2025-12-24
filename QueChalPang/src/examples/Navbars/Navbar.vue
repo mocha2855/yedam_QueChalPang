@@ -13,26 +13,25 @@ const store = useStore()
 
 // 현재 활성화된 메뉴를 표시하기 위한 로직
 const getRoute = () => {
-  const route = useRoute();
-  const routeArr = route.path.split("/");
-  return routeArr[1];
-};
+  const route = useRoute()
+  const routeArr = route.path.split('/')
+  return routeArr[1]
+}
 
 //const minimizeSidebar = () => store.commit('sidebarMinimize')
 const toggleConfigurator = () => store.commit('toggleConfigurator')
 
-
 const priority = (auth) => {
   if (isLogIn.value.isLogIn) {
     const roles = {
-      'a1': '일반사용자',
-      'a2': '담당자',
-      'a3': '관리자',
-      'a4': '시스템 관리자'
-    };
-    return roles[auth] || '';
+      a1: '일반사용자',
+      a2: '담당자',
+      a3: '관리자',
+      a4: '시스템 관리자',
+    }
+    return roles[auth] || ''
   }
-  return '';
+  return ''
 }
 
 const clearInfo = () => {
@@ -51,71 +50,87 @@ const clearInfo = () => {
   >
     <div class="px-3 py-1 container-fluid">
       <div class="mt-2 collapse navbar-collapse mt-sm-0 me-md-0 me-sm-4" id="navbar">
-        
         <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <router-link 
-              to="/dashboard-default" 
-              class="nav-link text-black" 
-              :class="getRoute() === 'dashboard-default' ? 'font-weight-bold opacity-10' : 'opacity-6'"
+            <router-link
+              to="/dashboard-default"
+              class="nav-link text-black"
+              :class="
+                getRoute() === 'dashboard-default' ? 'font-weight-bold opacity-10' : 'opacity-6'
+              "
             >
               <i class="ni ni-tv-2 me-2"></i>메인
             </router-link>
           </li>
           <li class="nav-item">
-            <router-link 
-              to="/tables" 
-              class="nav-link text-black" 
+            <router-link
+              to="/tables"
+              class="nav-link text-black"
               :class="getRoute() === 'tables' ? 'font-weight-bold opacity-10' : 'opacity-6'"
             >
               <i class="ni ni-calendar-grid-58 me-2"></i>지원현황
             </router-link>
           </li>
           <li class="nav-item">
-            <router-link 
-              to="/reservations" 
-              class="nav-link text-black" 
+            <router-link
+              to="/reservations"
+              class="nav-link text-black"
               :class="getRoute() === 'reservations' ? 'font-weight-bold opacity-10' : 'opacity-6'"
             >
               <i class="ni ni-world-2 me-2"></i>상담예약 관리
             </router-link>
           </li>
+          <li class="nav-item">
+            <router-link
+              to="/surveys"
+              class="nav-link text-black"
+              :class="getRoute() === 'surveys' ? 'font-weight-bold opacity-10' : 'opacity-6'"
+            >
+              <i class="ni ni-world-2 me-2"></i>지원서관리
+            </router-link>
+          </li>
         </ul>
-
-        <!-- <div class="pe-md-3 d-flex align-items-center ms-md-auto">
-          <div class="input-group">
-            <span class="input-group-text text-body">
-              <i class="fas fa-search" aria-hidden="true"></i>
-            </span>
-            <input type="text" class="form-control" placeholder="Type here..." />
-          </div>
-        </div> -->
 
         <ul class="navbar-nav justify-content-end">
           <li class="nav-item d-flex align-items-center">
-            <router-link v-if="!isLogIn.isLogIn" :to="{ name: 'Signin' }" class="px-0 nav-link font-weight-bold text-black">
+            <router-link
+              v-if="!isLogIn.isLogIn"
+              :to="{ name: 'Signin' }"
+              class="px-0 nav-link font-weight-bold text-black"
+            >
               <i class="fa fa-user me-sm-2"></i>로그인
             </router-link>
             <span v-else class="d-flex align-items-center">
-              <router-link :to="{ name: '/' }" class="px-0 nav-link font-weight-bold text-black me-3">
+              <router-link
+                :to="{ name: '/' }"
+                class="px-0 nav-link font-weight-bold text-black me-3"
+              >
                 <i class="fa fa-user me-sm-2"></i>
                 <span class="d-sm-inline d-none">
                   {{ priority(isLogIn.info?.member_authority) }} {{ isLogIn.info?.member_name }}님
                 </span>
               </router-link>
-              <span class="cursor-pointer nav-link font-weight-bold text-black p-0" @click.prevent="clearInfo()">
+              <span
+                class="cursor-pointer nav-link font-weight-bold text-black p-0"
+                @click.prevent="clearInfo()"
+              >
                 로그아웃
               </span>
             </span>
           </li>
-          
+
           <li class="px-3 nav-item d-flex align-items-center">
             <a class="p-0 nav-link text-black" @click="toggleConfigurator">
               <i class="cursor-pointer fa fa-cog"></i>
             </a>
           </li>
           <li class="nav-item dropdown d-flex align-items-center pe-2">
-            <a href="#" class="p-0 nav-link text-black" :class="[showMenu ? 'show' : '']" @click="showMenu = !showMenu">
+            <a
+              href="#"
+              class="p-0 nav-link text-black"
+              :class="[showMenu ? 'show' : '']"
+              @click="showMenu = !showMenu"
+            >
               <i class="cursor-pointer fa fa-bell"></i>
             </a>
             <ul class="px-2 py-3 dropdown-menu dropdown-menu-end" :class="showMenu ? 'show' : ''">
@@ -144,7 +159,7 @@ const clearInfo = () => {
   transition: opacity 0.2s ease;
   display: flex;
   align-items: center;
-  font-size: 1.3rem !important; 
+  font-size: 1.3rem !important;
   font-weight: 500 !important;
   padding: 0.5rem 1rem !important;
 }
