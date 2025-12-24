@@ -12,9 +12,12 @@ const findByNo = async (no) => {
   return post;
 };
 // survey 단건 등록(새로운 버전 업그레이드)
+//질문추가 &  항목 추가시 기존 버전 비활성 -> 새버전 활성화
 const addSurvey = async (data) => {
   const { survey_no, survey_version, survey_start, survey_end, titles } = data;
+  await mysql.squery("updateSurvey");
 
+  //새 버전 insert
   let result = await mysql.squery("insertSurvey", [
     survey_no,
     survey_version,
@@ -65,7 +68,7 @@ const modifySurvey = async (no, data) => {
 
   //수정이력 저장
   let result = await mysql.squery("insertSurveyHistory", [
-    null, // AUTO_INCREMENT면 생략 가능
+    null,
     survey_no,
     person,
     reason,
@@ -91,10 +94,6 @@ const modifySurvey = async (no, data) => {
         qitem.survey_qitem_no,
       ]);
     }
-  }
-  // 3. 버전업데이트
-  if (subtitles || qitems) {
-    await mysql.squery("updateSurveyVersion", [survey_no]);
   }
   return result;
 };
