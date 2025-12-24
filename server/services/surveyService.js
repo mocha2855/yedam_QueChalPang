@@ -1,5 +1,5 @@
 //services/surveyService.js
-const mysql = require("../database/applicationMapper.js");
+const mysql = require("../database/mapper.js");
 
 //survey 전체 조회
 const findAll = async () => {
@@ -92,7 +92,6 @@ const modifySurvey = async (no, data) => {
       ]);
     }
   }
-  // 3. 버전업데이트
   // 3. 버전업데이트
   if (subtitles || qitems) {
     await mysql.squery("updateSurveyVersion", [survey_no]);
