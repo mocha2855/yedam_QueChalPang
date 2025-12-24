@@ -1,24 +1,60 @@
 const mysql = require("../database/mapper");
 
-// 대기단계 선택: 상담완료 상태이면서 지원신청서 단계가 대기 중인 사람
+// 접속자 권한 확인
+const authorityFindById = async (no) => {
+  let post = await mysql.bquery("authoritySelectById", no);
+  return post;
+};
+
+// 대기단계 선택시 상태확인
 const findById = async (no) => {
   let post = await mysql.bquery("selectById", no);
   return post;
 };
 
+// 결재자 선택화면 목록
 const rejectorFindById = async () => {
   let post = await mysql.bquery("rejectorSelectById");
   return post;
 };
 
+// 대기단계 승인요청
 const applicationModifyInfo = async (no, data) => {
-  let { status } = data;
-  let post = await mysql.bquery("applicationUpdateInfo", [status, no]);
+  let { status, status_status } = data;
+  let post = await mysql.bquery("applicationUpdateInfo", [
+    status,
+    status_status,
+    no,
+  ]);
+  return post;
+};
+
+// 대기단계 반려사유
+const rejectModifyInfo = async (no, data) => {
+  let { status_reject, status_status } = data;
+  let post = await mysql.bquery("statusRejectUpdateInfo", [
+    status_reject,
+    status_status,
+    no,
+  ]);
+  return post;
+};
+
+// 대기단계 승인
+const applicationSuccessModifyInfo = async (no, data) => {
+  let { status_status } = data;
+  let post = await mysql.bquery("applicationSuccessUpdateInfo", [
+    status_status,
+    no,
+  ]);
   return post;
 };
 
 module.exports = {
+  authorityFindById,
   findById,
   rejectorFindById,
   applicationModifyInfo,
+  rejectModifyInfo,
+  applicationSuccessModifyInfo,
 };

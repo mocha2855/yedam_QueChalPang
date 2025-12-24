@@ -59,7 +59,9 @@ console.log(isLogIn)
 
     <navbar :class="[navClasses]" v-if="showNavbar" />
 
-    <router-view />
+    <div class="py-4 container-fluid" style="min-height: 85vh">
+      <router-view />
+    </div>
 
     <app-footer v-show="showFooter" />
 
