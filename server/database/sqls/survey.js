@@ -89,6 +89,13 @@ SET survey_qitem_question = ?,
     survey_qitem_type = ?
 WHERE survey_qitem_no = ?
 `;
+//버전 업데이트
+const updateSurveyVersion = `
+UPDATE survey 
+SET survey_version = survey_version + 0.1 
+WHERE survey_no = ?
+`;
+
 //수정이력 저장
 const insertSurveyHistory = `
 INSERT INTO survey_history (
@@ -108,6 +115,7 @@ module.exports = {
   insertSurveyQitem,
   //조사지 수정(업데이트)
   updateSurvey,
+  updateSurveyVersion,
   updateTitle,
   updateSubtitle,
   updateQitem,
