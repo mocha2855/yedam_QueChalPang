@@ -5,6 +5,7 @@ import Profile from '../views/Profile.vue'
 import Signup from '../views/Signup.vue'
 import Signin from '../views/Signin.vue'
 import applicationWait from '../views/applicationWait.vue'
+import surveyRoutes from './survey' //시스템관리자 조사지
 import centerPopup from '../views/centerPopup.vue'
 
 import reservationRoutes from './reservation'
@@ -15,6 +16,7 @@ const routes = [
     name: '/',
     redirect: '/dashboard-default',
   },
+
   {
     path: '/dashboard-default',
     name: 'Dashboard',
@@ -46,6 +48,7 @@ const routes = [
     name: 'applicationWait',
     component: applicationWait,
   },
+  ...surveyRoutes,
   ...reservationRoutes,
   {
     path: '/centerPopup',

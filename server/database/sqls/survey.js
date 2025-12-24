@@ -65,8 +65,7 @@ VALUES (?,?,?,?)`;
 const updateSurvey = `
 UPDATE 
  survey SET survey_version_status = 'inactive'
- WHERE survey_no = ?
- AND survey_version_status = 'active'`;
+ WHERE survey_version_status = 'active'`;
 
 //조사지 항목 수정
 const updateTitle = `
@@ -89,21 +88,16 @@ SET survey_qitem_question = ?,
     survey_qitem_type = ?
 WHERE survey_qitem_no = ?
 `;
-//버전 업데이트
-const updateSurveyVersion = `
-UPDATE survey 
-SET survey_version = survey_version + 0.1 
-WHERE survey_no = ?
-`;
 
 //수정이력 저장
 const insertSurveyHistory = `
 INSERT INTO survey_history (
- survey_history_no, 
- survey_no, 
- survey_history_person,
- survey_history_reason,
- survey_history_date) VALUES(?,?,?,?,NOW())`;
+  survey_history_no, 
+  survey_no, 
+  survey_history_person,
+  survey_history_reason,
+  survey_history_date ) 
+ VALUES(?,?,?,?,NOW())`;
 
 module.exports = {
   selectAll,
@@ -113,9 +107,9 @@ module.exports = {
   insertSurveyTitle,
   insertSurveySubtitle,
   insertSurveyQitem,
+
   //조사지 수정(업데이트)
   updateSurvey,
-  updateSurveyVersion,
   updateTitle,
   updateSubtitle,
   updateQitem,
