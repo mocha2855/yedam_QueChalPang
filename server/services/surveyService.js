@@ -93,7 +93,6 @@ const modifySurvey = async (no, data) => {
     }
   }
   // 3. 버전업데이트
-  // 3. 버전업데이트
   if (subtitles || qitems) {
     await mysql.squery("updateSurveyVersion", [survey_no]);
   }
