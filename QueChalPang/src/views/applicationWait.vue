@@ -1,7 +1,7 @@
 <template>
   <div class="card w-100" style="min-height: 60vh">
     <!-- 담당자로 접속시 -->
-    <div v-if="memAuthority == 'a2'">
+    <div v-if="memAuthority == 'a2' && dependantWait.manager_id == id">
       <div class="card-header"><h5>대기단계 승인요청</h5></div>
       <div class="card-body">
         <div
@@ -94,7 +94,7 @@
       </div>
     </div>
     <!-- 관리자로 접속시 -->
-    <div v-else-if="memAuthority == 'a3'">
+    <div v-else-if="memAuthority == 'a3' && dependantWait.application_rejector == id">
       <div class="card-header"><h5>대기단계 승인요청</h5></div>
       <div class="card-body">
         <div
@@ -157,7 +157,7 @@ onBeforeMount(async () => {
   await axios //
     .get(`/api/applicationAuthority/` + id)
     .then((req) => {
-      console.log(req.data[0].member_authority)
+      console.log(req.data[0])
       memAuthority.value = req.data[0].member_authority
       console.log(memAuthority)
 
