@@ -1,13 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Dashboard from '../views/Dashboard.vue'
 import Tables from '../views/Tables.vue'
-import Billing from '../views/Billing.vue'
-import VirtualReality from '../views/VirtualReality.vue'
 import Profile from '../views/Profile.vue'
 import Signup from '../views/Signup.vue'
 import Signin from '../views/Signin.vue'
 import applicationWait from '../views/applicationWait.vue'
 import surveyRoutes from './survey' //시스템관리자 조사지
+
+import reservationRoutes from './reservation'
 
 const routes = [
   {
@@ -25,16 +25,6 @@ const routes = [
     path: '/tables',
     name: 'Tables',
     component: Tables,
-  },
-  {
-    path: '/billing',
-    name: 'Billing',
-    component: Billing,
-  },
-  {
-    path: '/virtual-reality',
-    name: 'Virtual Reality',
-    component: VirtualReality,
   },
 
   {
@@ -58,6 +48,7 @@ const routes = [
     component: applicationWait,
   },
   ...surveyRoutes,
+  ...reservationRoutes,
 ]
 
 const router = createRouter({
