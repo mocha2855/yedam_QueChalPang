@@ -1,5 +1,7 @@
 use project;
 
+set autocommit=0;
+
 select * from reservation;
 delete from reservation;
 
@@ -82,3 +84,27 @@ INSERT INTO reservation (
 -- 3. 홍길동 (dependant_no: 4 / user02 / Center 1) -> f2 (예약확정)
 (4, 16, 'user02', 'teacher01', NOW(), '2025-12-29', '2025-12-29 14:00:00', '2025-12-29 15:00:00', 'f2', NULL);
 
+savepoint A;
+
+desc reservation;
+select * from reservation;
+--
+  DELETE FROM reservation 
+  WHERE resv_id = 25
+    AND manager_id = 'teacher01'; 
+    
+  SELECT
+    g.member_name    AS guardian_name,
+    d.dependant_name AS dependant_name,    
+    r.start_at       AS start_at,
+    r.resv_status    AS status,
+    r.manager_id,
+    r.guardian_id
+  FROM reservation r
+  JOIN member g
+    ON g.member_id = r.guardian_id
+  JOIN dependant d
+    ON d.dependant_no = r.dependant_no
+  WHERE r.guardian_id = 'user02';
+    
+rollback to A;
