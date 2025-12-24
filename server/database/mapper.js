@@ -2,7 +2,6 @@
 require("dotenv").config();
 
 const mysql = require("mysql2/promise");
-const applicationSql = require("./sqls/applicationJH.js");
 const memberSql = require("./sqls/member.js");
 const centerSql = require("./sqls/center.js");
 const surveySql = require("./sqls/survey");
@@ -72,6 +71,8 @@ const memberQuery = async (selected, values) => {
   try {
     conn = await pool.getConnection();
     let executeSql = memberSql[selected];
+    console.log("sql:", executeSql);
+    console.log("value:", values);
     let result = (await conn.query(executeSql, values))[0];
     return result;
   } finally {
@@ -79,4 +80,4 @@ const memberQuery = async (selected, values) => {
   }
 };
 
-module.exports = { bquery, rquery, squery, memberQuery, centerQuery };
+module.exports = { rquery, squery, memberQuery, centerQuery };
