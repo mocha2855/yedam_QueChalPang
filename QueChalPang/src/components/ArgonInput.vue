@@ -1,10 +1,10 @@
 <script setup>
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits(['update:modelValue'])
 
 defineProps({
   size: {
     type: String,
-    default: "default",
+    default: 'default',
   },
   success: {
     type: Boolean,
@@ -16,55 +16,59 @@ defineProps({
   },
   icon: {
     type: String,
-    default: "",
+    default: '',
   },
   iconDir: {
     type: String,
-    default: "",
+    default: '',
   },
   name: {
     type: String,
-    default: "",
+    default: '',
   },
   id: {
     type: String,
-    default: "",
+    default: '',
   },
   modelValue: {
     type: String,
-    default: "",
+    default: '',
   },
   placeholder: {
     type: String,
-    default: "",
+    default: '',
   },
   type: {
     type: String,
-    default: "text",
+    default: 'text',
   },
   isRequired: {
     type: Boolean,
     default: false,
   },
-});
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+})
 
 const getClasses = (size, success, error) => {
-  let sizeValue, isValidValue;
+  let sizeValue, isValidValue
 
-  sizeValue = size ? `form-control-${size}` : null;
+  sizeValue = size ? `form-control-${size}` : null
 
   if (error) {
-    isValidValue = "is-invalid";
+    isValidValue = 'is-invalid'
   } else if (success) {
-    isValidValue = "is-valid";
+    isValidValue = 'is-valid'
   } else {
-    isValidValue = "";
+    isValidValue = ''
   }
 
-  return `${sizeValue} ${isValidValue}`;
-};
-const getIcon = (icon) => (icon ? icon : null);
-const hasIcon = (icon) => (icon ? "input-group" : null);
+  return `${sizeValue} ${isValidValue}`
+}
+const getIcon = (icon) => (icon ? icon : null)
+const hasIcon = (icon) => (icon ? 'input-group' : null)
 </script>
 <template>
   <div class="form-group">
@@ -81,6 +85,7 @@ const hasIcon = (icon) => (icon ? "input-group" : null);
         :value="modelValue"
         :placeholder="placeholder"
         :isRequired="isRequired"
+        :disabled="disabled"
         @input="emit('update:modelValue', $event.target.value)"
       />
       <span v-if="iconDir === 'right'" class="input-group-text">

@@ -71,6 +71,8 @@ const memberQuery = async (selected, values) => {
   try {
     conn = await pool.getConnection();
     let executeSql = memberSql[selected];
+    console.log("sql:", executeSql);
+    console.log("value:", values);
     let result = (await conn.query(executeSql, values))[0];
     return result;
   } finally {

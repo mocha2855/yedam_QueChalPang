@@ -5,6 +5,7 @@ import Profile from '../views/Profile.vue'
 import Signup from '../views/Signup.vue'
 import Signin from '../views/Signin.vue'
 import applicationWait from '../views/applicationWait.vue'
+import centerPopup from '../views/centerPopup.vue'
 
 import reservationRoutes from './reservation'
 
@@ -46,6 +47,11 @@ const routes = [
     component: applicationWait,
   },
   ...reservationRoutes,
+  {
+    path: '/centerPopup',
+    name: 'centerPopup',
+    component: centerPopup,
+  },
 ]
 
 const router = createRouter({
