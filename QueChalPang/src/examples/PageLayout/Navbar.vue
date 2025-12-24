@@ -89,6 +89,8 @@ defineProps({
               Sign In
             </router-link>
           </li>
+
+
         </ul>
         <ul class="navbar-nav d-lg-block d-none">
           <li class="nav-item">

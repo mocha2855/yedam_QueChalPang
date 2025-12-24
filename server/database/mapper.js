@@ -4,7 +4,6 @@ require("dotenv").config();
 const mysql = require("mysql2/promise");
 const memberSql = require("./sqls/member.js");
 const centerSql = require("./sqls/center.js");
-const resvSql = require("./sqls/reservation");
 const surveySql = require("./sqls/survey");
 
 console.log(process.env.MARIADB_HOST);

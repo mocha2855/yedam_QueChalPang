@@ -15,7 +15,7 @@ const darkMode = computed(() => store.state.darkMode);
   <div
     v-show="layout === 'default'"
     class="min-height-300 position-absolute w-100"
-    :class="`${darkMode ? 'bg-transparent' : 'bg-success'}`"
+    :class="`${darkMode ? 'bg-transparent' : 'bg-white'}`"
   />
 
   <aside
@@ -40,7 +40,7 @@ const darkMode = computed(() => store.state.darkMode);
           alt="main_logo"
         />
 
-        <span class="ms-2 font-weight-bold me-2">Argon Dashboard 2</span>
+        <span class="ms-2 font-weight-bold me-2">발달장애인 프로그램</span>
       </router-link>
     </div>
 
