@@ -43,6 +43,7 @@ const routes = [
     name: 'Signup',
     component: Signup,
   },
+
   {
     path: '/applicationWait/:id',
     name: 'applicationWait',
