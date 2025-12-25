@@ -11,6 +11,13 @@ router.get("/resvByDate/:managerId/:date", async (req, res) => {
   res.json(rows);
 });
 
+//[1]-1 초록점찍기용 - 예약이 하나라도 존재하는 날짜 뽑기
+router.get("/resvByManager/:managerId", async (req, res) => {
+  const { managerId } = req.params;
+  const rows = await reservationService.findTresvByManager(managerId); //rows = [{ start_at: '2025-12-28' },{ start_at: '2025-12-29' }]
+  res.json(rows.map((r) => r.start_at));
+});
+
 //[2]담당자 - status가 f1인 모든 상담내역 조회 ->
 router.get("/resvByPendingList/:managerId", async (req, res) => {
   const { managerId } = req.params;
@@ -21,11 +28,21 @@ router.get("/resvByPendingList/:managerId", async (req, res) => {
 //[3]담당자 - 승인버튼 누르면 reservation table의 status 를 f2, 반려 누르면 f4로 => 업뎃
 router.put("/updateRstatus", async (req, res) => {
   const { resvId, managerId, resvStatus, rejectReason } = req.body; //body, params.
-  //디버깅용 콘솔추가 
-  console.log("요청 데이터 상세:", { resvId, managerId, resvStatus, rejectReason });
+  //디버깅용 콘솔추가
+  console.log("요청 데이터 상세:", {
+    resvId,
+    managerId,
+    resvStatus,
+    rejectReason,
+  });
 
   try {
-    const result = await reservationService.modifyRstatus(resvId, managerId, resvStatus, rejectReason);
+    const result = await reservationService.modifyRstatus(
+      resvId,
+      managerId,
+      resvStatus,
+      rejectReason
+    );
     //디버깅용 콘솔추가
     //affectedRows가 뭔지.
     console.log("DB 결과:", result);
@@ -36,7 +53,9 @@ router.put("/updateRstatus", async (req, res) => {
       res.status(403).json({ message: "해당 예약정보에 접근할 수 없습니다." });
     }
   } catch (err) {
-    res.status(500).json({ message: "서버에 연결할 수 없습니다.", err: err.message });
+    res
+      .status(500)
+      .json({ message: "서버에 연결할 수 없습니다.", err: err.message });
   }
 });
 
@@ -46,14 +65,16 @@ router.delete("/cancelReservation/:managerId/:resvId", async (req, res) => {
   console.log("요청 데이터 상세:", { resvId, managerId });
 
   try {
-    const result = await reservationService.removeReservation(resvId, managerId);
+    const result = await reservationService.removeReservation(
+      resvId,
+      managerId
+    );
     if (result.affectedRows > 0) {
       res.json({ message: "삭제성공" }, resvId, managerId);
     } else {
-      res.status(403).json({ message: "해당 상담을 삭제할 수 없습니다." })
+      res.status(403).json({ message: "해당 상담을 삭제할 수 없습니다." });
     }
-  }
-  catch (err) {
+  } catch (err) {
     res.status(500).json({ message: "서버연결 실패", err: err.message });
   }
 });
@@ -68,18 +89,17 @@ router.get("/gresvByDate/:guardianId", async (req, res) => {
 
 //[6]보호자 - 예약 요청
 router.post("/createReservation", async (req, res) => {
-
   try {
     const data = req.body;
     const insertId = await reservationService.addReservation(data);
 
     if (insertId) {
-      res.json({ message: "상담예약 신청 완료", resvId: insertId })
+      res.json({ message: "상담예약 신청 완료", resvId: insertId });
     } else {
       res.status(403).json({ message: "예약신청을 전송할 수 없습니다" });
     }
   } catch (err) {
-    res.status(500).json({ message: "서버연결 실패", err: err.message })
+    res.status(500).json({ message: "서버연결 실패", err: err.message });
   }
 });
 

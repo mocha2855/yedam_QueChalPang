@@ -2,6 +2,7 @@
 const mysql = require("../database/mapper.js");
 const {
   selectTResvByDate,
+  selectTResvbyManager,
   selectTResvPendingList,
   updateResvStatus,
   deleteReserv,
@@ -12,6 +13,11 @@ const {
 //[1]담당자 - 해당 날짜의 모든 예약 조회
 const findByDate = async (managerId, targetDay) => {
   return await mysql.rquery(selectTResvByDate, [managerId, targetDay]);
+};
+
+//[1]-1 초록점찍기용 - 예약이 하나라도 존재하는 날짜 뽑기
+const findTresvByManager = async (managerId) => {
+  return await mysql.rquery(selectTResvbyManager, [managerId]);
 };
 
 //[2]담당자 - status가 f1인 모든 상담내역 조회 ->
@@ -26,7 +32,7 @@ const modifyRstatus = async (resvId, managerId, resvStatus, rejectReason) => {
     resvStatus,
     rejectReason,
     resvId,
-    managerId
+    managerId,
   ]);
 };
 
@@ -42,9 +48,33 @@ const findByGreserv = async (guardianId) => {
 
 //[6]보호자 - 예약 요청
 const addReservation = async (data) => {
-  const { dependant_no, application_no, guardian_id, manager_id, resv_day, start_at, end_at } = data;
-  let result = await mysql.rquery(insertResv, [dependant_no, application_no, guardian_id, manager_id, resv_day, start_at, end_at]);
+  const {
+    dependant_no,
+    application_no,
+    guardian_id,
+    manager_id,
+    resv_day,
+    start_at,
+    end_at,
+  } = data;
+  let result = await mysql.rquery(insertResv, [
+    dependant_no,
+    application_no,
+    guardian_id,
+    manager_id,
+    resv_day,
+    start_at,
+    end_at,
+  ]);
   return result.insertId;
 };
 
-module.exports = { findByDate, findPendingList, modifyRstatus, removeReservation, findByGreserv, addReservation };
+module.exports = {
+  findByDate,
+  findTresvByManager,
+  findPendingList,
+  modifyRstatus,
+  removeReservation,
+  findByGreserv,
+  addReservation,
+};

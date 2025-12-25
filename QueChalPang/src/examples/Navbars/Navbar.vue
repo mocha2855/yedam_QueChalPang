@@ -159,7 +159,7 @@ const clearInfo = () => {
   transition: opacity 0.2s ease;
   display: flex;
   align-items: center;
-  font-size: 1.3rem !important;
+  font-size: 1.1rem !important;
   font-weight: 500 !important;
   padding: 0.5rem 1rem !important;
 }

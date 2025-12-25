@@ -37,6 +37,7 @@ onBeforeUnmount(() => {
   store.state.showFooter = true
   body.classList.add('bg-gray-100')
 })
+
 const logIn = async () => {
   let result = await axios.post(`/api/member/login`, member)
   result = result.data
@@ -49,6 +50,7 @@ const logIn = async () => {
   }
   console.log(isLogIn.value)
 }
+
 const goToBoardInfo = () => {
   router.push({ name: '/' })
 }
