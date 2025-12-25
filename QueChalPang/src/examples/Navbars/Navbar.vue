@@ -80,6 +80,15 @@ const clearInfo = () => {
               <i class="ni ni-world-2 me-2"></i>상담예약 관리
             </router-link>
           </li>
+          <li class="nav-item">
+            <router-link
+              to="/surveys"
+              class="nav-link text-black"
+              :class="getRoute() === 'surveys' ? 'font-weight-bold opacity-10' : 'opacity-6'"
+            >
+              <i class="ni ni-world-2 me-2"></i>지원서관리
+            </router-link>
+          </li>
         </ul>
 
         <ul class="navbar-nav justify-content-end">

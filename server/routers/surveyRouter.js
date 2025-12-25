@@ -9,6 +9,7 @@ router.get(`/surveys`, async (req, res) => {
   console.log("survey");
   res.send(list);
 });
+//survey 단건 조회
 router.get(`/survey/:no`, async (req, res) => {
   let no = req.params.no;
   let post = await surveyService.findByNo(no);
