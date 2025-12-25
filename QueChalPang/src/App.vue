@@ -1,57 +1,65 @@
+<!-- src/App.vue -->
 <script setup>
 import { computed } from 'vue'
 import { useStore } from 'vuex'
-import { useCounterStore } from '@/stores/member'
-import Sidenav from './examples/Sidenav'
+import { useRoute } from 'vue-router'
+
 import Navbar from '@/examples/Navbars/Navbar.vue'
-import AppFooter from '@/examples/Footer.vue'
-import { storeToRefs } from 'pinia'
+import Sidenav from './examples/Sidenav'
+import Configurator from '@/examples/Configurator.vue'
 
-const counterStore = useCounterStore()
 const store = useStore()
-const { isLogIn } = storeToRefs(counterStore)
-const isNavFixed = computed(() => store.state.isNavFixed)
-const darkMode = computed(() => store.state.darkMode)
-const isAbsolute = computed(() => store.state.isAbsolute)
-const showSidenav = computed(() => store.state.showSidenav)
-const layout = computed(() => store.state.layout)
+const route = useRoute()
+
 const showNavbar = computed(() => store.state.showNavbar)
-const showFooter = computed(() => store.state.showFooter)
-const showConfig = computed(() => store.state.showConfig)
-const hideConfigButton = computed(() => store.state.hideConfigButton)
+const showSidenav = computed(() => store.state.showSidenav)
 
-const navClasses = computed(() => {
-  return {
-    'position-sticky bg-white left-auto top-2 z-index-sticky': isNavFixed.value && !darkMode.value,
-    'position-sticky bg-default left-auto top-2 z-index-sticky': isNavFixed.value && darkMode.value,
-    'position-absolute px-4 mx-0 w-100 z-index-2': isAbsolute.value,
-    'px-0 mx-4': !isAbsolute.value,
-  }
+//인증 페이지면 풀화면
+const isAuthPage = computed(() => {
+  return route.path === '/signin' || route.path === '/signup'
 })
-console.log(isLogIn)
 </script>
+
 <template>
-  <div
-    v-show="layout === 'landing'"
-    class="landing-bg h-100 bg-gradient-primary position-fixed w-100"
-  ></div>
+  <!-- 상단 네비바 -->
+  <Navbar v-if="showNavbar" class="app-navbar" />
 
-  <sidenav v-if="showSidenav" />
+  <!-- 좌우 레이아웃 -->
+  <div class="app-layout">
+    <Sidenav v-if="showSidenav" />
 
-  <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
-    <!-- nav -->
-
-    <navbar :class="[navClasses]" v-if="showNavbar" />
-
-    <div class="py-4 container-fluid" style="min-height: 85vh">
+    <main class="app-main" :class="{ 'app-main--full': isAuthPage }">
       <router-view />
-    </div>
-
-    <app-footer v-show="showFooter" />
-
-    <configurator
-      :toggle="toggleConfigurator"
-      :class="[showConfig ? 'show' : '', hideConfigButton ? 'd-none' : '']"
-    />
-  </main>
+    </main>
+  </div>
+  <Configurator />
 </template>
+
+<style>
+.app-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.app-main {
+  flex: 1;
+  padding: 24px;
+  min-width: 0;
+  /* background-color: rgb(255, 255, 255); */
+  margin-left: 260px;
+  position: relative;
+  z-index: 1;
+}
+
+/* signin/signup에서는 꽉 차게 */
+.app-main--full {
+  margin-left: 0;
+  padding: 0;
+}
+</style>

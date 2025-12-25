@@ -1,31 +1,24 @@
+<!-- Sidenav/index.vue -->
 <script setup>
-import { computed } from "vue";
-import { useStore } from "vuex";
-import SidenavList from "./SidenavList.vue";
-import logo from "@/assets/img/logo-ct-dark.png";
-import logoWhite from "@/assets/img/logo-ct.png";
+import { computed } from 'vue'
+import { useStore } from 'vuex'
+import SidenavList from './SidenavList.vue'
+import logo from '@/assets/img/logo-ct-dark.png'
+import logoWhite from '@/assets/img/logo-ct.png'
 
-const store = useStore();
-const isRTL = computed(() => store.state.isRTL);
-const layout = computed(() => store.state.layout);
-const sidebarType = computed(() => store.state.sidebarType);
-const darkMode = computed(() => store.state.darkMode);
+const store = useStore()
+const layout = computed(() => store.state.layout)
+const sidebarType = computed(() => store.state.sidebarType)
+const darkMode = computed(() => store.state.darkMode)
 </script>
 <template>
   <div
     v-show="layout === 'default'"
     class="min-height-300 position-absolute w-100"
-    :class="`${darkMode ? 'bg-transparent' : 'bg-white'}`"
+    :class="`${darkMode ? 'bg-transparent' : 'bg-transparent'}`"
   />
 
-  <aside
-    class="my-3 overflow-auto border-0 sidenav navbar navbar-vertical navbar-expand-xs border-radius-xl"
-    :class="`${isRTL ? 'me-3 rotate-caret fixed-end' : 'fixed-start ms-3'}    
-      ${
-        layout === 'landing' ? 'bg-transparent shadow-none' : ' '
-      } ${sidebarType}`"
-    id="sidenav-main"
-  >
+  <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-radius-xl" id="sidenav-main">
     <div class="sidenav-header">
       <i
         class="top-0 p-3 cursor-pointer fas fa-times text-secondary opacity-5 position-absolute end-0 d-none d-xl-none"
@@ -49,3 +42,15 @@ const darkMode = computed(() => store.state.darkMode);
     <sidenav-list />
   </aside>
 </template>
+
+<style scoped>
+#sidenav-main {
+  position: fixed !important;
+  top: 56px !important;
+  left: 0;
+  width: 260px;
+  height: calc(100vh - 56px) !important;
+  overflow-y: auto;
+  z-index: 900;
+}
+</style>
