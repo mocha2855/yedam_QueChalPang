@@ -2,12 +2,14 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
-export const useSurveyStore = defineStore('survey', {
+export const useSurveyStore = defineStore('surveys', {
   //state
   state: () => {
+    //피니아에서는 ref([]) 권장x
     return {
-      survey: ref([]), //조사지 목록
-      surveyDetail: ref([]), //조사지 상세
+      survey: [], //조사지 목록
+      surveyDetail: [], //조사지 상세
+      questionList: [], //질문 여러개 담을 것
       err: ref(''),
     }
   },
@@ -22,7 +24,7 @@ export const useSurveyStore = defineStore('survey', {
         //전체 조회 시 중복 제거해서 가져오기
         this.survey = activeOnly.filter(
           (survey, index, self) =>
-            index === self.findIndex((s) => s.survey_no === survey.survey.survey_no),
+            index === self.findIndex((s) => s.survey_no === survey.survey_no),
         )
         this.err = ''
       } catch (err) {
@@ -33,8 +35,9 @@ export const useSurveyStore = defineStore('survey', {
     //조사지 상세조회
     async fetchSurveyDetail(no) {
       try {
-        const response = await axios.get(`/api/survey/${no}`)
+        const response = await axios.get(`/api/surveys/${no}`)
         this.surveyDetail = response.data
+        this.questionList = response.data
         this.err = ''
       } catch (err) {
         console.log(err)

@@ -6,7 +6,7 @@ const findAll = async () => {
   let list = await mysql.squery("selectAll");
   return list;
 };
-//survey 단건 조회(안써도 될거 같음)
+//survey 단건 조회
 const findByNo = async (no) => {
   let post = await mysql.squery("selectByNo", [no]);
   return post;
@@ -14,7 +14,10 @@ const findByNo = async (no) => {
 // survey 단건 등록(새로운 버전 업그레이드)
 //질문추가 &  항목 추가시 기존 버전 비활성 -> 새버전 활성화
 const addSurvey = async (data) => {
-  const { survey_no, survey_version, survey_start, survey_end, titles } = data;
+  const { survey_no, title } = data;
+  const survey_start = new Date(); //날짜 자동화
+  const survey_end = new Date("9999-12-31"); // 끝나는 시간은 무기한 연장(새버전 등장 시 자동 마무리 시간 계산)
+
   await mysql.squery("updateSurvey");
 
   //새 버전 insert
@@ -25,29 +28,27 @@ const addSurvey = async (data) => {
     survey_end,
   ]);
 
-  for (let title of titles) {
-    await mysql.squery("insertSurveyTitle", [
+  await mysql.squery("insertSurveyTitle", [
+    title.survey_title_no,
+    survey_no,
+    title.survey_title,
+  ]);
+
+  for (let subtitle of title.subtitles) {
+    await mysql.squery("insertSurveySubtitle", [
+      subtitle.survey_subtitle_no,
       title.survey_title_no,
-      survey_no,
-      title.survey_title,
+      subtitle.survey_subtitle,
+      subtitle.survey_subtitle_detail,
     ]);
 
-    for (let subtitle of title.subtitles) {
-      await mysql.squery("insertSurveySubtitle", [
+    for (let qitem of subtitle.qitems) {
+      await mysql.squery("insertSurveyQitem", [
+        qitem.survey_qitem_no,
         subtitle.survey_subtitle_no,
-        title.survey_title_no,
-        subtitle.survey_subtitle,
-        subtitle.survey_subtitle_detail,
+        qitem.survey_qitem_question,
+        qitem.survey_qitem_type,
       ]);
-
-      for (let qitem of subtitle.qitems) {
-        await mysql.squery("insertSurveyQitem", [
-          qitem.survey_qitem_no,
-          subtitle.survey_subtitle_no,
-          qitem.survey_qitem_question,
-          qitem.survey_qitem_type,
-        ]);
-      }
     }
   }
   return result.insertId;

@@ -15,6 +15,10 @@ onMounted(async () => {
 function surveyInfo(no) {
   router.push({ name: 'surveyInfo', params: { no: no } })
 }
+
+const goTosurveyAdd = () => {
+  router.push({ name: 'surveyAdd' })
+}
 </script>
 
 <template>
@@ -24,6 +28,7 @@ function surveyInfo(no) {
         <div class="card">
           <div class="card-header pb-0">
             <h6>설문지 목록</h6>
+            <button class="btn btn-primary" @click="goTosurveyAdd">항목추가</button>
           </div>
           <div class="card-body px-0 pt-0 pb-2">
             <div class="table-responsive p-0">
