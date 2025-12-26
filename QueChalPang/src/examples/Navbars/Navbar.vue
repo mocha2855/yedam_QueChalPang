@@ -51,6 +51,7 @@ const clearInfo = () => {
     <div class="container-fluid">
       <div class="mt-2 collapse navbar-collapse mt-sm-0 me-md-0 me-sm-4" id="navbar">
         <ul class="navbar-nav me-auto">
+          
           <li class="nav-item">
             <router-link
               to="/dashboard-default"
@@ -62,6 +63,7 @@ const clearInfo = () => {
               <i class="ni ni-tv-2 me-2"></i>메인
             </router-link>
           </li>
+
           <li class="nav-item">
             <router-link
               to="/tables"
@@ -71,15 +73,27 @@ const clearInfo = () => {
               <i class="ni ni-calendar-grid-58 me-2"></i>지원현황
             </router-link>
           </li>
+
           <li class="nav-item">
             <router-link
-              to="/reservations"
+              to="/reservTeacher"
               class="nav-link text-black"
-              :class="getRoute() === 'reservations' ? 'font-weight-bold opacity-10' : 'opacity-6'"
+              :class="getRoute() === 'reservTeacher' ? 'font-weight-bold opacity-10' : 'opacity-6'"
             >
               <i class="ni ni-world-2 me-2"></i>상담예약 관리
             </router-link>
           </li>
+          
+          <li class="nav-item">
+            <router-link
+              to="/reservGuardian"
+              class="nav-link text-black"
+              :class="getRoute() === 'reservGuardian' ? 'font-weight-bold opacity-10' : 'opacity-6'"
+            >
+              <i class="ni ni-world-2 me-2"></i>상담예약하기
+            </router-link>
+          </li>
+
           <li class="nav-item">
             <router-link
               to="/surveys"
@@ -89,6 +103,7 @@ const clearInfo = () => {
               <i class="ni ni-world-2 me-2"></i>지원서관리
             </router-link>
           </li>
+
         </ul>
 
         <ul class="navbar-nav justify-content-end">
@@ -159,7 +174,7 @@ const clearInfo = () => {
   transition: opacity 0.2s ease;
   display: flex;
   align-items: center;
-  font-size: 1.1rem !important;
+  font-size: 1.0rem !important;
   font-weight: 500 !important;
   padding: 0.5rem 1rem !important;
 }

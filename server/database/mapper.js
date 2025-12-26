@@ -6,7 +6,6 @@ const applicationSql = require("./sqls/applicationJH.js");
 const memberSql = require("./sqls/member.js");
 const centerSql = require("./sqls/center.js");
 const surveySql = require("./sqls/survey");
-const applicationSql = require("./sqls/applicationJH.js");
 
 console.log(process.env.MARIADB_HOST);
 
