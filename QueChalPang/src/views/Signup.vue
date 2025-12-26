@@ -112,6 +112,9 @@ const timeFormat = computed(() => {
   let minute = `${Math.floor(timer.value / 60)}`
   let second = timer.value % 60 < 10 ? `0${timer.value % 60}` : `${timer.value % 60}`
   let times = `${minute}:${second}`
+  if (timer.value == 0) {
+    clearInterval(loseTime)
+  }
   return times
 })
 const member = reactive({
