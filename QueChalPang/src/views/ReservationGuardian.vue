@@ -13,17 +13,15 @@ const { isLogIn } = storeToRefs(counterStore)
 
 const guardianId = computed(() => isLogIn.value?.info?.member_id)
 
-const dependantList = ref([]) // [{ dependant_no, dependant_name }, ...]
-const dependantNo = ref(null) // 선택된 dependant_no
+const dependantList = ref([])
+const dependantNo = ref(null)
 
 const fetchMyDependants = async () => {
   if (!guardianId.value) return
 
-  // ✅ 서버에 /api/dependants/:guardianId 라우터 만들어둔 기준
   const res = await axios.get(`/api/dependants/${guardianId.value}`)
   dependantList.value = res.data ?? []
 
-  // 기본값: 첫번째 자동 선택
   dependantNo.value = dependantList.value[0]?.dependant_no ?? null
 }
 
@@ -45,8 +43,8 @@ const selectedDate = ref(new Date(today))
 
 //vcalendar 날짜막기
 const disabledDates = computed(() => [
-  { start: null, end: new Date(today.getTime() - 1000 * 60 * 60 * 24) }, // 오늘 이전 전체 비활성
-  { start: new Date(maxDate.getTime()), end: null }, // maxDate 다음날 이후 전체 비활성
+  { start: null, end: new Date(today.getTime() - 1000 * 60 * 60 * 24) },
+  { start: new Date(maxDate.getTime()), end: null },
 ])
 
 // ========================
@@ -70,9 +68,7 @@ const selectedYmdDash = computed(() => {
   return `${yyyy}-${mm}-${dd}`
 })
 
-// ========================
 // 시간 슬롯
-// ========================
 const baseSlots = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00']
 
 const timeSlots = computed(() =>
@@ -84,7 +80,6 @@ const timeSlots = computed(() =>
     return {
       time: t,
       available: !(isLunch || isReserved || isBlocked),
-      // 필요 없으면 reason 제거 가능
       reason: isLunch ? '점심' : isReserved ? '예약됨' : isBlocked ? '차단' : '',
     }
   }),
@@ -106,9 +101,7 @@ const fetchAvailability = async () => {
   blockedTimes.value = new Set((res.data.blockedTimes ?? []).map((t) => t.slice(0, 5)))
 }
 
-// ========================
 // DatePicker 하이라이트
-// ========================
 const calendarAttrs = computed(() => [
   {
     key: 'selected',
