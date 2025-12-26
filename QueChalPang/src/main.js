@@ -5,6 +5,7 @@ import router from './router'
 import './assets/css/nucleo-icons.css'
 import './assets/css/nucleo-svg.css'
 import ArgonDashboard from './argon-dashboard'
+import './assets/css/override.css'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 const appInstance = createApp(App)

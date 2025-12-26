@@ -6,6 +6,7 @@ const applicationSql = require("./sqls/applicationJH.js");
 const memberSql = require("./sqls/member.js");
 const centerSql = require("./sqls/center.js");
 const surveySql = require("./sqls/survey");
+const applicationSql = require("./sqls/applicationJH.js");
 
 console.log(process.env.MARIADB_HOST);
 
@@ -35,7 +36,9 @@ const bquery = async (selected, values) => {
   try {
     conn = await pool.getConnection();
     let executeSql = applicationSql[selected];
-    console.log(executeSql);
+
+    console.log(selected, values);
+
     let result = (await conn.query(executeSql, values))[0];
     return result;
   } finally {
@@ -81,4 +84,4 @@ const memberQuery = async (selected, values) => {
   }
 };
 
-module.exports = { bquery, rquery, squery, memberQuery, centerQuery };
+module.exports = { rquery, bquery, squery, memberQuery, centerQuery };

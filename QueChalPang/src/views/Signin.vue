@@ -9,6 +9,7 @@ import ArgonInput from '@/components/ArgonInput.vue'
 import ArgonSwitch from '@/components/ArgonSwitch.vue'
 import ArgonButton from '@/components/ArgonButton.vue'
 import { storeToRefs } from 'pinia'
+
 const body = document.getElementsByTagName('body')[0]
 const store = useStore()
 const counterStore = useCounterStore()
@@ -18,20 +19,25 @@ const member = reactive({
   id: '',
   pass: '',
 })
+
 onBeforeMount(() => {
   store.state.hideConfigButton = true
+  store.state.showConfig = false
   store.state.showNavbar = false
   store.state.showSidenav = false
   store.state.showFooter = false
   body.classList.remove('bg-gray-100')
 })
+
 onBeforeUnmount(() => {
   store.state.hideConfigButton = false
+  store.state.showConfig = false
   store.state.showNavbar = true
   store.state.showSidenav = true
   store.state.showFooter = true
   body.classList.add('bg-gray-100')
 })
+
 const logIn = async () => {
   let result = await axios.post(`/api/member/login`, member)
   result = result.data
@@ -44,6 +50,7 @@ const logIn = async () => {
   }
   console.log(isLogIn.value)
 }
+
 const goToBoardInfo = () => {
   router.push({ name: '/' })
 }

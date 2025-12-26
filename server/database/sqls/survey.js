@@ -26,9 +26,13 @@ SELECT
 
 //active(활동)인 것 중에서 단건 조회
 const selectByNo = `
-SELECT * 
-  FROM survey WHERE survey_no = ?
-  AND survey_version_status = 'active'`;
+  SELECT s.*, st.*, ss.*, sq.* 
+  FROM survey s
+  LEFT JOIN survey_title st ON s.survey_no = st.survey_no
+  LEFT JOIN survey_subtitle ss ON st.survey_title_no = ss.survey_title_no
+  LEFT JOIN survey_qitem sq ON ss.survey_subtitle_no = sq.survey_subtitle_no
+  WHERE s.survey_no = ? AND s.survey_version_status = 'active'
+`;
 
 //조사지 새로 등록시 추가
 const insertSurvey = `INSERT INTO 
