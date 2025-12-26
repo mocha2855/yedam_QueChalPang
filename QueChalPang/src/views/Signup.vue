@@ -86,6 +86,7 @@ const emailBtnChecked = ref(false)
 const msg = ref('')
 const argonAlert = ref(false)
 const selectedCenter = ref({ center_name: '', center_no: 0 })
+const authority = ref('a1')
 const member = reactive({
   id: '',
   pass: '',
@@ -94,15 +95,16 @@ const member = reactive({
   phone: '',
   address: '',
   center_no: 0,
-  authority: '',
+  authority: 'a1',
 })
 const pwc = ref('')
 const isIdDisabled = ref(false)
 const isEmailDisabled = ref(false)
-const authority = ref('a1')
 const selectAuth = (auth) => {
   console.log(authority)
   authority.value = auth
+  member.authority = auth
+  console.log(member)
 }
 const idCheck = async () => {
   if (member.id == '') {
@@ -167,6 +169,9 @@ const addMemberInfo = () => {
   // let result = axios.post(`/member`,member)
   // console.log(result)
 }
+const getColor = (id) => {
+  return authority.value === id ? 'primary' : 'secondary'
+}
 </script>
 <template>
   <div class="fixed-top d-flex justify-content-end p-3">
@@ -204,14 +209,14 @@ const addMemberInfo = () => {
             <p class="text-lead text-white">
               회원가입을 위해 아래 내용을 입력 후 가입 버튼을 눌러주세요
             </p>
-            <div class="row mb-3 justify-content-center">
-              <argon-button color="primary" class="col-3" v-on:click="selectAuth('a1')">
+            <div id="buttons" class="row mb-3 justify-content-center">
+              <argon-button :color="getColor('a1')" class="col-3" v-on:click="selectAuth('a1')">
                 일반회원
               </argon-button>
-              <argon-button color="secondary" class="col-3" v-on:click="selectAuth('a2')"
+              <argon-button :color="getColor('a2')" class="col-3" v-on:click="selectAuth('a2')"
                 >기관 담당자</argon-button
               >
-              <argon-button color="secondary" class="col-3" v-on:click="selectAuth('a3')"
+              <argon-button :color="getColor('a3')" class="col-3" v-on:click="selectAuth('a3')"
                 >기관관리자</argon-button
               >
             </div>

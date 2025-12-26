@@ -1,8 +1,6 @@
 <script setup>
 import { onBeforeUnmount, onBeforeMount, ref } from 'vue'
 import { useStore } from 'vuex'
-// import axios from 'axios'
-
 import ArgonInput from '@/components/ArgonInput.vue'
 import ArgonButton from '@/components/ArgonButton.vue'
 import CenterTable from './components/CenterTable.vue'
