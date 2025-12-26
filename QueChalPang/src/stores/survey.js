@@ -6,7 +6,9 @@ export const useSurveyStore = defineStore('survey', {
   //state
   state: () => {
     return {
-      survey: ref([]),
+      survey: ref([]), //조사지 목록
+      surveyDetail: ref([]), //조사지 상세
+      err: ref(''),
     }
   },
   actions: {
@@ -26,6 +28,17 @@ export const useSurveyStore = defineStore('survey', {
       } catch (err) {
         console.log(err)
         this.err = '조사지 목록을 가져오는데 실패 했습니다.'
+      }
+    },
+    //조사지 상세조회
+    async fetchSurveyDetail(no) {
+      try {
+        const response = await axios.get(`/api/survey/${no}`)
+        this.surveyDetail = response.data
+        this.err = ''
+      } catch (err) {
+        console.log(err)
+        this.err = '조사지 상세를 가져오는데 실패 했습니다.'
       }
     },
   },
