@@ -1,3 +1,31 @@
+<!-- src/components/ReservationTable.vue -->
+<script setup>
+const { pendingReservedList } = defineProps({
+  pendingReservedList: { type: Array, required: true },
+})
+
+const timeText = (start_at) => {
+  if (!start_at) return ''
+  const d = new Date(start_at)
+
+  //toLocaleTimeString : 지역규칙 이용해 시간문자열 만듦
+  return d.toLocaleTimeString('ko-KR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  })
+}
+
+//예약상태 변환하기 !!! 
+const statusMap = {
+  f1: '확인중',
+}
+
+const statusText = (status) => {
+  return statusMap[status] ?? status
+}
+</script>
+
 <template>
   <div class="card">
     <div class="card-header pb-0">
@@ -23,6 +51,11 @@
               >
                 예약 날짜
               </th>
+                <th
+                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+              >
+                예약 상태
+              </th>
               <th
                 class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
               >
@@ -32,35 +65,29 @@
             </tr>
           </thead>
           <tbody>
-            <tr>
+            <tr v-for="r in pendingReservedList" :key="r.resv_id">
               <td>
                 <div class="d-flex px-2 py-1">
-                  <div>
-                    <img
-                      src="../../assets/img/team-2.jpg"
-                      class="avatar avatar-sm me-3"
-                      alt="user1"
-                    />
-                  </div>
                   <div class="d-flex flex-column justify-content-center">
-                    <h6 class="mb-0 text-sm">John Michael</h6>
-                    <p class="text-xs text-secondary mb-0">
-                      john@creative-tim.com
-                    </p>
+                    <h6 class="mb-0 text-sm">{{ r.guardian_name }}</h6>
                   </div>
                 </div>
               </td>
               <td>
-                <p class="text-xs font-weight-bold mb-0">Manager</p>
-                <p class="text-xs text-secondary mb-0">Organization</p>
-              </td>
-              <td class="align-middle text-center text-sm">
-                <span class="badge badge-sm bg-gradient-success">Online</span>
+                <p class="text-xs font-weight-bold mb-0">{{ r.dependant_name }}</p>
               </td>
               <td class="align-middle text-center">
                 <span class="text-secondary text-xs font-weight-bold"
-                  >23/04/18</span
+                  >{{ r.start_at.slice(0, 10) }}</span
                 >
+              </td>
+              <td class="align-middle text-center">
+                <span class="text-secondary text-xs font-weight-bold"
+                  >{{ statusText(r.resv_status)}}</span
+                >
+              </td>
+              <td class="align-middle text-center">
+                  {{ timeText(r.start_at)}}
               </td>
               <td class="align-middle">
                 <a
@@ -72,7 +99,7 @@
                 >
               </td>
             </tr>
-            
+
           </tbody>
         </table>
       </div>

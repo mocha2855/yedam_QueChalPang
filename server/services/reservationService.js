@@ -8,6 +8,10 @@ const {
   deleteReserv,
   selectGuardianResv,
   insertResv,
+  selectCenterLunch,
+  selectReservedTimes,
+  selectBlockedTimes,
+  selectDependant,
 } = require("../database/sqls/reservation.js");
 
 //[1]담당자 - 해당 날짜의 모든 예약 조회
@@ -69,6 +73,39 @@ const addReservation = async (data) => {
   return result.insertId;
 };
 
+// [7] 보호자 - 날짜별 예약불가 시간 조회 (예약된시간 + 센터점심 + 담당자가차단 빼기)
+const findAvailability = async (dependantNo, date) => {
+  // 1) dependant로 담당자, 센터 점심시간 조회
+  const rows = await mysql.rquery(selectCenterLunch, [dependantNo]);
+  if (rows.length === 0) {
+    return {
+      managerId: null,
+      centerLunch: null,
+      reservedTimes: [],
+      blockedTimes: [],
+    };
+  }
+
+  const { manager_id, center_lunch } = rows[0];
+
+  // 2) 예약된 시간 목록
+  const reserved = await mysql.rquery(selectReservedTimes, [manager_id, date]);
+
+  // 3) 차단된 시간 목록
+  const blocked = await mysql.rquery(selectBlockedTimes, [manager_id, date]);
+
+  return {
+    managerId: manager_id,
+    centerLunch: center_lunch,
+    reservedTimes: reserved.map((r) => r.reserved_time),
+  };
+};
+
+//[7]-4 (보호자 예약) 드롭다운 지원자 선택하기
+const findDependants = async (guardianId) => {
+  return await mysql.rquery(selectDependant, [guardianId]);
+};
+
 module.exports = {
   findByDate,
   findTresvByManager,
@@ -77,4 +114,6 @@ module.exports = {
   removeReservation,
   findByGreserv,
   addReservation,
+  findAvailability,
+  findDependants,
 };
