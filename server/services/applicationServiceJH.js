@@ -1,13 +1,13 @@
 const mysql = require("../database/mapper");
 
 // 접속자 권한 확인
-const authorityFindById = async no => {
+const authorityFindById = async (no) => {
   let post = await mysql.bquery("authoritySelectById", no);
   return post;
 };
 
 // 대기단계 선택시 상태확인
-const findById = async no => {
+const findById = async (no) => {
   let post = await mysql.bquery("selectById", no);
   return post;
 };
@@ -27,20 +27,17 @@ const applicationModifyInfo = async (no, data) => {
 
 // 대기단계 반려사유
 const rejectModifyInfo = async (no, data) => {
-  let { status_reject, status_status } = data;
-  let post = await mysql.bquery("statusRejectUpdateInfo", [
-    status_reject,
-    status_status,
-    no,
-  ]);
+  let { status_reject } = data;
+  let post = await mysql.bquery("statusRejectUpdateInfo", [status_reject, no]);
   return post;
 };
 
-// 대기단계 승인
+// 대기단계 승인 , 재승인
 const applicationSuccessModifyInfo = async (no, data) => {
-  let { status_status } = data;
+  let { status_status, status_reject } = data;
   let post = await mysql.bquery("applicationSuccessUpdateInfo", [
     status_status,
+    status_reject,
     no,
   ]);
   return post;
