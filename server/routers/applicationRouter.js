@@ -39,11 +39,12 @@ router.put("/compApplication/:id", async (req, res) => {
 router.put("/rejectstatus/:no", async (req, res) => {
   const data = req.body;
   const no = req.params.no;
+  console.log(no);
   let post = await applicationService.rejectModifyInfo(no, data);
   res.send(post);
 });
 
-// 대기단계 승인
+// 대기단계 승인 / 재승인
 router.put("/compSuccessApplication/:no", async (req, res) => {
   const data = req.body;
   console.log(data);

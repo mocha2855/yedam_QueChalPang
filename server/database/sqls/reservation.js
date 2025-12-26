@@ -85,6 +85,48 @@ INSERT INTO reservation
 VALUES (?, ?, ?, ?, ?, ?, ?);
 `;
 
+// [7-1] (보호자 예약) dependant로 담당자 + 센터 점심시간 조회
+const selectCenterLunch = `
+SELECT
+  d.manager_main AS manager_id,
+  c.center_lunch AS center_lunch
+FROM dependant d
+JOIN member m
+  ON m.member_id = d.manager_main
+JOIN center c
+  ON c.center_no = m.center_no
+WHERE d.dependant_no = ?;
+`;
+
+// [7-2] (보호자 예약) 해당 날짜 예약된 시간(time) 목록
+const selectReservedTimes = `
+SELECT
+  TIME(r.start_at) AS reserved_time
+FROM reservation r
+WHERE r.manager_id = ?
+  AND DATE(r.start_at) = ?
+  AND r.resv_status IN ('f1','f2','f3')
+ORDER BY r.start_at;
+`;
+
+// [7-3] (보호자 예약) 해당 날짜 차단된 시간 목록
+const selectBlockedTimes = `
+SELECT
+  block_time
+FROM schedule_block
+WHERE member_id = ?
+  AND block_date = ?
+ORDER BY block_time;
+`;
+
+//[7]-4 (보호자 예약) 드롭다운 지원자 선택하기
+const selectDependant = `
+  SELECT dependant_no, dependant_name
+  FROM dependant
+  WHERE member_id = ?
+  ORDER BY dependant_no;
+`;
+
 module.exports = {
   selectTResvByDate,
   selectTResvbyManager,
@@ -93,4 +135,8 @@ module.exports = {
   deleteReserv,
   selectGuardianResv,
   insertResv,
+  selectCenterLunch,
+  selectReservedTimes,
+  selectBlockedTimes,
+  selectDependant,
 };

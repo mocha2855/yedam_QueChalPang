@@ -1,26 +1,28 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
-import axios from 'axios'
 import { DatePicker } from 'v-calendar'
+import axios from 'axios'
 import 'v-calendar/style.css'
 
-import ReservationTable from './components/ReservationTable.vue'
 import { useCounterStore } from '@/stores/member'
 import { storeToRefs } from 'pinia'
+
+import ReservationTable from './components/ReservationTable.vue'
 import ReservationCright from './components/ReservationCright.vue'
 
 const counterStore = useCounterStore()
+
 const { isLogIn } = storeToRefs(counterStore)
 
 const managerId = computed(() => isLogIn.value?.info?.member_id)
 
 const selectedDate = ref(new Date())
-
-//예약목록
 const reservations = ref([])
 const reservedDays = ref([])
+const pendingReservedList = ref([])
 
 //DatePicker에서 Date 객체가 와서 서버 쿼리에 맞게 YYYY-MM-DD 문자열로 변환
+//외우면 좋음.
 const toYmd = (d) => {
   const yyyy = d.getFullYear()
   const mm = String(d.getMonth() + 1).padStart(2, '0')
@@ -48,7 +50,7 @@ watch(
   { immediate: true },
 )
 
-//Datepicker에 있는 attribute_점찍기
+//Datepicker에 있는 attribute_점찍기기능
 const calendarAttrs = computed(() => [
   {
     key: 'reserved-days',
@@ -64,7 +66,7 @@ const calendarAttrs = computed(() => [
   },
 ])
 
-//달력에 예약존재하는 날에 초록닷 찍기
+//mid가 바뀔때 마다 달력에 예약존재하는 날에 새로 초록닷 찍기
 watch(
   managerId,
   async (mid) => {
@@ -75,8 +77,18 @@ watch(
   { immediate: true },
 )
 
-const lastSelectedDate = ref(selectedDate.value)
+//mid가 바뀔때 마다 하단 테이블영역 승인예약리스트 불러오기
+watch(
+  managerId,
+  async (mid) => {
+    if (!mid) return
+    const res = await axios.get(`/api/resvByPendingList/${mid}`)
+    pendingReservedList.value = res.data
+  },
+  { immediate: true },
+)
 
+const lastSelectedDate = ref(selectedDate.value)
 watch(selectedDate, (v) => {
   // v-calendar가 같은 날짜를 다시 누르면 null로 만들 수 있음
   if (v === null) {
@@ -96,7 +108,7 @@ console.log('login info:', isLogIn.value?.value?.info ?? isLogIn.value?.info)
 
 <template>
   <div class="py-4 container-fluid">
-    <!-- 캘린더 + 날짜별 예약목록 -->
+    <!-- 캘린더 -->
     <div class="row g-4 mb-4">
       <div class="col-12 col-lg-6">
         <div class="card p-3 h-100">
@@ -105,15 +117,18 @@ console.log('login info:', isLogIn.value?.value?.info ?? isLogIn.value?.info)
         </div>
       </div>
 
-      <!-- 오른쪽 -->
+      <!-- 캘린더 오른쪽섹션 -->
+      <!-- 부모 -->
       <div class="col-12 col-lg-6">
         <ReservationCright :selectedDate="selectedDate" :reservations="reservations" />
+        <!-- <ReservationCright/> -->
       </div>
     </div>
 
+    <!-- 하단 승인대기중상담예약 섹션 -->
     <div class="row">
       <div class="col-12">
-        <ReservationTable :selectedDate="selectedDate" :reservations="reservations" />
+        <ReservationTable :pendingReservedList="pendingReservedList" />
       </div>
     </div>
   </div>

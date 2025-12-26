@@ -31,4 +31,18 @@ router.post(`/member`, async (req, res) => {
   let output = await memberService.addMemberInfo(input);
   res.send(output);
 });
+router.post(`/authenticate`, async (req, res) => {
+  let input = req.body;
+  console.log("input", input);
+  let output = await memberService.phoneAuth(input);
+  console.log(output);
+  res.send(output);
+});
+router.post(`/authenticate/:id`, async (req, res) => {
+  let id = req.params.id;
+  let num = req.body.auth;
+  let result = await memberService.getAuth(id, num);
+  console.log(result);
+  res.send(result);
+});
 module.exports = router;

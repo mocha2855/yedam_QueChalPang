@@ -103,4 +103,28 @@ router.post("/createReservation", async (req, res) => {
   }
 });
 
+// [7] 보호자 - 날짜별 예약불가 시간 조회 (예약된시간 + 센터점심 + 담당자가차단 빼기)
+router.get("/availability/:dependantNo/:date", async (req, res) => {
+  const { dependantNo, date } = req.params;
+  try {
+    const data = await reservationService.findAvailability(dependantNo, date);
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "조회 실패", err: err.message });
+  }
+});
+
+//[7]-4 (보호자 예약) 드롭다운 지원자 선택하기
+router.get("/dependants/:guardianId", async (req, res) => {
+  try {
+    const { guardianId } = req.params;
+    const rows = await reservationService.findDependants(guardianId);
+    res.json(rows);
+  } catch (err) {
+    console.error("dependants error:", err);
+    res.status(500).json({ message: "dependants fail", err: err.message });
+  }
+});
+
 module.exports = router;

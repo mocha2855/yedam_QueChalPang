@@ -50,6 +50,9 @@ defineProps({
     type: Boolean,
     default: false,
   },
+  maxlength: {
+    type: Number,
+  },
 })
 
 const getClasses = (size, success, error) => {
@@ -86,6 +89,7 @@ const hasIcon = (icon) => (icon ? 'input-group' : null)
         :placeholder="placeholder"
         :isRequired="isRequired"
         :disabled="disabled"
+        :maxlength="maxlength"
         @input="emit('update:modelValue', $event.target.value)"
       />
       <span v-if="iconDir === 'right'" class="input-group-text">
