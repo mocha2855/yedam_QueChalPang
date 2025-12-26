@@ -101,7 +101,6 @@ const pwc = ref('')
 const isIdDisabled = ref(false)
 const isEmailDisabled = ref(false)
 const selectAuth = (auth) => {
-  console.log(authority)
   authority.value = auth
   member.authority = auth
   console.log(member)
