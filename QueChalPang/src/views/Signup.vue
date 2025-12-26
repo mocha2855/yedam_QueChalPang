@@ -1,5 +1,13 @@
 <script setup>
-import { onBeforeUnmount, onBeforeMount, ref, onMounted, onUnmounted, reactive } from 'vue'
+import {
+  onBeforeUnmount,
+  onBeforeMount,
+  ref,
+  onMounted,
+  onUnmounted,
+  reactive,
+  computed,
+} from 'vue'
 import { useStore } from 'vuex'
 import axios from 'axios'
 
@@ -11,10 +19,12 @@ import ArgonAlert from '@/components/ArgonAlert.vue'
 const body = document.getElementsByTagName('body')[0]
 
 const store = useStore()
+//주소api에서 쓰는 ref
 const postcode = ref('')
 const address = ref('')
 const detailAddress = ref('')
 const extraAddress = ref('')
+
 onBeforeMount(() => {
   store.state.hideConfigButton = true
   store.state.showNavbar = false
@@ -40,6 +50,7 @@ onMounted(() => {
 onUnmounted(() => {
   delete window.receiveCenterData
 })
+// 주소 api에서 사용하는 함수들
 const openCenterCode = () => {
   window.open('/centerPopup', 'popupWindow', 'width=600, height=500, resizable=yes, scrollbars=yes')
 }
@@ -79,17 +90,33 @@ const openPostcode = () => {
     },
   }).open()
 }
+// 기능 사용을 위해 정의한 변수들
 const idBtn = ref(true)
 const idBtnChecked = ref(false)
 const emailBtn = ref(true)
 const emailBtnChecked = ref(false)
+const phoneBtn = reactive({
+  phoneBtn: true,
+  phoneBtnChecked: false,
+  phoneAuth: true,
+  phoneAuthChecked: false,
+  auth: '',
+})
 const msg = ref('')
 const argonAlert = ref(false)
 const selectedCenter = ref({ center_name: '', center_no: 0 })
 const authority = ref('a1')
+const phone2 = ref('')
+const timer = ref(180)
+const timeFormat = computed(() => {
+  let minute = `${Math.floor(timer.value / 60)}`
+  let second = timer.value % 60 < 10 ? `0${timer.value % 60}` : `${timer.value % 60}`
+  let times = `${minute}:${second}`
+  return times
+})
 const member = reactive({
   id: '',
-  pass: '',
+  pw: '',
   name: '',
   email: '',
   phone: '',
@@ -98,13 +125,22 @@ const member = reactive({
   authority: 'a1',
 })
 const pwc = ref('')
-const isIdDisabled = ref(false)
-const isEmailDisabled = ref(false)
+const isAuth = ref('')
+let loseTime
+
+// 함수들
+
+// 상단 버튼으로 어떤 회원으로 가입할지 누를때 athority 변경되도록 하는 거
 const selectAuth = (auth) => {
   authority.value = auth
   member.authority = auth
   console.log(member)
 }
+// 누른 authority에 따라 버튼 스타일 변경
+const getColor = (id) => {
+  return authority.value === id ? 'primary' : 'secondary'
+}
+// 아이디 중복체크
 const idCheck = async () => {
   if (member.id == '') {
     showAlert('아이디가 입력되지 않았습니다. 아이디를 입력해주세요.')
@@ -116,11 +152,13 @@ const idCheck = async () => {
     showAlert('이미 존재하는 아이디입니다.')
     return
   } else {
+    // 중복체크 성공하면 버튼 비활성화 및 스타일을 secondary로 변경
     idBtn.value = false
     idBtnChecked.value = true
-    isIdDisabled.value = true
   }
 }
+// 이메일 중복체크
+
 const emailCheck = async () => {
   if (member.email == '') {
     showAlert('이메일이 입력되지 않았습니다. 이메일을 입력해주세요.')
@@ -129,14 +167,71 @@ const emailCheck = async () => {
   let result = await axios.get(`/api/member/email/${member.email}`)
   console.log(result.data.result[0].count)
   if (result.data.result[0].count == 1) {
-    showAlert('이미 존재하는 이메일입니다.')
+    showAlert('이미 가입된 이메일입니다.')
     return
   } else {
+    // 중복체크 성공하면 버튼 비활성화 및 스타일을 secondary로 변경
     emailBtn.value = false
     emailBtnChecked.value = true
-    isEmailDisabled.value = true
   }
 }
+// 휴대폰 번호 인증을 위한 함수 1
+const phoneCheck = async () => {
+  if (phone2.value == '') {
+    showAlert('휴대폰 번호가 입력되지 않았습니다.')
+    return
+  }
+  let phone = `${phone2.value.slice(0, 4)}-${phone2.value.slice(-4)}`
+  member.phone = `010-${phone}`
+  // 휴대폰 번호 중복체크
+  let result = await axios.get(`/api/member/phone/${member.phone}`)
+  console.log(result.data.result[0].count)
+  if (result.data.result[0].count == 1) {
+    showAlert('이미 가입된 번호입니다.')
+    return
+  } else {
+    // 성공시 버튼 비활성화 및 스타일 변경
+    phoneBtn.phoneBtn = false
+    phoneBtn.phoneBtnChecked = true
+    // 인증번호 생성을 위한 axios 작업
+    let res = await axios.post('/api/authenticate', { phone: member.phone })
+    // 인증번호 생성 후 auto_increment로 생성된 sms_id값 받아오기
+    isAuth.value = res.data.insertId
+    console.log(isAuth.value)
+    //인증은 3분간만 유효하기 때문에 타이머 180초로 세팅
+    timer.value = 180
+    //타이머 작동
+    loseTime = setInterval(losingTime, 1000)
+  }
+}
+// 인증번호 입력 후 인증번호 일치여부 확인하는 함수.
+const authCheck = async () => {
+  if (phoneBtn.phoneBtnChecked == false) {
+    showAlert('인증번호 발송이 되지 않았습니다.')
+  } else if (phoneBtn.auth == '') {
+    showAlert('인증번호가 입력되지 않았습니다.')
+  } else {
+    console.log(`/api/authenticate/${isAuth.value}`)
+
+    let res = await axios.post(`/api/authenticate/${isAuth.value}`, { auth: phoneBtn.auth })
+    console.log(res.data[0].count)
+    if (res.data[0].count > 0) {
+      // 인증이 완료된 경우 확인버튼 비활성화 및 스타일 변경.
+      phoneBtn.phoneAuth = false
+      phoneBtn.phoneAuthChecked = true
+      showAlert('본인인증이 완료되었습니다.')
+      //타이머 중단.
+      clearInterval(loseTime)
+    } else {
+      showAlert('인증번호가 일치하지 않습니다.')
+    }
+  }
+}
+// 인증 타이머 동작시 실행되는 함수.
+const losingTime = () => {
+  timer.value = timer.value - 1
+}
+// 알림작동 시키는 함수
 const showAlert = (message) => {
   msg.value = message
   argonAlert.value = true
@@ -144,32 +239,43 @@ const showAlert = (message) => {
     argonAlert.value = false
   }, 1500)
 }
+// 팝업에서 센터 정보 가져오는 함수,
 const receiveCenterData = (data) => {
   console.log(data)
   selectedCenter.value = data
   member.center_no = selectedCenter.value.center_no
 }
+// 최종 회원가입시 동작하는 함수.
 const addMemberInfo = () => {
   console.log(member)
   member.address = member.address + ' ' + detailAddress.value
   if (!member.id) {
     showAlert('아이디가 입력되지 않았습니다.')
-  } else if (!member.pw) {
+  } else if (member.pw == '') {
     showAlert('비밀번호가 입력되지 않았습니다.')
   } else if (!pwc.value) {
     showAlert('비밀번호 확인이 입력되지 않았습니다.')
+  } else if (pwc.value != member.pw) {
+    showAlert('비밀번호와 비밀번호 확인이 일치하지 않습니다.')
+  } else if (!member.name) {
+    showAlert('이름이 입력되지 않았습니다.')
   } else if (!member.email) {
     showAlert('이메일이 입력되지 않았습니다.')
-  } else if (!member.address) {
+  } else if (!member.phone) {
+    showAlert('휴대폰번호가 입력되지 않았습니다.')
+  } else if (member.address.replace(' ', '') == '') {
     showAlert('주소가 입력되지 않았습니다.')
   } else if (member.center_no == 0) {
     showAlert('센터가 입력되지 않았습니다.')
+  } else if (idBtn.value) {
+    showAlert('아이디 중복확인이 되지 않았습니다.')
+  } else if (emailBtn.value) {
+    showAlert('이메일 중복확인이 되지 않았습니다.')
+  } else if (phoneBtn.phoneBtn || phoneBtn.phoneAuth) {
+    showAlert('휴대폰 인증이 진행되지 않았습니다.')
   }
-  // let result = axios.post(`/member`,member)
-  // console.log(result)
-}
-const getColor = (id) => {
-  return authority.value === id ? 'primary' : 'secondary'
+  let result = axios.post(`/member`, member)
+  console.log(result)
 }
 </script>
 <template>
@@ -307,7 +413,7 @@ const getColor = (id) => {
                       placeholder="아이디"
                       aria-label="Id"
                       v-model="member.id"
-                      :disabled="isIdDisabled"
+                      :disabled="idBtnChecked"
                     />
                   </div>
                   <div class="col-4">
@@ -356,7 +462,7 @@ const getColor = (id) => {
                       placeholder="example@example.com"
                       aria-label="email"
                       v-model="member.email"
-                      :disabled="isEmailDisabled"
+                      :disabled="emailBtnChecked"
                     />
                   </div>
                   <div class="col-4">
@@ -378,19 +484,69 @@ const getColor = (id) => {
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-8">
-                    <argon-input id="phone" v-model="member.phone" placeholder="전화번호" />
+                  <div class="col-3">
+                    <argon-input id="phone" modelValue="010" disabled="true" />
                   </div>
+
+                  <div class="col-5">
+                    <argon-input
+                      id="phone"
+                      v-model="phone2"
+                      maxlength="8"
+                      :disabled="phoneBtn.phoneBtnChecked"
+                      placeholder="00000000"
+                    />
+                  </div>
+
                   <div class="col-4">
-                    <button type="button" class="p-2 btn btn-primary w-100">본인인증</button>
+                    <button
+                      type="button"
+                      :class="{
+                        'p-2': true,
+                        btn: true,
+                        'btn-primary': phoneBtn.phoneBtn,
+                        'btn-secondary': phoneBtn.phoneBtnChecked,
+                        disabled: phoneBtn.phoneBtnChecked,
+
+                        'w-100': true,
+                      }"
+                      @click="phoneCheck()"
+                    >
+                      본인인증
+                    </button>
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-8">
-                    <argon-input id="certification" placeholder="인증번호" disabled="true" />
+                  <div class="col-8 position-relative">
+                    <label
+                      for="certification"
+                      class="position-absolute bottom-10 end-10 translate-middle-y"
+                      >{{ timeFormat }}</label
+                    >
+                    <argon-input
+                      id="certification"
+                      v-model="phoneBtn.auth"
+                      maxlength="6"
+                      placeholder="인증번호"
+                      :disabled="phoneBtn.phoneAuthChecked"
+                    />
                   </div>
                   <div class="col-4">
-                    <button type="button" class="p-2 btn btn-primary w-100">확인</button>
+                    <button
+                      type="button"
+                      :class="{
+                        'p-2': true,
+                        btn: true,
+                        'btn-primary': phoneBtn.phoneAuth,
+                        'btn-secondary': phoneBtn.phoneAuthChecked,
+                        disabled: phoneBtn.phoneAuthChecked,
+
+                        'w-100': true,
+                      }"
+                      @click="authCheck()"
+                    >
+                      확인
+                    </button>
                   </div>
                 </div>
                 <div class="row">
