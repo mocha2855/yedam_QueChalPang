@@ -54,25 +54,23 @@ VALUES (?, ?, ?, 'active')`;
 
 //조사지 타이틀(항목) 새로 등록시 추가
 const insertSurveyTitle = `
-INSERT INTO survey_title (survey_title_no, survey_no, survey_title) VALUES(?,?,?)`;
+INSERT INTO survey_title (survey_no, survey_title) VALUES(?,?)`;
 
 //조사지 서브타이틀(세부항목) 새로 등록시 추가
 const insertSurveySubtitle = `
 INSERT INTO survey_subtitle (
-  survey_subtitle_no, 
   survey_title_no, 
   survey_subtitle, 
   survey_subtitle_detail)
-VALUES (?,?,?,?)`;
+VALUES (?,?,?)`;
 
 //조사지 질문 새로 등록시 추가
 const insertSurveyQitem = `
 INSERT INTO survey_qitem (
-  survey_qitem_no, 
-  survey_subtitle_no, 
+ survey_subtitle_no, 
   survey_qitem_question, 
   survey_qitem_type)
-VALUES (?,?,?,?)`;
+VALUES (?,?,?)`;
 
 //조사지  active 한 구버전은 inactive로 업데이트 =>수정 ?
 const updateSurvey = `

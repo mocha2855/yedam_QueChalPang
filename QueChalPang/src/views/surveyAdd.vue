@@ -65,16 +65,14 @@ const surveyInfo = reactive({
 })
 //조사지 등록
 const addSurvey = async () => {
-  console.log('전송할 데이터:', surveyInfo)
-  console.log('보낼 데이터:', surveyInfo.value)
-  console.log('title:', surveyInfo.value.title)
-
   const result = await axios.post('/api/surveys', surveyInfo)
+  console.log('서버 응답:', result) // ← 추가!
+  console.log('result.data:', result.data) // ← 추가!
 
   //등록
-  if (result.data.status == 'success') {
+  if (result.data) {
     alert('등록되었습니다!')
-    router.push({ name: 'surveyList' })
+    router.push({ name: 'SurveyList' })
   } else {
     alert('실패했습니다')
   }
