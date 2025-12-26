@@ -119,6 +119,13 @@ WHERE member_id = ?
 ORDER BY block_time;
 `;
 
+//[7]-4 (보호자 예약) 드롭다운 지원자 선택하기
+const selectDependant = `
+  SELECT dependant_no, dependant_name
+  FROM dependant
+  WHERE member_id = ?
+  ORDER BY dependant_no;
+`;
 
 module.exports = {
   selectTResvByDate,
@@ -131,4 +138,5 @@ module.exports = {
   selectCenterLunch,
   selectReservedTimes,
   selectBlockedTimes,
+  selectDependant,
 };

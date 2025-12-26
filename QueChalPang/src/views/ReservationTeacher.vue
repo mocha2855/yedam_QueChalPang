@@ -22,7 +22,7 @@ const reservedDays = ref([])
 const pendingReservedList = ref([])
 
 //DatePicker에서 Date 객체가 와서 서버 쿼리에 맞게 YYYY-MM-DD 문자열로 변환
-//외우면 좋음. 
+//외우면 좋음.
 const toYmd = (d) => {
   const yyyy = d.getFullYear()
   const mm = String(d.getMonth() + 1).padStart(2, '0')
@@ -77,7 +77,6 @@ watch(
   { immediate: true },
 )
 
-
 //mid가 바뀔때 마다 하단 테이블영역 승인예약리스트 불러오기
 watch(
   managerId,
@@ -126,10 +125,10 @@ console.log('login info:', isLogIn.value?.value?.info ?? isLogIn.value?.info)
       </div>
     </div>
 
-    <!-- 승인대기중상담예약 섹션 -->
+    <!-- 하단 승인대기중상담예약 섹션 -->
     <div class="row">
       <div class="col-12">
-        <ReservationTable :pendingReservedList="pendingReservedList"/>
+        <ReservationTable :pendingReservedList="pendingReservedList" />
       </div>
     </div>
   </div>
