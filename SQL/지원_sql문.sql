@@ -4,7 +4,7 @@ insert into test_tbl
 values (1);
 commit;
 
-delete from survey where survey_no= '3';
+delete from survey where survey_no= '5';
 delete from survey_title where survey_title_no= '1';
 delete from survey_subtitle where survey_subtitle_no= '1';
 delete from survey_qitem where survey_qitem_no= '10';
@@ -32,6 +32,15 @@ SET survey_version_status = 'inactive'
 WHERE survey_no = 1;
 commit;
 
+UPDATE survey
+SET survey_version_status = 'active'
+WHERE survey_no = 4;
+commit;
+
+
+-- 버전 자동 업그레이드
+select Max(survey_version) as max_version
+from surveys;
 -- 업데이트 시 기존 active한 걸 골라서 inactive
 UPDATE survey
 SET survey_version_status = 'inactive'
