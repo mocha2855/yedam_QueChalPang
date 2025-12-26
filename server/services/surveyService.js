@@ -14,19 +14,27 @@ const findByNo = async (no) => {
 // survey 단건 등록(새로운 버전 업그레이드)
 //질문추가 &  항목 추가시 기존 버전 비활성 -> 새버전 활성화
 const addSurvey = async (data) => {
-  const { survey_no, title } = data;
+  const { title } = data;
+  console.log("title 데이터:", title);
+  console.log("title.survey_title:", title?.survey_title);
+
   const survey_start = new Date(); //날짜 자동화
   const survey_end = new Date("9999-12-31"); // 끝나는 시간은 무기한 연장(새버전 등장 시 자동 마무리 시간 계산)
+
+  let versionResult = await mysql.squery("selectMaxVersionAll");
+  let survey_version = versionResult[0]?.max_version
+    ? (parseFloat(versionResult[0].max_version) + 0.1).toFixed(1)
+    : "1.0";
 
   await mysql.squery("updateSurvey");
 
   //새 버전 insert
-  let result = await mysql.squery("insertSurvey", [
-    survey_no,
+  let insertResult = await mysql.squery("insertSurvey", [
     survey_version,
     survey_start,
     survey_end,
   ]);
+  let survey_no = insertResult.insertId;
 
   await mysql.squery("insertSurveyTitle", [
     title.survey_title_no,
@@ -51,7 +59,7 @@ const addSurvey = async (data) => {
       ]);
     }
   }
-  return result.insertId;
+  return insertResult.insertId;
 };
 
 //survey 수정

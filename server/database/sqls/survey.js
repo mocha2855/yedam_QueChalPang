@@ -33,15 +33,24 @@ const selectByNo = `
   LEFT JOIN survey_qitem sq ON ss.survey_subtitle_no = sq.survey_subtitle_no
   WHERE s.survey_no = ? AND s.survey_version_status = 'active'
 `;
+//조사지 버전 업 자동 저장
+const selectMaxVersionAll = `
+  SELECT MAX(CAST(survey_version AS DECIMAL(10,2))) as max_version 
+  FROM survey
+`;
+const selectMaxSurveyNo = `
+  SELECT MAX(survey_no) as max_no 
+  FROM survey
+`;
 
 //조사지 새로 등록시 추가
 const insertSurvey = `INSERT INTO 
-survey (survey_no, 
+survey (
         survey_version, 
         survey_start, 
         survey_end, 
         survey_version_status) 
-VALUES (?, ?, ?, ?, 'active')`;
+VALUES (?, ?, ?, 'active')`;
 
 //조사지 타이틀(항목) 새로 등록시 추가
 const insertSurveyTitle = `
@@ -106,6 +115,8 @@ INSERT INTO survey_history (
 module.exports = {
   selectAll,
   selectByNo,
+  selectMaxVersionAll,
+  selectMaxSurveyNo,
   //조사지 새로 등록(버전업)
   insertSurvey,
   insertSurveyTitle,
