@@ -49,13 +49,13 @@ const routes = [
     name: 'applicationWait',
     component: applicationWait,
   },
-  ...surveyRoutes,
-  ...reservationRoutes,
   {
     path: '/centerPopup',
     name: 'centerPopup',
     component: centerPopup,
   },
+  ...surveyRoutes,
+  ...reservationRoutes,
 ]
 
 const router = createRouter({

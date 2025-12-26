@@ -4,7 +4,7 @@ import SurveyInfo from '@/views/surveyInfo.vue'
 const surveyRoutes = [
   {
     path: '/surveys',
-    name: '/surveyList',
+    name: 'SurveyList',
     component: SurveyList,
   },
   {

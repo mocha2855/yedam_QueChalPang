@@ -6,6 +6,7 @@ const memberSql = require("./sqls/member.js");
 const centerSql = require("./sqls/center.js");
 const surveySql = require("./sqls/survey");
 const applicationSql = require("./sqls/applicationJH.js");
+
 console.log(process.env.MARIADB_HOST);
 
 const pool = mysql.createPool({
@@ -82,4 +83,4 @@ const memberQuery = async (selected, values) => {
   }
 };
 
-module.exports = { bquery, rquery, squery, memberQuery, centerQuery };
+module.exports = { rquery, bquery, squery, memberQuery, centerQuery };

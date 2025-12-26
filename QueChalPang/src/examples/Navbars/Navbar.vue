@@ -1,6 +1,7 @@
+<!-- Navbar.vue -->
 <script setup>
 import { ref } from 'vue'
-import { useRoute } from 'vue-router' // 경로 확인을 위해 추가
+import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import { useCounterStore } from '@/stores/member'
 import { storeToRefs } from 'pinia'
@@ -18,7 +19,6 @@ const getRoute = () => {
   return routeArr[1]
 }
 
-//const minimizeSidebar = () => store.commit('sidebarMinimize')
 const toggleConfigurator = () => store.commit('toggleConfigurator')
 
 const priority = (auth) => {
@@ -43,12 +43,12 @@ const clearInfo = () => {
 
 <template>
   <nav
-    class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl"
+    class="navbar navbar-expand-lg sticky-top bg-dark navbar-dark"
     v-bind="$attrs"
     id="navbarBlur"
     data-scroll="true"
   >
-    <div class="px-3 py-1 container-fluid">
+    <div class="container-fluid">
       <div class="mt-2 collapse navbar-collapse mt-sm-0 me-md-0 me-sm-4" id="navbar">
         <ul class="navbar-nav me-auto">
           <li class="nav-item">
@@ -159,7 +159,7 @@ const clearInfo = () => {
   transition: opacity 0.2s ease;
   display: flex;
   align-items: center;
-  font-size: 1.3rem !important;
+  font-size: 1.1rem !important;
   font-weight: 500 !important;
   padding: 0.5rem 1rem !important;
 }
