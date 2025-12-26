@@ -484,6 +484,15 @@ REFERENCES `attachment` (
 	`attachment_no`
 );
 
+
+-- 인증번호 (12/26)
+CREATE TABLE `sms` (
+	`sms_id`	int	NULL primary key	auto_increment,
+	`sms_no`	varchar(6)	NOT NULL,
+	`sms_created_at`	datetime	NOT NULL	DEFAULT current_timestamp
+);
+
+ 
 -- //////////////////////////////////////////////////////
 
 

@@ -15,11 +15,11 @@ where member_authority = 'a3'`;
 const applicationUpdateInfo = `update application set status = ?, status_status = 'i1' where application_no = ?`;
 
 // 대기단계 반려사유
-const statusRejectUpdateInfo = `update application set status_reject =?, status_status='e1' where application_no=?`;
+const statusRejectUpdateInfo = `update application set status_reject =?, status_status='i3' where application_no=?`;
 
-// 대기단계 승인
+// 대기단계 승인 및 재승인
 const applicationSuccessUpdateInfo = `update application 
-set status_status = ?
+set status_status = ?, status_reject = ?
 where application_no = ?`;
 
 module.exports = {
