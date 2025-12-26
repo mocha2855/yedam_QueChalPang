@@ -27,10 +27,10 @@ router.get(`/rejectApplication`, async (req, res) => {
 });
 
 // 대기단계 승인요청
-router.put("/compApplication/:no", async (req, res) => {
+router.put("/compApplication/:id", async (req, res) => {
   const data = req.body;
-  console.log(data);
-  let no = req.params.no;
+  let no = Number(req.params.id);
+  console.log(no, data);
   let post = await applicationService.applicationModifyInfo(no, data);
   res.send(post);
 });

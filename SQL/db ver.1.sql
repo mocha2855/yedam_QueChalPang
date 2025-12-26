@@ -210,7 +210,8 @@ REFERENCES `dependant` (
 -- 결재자 및 대기단계 반려사유, 대기단계 진행상태 추가(12/24)
 alter table application add application_rejector varchar(100);
 alter table application add status_reject varchar(100);
-alter table application add status_reject char(2);
+alter table application add status_status char(2) ;
+alter table application drop column status_status;
 
  
 DROP TABLE IF EXISTS `planning`;
