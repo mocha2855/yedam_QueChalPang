@@ -11,34 +11,38 @@
           </div>
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table align-items-center mb-0">
-                <thead>
-                  <tr>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder">항목</th>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder">
-                      세부항목
-                    </th>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder">
-                      세부항목 설명
-                    </th>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder">질문</th>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder">유형</th>
-                  </tr>
-                </thead>
+              <table class="table">
                 <tbody>
-                  <tr v-for="item in surveyDetail" :key="item.survey_qitem_no">
-                    <td class="text-sm">{{ item.survey_title }}</td>
-                    <td class="text-sm">{{ item.survey_subtitle }}</td>
-                    <td class="text-sm">{{ item.survey_subtitle_detail }}</td>
-                    <td class="text-sm">{{ item.survey_qitem_question }}</td>
-                    <td class="text-sm">
-                      <span class="badge badge-sm bg-gradient-info">{{
-                        item.survey_qitem_type
-                      }}</span>
+                  <tr>
+                    <th class="text-right">번호</th>
+                    <td class="text-center">{{ surveyInfo.no }}</td>
+                  </tr>
+                  <tr>
+                    <th class="text-right">항목</th>
+                    <td class="text-center">{{ surveyInfo.title }}</td>
+                  </tr>
+                  <tr>
+                    <th class="text-right">세부항목</th>
+                    <td class="text-center">{{ surveyInfo.subtitle }}</td>
+                  </tr>
+                  <tr>
+                    <th class="text-right">세부항목설명</th>
+                    <td class="text-center">{{ surveyInfo.subtitleDetail }}</td>
+                  </tr>
+                  <tr>
+                    <th class="text-right">질문</th>
+                    <td class="text-center">
+                      <div v-for="q in store.questionList" :key="q.survey_qitem_no">
+                        {{ q.survey_qitem_question }}({{ q.survey_qitem_type }})
+                      </div>
                     </td>
                   </tr>
                 </tbody>
               </table>
+              <div>
+                <button class="btn btn-primary" @click="goTosurveyUpdate">수정</button>
+              </div>
+              <hr />
             </div>
           </div>
         </div>
@@ -48,7 +52,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { onMounted, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSurveyStore } from '@/stores/survey'
 
@@ -56,11 +60,27 @@ const route = useRoute()
 const router = useRouter()
 const store = useSurveyStore()
 
-const surveyDetail = computed(() => store.surveyDetail)
+defineProps({
+  no: [Number, String],
+})
 
-onMounted(() => {
-  const no = route.params.no
-  store.fetchSurveyDetail(no)
+const surveyInfo = reactive({
+  no: '',
+  title: '',
+  subtitle: '',
+  subtitleDetail: '',
+})
+
+onMounted(async () => {
+  await store.fetchSurveyDetail(route.params.no)
+  const data = store.surveyDetail
+  if (data) {
+    console.log(data)
+    surveyInfo.no = data[0].survey_no || ''
+    surveyInfo.title = data[0].survey_title || ''
+    surveyInfo.subtitle = data[0].survey_subtitle || ''
+    surveyInfo.subtitleDetail = data[0].survey_subtitle_detail || ''
+  }
 })
 
 const goBack = () => {

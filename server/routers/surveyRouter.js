@@ -10,7 +10,7 @@ router.get(`/surveys`, async (req, res) => {
   res.send(list);
 });
 //survey 단건 조회
-router.get(`/survey/:no`, async (req, res) => {
+router.get(`/surveys/:no`, async (req, res) => {
   let no = req.params.no;
   let post = await surveyService.findByNo(no);
   res.send(post);
@@ -24,7 +24,7 @@ router.post(`/surveys`, async (req, res) => {
 });
 
 //survey 수정
-router.put(`/survey/:no`, async (req, res) => {
+router.put(`/surveys/:no`, async (req, res) => {
   const data = req.body;
   const no = req.params.no;
   let result = await surveyService.modifySurvey(no, data);
