@@ -1,13 +1,13 @@
 const mysql = require("../database/mapper");
 
 // 접속자 권한 확인
-const authorityFindById = async no => {
+const authorityFindById = async (no) => {
   let post = await mysql.bquery("authoritySelectById", no);
   return post;
 };
 
 // 대기단계 선택시 상태확인
-const findById = async no => {
+const findById = async (no) => {
   let post = await mysql.bquery("selectById", no);
   return post;
 };
@@ -44,8 +44,14 @@ const applicationSuccessModifyInfo = async (no, data) => {
 };
 
 // 지원계획서 갯수 조회(계획서 추가시 숫자 파악 위해)
-const findPlanningById = async no => {
+const findPlanningById = async (no) => {
   let post = await mysql.bquery("selectPlanningById", no);
+  return post;
+};
+
+// 검토 중인 지원계획서 불러오기
+const findplanningReviewById = async (no) => {
+  let post = await mysql.bquery("selectPlanningReviewById", no);
   return post;
 };
 
@@ -78,5 +84,6 @@ module.exports = {
   rejectModifyInfo,
   applicationSuccessModifyInfo,
   findPlanningById,
+  findplanningReviewById,
   addPlanningInfo,
 };

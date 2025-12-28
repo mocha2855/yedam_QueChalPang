@@ -23,7 +23,10 @@ set status_status = ?, status_reject = ?
 where application_no = ?`;
 
 // 지원계획서 갯수 파악
-const selectPlanningById = `select ifnull(max(application_no), 0) counts from planning where application_no = ?`;
+const selectPlanningById = `select count(*) counts from planning where application_no=?`;
+
+// 검토 중인 지원계획서 불러오기
+const selectPlanningReviewById = `select *, rank() over (order by planning_date) ranking from planning where application_no =?`;
 
 // 지원계획서 승인요청(담당자)
 const insertPlannginInfo = `insert into planning (application_no, planning_id, planning_rejecter, planning_start, planning_end, planning_title, planning_content)
@@ -37,5 +40,6 @@ module.exports = {
   statusRejectUpdateInfo,
   applicationSuccessUpdateInfo,
   selectPlanningById,
+  selectPlanningReviewById,
   insertPlannginInfo,
 };

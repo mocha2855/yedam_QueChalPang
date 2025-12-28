@@ -11,10 +11,10 @@
       <h5>지원계획 입력하기</h5>
       <button type="button" @click="addPlanningForm">계획추가</button>
     </div>
-    <div class="card-body" v-if="addCount[0] == 1">
-      <div class="planningInfo" v-for="count in addCount" :key="count">
+    <div class="card-body" v-show="addCount == 1">
+      <div class="planningInfo" :value="realCount">
         <div class="formTop">
-          <p>지원계획{{ count }} 입력</p>
+          <p>지원계획{{ realCount }} 입력</p>
           <button>임시저장</button>
           <button>삭제</button>
         </div>
@@ -51,10 +51,51 @@
         </div>
       </div>
     </div>
+    <!-- 검토중인 계획서 -->
+    <div class="card-body" v-if="planningReview.length != 0" :style="reviewStyle">
+      <div class="planningInfo" v-for="plan in planningReview" :key="plan">
+        <div class="formTop">
+          <p><span>검토중 </span>지원계획{{ plan.ranking }}</p>
+        </div>
+        <form action="#" name="planning">
+          <label for="planningtime">지원기간</label>
+          <input
+            type="text"
+            name="startDate"
+            id="startDate"
+            v-model="plan.planning_start"
+            disabled
+          />
+          <span> ~ </span>
+          <input type="text" name="endDate" id="endDate" v-model="plan.planning_end" disabled />
+
+          <label class="writerRight"
+            >작성자
+            <input type="text" name="writer" id="writer" value="최강희" disabled />
+          </label>
+          <div class="titleInfo">
+            <label for="title">제목</label>
+            <input type="text" name="title" id="title" :value="plan.planning_title" disabled />
+          </div>
+          <div class="contentInfo">
+            <label for="content">내용</label>
+            <input
+              type="text"
+              name="content"
+              id="content"
+              :value="plan.planning_content"
+              disabled
+            />
+          </div>
+          <label for="attachmentFile">첨부파일</label>
+          <input type="text" name="attachmentFile" id="attachmentFile" disabled />
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 <script setup>
-import { ref, onBeforeMount } from 'vue'
+import { ref, reactive, onBeforeMount, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useCounterStore } from '@/stores/member'
 import axios from 'axios'
@@ -67,6 +108,8 @@ const counters = useCounterStore()
 let id = counters.isLogIn.info.member_id
 let memAuthority = ref() // 권한
 let dependantInfo = ref() // 대기단계 승인확인
+let realCount = ref() // 지원계획서 진짜 갯수
+let planningReview = ref([]) // 검토중인 계획서 정보
 
 onBeforeMount(async () => {
   // 권한 확인
@@ -88,17 +131,50 @@ onBeforeMount(async () => {
   await axios //
     .get('/api/planning/' + route.params.id)
     .then((res) => {
-      addCount.value[0] = res.data[0].counts
-      console.log(addCount.value[0] === 0)
+      console.log(res.data[0])
+      addCount.value = res.data[0].counts
+      if (addCount.value != 0) {
+        realCount.value = addCount.value + 1
+        addCount.value = 0
+      }
+      console.log(`realCount.value: ${realCount.value}`)
+      console.log(`addCount.value: ${addCount.value}`)
+    })
+
+  // 검토중 계획서 불러오기.
+  await axios //
+    .get('/api/planningReview/' + route.params.id)
+    .then((res) => {
+      res.data.forEach((data) => {
+        data.planning_start = dateChange(data.planning_start)
+        data.planning_end = dateChange(data.planning_end)
+      })
+      planningReview.value = res.data
+      console.log(res.data)
+      console.log(`planningReview.length: ${planningReview.value.length}`)
     })
 })
 
+// 검토중 계획서 날짜 형식 변경
+const dateChange = (day) => {
+  let date = new Date(day)
+  let realDate = `${date.getFullYear(day)}.${date.getMonth(day) + 1}.${date.getDay(day)}`
+  return realDate
+}
+
+// 검토중 계획서 스타일 적용
+let reviewStyle = reactive({
+  display: 'flex',
+  'flex-direction': 'column',
+  'margin-top': 'auto',
+})
+
 // 계획 추가시 배열에 숫자 증가.
-let addCount = ref([0])
+let addCount = ref(0) // 계획추가 버튼용
 
 const addPlanningForm = () => {
-  if (addCount.value[0] == 0) {
-    addCount.value[0] = 1
+  if (addCount.value == 0) {
+    addCount.value = 1
     return
   } else if (count != 1) {
     alert('작성하던 내용을 완료해주세요.')
@@ -131,18 +207,40 @@ const submitPlanningInfo = async () => {
     .then((res) => {
       console.log(res)
     })
+  addCount.value = 0
+  formData.value = null
   count++
   console.log(count)
 }
+
+watch(
+  planningReview,
+  async () => {
+    await axios //
+      .get('/api/planningReview/' + route.params.id)
+      .then((res) => {
+        res.data.forEach((data) => {
+          data.planning_start = dateChange(data.planning_start)
+          data.planning_end = dateChange(data.planning_end)
+        })
+        planningReview.value = res.data
+        console.log(res.data)
+        console.log(`planningReview.length: ${planningReview.value.length}`)
+      })
+  },
+  { immediate: true },
+)
 </script>
 <style scoped>
 .container {
   display: flex;
   padding: 0px;
   width: 100%;
-  height: 448.5px;
+  min-height: 448.5px;
   flex-direction: column;
-  background-color: white;
+  background-color: beige;
+  overflow: hidden;
+  height: 100%;
 }
 .card-header {
   display: flex;

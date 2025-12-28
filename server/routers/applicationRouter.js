@@ -60,6 +60,13 @@ router.get("/planning/:no", async (req, res) => {
   res.send(post);
 });
 
+// 검토 중인 지원계획서 불러오기
+router.get("/planningReview/:no", async (req, res) => {
+  let no = req.params.no;
+  let post = await applicationService.findplanningReviewById(no);
+  res.send(post);
+});
+
 // 지원계획서 승인요청
 router.post("/submitPlanningInfo/:no", async (req, res) => {
   let data = req.body;
