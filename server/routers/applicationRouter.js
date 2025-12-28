@@ -28,7 +28,7 @@ router.get(`/rejectApplication`, async (req, res) => {
 
 // 대기단계 승인요청
 router.put("/compApplication/:id", async (req, res) => {
-  const data = req.body;
+  let data = req.body;
   let no = Number(req.params.id);
   console.log(no, data);
   let post = await applicationService.applicationModifyInfo(no, data);
@@ -37,8 +37,8 @@ router.put("/compApplication/:id", async (req, res) => {
 
 // 대기단계 반려사유 입력
 router.put("/rejectstatus/:no", async (req, res) => {
-  const data = req.body;
-  const no = req.params.no;
+  let data = req.body;
+  let no = req.params.no;
   console.log(no);
   let post = await applicationService.rejectModifyInfo(no, data);
   res.send(post);
@@ -46,10 +46,26 @@ router.put("/rejectstatus/:no", async (req, res) => {
 
 // 대기단계 승인 / 재승인
 router.put("/compSuccessApplication/:no", async (req, res) => {
-  const data = req.body;
+  let data = req.body;
   console.log(data);
   let no = req.params.no;
   let post = await applicationService.applicationSuccessModifyInfo(no, data);
+  res.send(post);
+});
+
+// 지원계획서 갯수 파악
+router.get("/planning/:no", async (req, res) => {
+  let no = req.params.no;
+  let post = await applicationService.findPlanningById(no);
+  res.send(post);
+});
+
+// 지원계획서 승인요청
+router.post("/submitPlanningInfo/:no", async (req, res) => {
+  let data = req.body;
+  console.log(data);
+  let no = req.params.no;
+  let post = await applicationService.addPlanningInfo(no, data);
   res.send(post);
 });
 
