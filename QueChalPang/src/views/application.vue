@@ -12,8 +12,8 @@
         <RouterLink v-bind:to="{ name: 'applicationPlanning', params: { id: 20 } }"
           >지원계획서</RouterLink
         >
-        <RouterLink to="{ name: #}">지원결과서</RouterLink>
-        <RouterLink to="{ name: #}">상담내역</RouterLink>
+        <p>지원결과서</p>
+        <p>상담내역</p>
       </nav>
     </div>
     <div class="tabRight">
