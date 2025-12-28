@@ -12,6 +12,7 @@ const {
   selectReservedTimes,
   selectBlockedTimes,
   selectDependant,
+  selectManagerbyDeptno,
 } = require("../database/sqls/reservation.js");
 
 //[1]담당자 - 해당 날짜의 모든 예약 조회
@@ -101,6 +102,11 @@ const findAvailability = async (dependantNo, date) => {
   };
 };
 
+//[7]-1 (보호자 예약) dependant_no로 담당자조회
+const findManagerbyDeptno = async (dependantNo) => {
+  return await mysql.centerQuery(selectManagerbyDeptno, [dependantNo]);
+};
+
 //[7]-4 (보호자 예약) 드롭다운 지원자 선택하기
 const findDependants = async (guardianId) => {
   return await mysql.rquery(selectDependant, [guardianId]);
@@ -115,5 +121,6 @@ module.exports = {
   findByGreserv,
   addReservation,
   findAvailability,
+  findManagerbyDeptno,
   findDependants,
 };

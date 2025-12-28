@@ -7,9 +7,34 @@ import axios from 'axios'
 
 import { useCounterStore } from '@/stores/member'
 import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
 
+//피니아 로그인정보
 const counterStore = useCounterStore()
 const { isLogIn } = storeToRefs(counterStore)
+
+//다음 버튼 누르면 예약확인 페이지로 넘어가기============================
+const router = useRouter() //★괄호 빼먹지말기.
+
+const goNext = () => {
+  router.push({
+    name: 'reservationGuardianConfirm',
+    query: {
+      date: toYmd.value, //캘린더에서 선택한 날짜
+      time: selectedTime.value, //타임슬롯에서 선택한 시간
+      dependantNo: dependantNo.value,
+      name: isLogIn.value?.info?.member_name ?? '',
+      dependant: selectDependantName.value, //드롭다운에서 고른 지원자 이름 같이 넘기기 - isLogIn에서 당연히 안꺼내짐.
+      manager: '최강희',
+    },
+  })
+}
+
+const selectDependantName = computed(() => {
+  const dependant = dependantList.value.find((d) => d.dependant_no == dependantNo.value)
+  return dependant?.dependant_name ?? ''
+})
+//================================================================
 
 const guardianId = computed(() => isLogIn.value?.info?.member_id)
 
@@ -41,16 +66,16 @@ maxDate.setDate(maxDate.getDate() + 14)
 
 const selectedDate = ref(new Date(today))
 
-//vcalendar 날짜막기
+//vcalendar - 날짜선택 막기
 const disabledDates = computed(() => [
   { start: null, end: new Date(today.getTime() - 1000 * 60 * 60 * 24) },
   { start: new Date(maxDate.getTime()), end: null },
 ])
 
 // ========================
-// 날짜 포맷 (표시용 / API용) 통일
+// 날짜 포맷
 // ========================
-const selectedYmdKorean = computed(() => {
+const toYmd = computed(() => {
   const d = selectedDate.value
   if (!d) return ''
   const yyyy = d.getFullYear()
@@ -59,14 +84,14 @@ const selectedYmdKorean = computed(() => {
   return `${yyyy}년 ${mm}월 ${dd}일`
 })
 
-const selectedYmdDash = computed(() => {
-  const d = selectedDate.value
-  if (!d) return ''
-  const yyyy = d.getFullYear()
-  const mm = String(d.getMonth() + 1).padStart(2, '0')
-  const dd = String(d.getDate()).padStart(2, '0')
-  return `${yyyy}-${mm}-${dd}`
-})
+// const toYmdDash = computed(() => {
+//   const d = selectedDate.value
+//   if (!d) return ''
+//   const yyyy = d.getFullYear()
+//   const mm = String(d.getMonth() + 1).padStart(2, '0')
+//   const dd = String(d.getDate()).padStart(2, '0')
+//   return `${yyyy}-${mm}-${dd}`
+// })
 
 // 시간 슬롯
 const baseSlots = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00']
@@ -95,7 +120,7 @@ const selectTime = (slot) => {
 // ========================
 const fetchAvailability = async () => {
   if (!dependantNo.value || !selectedDate.value) return
-  const res = await axios.get(`/api/availability/${dependantNo.value}/${selectedYmdDash.value}`)
+  const res = await axios.get(`/api/availability/${dependantNo.value}/${toYmd.value}`)
   lunchTime.value = res.data.centerLunch ? res.data.centerLunch.slice(0, 5) : ''
   reservedTimes.value = new Set((res.data.reservedTimes ?? []).map((t) => t.slice(0, 5)))
   blockedTimes.value = new Set((res.data.blockedTimes ?? []).map((t) => t.slice(0, 5)))
@@ -191,7 +216,9 @@ watch(
               <div class="fw-semibold">{{ selectedYmdKorean }}</div>
             </div>
 
-            <button class="btn btn-primary btn-sm" :disabled="!selectedTime">다음</button>
+            <button class="btn btn-primary btn-sm" :disabled="!selectedTime" @click="goNext">
+              다음
+            </button>
           </div>
 
           <div class="time-grid">
