@@ -1,5 +1,5 @@
 const selectAllMember = `select * from member`;
-const selectByMemberId = `select member_id,member_name,member_confirm,member_authority from member where member_id = ?`;
+const selectByMemberId = `select member_id,member_name,member_confirm,member_authority,center_no from member where member_id = ?`;
 const countByMemberPass = `select count(*) as count from member where member_id=? and member_pass=sha2(?,256)`;
 const countByMemberId = `select count(*) as count from member where member_id=?`;
 const countByMemberEmail = `select count(*) as count from member where member_email=?`;

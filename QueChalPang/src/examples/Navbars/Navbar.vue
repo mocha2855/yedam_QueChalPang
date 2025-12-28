@@ -1,14 +1,14 @@
 <!-- Navbar.vue -->
 <script setup>
 import { ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute,useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useCounterStore } from '@/stores/member'
 import { storeToRefs } from 'pinia'
 
 const counterStore = useCounterStore()
 const { isLogIn } = storeToRefs(counterStore)
-
+const router = useRouter();
 const showMenu = ref(false)
 const store = useStore()
 
@@ -33,12 +33,21 @@ const priority = (auth) => {
   }
   return ''
 }
+const isConfirm= ()=>{
+  if(isLogIn.value.isLogIn){
+    if(isLogIn.value.info.member_confirm =='e2'){
+      router.push({ name: 'notConfirmed' })
+
+    }
+  }
+}
 
 const clearInfo = () => {
   isLogIn.value.isLogIn = false
   isLogIn.value.info = { member_authority: '', member_name: '' }
   location.reload()
 }
+isConfirm()
 </script>
 
 <template>

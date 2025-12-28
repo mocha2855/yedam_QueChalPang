@@ -10,6 +10,7 @@ import applicationPlanning from '../views/components/applicationPlanning.vue' //
 import surveyRoutes from './survey' //시스템관리자 조사지
 import centerPopup from '../views/centerPopup.vue'
 import reservationRoutes from './reservation'
+import notConfirmed from '../views/notConfirmed.vue'
 
 const routes = [
   {
@@ -66,6 +67,11 @@ const routes = [
     path: '/centerPopup',
     name: 'centerPopup',
     component: centerPopup,
+  },
+  {
+    path: '/notConfirmed',
+    name: 'notConfirmed',
+    component: notConfirmed,
   },
   ...surveyRoutes,
   ...reservationRoutes,
