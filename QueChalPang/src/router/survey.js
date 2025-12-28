@@ -1,6 +1,7 @@
-import SurveyList from '../views/surveyList.vue'
-import SurveyInfo from '@/views/surveyInfo.vue'
-import SurveyAdd from '../views/surveyAdd.vue'
+import SurveyList from '../views/SurveyList.vue'
+import SurveyInfo from '../views/SurveyInfo.vue'
+import SurveyAdd from '../views/SurveyAdd.vue'
+import SurveyUpdate from '@/views/SurveyUpdate.vue'
 
 const surveyRoutes = [
   {
@@ -17,6 +18,11 @@ const surveyRoutes = [
     path: '/surveyAdd',
     name: 'surveyAdd',
     component: SurveyAdd,
+  },
+  {
+    path: '/surveyUpdate/:no',
+    name: 'surveyUpdate',
+    component: SurveyUpdate,
   },
 ]
 export default surveyRoutes

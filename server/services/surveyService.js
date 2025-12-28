@@ -19,6 +19,7 @@ const addSurvey = async (data) => {
   const survey_start = new Date(); //날짜 자동화
   const survey_end = new Date("9999-12-31"); // 끝나는 시간은 무기한 연장(새버전 등장 시 자동 마무리 시간 계산)
 
+  //insert 시 버전 자동 증가
   let versionResult = await mysql.squery("selectMaxVersionAll");
   let survey_version = versionResult[0]?.max_version
     ? (parseFloat(versionResult[0].max_version) + 0.1).toFixed(1)
@@ -40,18 +41,24 @@ const addSurvey = async (data) => {
   ]);
   let survey_title_no = titleResult.insertId;
 
-  let subtitleResult = await mysql.squery("insertSurveySubtitle", [
-    survey_title_no,
-    data.subtitle,
-    data.subtitleDetail,
-  ]);
-  let survey_subtitle_no = subtitleResult.insertId;
+  for (const subtitleData of data.subtitles) {
+    // 세부항목 저장
+    let subtitleResult = await mysql.squery("insertSurveySubtitle", [
+      survey_title_no,
+      subtitleData.subtitle,
+      subtitleData.subtitleDetail,
+    ]);
+    let survey_subtitle_no = subtitleResult.insertId;
 
-  await mysql.squery("insertSurveyQitem", [
-    survey_subtitle_no,
-    data.qitem,
-    data.qitemType,
-  ]);
+    //질문 저장
+    for (const question of subtitleData.questions) {
+      await mysql.squery("insertSurveyQitem", [
+        survey_subtitle_no,
+        question.text,
+        question.type,
+      ]);
+    }
+  }
   return survey_no;
 };
 
