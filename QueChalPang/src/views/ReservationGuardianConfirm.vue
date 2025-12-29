@@ -2,14 +2,17 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import axios from 'axios'
 
 const route = useRoute()
 const router = useRouter()
 
+//front용 format
 const date = computed(() => route.query.date ?? '')
 const time = computed(() => route.query.time ?? '')
 const name = computed(() => route.query.name)
 const dependant = computed(() => route.query.dependant)
+const manager = computed(() => route.query.manager)
 
 const scheduleLabel = computed(() => {
   if (!date.value && !time.value) return ''
@@ -18,22 +21,67 @@ const scheduleLabel = computed(() => {
 
 const goBack = () => router.back()
 
-const submitReservation = async () => {
-  // TODO: 여기서 서버로 예약신청 POST 넣으면 됨
-  // await axios.post('/api/reservation', {...})
-  alert('예약 신청(임시) 완료!') // 지금은 화면 확인용
-  // router.push('/reservation/done') 같은 완료페이지로 보내도 됨
+//DB용 format
+const resvDay = computed(()=>route.query.resv_day)
+const guardianId = computed(()=>route.query.guardianId)
+const managerId = computed(()=>route.query.managerId)
+const dependantNo = computed(()=>route.query.dependantNo)
+
+//[2025-12-26 14:00:00 ] 형태
+const timeslotCal = () =>{
+  const start_at = `${resvDay.value} ${time.value}:00`
+
+  //end_at시간 설정: start_at기준으로 한시간 더하기 
+  const startDate = new Date(`${resvDay.value}T${time.value}:00`) //객채 한개 만들어줌
+  startDate.setHours(startDate.getHours() + 1) //만든 객체에서 시간 가져와서 +1
+
+  const yyyy  = startDate.getFullYear()
+  const mm = String(startDate.getMonth() + 1).padStart(2,'0')
+  const dd = String(startDate.getDate()).padStart(2,'0')
+  const hh = String(startDate.getHours()).padStart(2,'0')
+  const mi = String(startDate.getMinutes()).padStart(2,'0')
+
+  const end_at = `${yyyy}-${mm}-${dd} ${hh}:${mi}:00`
+
+  return {start_at, end_at}
 }
 
-// const toYmd = computed(() => {
-//   const d = selectedDate.value
-//   if (!d) return ''
-//   const yyyy = d.getFullYear()
-//   const mm = String(d.getMonth() + 1).padStart(2, '0')
-//   const dd = String(d.getDate()).padStart(2, '0')
-//   return `${yyyy}년 ${mm}월 ${dd}일`
-// })
+//예약학 버튼을 누르면 다음 페이지로 쿼리를 함께 넘김
+const submitReservation = async () => {
+  
+  if(!resvDay.value||!guardianId.value||!dependantNo.value||!guardianId.value||!managerId.value){
+    alert("예약정보가 부족합니다. 다시 시도해주세요.")
+  }
+
+  const {start_at, end_at} = timeslotCal()
+
+  const resvdata = {
+    dependant_no: Number(dependantNo.value),
+    application_no:20,
+    guardian_id: String(guardianId.value),
+    manager_id: String(managerId.value),
+    resv_day: String(resvDay.value),
+    start_at,
+    end_at,
+  }
+
+  const res = await axios.post(`/api/createReservation`, resvdata)
+
+  router.push({
+    name: 'ReservationGuardianMap',
+    query: {
+      date : date.value,
+      time: time.value,
+      guardian: name.value,
+      dependant: dependant.value,
+      manager: manager.value,
+      resvId: res.data?.resvId, 
+    },
+  })
+}
+
 </script>
+
 <template>
   <div class="container-fluid py-4">
     <div class="d-flex justify-content-center">

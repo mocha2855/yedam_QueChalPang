@@ -36,6 +36,7 @@
     "vue": "3.4.19",
     "vue-count-to": "1.0.13",
     "vue-flatpickr-component": "11.0.4",
+    "vue-naver-maps": "^1.0.0",
     "vue-router": "4.3.0",
     "vuex": "4.1.0"
   },
