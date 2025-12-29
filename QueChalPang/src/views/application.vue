@@ -12,8 +12,8 @@
         <RouterLink v-bind:to="{ name: 'applicationPlanning', params: { id: 20 } }"
           >지원계획서</RouterLink
         >
-        <RouterLink to="{ name: #}">지원결과서</RouterLink>
-        <RouterLink to="{ name: #}">상담내역</RouterLink>
+        <p>지원결과서</p>
+        <p>상담내역</p>
       </nav>
     </div>
     <div class="tabRight">
@@ -29,8 +29,9 @@
   flex-direction: row;
   justify-content: space-between;
   width: 100%;
-  height: 50%;
+  height: 100%;
   background-color: beige;
+  overflow: hidden;
 }
 
 .tabLeft {
@@ -38,18 +39,18 @@
   justify-content: flex-start;
   flex-direction: column;
   width: 50%;
-  height: 50%;
+  height: 100%;
 }
 header {
   display: flex;
   flex-direction: row;
   width: 100%;
-  height: 33vh;
+  height: 100px;
 }
 
 .tabLeft nav {
   width: 100%;
-  height: 20%;
+  height: 20px;
   background-color: #fff;
   border-radius: 10px;
   display: flex;
@@ -66,5 +67,6 @@ header p {
   display: flex;
   flex-direction: column;
   width: 50%;
+  min-height: 100%;
 }
 </style>

@@ -13,4 +13,9 @@ router.post(`/center`, async (req, res) => {
   let result = await centerService.addCenterInfo(value);
   res.send(result);
 });
+router.get(`/center/:no`,async (req,res)=>{
+  const no = req.params.no;
+  let result = await centerService.findByCenterNo(no);
+  res.send(result)
+})
 module.exports = router;

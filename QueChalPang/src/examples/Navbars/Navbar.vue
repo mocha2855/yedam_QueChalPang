@@ -1,16 +1,17 @@
 <!-- Navbar.vue -->
 <script setup>
 import { ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute,useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useCounterStore } from '@/stores/member'
 import { storeToRefs } from 'pinia'
 
 const counterStore = useCounterStore()
 const { isLogIn } = storeToRefs(counterStore)
-
+const router = useRouter();
 const showMenu = ref(false)
 const store = useStore()
+const router = useRouter()
 
 // 현재 활성화된 메뉴를 표시하기 위한 로직
 const getRoute = () => {
@@ -33,12 +34,21 @@ const priority = (auth) => {
   }
   return ''
 }
+const isConfirm= ()=>{
+  if(isLogIn.value.isLogIn){
+    if(isLogIn.value.info.member_confirm =='e2'){
+      router.push({ name: 'notConfirmed' })
+
+    }
+  }
+}
 
 const clearInfo = () => {
   isLogIn.value.isLogIn = false
   isLogIn.value.info = { member_authority: '', member_name: '' }
-  location.reload()
+  router.push({ name: '/' })
 }
+isConfirm()
 </script>
 
 <template>
@@ -51,7 +61,6 @@ const clearInfo = () => {
     <div class="container-fluid">
       <div class="mt-2 collapse navbar-collapse mt-sm-0 me-md-0 me-sm-4" id="navbar">
         <ul class="navbar-nav me-auto">
-          
           <li class="nav-item">
             <router-link
               to="/dashboard-default"
@@ -83,7 +92,7 @@ const clearInfo = () => {
               <i class="ni ni-world-2 me-2"></i>상담예약 관리
             </router-link>
           </li>
-          
+
           <li class="nav-item">
             <router-link
               to="/reservGuardian"
@@ -103,7 +112,6 @@ const clearInfo = () => {
               <i class="ni ni-world-2 me-2"></i>지원서관리
             </router-link>
           </li>
-
         </ul>
 
         <ul class="navbar-nav justify-content-end">
@@ -128,6 +136,7 @@ const clearInfo = () => {
               <span
                 class="cursor-pointer nav-link font-weight-bold text-black p-0"
                 @click.prevent="clearInfo()"
+                @click="logOut"
               >
                 로그아웃
               </span>
@@ -174,7 +183,7 @@ const clearInfo = () => {
   transition: opacity 0.2s ease;
   display: flex;
   align-items: center;
-  font-size: 1.0rem !important;
+  font-size: 1rem !important;
   font-weight: 500 !important;
   padding: 0.5rem 1rem !important;
 }

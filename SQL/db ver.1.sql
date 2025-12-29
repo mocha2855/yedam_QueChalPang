@@ -249,6 +249,9 @@ REFERENCES `application` (
 	`application_no`
 );
 
+-- 작성일 current_timestamp 추가(12/27)
+ALTER TABLE planning Modify planning_date timestamp DEFAULT current_timestamp; 
+
 
 DROP TABLE IF EXISTS `result`;
 

@@ -43,6 +43,39 @@ const applicationSuccessModifyInfo = async (no, data) => {
   return post;
 };
 
+// 지원계획서 갯수 조회(계획서 추가시 숫자 파악 위해)
+const findPlanningById = async (no) => {
+  let post = await mysql.bquery("selectPlanningById", no);
+  return post;
+};
+
+// 검토 중인 지원계획서 불러오기
+const findplanningReviewById = async (no) => {
+  let post = await mysql.bquery("selectPlanningReviewById", no);
+  return post;
+};
+
+// 지원계획서 승인요청
+const addPlanningInfo = async (no, data) => {
+  let {
+    planning_id,
+    planning_rejecter,
+    planning_start,
+    planning_end,
+    planning_title,
+    planning_content,
+  } = data;
+  let post = await mysql.bquery("insertPlannginInfo", [
+    no,
+    planning_id,
+    planning_rejecter,
+    planning_start,
+    planning_end,
+    planning_title,
+    planning_content,
+  ]);
+};
+
 module.exports = {
   authorityFindById,
   findById,
@@ -50,4 +83,7 @@ module.exports = {
   applicationModifyInfo,
   rejectModifyInfo,
   applicationSuccessModifyInfo,
+  findPlanningById,
+  findplanningReviewById,
+  addPlanningInfo,
 };
