@@ -1,54 +1,74 @@
 <template>
-  <div class="py-4 container-fluid">
-    <div class="row">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-header pb-0">
-            <div class="d-flex justify-content-between">
-              <h6>설문지 상세</h6>
-              <button class="btn btn-sm btn-secondary" @click="goBack">목록으로</button>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="table-responsive">
-              <table class="table">
-                <tbody>
-                  <tr>
-                    <th class="text-right">번호</th>
-                    <td class="text-center">{{ surveyInfo.no }}</td>
-                  </tr>
-                  <tr>
-                    <th class="text-right">항목</th>
-                    <td class="text-center">{{ surveyInfo.title }}</td>
-                  </tr>
-                  <tr>
-                    <th class="text-right">세부항목</th>
-                    <td class="text-center">{{ surveyInfo.subtitle }}</td>
-                  </tr>
-                  <tr>
-                    <th class="text-right">세부항목설명</th>
-                    <td class="text-center">{{ surveyInfo.subtitleDetail }}</td>
-                  </tr>
-                  <tr>
-                    <th class="text-right">질문</th>
-                    <td class="text-center">
-                      <div v-for="q in store.questionList" :key="q.survey_qitem_no">
-                        {{ q.survey_qitem_question }}({{ q.survey_qitem_type }})
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <div>
-                <button class="btn btn-primary" @click="goTosurveyUpdate(surveyInfo.no)">
-                  수정
-                </button>
-              </div>
+  <!--조사지등록-->
+  <div class="container">
+    <div class="d-flex justify-content-between">
+      <h6>조사지 상세</h6>
+      <button class="btn btn-sm btn-secondary" @click="goBack">목록으로</button>
+    </div>
+    <table class="table">
+      <tbody>
+        <tr>
+          <th class="text-right">No</th>
+          <td class="text-center">
+            <input class="form-control" type="text" v-model="surveyInfo.no" readonly="" />
+          </td>
+        </tr>
+        <tr>
+          <th class="text-right">항목</th>
+          <td class="text-center">
+            <input class="form-control" type="text" v-model="surveyInfo.title" readonly="" />
+          </td>
+        </tr>
+
+        <tr>
+          <th class="text-right">세부항목</th>
+          <td class="text-center">
+            <!-- 세부항목들 반복 -->
+            <div
+              v-for="(subtitle, sIndex) in surveyInfo.subtitles"
+              :key="subtitle.survey_subtitle_no"
+            >
+              <h4>세부항목 {{ sIndex + 1 }}</h4>
+
+              <!-- 세부항목 -->
+              <label>세부항목</label>
+              <textarea class="form-control" v-model="subtitle.survey_subtitle" readonly></textarea>
+
+              <!-- 세부항목 설명 -->
+              <label>세부항목 설명</label>
+              <input class="form-control" v-model="subtitle.survey_subtitle_detail" readonly />
+
               <hr />
+
+              <!-- 질문들 -->
+              <h5>질문 목록</h5>
+              <div
+                v-for="(question, qIndex) in subtitle.questionList"
+                :key="question.survey_qitem_no"
+              >
+                <strong>질문 {{ qIndex + 1 }}</strong>
+
+                <input
+                  class="form-control"
+                  v-model="question.survey_qitem_question"
+                  readonly
+                  style="margin-top: 5px"
+                />
+
+                <input
+                  class="form-control"
+                  v-model="question.survey_qitem_type"
+                  readonly
+                  style="margin-top: 5px"
+                />
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div>
+      <button class="btn btn-primary" @click="goTosurveyUpdate(surveyInfo.no)">수정</button>
     </div>
   </div>
 </template>
@@ -69,20 +89,18 @@ defineProps({
 const surveyInfo = reactive({
   no: '',
   title: '',
-  subtitle: '',
-  subtitleDetail: '',
+  subtitles: [],
 })
 
 onMounted(async () => {
   await store.fetchSurveyDetail(route.params.no)
   const data = store.surveyDetail
   if (data) {
-    console.log(data)
-    surveyInfo.no = data[0].survey_no || ''
-    surveyInfo.title = data[0].survey_title || ''
-    surveyInfo.subtitle = data[0].survey_subtitle || ''
-    surveyInfo.subtitleDetail = data[0].survey_subtitle_detail || ''
+    surveyInfo.no = data.survey_no || ''
+    surveyInfo.title = data.survey_title || ''
+    surveyInfo.subtitles = data.subtitles || []
   }
+  console.log(surveyInfo)
 })
 
 const goBack = () => {
