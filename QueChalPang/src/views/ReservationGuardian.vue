@@ -13,23 +13,34 @@ import { useRouter } from 'vue-router'
 const counterStore = useCounterStore()
 const { isLogIn } = storeToRefs(counterStore)
 
-//다음 버튼 누르면 예약확인 페이지로 넘어가기============================
+//==========================================================================
+//다음 버튼 누르면 예약확인 페이지로 넘어가기
+//==========================================================================
 const router = useRouter() //★괄호 빼먹지말기.
 
+//다음 버튼 누르면서 정보 같이 넘겨야함
 const goNext = () => {
   router.push({
     name: 'reservationGuardianConfirm',
     query: {
       date: toYmd.value, //캘린더에서 선택한 날짜
       time: selectedTime.value, //타임슬롯에서 선택한 시간
+
+      //DB저장 
+      resv_day: toYmdDash.value,
+      guardianId: guardianId.value,
+      managerId: managerId.value,
       dependantNo: dependantNo.value,
+
+      //front
       name: isLogIn.value?.info?.member_name ?? '',
       dependant: selectDependantName.value, //드롭다운에서 고른 지원자 이름 같이 넘기기 - isLogIn에서 당연히 안꺼내짐.
-      manager: '최강희',
+      manager: managerName.value,
     },
   })
 }
 
+//보호자의 지원자정보 가져옴(지원자이름 드롭다운)
 const selectDependantName = computed(() => {
   const dependant = dependantList.value.find((d) => d.dependant_no == dependantNo.value)
   return dependant?.dependant_name ?? ''
@@ -38,17 +49,11 @@ const selectDependantName = computed(() => {
 
 const guardianId = computed(() => isLogIn.value?.info?.member_id)
 
+const managerName = ref('') //담당자 이름
+const managerId = ref('') //담당자 이름
+
 const dependantList = ref([])
 const dependantNo = ref(null)
-
-const fetchMyDependants = async () => {
-  if (!guardianId.value) return
-
-  const res = await axios.get(`/api/dependants/${guardianId.value}`)
-  dependantList.value = res.data ?? []
-
-  dependantNo.value = dependantList.value[0]?.dependant_no ?? null
-}
 
 const reservedTimes = ref(new Set())
 const blockedTimes = ref(new Set())
@@ -84,21 +89,21 @@ const toYmd = computed(() => {
   return `${yyyy}년 ${mm}월 ${dd}일`
 })
 
-// const toYmdDash = computed(() => {
-//   const d = selectedDate.value
-//   if (!d) return ''
-//   const yyyy = d.getFullYear()
-//   const mm = String(d.getMonth() + 1).padStart(2, '0')
-//   const dd = String(d.getDate()).padStart(2, '0')
-//   return `${yyyy}-${mm}-${dd}`
-// })
+const toYmdDash = computed(() => {
+  const d = selectedDate.value
+  if (!d) return ''
+  const yyyy = d.getFullYear()
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  return `${yyyy}-${mm}-${dd}`
+})
 
 // 시간 슬롯
 const baseSlots = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00']
 
 const timeSlots = computed(() =>
   baseSlots.map((t) => {
-    const isLunch = lunchTime.value === t
+    const isLunch = lunchTime.value == t
     const isReserved = reservedTimes.value.has(t)
     const isBlocked = blockedTimes.value.has(t)
 
@@ -118,6 +123,18 @@ const selectTime = (slot) => {
 // ========================
 // API 호출
 // ========================
+//담당자 이름 goNext로 같이 넘기기
+const fetchManagerName = async() =>{
+ if (!dependantNo.value) return
+
+  const mname = await axios.get(`/api/getManagerName/${dependantNo.value}`)
+  //console.log(mname)
+  managerName.value = mname.data.manager_name
+  managerId.value = mname.data.manager_id
+  console.log(managerName, managerId)
+}
+
+//예약가능한 담당자 시간 불러오기
 const fetchAvailability = async () => {
   if (!dependantNo.value || !selectedDate.value) return
   const res = await axios.get(`/api/availability/${dependantNo.value}/${toYmd.value}`)
@@ -126,7 +143,15 @@ const fetchAvailability = async () => {
   blockedTimes.value = new Set((res.data.blockedTimes ?? []).map((t) => t.slice(0, 5)))
 }
 
-// DatePicker 하이라이트
+//담당자의ID로 지원자정보 불러오기
+const fetchMyDependants = async () => {
+  if (!guardianId.value) return
+  const res = await axios.get(`/api/dependants/${guardianId.value}`)
+  dependantList.value = res.data ?? []
+  dependantNo.value = dependantList.value[0]?.dependant_no ?? null
+}
+
+// DatePicker 캘린더 하이라이트
 const calendarAttrs = computed(() => [
   {
     key: 'selected',
@@ -153,7 +178,7 @@ watch(
   { immediate: true },
 )
 
-// 로그인 정보 들어오면 dependant 리스트 가져오기
+// 로그인 정보 들어오면 드롭다운에 dependant 리스트 가져오기
 watch(
   guardianId,
   async () => {
@@ -163,6 +188,17 @@ watch(
   },
   { immediate: true },
 )
+
+//드롭다운에서 dependant바뀌면 매니저정보 바뀌게 
+watch(
+  dependantNo,
+  async()=>{
+    await fetchManagerName()
+  },
+  { immediate: true },
+)
+
+
 </script>
 
 <template>

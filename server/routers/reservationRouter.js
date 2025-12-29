@@ -116,7 +116,16 @@ router.get("/availability/:dependantNo/:date", async (req, res) => {
 });
 
 // [7-1] 보호자 - dependant_no로 담당자조회
-// router.get("/
+router.get("/getManagerName/:dependantNo", async (req, res) => {
+  const { dependantNo } = req.params;
+  try {
+    const data = await reservationService.findManagerbyDeptno(dependantNo);
+    res.json(data[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "관리자이름 조회 실패", err: err.message });
+  }
+});
 
 //[7]-4 (보호자 예약) 드롭다운 지원자 선택하기
 router.get("/dependants/:guardianId", async (req, res) => {
