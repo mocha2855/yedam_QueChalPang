@@ -9,12 +9,13 @@
         <RouterLink v-bind:to="{ name: 'applicationWait', params: { id: 20 } }"
           >지원신청서</RouterLink
         >
-        <RouterLink v-bind:to="{ name: 'applicationPlanning', params: { id: 20 } }"
-          >지원계획서</RouterLink
-        >
+        <RouterLink v-bind:to="{ name: 'applicationPlanning', params: { id: 20 } }">
+          지원계획서
+        </RouterLink>
         <p>지원결과서</p>
         <p>상담내역</p>
       </nav>
+      <router-view name="right" />
     </div>
     <div class="tabRight">
       <router-view />

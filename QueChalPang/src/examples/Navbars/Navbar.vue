@@ -1,17 +1,16 @@
 <!-- Navbar.vue -->
 <script setup>
 import { ref } from 'vue'
-import { useRoute,useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useCounterStore } from '@/stores/member'
 import { storeToRefs } from 'pinia'
 
 const counterStore = useCounterStore()
 const { isLogIn } = storeToRefs(counterStore)
-const router = useRouter();
+const router = useRouter()
 const showMenu = ref(false)
 const store = useStore()
-const router = useRouter()
 
 // 현재 활성화된 메뉴를 표시하기 위한 로직
 const getRoute = () => {
@@ -34,11 +33,10 @@ const priority = (auth) => {
   }
   return ''
 }
-const isConfirm= ()=>{
-  if(isLogIn.value.isLogIn){
-    if(isLogIn.value.info.member_confirm =='e2'){
+const isConfirm = () => {
+  if (isLogIn.value.isLogIn) {
+    if (isLogIn.value.info.member_confirm == 'e2') {
       router.push({ name: 'notConfirmed' })
-
     }
   }
 }

@@ -115,9 +115,6 @@ router.get("/availability/:dependantNo/:date", async (req, res) => {
   }
 });
 
-// [7-1] 보호자 - dependant_no로 담당자조회
-router.get("/
-
 //[7]-4 (보호자 예약) 드롭다운 지원자 선택하기
 router.get("/dependants/:guardianId", async (req, res) => {
   try {
