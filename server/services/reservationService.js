@@ -13,6 +13,7 @@ const {
   selectBlockedTimes,
   selectDependant,
   selectManagerbyDeptno,
+  selectApplicationByDependant,
 } = require("../database/sqls/reservation.js");
 
 //[1]담당자 - 해당 날짜의 모든 예약 조회
@@ -53,7 +54,15 @@ const findByGreserv = async (guardianId) => {
 
 //[6]보호자 - 예약 요청
 const addReservation = async (data) => {
-  const { dependant_no, application_no, guardian_id, manager_id, resv_day, start_at, end_at, } = data;
+  const {
+    dependant_no,
+    application_no,
+    guardian_id,
+    manager_id,
+    resv_day,
+    start_at,
+    end_at,
+  } = data;
 
   let result = await mysql.rquery(insertResv, [
     dependant_no,
@@ -92,6 +101,7 @@ const findAvailability = async (dependantNo, date) => {
     managerId: manager_id,
     centerLunch: center_lunch,
     reservedTimes: reserved.map((r) => r.reserved_time),
+    blockedTimes: blocked.map((b) => b.block_time),
   };
 };
 
@@ -105,6 +115,11 @@ const findDependants = async (guardianId) => {
   return await mysql.rquery(selectDependant, [guardianId]);
 };
 
+//[7]-5 (보호자 예약) 드롭다운 지원자 선택 후 지원자의 지원신청서 선택하기
+const findApplication = async (dependantNo) => {
+  return await mysql.rquery(selectApplicationByDependant, [dependantNo]);
+};
+
 module.exports = {
   findByDate,
   findTresvByManager,
@@ -116,4 +131,5 @@ module.exports = {
   findAvailability,
   findManagerbyDeptno,
   findDependants,
+  findApplication,
 };

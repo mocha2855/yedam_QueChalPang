@@ -26,7 +26,7 @@ const goNext = () => {
       date: toYmd.value, //캘린더에서 선택한 날짜
       time: selectedTime.value, //타임슬롯에서 선택한 시간
 
-      //DB저장 
+      //DB저장
       resv_day: toYmdDash.value,
       guardianId: guardianId.value,
       managerId: managerId.value,
@@ -45,6 +45,12 @@ const selectDependantName = computed(() => {
   const dependant = dependantList.value.find((d) => d.dependant_no == dependantNo.value)
   return dependant?.dependant_name ?? ''
 })
+
+//선택한 지원서번호 받기
+const selectApplicationNo = computed(() => {
+  return selectedApplicationNo.value ?? ''
+})
+
 //================================================================
 
 const guardianId = computed(() => isLogIn.value?.info?.member_id)
@@ -54,6 +60,8 @@ const managerId = ref('') //담당자 이름
 
 const dependantList = ref([])
 const dependantNo = ref(null)
+const applicationNo = ref([]) //목록
+const selectedApplicationNo = ref(null) //선택값
 
 const reservedTimes = ref(new Set())
 const blockedTimes = ref(new Set())
@@ -80,6 +88,7 @@ const disabledDates = computed(() => [
 // ========================
 // 날짜 포맷
 // ========================
+// 프론트 표시용
 const toYmd = computed(() => {
   const d = selectedDate.value
   if (!d) return ''
@@ -89,6 +98,7 @@ const toYmd = computed(() => {
   return `${yyyy}년 ${mm}월 ${dd}일`
 })
 
+//DB에 넘기는 용
 const toYmdDash = computed(() => {
   const d = selectedDate.value
   if (!d) return ''
@@ -98,7 +108,7 @@ const toYmdDash = computed(() => {
   return `${yyyy}-${mm}-${dd}`
 })
 
-// 시간 슬롯
+// 시간 슬롯 설정
 const baseSlots = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00']
 
 const timeSlots = computed(() =>
@@ -124,8 +134,8 @@ const selectTime = (slot) => {
 // API 호출
 // ========================
 //담당자 이름 goNext로 같이 넘기기
-const fetchManagerName = async() =>{
- if (!dependantNo.value) return
+const fetchManagerName = async () => {
+  if (!dependantNo.value) return
 
   const mname = await axios.get(`/api/getManagerName/${dependantNo.value}`)
   //console.log(mname)
@@ -137,7 +147,9 @@ const fetchManagerName = async() =>{
 //예약가능한 담당자 시간 불러오기
 const fetchAvailability = async () => {
   if (!dependantNo.value || !selectedDate.value) return
-  const res = await axios.get(`/api/availability/${dependantNo.value}/${toYmd.value}`)
+
+  const res = await axios.get(`/api/availability/${dependantNo.value}/${toYmdDash.value}`)
+
   lunchTime.value = res.data.centerLunch ? res.data.centerLunch.slice(0, 5) : ''
   reservedTimes.value = new Set((res.data.reservedTimes ?? []).map((t) => t.slice(0, 5)))
   blockedTimes.value = new Set((res.data.blockedTimes ?? []).map((t) => t.slice(0, 5)))
@@ -189,39 +201,104 @@ watch(
   { immediate: true },
 )
 
-//드롭다운에서 dependant바뀌면 매니저정보 바뀌게 
+//드롭다운에서 dependant바뀌면 매니저정보 바뀌게
 watch(
   dependantNo,
-  async()=>{
+  async () => {
     await fetchManagerName()
   },
   { immediate: true },
 )
 
-
+//드롭다운에서 dependant바뀌면 application 바뀌게
+watch(
+  dependantNo,
+  async (ano) => {
+    if (!ano) return
+    const res = await axios.get(`/api/applicationList/${ano}`)
+    applicationNo.value = res.data
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
   <div class="py-4 container-fluid">
-    <!--dependant 드롭다운!  -->
-    <div class="row justify-content-center mb-3">
-      <div class="col-12 col-md-10 col-lg-7 col-xl-6">
-        <div class="card p-3 shadow-sm">
-          <div class="d-flex align-items-center justify-content-between mb-2">
-            <h6 class="mb-0">대상자 선택</h6>
-            <div class="small text-muted" v-if="dependantList.length === 0">
-              대상자 정보가 없습니다.
+    <!-- 대상자 + 신청서 -->
+    <div class="py-4 container-fluid">
+      <!-- 대상자 + 신청서 -->
+      <div class="row justify-content-center mb-3">
+        <div class="col-12 col-md-10 col-lg-7 col-xl-6">
+          <div class="card p-3 shadow-sm">
+            <!-- 2칸 레이아웃 - 왼쪽/오른쪽 -->
+            <div class="row g-3">
+              <!-- 왼쪽: 지원자 선택  -->
+              <div class="col-12 col-md-6">
+                <div class="field">
+                  <div class="d-flex align-items-end justify-content-between mb-1">
+                    <label class="form-label fw-semibold field-label mb-0">대상자 선택</label>
+
+                    <div class="small text-muted" v-if="dependantList.length === 0">
+                      대상자 정보가 없습니다.
+                    </div>
+                  </div>
+
+                  <select
+                    class="form-select"
+                    v-model="dependantNo"
+                    :disabled="dependantList.length === 0"
+                  >
+                    <option
+                      v-for="d in dependantList"
+                      :key="d.dependant_no"
+                      :value="d.dependant_no"
+                    >
+                      {{ d.dependant_name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- 오른쪽: 신청서 선택 -->
+              <div class="col-12 col-md-6">
+                <div class="field">
+                  <label class="form-label fw-semibold field-label mb-1 text-nowrap"
+                    >신청서 선택</label
+                  >
+                  <select
+                    class="form-select"
+                    v-model="selectedApplicationNo"
+                    :disabled="applicationNo.length === 0"
+                  >
+                    <option
+                      v-for="a in applicationNo"
+                      :key="a.application_no"
+                      :value="a.application_no"
+                    >
+                      {{ a.application_no }} (신청일 {{ a.application_date.slice(0, 10) }} )
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- 하단: 중앙 정렬 (가로) -->
+              <div class="col-12">
+                <div class="info-center-wrap">
+                  <div class="info-pill">
+                    <span class="text-muted small">지원자이름 </span>
+                    <span class="fw-semibold">{{ selectDependantName }}</span>
+                    <span class="divider"></span>
+                    <span class="text-muted small">신청서번호</span>
+                    <span class="fw-semibold">{{ selectApplicationNo }}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-
-          <select class="form-select" v-model="dependantNo" :disabled="dependantList.length === 0">
-            <option v-for="d in dependantList" :key="d.dependant_no" :value="d.dependant_no">
-              {{ d.dependant_name }}
-            </option>
-          </select>
         </div>
       </div>
     </div>
+
     <!-- 캘린더 -->
     <div class="row justify-content-center">
       <div class="col-12 col-md-10 col-lg-7 col-xl-6">
@@ -311,5 +388,11 @@ watch(
   background: #d9dde3;
   color: #8a8f98;
   cursor: not-allowed;
+}
+
+.info-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 </style>
