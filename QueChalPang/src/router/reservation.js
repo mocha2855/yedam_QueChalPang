@@ -1,6 +1,7 @@
 import ReservationGuardian from '@/views/ReservationGuardian.vue'
 import ReservationGuardianConfirm from '@/views/ReservationGuardianConfirm.vue'
 import ReservationTeacher from '@/views/ReservationTeacher.vue'
+import ReservationGuardianMap from '@/views/ReservationGuardianMap.vue'
 
 const reservationRoutes = [
   {
@@ -18,6 +19,11 @@ const reservationRoutes = [
     path: '/reservGuardianConfirm',
     name: 'reservationGuardianConfirm',
     component: ReservationGuardianConfirm,
+  },
+  {
+    path: '/reservGuardianMap',
+    name: 'ReservationGuardianMap',
+    component: ReservationGuardianMap,
   },
 ]
 
