@@ -53,15 +53,8 @@ const findByGreserv = async (guardianId) => {
 
 //[6]보호자 - 예약 요청
 const addReservation = async (data) => {
-  const {
-    dependant_no,
-    application_no,
-    guardian_id,
-    manager_id,
-    resv_day,
-    start_at,
-    end_at,
-  } = data;
+  const { dependant_no, application_no, guardian_id, manager_id, resv_day, start_at, end_at, } = data;
+
   let result = await mysql.rquery(insertResv, [
     dependant_no,
     application_no,
@@ -104,7 +97,7 @@ const findAvailability = async (dependantNo, date) => {
 
 //[7]-1 (보호자 예약) dependant_no로 담당자조회
 const findManagerbyDeptno = async (dependantNo) => {
-  return await mysql.centerQuery(selectManagerbyDeptno, [dependantNo]);
+  return await mysql.rquery(selectManagerbyDeptno, [dependantNo]);
 };
 
 //[7]-4 (보호자 예약) 드롭다운 지원자 선택하기
