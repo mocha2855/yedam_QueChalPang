@@ -25,12 +25,21 @@ where application_no = ?`;
 // 지원계획서 갯수 파악
 const selectPlanningById = `select count(*) counts from planning where application_no=?`;
 
-// 검토 중인 지원계획서 불러오기
+// 검토 중, 반려, 승인 지원계획서 불러오기
 const selectPlanningReviewById = `select *, rank() over (order by planning_date) ranking from planning where application_no =?`;
 
 // 지원계획서 승인요청(담당자)
-const insertPlannginInfo = `insert into planning (application_no, planning_id, planning_rejecter, planning_start, planning_end, planning_title, planning_content)
-values(?, ?, ?, ?, ?, ?, ?)`;
+const insertPlannginInfo = `insert into planning set ?`;
+
+// 지원계획서 승인 및 재승인
+const sucessPlanningUpdateInfo = `update planning 
+set ?
+where planning_no = ?`;
+
+// 지원계획서 반려
+const rejectPlanningUpdateInfo = `update planning 
+set planning_reject_date = current_timestamp(), planning_approvedDate = current_timestamp(), ?
+where planning_no = ?`;
 
 module.exports = {
   authoritySelectById,
@@ -42,4 +51,6 @@ module.exports = {
   selectPlanningById,
   selectPlanningReviewById,
   insertPlannginInfo,
+  sucessPlanningUpdateInfo,
+  rejectPlanningUpdateInfo,
 };

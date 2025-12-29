@@ -60,19 +60,37 @@ router.get("/planning/:no", async (req, res) => {
   res.send(post);
 });
 
-// 검토 중인 지원계획서 불러오기
+// 검토 중, 반려, 승인 지원계획서 불러오기
 router.get("/planningReview/:no", async (req, res) => {
   let no = req.params.no;
   let post = await applicationService.findplanningReviewById(no);
   res.send(post);
 });
 
-// 지원계획서 승인요청
+// 지원계획서 승인요청(담당자)
 router.post("/submitPlanningInfo/:no", async (req, res) => {
   let data = req.body;
   console.log(data);
   let no = req.params.no;
   let post = await applicationService.addPlanningInfo(no, data);
+  res.send(post);
+});
+
+// 지원계획서 승인(관리자)
+router.put("/successPlanningInfo/:no", async (req, res) => {
+  let no = req.params.no;
+  let data = req.body;
+  console.log(data);
+  let post = await applicationService.updatePlanningInfo(no, data);
+  res.send(post);
+});
+
+// 지원계획서 반려(관리자)
+router.put("/rejectPlanningInfo/:no", async (req, res) => {
+  let no = req.params.no;
+  let data = req.body;
+  console.log(data);
+  let post = await applicationService.updateRejectPlanningInfo(no, data);
   res.send(post);
 });
 
