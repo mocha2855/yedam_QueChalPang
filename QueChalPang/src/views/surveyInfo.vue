@@ -40,7 +40,9 @@
                 </tbody>
               </table>
               <div>
-                <button class="btn btn-primary" @click="goTosurveyUpdate">수정</button>
+                <button class="btn btn-primary" @click="goTosurveyUpdate(surveyInfo.no)">
+                  수정
+                </button>
               </div>
               <hr />
             </div>
@@ -85,5 +87,12 @@ onMounted(async () => {
 
 const goBack = () => {
   router.push({ name: 'SurveyList' })
+}
+
+const goTosurveyUpdate = () => {
+  router.push({
+    name: 'surveyUpdate',
+    params: { no: surveyInfo.no },
+  })
 }
 </script>
