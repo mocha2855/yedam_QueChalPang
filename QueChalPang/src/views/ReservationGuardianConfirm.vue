@@ -19,10 +19,8 @@ const scheduleLabel = computed(() => {
 const goBack = () => router.back()
 
 const submitReservation = async () => {
-  // TODO: 여기서 서버로 예약신청 POST 넣으면 됨
-  // await axios.post('/api/reservation', {...})
+
   alert('예약 신청(임시) 완료!') // 지금은 화면 확인용
-  // router.push('/reservation/done') 같은 완료페이지로 보내도 됨
 }
 
 // const toYmd = computed(() => {
