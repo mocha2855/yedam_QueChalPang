@@ -11,7 +11,6 @@ const { isLogIn } = storeToRefs(counterStore)
 const router = useRouter();
 const showMenu = ref(false)
 const store = useStore()
-const router = useRouter()
 
 // 현재 활성화된 메뉴를 표시하기 위한 로직
 const getRoute = () => {
