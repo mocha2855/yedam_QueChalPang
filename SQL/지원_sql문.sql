@@ -4,7 +4,7 @@ insert into test_tbl
 values (1);
 commit;
 
-delete from survey where survey_no= '5';
+delete from survey where survey_no= '11';
 delete from survey_title where survey_title_no= '1';
 delete from survey_subtitle where survey_subtitle_no= '1';
 delete from survey_qitem where survey_qitem_no= '10';

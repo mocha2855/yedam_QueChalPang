@@ -110,17 +110,17 @@
       </tbody>
     </table>
     <div>
-      <button class="btn btn-info" @click="addSurvey">저장</button>
+      <button class="btn btn-info" @click="updateSurvey">수정</button>
     </div>
   </div>
 </template>
 <script setup>
 import axios from 'axios'
 import { reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 const router = useRouter()
-
+const route = useRoute()
 const surveyInfo = reactive({
   no: '',
   survey_version: '',
@@ -164,9 +164,18 @@ const deleteQuestion = (subtitleId, questionId) => {
   subtitle.questions = subtitle.questions.filter((q) => q.id !== questionId)
 }
 
+// DB에서 데이터 불러오기
+const loadSurvey = async () => {
+  const surveyNo = route.params.no
+  console.log('불러올 번호:', surveyNo)
+
+  const result = await axios.get(`/api/surveys/${surveyNo}`)
+  console.log('불러온 데이터:', result.data)
+}
+
 //조사지 등록
-const addSurvey = async () => {
-  const result = await axios.post('/api/surveys', surveyInfo)
+const updateSurvey = async () => {
+  const result = await axios.put('/api/surveys/${surveyNo}', surveyInfo)
 
   //등록
   if (result.data) {
@@ -178,6 +187,6 @@ const addSurvey = async () => {
 }
 
 onMounted(() => {
-  addSubtitle() // 세부항목 1개 추가
+  loadSurvey()
 })
 </script>
