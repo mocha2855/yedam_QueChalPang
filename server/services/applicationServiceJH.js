@@ -49,31 +49,35 @@ const findPlanningById = async (no) => {
   return post;
 };
 
-// 검토 중인 지원계획서 불러오기
+// 검토 중, 반려, 승인 지원계획서 불러오기
 const findplanningReviewById = async (no) => {
   let post = await mysql.bquery("selectPlanningReviewById", no);
   return post;
 };
 
 // 지원계획서 승인요청
-const addPlanningInfo = async (no, data) => {
-  let {
-    planning_id,
-    planning_rejecter,
-    planning_start,
-    planning_end,
-    planning_title,
-    planning_content,
-  } = data;
-  let post = await mysql.bquery("insertPlannginInfo", [
-    no,
-    planning_id,
-    planning_rejecter,
-    planning_start,
-    planning_end,
-    planning_title,
-    planning_content,
+const addPlanningInfo = async (application_no, data) => {
+  let param = { application_no, ...data };
+  let post = await mysql.bquery("insertPlannginInfo", param);
+  return post;
+};
+
+// 지원계획서 승인(관리자)
+const updatePlanningInfo = async (planning_no, data) => {
+  let post = await mysql.bquery("sucessPlanningUpdateInfo", [
+    data,
+    planning_no,
   ]);
+  return post;
+};
+
+// 지원계획서 반려(담당자)
+const updateRejectPlanningInfo = async (planning_no, data) => {
+  let post = await mysql.bquery("rejectPlanningUpdateInfo", [
+    data,
+    planning_no,
+  ]);
+  return post;
 };
 
 module.exports = {
@@ -86,4 +90,6 @@ module.exports = {
   findPlanningById,
   findplanningReviewById,
   addPlanningInfo,
+  updatePlanningInfo,
+  updateRejectPlanningInfo,
 };

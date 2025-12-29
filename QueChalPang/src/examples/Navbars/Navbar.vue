@@ -1,14 +1,14 @@
 <!-- Navbar.vue -->
 <script setup>
 import { ref } from 'vue'
-import { useRoute,useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useCounterStore } from '@/stores/member'
 import { storeToRefs } from 'pinia'
 
 const counterStore = useCounterStore()
 const { isLogIn } = storeToRefs(counterStore)
-const router = useRouter();
+const router = useRouter()
 const showMenu = ref(false)
 const store = useStore()
 
@@ -33,11 +33,10 @@ const priority = (auth) => {
   }
   return ''
 }
-const isConfirm= ()=>{
-  if(isLogIn.value.isLogIn){
-    if(isLogIn.value.info.member_confirm =='e2'){
+const isConfirm = () => {
+  if (isLogIn.value.isLogIn) {
+    if (isLogIn.value.info.member_confirm == 'e2') {
       router.push({ name: 'notConfirmed' })
-
     }
   }
 }
@@ -109,6 +108,17 @@ isConfirm()
               :class="getRoute() === 'surveys' ? 'font-weight-bold opacity-10' : 'opacity-6'"
             >
               <i class="ni ni-world-2 me-2"></i>지원서관리
+            </router-link>
+          </li>
+          <li v-if="isLogIn.info.member_authority == ('a4' || 'a3')" class="nav-item">
+            <router-link
+              to="/centerList"
+              class="nav-link text-black"
+              :class="
+                getRoute().indexOf('center') >= 0 ? 'font-weight-bold opacity-10' : 'opacity-6'
+              "
+            >
+              <i class="ni ni-world-2 me-2"></i>센터관리
             </router-link>
           </li>
         </ul>

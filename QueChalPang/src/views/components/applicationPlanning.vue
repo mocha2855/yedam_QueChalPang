@@ -3,7 +3,7 @@
     <div
       class="card-header"
       v-if="
-        memAuthority.member_authority == 'a2' &&
+        memAuthority == 'a2' &&
         dependantInfo.status_status == 'i2' &&
         dependantInfo.manager_id == id
       "
@@ -11,12 +11,12 @@
       <h5>지원계획 입력하기</h5>
       <button type="button" @click="addPlanningForm">계획추가</button>
     </div>
-    <div class="card-body" v-show="addCount == 1">
+    <div class="card-body" v-if="memAuthority == 'a2' && addCount == 1">
       <div class="planningInfo" :value="realCount">
         <div class="formTop">
           <p>지원계획{{ realCount }} 입력</p>
+          <button type="button" @click="delForm">삭제</button>
           <button>임시저장</button>
-          <button>삭제</button>
         </div>
         <form action="#" name="planning">
           <label for="planningtime">지원기간</label>
@@ -52,10 +52,21 @@
       </div>
     </div>
     <!-- 검토중인 계획서 -->
+    <div
+      class="card-header"
+      v-if="
+        memAuthority == 'a3' &&
+        dependantInfo.status_status == 'i2' &&
+        dependantInfo.application_rejector == id
+      "
+    >
+      <h5>지원계획 승인대기</h5>
+    </div>
     <div class="card-body" v-if="planningReview.length != 0" :style="reviewStyle">
-      <div class="planningInfo" v-for="plan in planningReview" :key="plan">
+      <div class="planningInfo" v-for="plan in application.planningReview" :key="plan">
         <div class="formTop">
-          <p><span>검토중 </span>지원계획{{ plan.ranking }}</p>
+          <p v-if="memAuthority == 'a2'"><span>검토중 </span>지원계획{{ plan.ranking }}</p>
+          <p v-if="memAuthority == 'a3'">지원계획{{ plan.ranking }}</p>
         </div>
         <form action="#" name="planning">
           <label for="planningtime">지원기간</label>
@@ -90,35 +101,52 @@
           <label for="attachmentFile">첨부파일</label>
           <input type="text" name="attachmentFile" id="attachmentFile" disabled />
         </form>
+        <div class="formBottom">
+          <button type="button" @click="modalClose(plan.planning_no)">반려</button>
+          <button type="button" @click="modalOpen(plan.planning_no)">승인</button>
+        </div>
+        <rejecterModalLayout class="modal-wrap" v-if="plan.checked">
+          <template v-slot:body>정말 승인하시겠습니까?</template>
+          <template v-slot:footer>
+            <button v-on:click="notChecked(plan.planning_no)">취소</button>
+            <button v-on:click="sucessResult">확인</button>
+          </template>
+        </rejecterModalLayout>
+        <rejecterModalLayout class="modal-wrap" v-if="plan.rejectChecked">
+          <template v-slot:header>반려사유를 적어주세요.</template>
+          <template v-slot:body>
+            <textarea v-model="rejectReason"> rejectReason </textarea>
+          </template>
+          <template v-slot:footer>
+            <button v-on:click="notChecked">취소</button>
+            <button v-on:click="rejectResult">확인</button>
+          </template>
+        </rejecterModalLayout>
       </div>
     </div>
   </div>
 </template>
 <script setup>
-import { ref, reactive, onBeforeMount, watch } from 'vue'
+import { ref, reactive, onBeforeMount } from 'vue'
 import { useRoute } from 'vue-router'
 import { useCounterStore } from '@/stores/member'
+import { useApplicationStore } from '@/stores/application'
 import axios from 'axios'
+import rejecterModalLayout from '../layouts/rejecterModalLayout.vue'
 
 const route = useRoute()
 
 const counters = useCounterStore()
+const application = useApplicationStore()
 
 // 권한 및 담당 지원자 일치 확인
 let id = counters.isLogIn.info.member_id
-let memAuthority = ref() // 권한
+let memAuthority = counters.isLogIn.info.member_authority // 권한
 let dependantInfo = ref() // 대기단계 승인확인
 let realCount = ref() // 지원계획서 진짜 갯수
 let planningReview = ref([]) // 검토중인 계획서 정보
 
 onBeforeMount(async () => {
-  // 권한 확인
-  await axios //
-    .get(`/api/applicationAuthority/` + id)
-    .then((res) => {
-      memAuthority.value = res.data[0]
-      console.log('memAuthority: ', memAuthority.value)
-    })
   // 지원자 정보
   await axios //
     .get(`/api/application/` + route.params.id)
@@ -128,31 +156,30 @@ onBeforeMount(async () => {
     })
 
   // 계획서 갯수 파악
-  await axios //
-    .get('/api/planning/' + route.params.id)
-    .then((res) => {
-      console.log(res.data[0])
-      addCount.value = res.data[0].counts
-      if (addCount.value != 0) {
-        realCount.value = addCount.value + 1
-        addCount.value = 0
-      }
-      console.log(`realCount.value: ${realCount.value}`)
-      console.log(`addCount.value: ${addCount.value}`)
-    })
+  const countplanned = await application.countPlanning(route.params.id)
+  console.log(countplanned)
+  addCount.value = countplanned.data[0].counts
+  if (addCount.value != 0) {
+    realCount.value = addCount.value + 1
+    addCount.value = 0
+  }
+  console.log(`realCount.value: ${realCount.value}`)
+  console.log(`addCount.value: ${addCount.value}`)
 
   // 검토중 계획서 불러오기.
-  await axios //
-    .get('/api/planningReview/' + route.params.id)
-    .then((res) => {
-      res.data.forEach((data) => {
-        data.planning_start = dateChange(data.planning_start)
-        data.planning_end = dateChange(data.planning_end)
-      })
-      planningReview.value = res.data
-      console.log(res.data)
-      console.log(`planningReview.length: ${planningReview.value.length}`)
-    })
+  await application.countRealReview(route.params.id)
+  console.log(application.planningReview)
+  for (let i = 0; i < application.planningReview.length; i++) {
+    application.planningReview[i].planning_start = dateChange(
+      application.planningReview[i].planning_start,
+    )
+    application.planningReview[i].planning_end = dateChange(
+      application.planningReview[i].planning_end,
+    )
+    application.planningReview[i].checked = false
+    application.planningReview[i].rejectChecked = false
+  }
+  console.log(application.planningReview)
 })
 
 // 검토중 계획서 날짜 형식 변경
@@ -181,16 +208,24 @@ const addPlanningForm = () => {
   }
 }
 
+// 삭제 버튼
+const delForm = () => {
+  if (addCount.value == 1) {
+    addCount.value = 0
+    formData.value = {}
+  }
+}
+
 // form 태그 안 내용 보내기
 let formData = ref({})
 let count = 0 // 승인요청 횟수
 
 const submitPlanningInfo = async () => {
   if (
-    formData.value.startDate == null ||
-    formData.value.endDate == null ||
-    formData.value.title == null ||
-    formData.value.content == null
+    formData.value.startDate == undefined ||
+    formData.value.endDate == undefined ||
+    formData.value.title == undefined ||
+    formData.value.content == undefined
   ) {
     alert('내용 입력을 완료해주세요')
     return
@@ -208,28 +243,116 @@ const submitPlanningInfo = async () => {
       console.log(res)
     })
   addCount.value = 0
-  formData.value = null
+  formData.value = {}
   count++
   console.log(count)
 }
 
-watch(
-  planningReview,
-  async () => {
-    await axios //
-      .get('/api/planningReview/' + route.params.id)
-      .then((res) => {
-        res.data.forEach((data) => {
-          data.planning_start = dateChange(data.planning_start)
-          data.planning_end = dateChange(data.planning_end)
-        })
-        planningReview.value = res.data
-        console.log(res.data)
-        console.log(`planningReview.length: ${planningReview.value.length}`)
+// 승인버튼
+let planningNo = ref()
+
+const modalOpen = async (data) => {
+  if (memAuthority.value.member_authority == 'a3') {
+    planningReview.value.forEach((review) => {
+      if (data == review.planning_no) {
+        review.checked = !review.checked
+        review.rejectChecked = false
+      }
+      planningNo.value = data
+      console.log(planningNo.value)
+    })
+  }
+}
+
+// 승인모달창-확인버튼
+const sucessResult = async () => {
+  alert('승인완료했습니다.')
+  planningReview.value = []
+  console.log(planningReview)
+  await axios //
+    .put('/api/successPlanningInfo/' + planningNo.value, {
+      planning_status: 'i2',
+      planning_approvedDate: new Date(),
+    })
+    .then((res) => {
+      console.log(res)
+    })
+  await axios //
+    .get('/api/planningReview/' + route.params.id)
+    .then((res) => {
+      res.data.forEach((data) => {
+        data.planning_start = dateChange(data.planning_start)
+        data.planning_end = dateChange(data.planning_end)
+        if (data.planning_status == 'i1') {
+          planningReview.value.push(data)
+        }
       })
-  },
-  { immediate: true },
-)
+      console.log(planningReview.value)
+      console.log(`planningReview.length: ${planningReview.value.length}`)
+    })
+}
+
+// 승인모달창-취소버튼
+const notChecked = (data) => {
+  planningReview.value.forEach((review) => {
+    if (data == review.planning_no) {
+      review.checked = false
+      review.rejectChecked = false
+    }
+  })
+}
+
+// 반려버튼
+const modalClose = (data) => {
+  if (memAuthority.value.member_authority == 'a3') {
+    planningReview.value.forEach((review) => {
+      if (data == review.planning_no) {
+        review.checked = false
+        review.rejectChecked = !review.rejectChecked
+        console.log(review.planning_no, review.rejectChecked)
+      }
+      planningNo.value = data
+    })
+  }
+}
+
+// 반려모달창-확인버튼
+let rejectReason = ref()
+const rejectResult = async () => {
+  if (rejectReason.value == undefined) {
+    alert('반려사유를 작성해주세요.')
+    return
+  }
+  alert('반려했습니다.')
+  planningReview.value = []
+  await axios //
+    .put('/api/rejectPlanningInfo/' + planningNo.value, {
+      planning_status: 'i3',
+      planning_reject: rejectReason.value,
+    })
+    .then((res) => {
+      console.log(res)
+    })
+  await axios //
+    .get('/api/planningReview/' + route.params.id)
+    .then((res) => {
+      res.data.forEach((data) => {
+        console.log(data.planning_status)
+        data.planning_start = dateChange(data.planning_start)
+        data.planning_end = dateChange(data.planning_end)
+        data.checked = false
+        data.rejectChecked = false
+        if (data.planning_status === 'i1') {
+          console.log(data)
+          planningReview.value.push(data)
+        }
+      })
+      console.log(planningReview.value)
+      console.log(`planningReview.length: ${planningReview.value.length}`)
+    })
+}
+
+// 검토중 즉각으로 가져오기
 </script>
 <style scoped>
 .container {
@@ -260,6 +383,7 @@ button {
   height: 20px;
   padding: 0px;
   border: 1px solid black;
+  float: right;
 }
 label {
   display: inline-block;

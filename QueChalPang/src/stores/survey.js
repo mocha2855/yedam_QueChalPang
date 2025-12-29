@@ -36,8 +36,10 @@ export const useSurveyStore = defineStore('surveys', {
     async fetchSurveyDetail(no) {
       try {
         const response = await axios.get(`/api/surveys/${no}`)
+        this.no = response.data
+        this.title = response.data
+        this.surveySubtitle = response.data.subtitles
         this.surveyDetail = response.data
-        this.questionList = response.data
         this.err = ''
       } catch (err) {
         console.log(err)

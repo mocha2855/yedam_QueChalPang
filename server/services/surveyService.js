@@ -8,14 +8,30 @@ const findAll = async () => {
 };
 //survey 단건 조회
 const findByNo = async (no) => {
-  let post = await mysql.squery("selectByNo", [no]);
-  return post;
+  let titleResult = await mysql.squery("selectTitle", [no]);
+  let title = titleResult[0];
+  let qitem = await mysql.squery("selectQitem", [no]);
+  let detail = await mysql.squery("selectDetail", [no]);
+
+  // 세부항목에 questionList 만들기
+  detail.map((d) => {
+    d.questionList = [];
+  });
+  qitem.forEach((q) => {
+    detail
+      .find((d) => d.survey_subtitle_no == q.survey_subtitle_no)
+      .questionList.push(q);
+  });
+  //항목에 세부항목 담기
+  title.subtitles = detail;
+  console.log(title);
+  console.log(qitem);
+
+  return title;
 };
 // survey 단건 등록(새로운 버전 업그레이드)
 //질문추가 &  항목 추가시 기존 버전 비활성 -> 새버전 활성화
 const addSurvey = async (data) => {
-  // const { title } = data;
-
   const survey_start = new Date(); //날짜 자동화
   const survey_end = new Date("9999-12-31"); // 끝나는 시간은 무기한 연장(새버전 등장 시 자동 마무리 시간 계산)
 
