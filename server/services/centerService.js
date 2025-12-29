@@ -15,7 +15,12 @@ const addCenterInfo = async (value) => {
   let result = await mysql.centerQuery("insertCenterInfo", value);
   return result;
 };
+
+const selectByCenterNo=async(no)=>{
+  let result = await mysql.centerQuery("selectByCenterNo",no);
+  return result;
+}
 module.exports = {
   findAllCenter,
-  addCenterInfo,
+  addCenterInfo,selectByCenterNo
 };
