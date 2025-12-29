@@ -1,6 +1,11 @@
 <template>
   <!--조사지등록-->
   <div class="container">
+    <div class="d-flex justify-content-between">
+      <h6>조사지 등록</h6>
+      <button class="btn btn-sm btn-secondary" @click="goBack">목록으로</button>
+    </div>
+
     <table class="table">
       <tbody>
         <tr>
@@ -53,6 +58,7 @@
               <hr />
 
               <!-- 세부항목의 질문들 -->
+              <!--세부항목 2개 이상일 때 삭제 나오게-->
               <h5>질문 목록</h5>
               <div v-for="(question, qIndex) in subtitle.questions" :key="question.id">
                 <div>
@@ -120,7 +126,6 @@ import { reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-
 const surveyInfo = reactive({
   no: '',
   survey_version: '',
@@ -130,7 +135,7 @@ const surveyInfo = reactive({
 
 // 세부항목 추가
 const addSubtitle = () => {
-  const newSubtitleId = Date.now()
+  const newSubtitleId = Date.now() //새 항목id
 
   surveyInfo.subtitles.push({
     id: newSubtitleId,
@@ -175,6 +180,9 @@ const addSurvey = async () => {
   } else {
     alert('실패했습니다')
   }
+}
+const goBack = () => {
+  router.push({ name: 'SurveyList' })
 }
 
 onMounted(() => {

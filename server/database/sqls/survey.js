@@ -24,13 +24,51 @@ SELECT
 
  WHERE s.survey_version_status = 'active'`;
 
-//active(활동)인 것 중에서 단건 조회
-const selectByNo = `
-  SELECT s.*, st.*, ss.*, sq.* 
+//항목 리스트 조회
+const selectTitle = `
+SELECT 
+  s.survey_no,
+  s.survey_version,
+  s.survey_start,
+  s.survey_end,
+  s.survey_version_status,
+  st.survey_title_no, 
+  st.survey_title
+FROM survey s
+LEFT JOIN survey_title st ON s.survey_no = st.survey_no
+WHERE s.survey_no = ? AND s.survey_version_status = 'active'
+ `;
+
+//active(활동)인 것 중에서 질문 리스트 조회
+const selectQitem = `
+  SELECT 
+  ss.survey_subtitle_no, 
+  sq.survey_qitem_no,
+  sq.survey_qitem_question,
+  sq.survey_qitem_type
+ 
   FROM survey s
   LEFT JOIN survey_title st ON s.survey_no = st.survey_no
   LEFT JOIN survey_subtitle ss ON st.survey_title_no = ss.survey_title_no
   LEFT JOIN survey_qitem sq ON ss.survey_subtitle_no = sq.survey_subtitle_no
+  WHERE s.survey_no = ? AND s.survey_version_status = 'active'
+`;
+//세부항목 리스트 가져오기
+const selectDetail = `
+SELECT 
+       s.survey_no,
+       s.survey_version,
+       s.survey_start,
+       s.survey_end,
+       s.survey_version_status,
+       st.survey_title_no, 
+       st.survey_title, 
+       ss.survey_subtitle_no, 
+       ss.survey_subtitle,
+       ss.survey_subtitle_detail
+  FROM survey s
+  LEFT JOIN survey_title st ON s.survey_no = st.survey_no
+  LEFT JOIN survey_subtitle ss ON st.survey_title_no = ss.survey_title_no
   WHERE s.survey_no = ? AND s.survey_version_status = 'active'
 `;
 //조사지 버전 업 자동 저장
@@ -112,7 +150,9 @@ INSERT INTO survey_history (
 
 module.exports = {
   selectAll,
-  selectByNo,
+  selectTitle,
+  selectQitem,
+  selectDetail,
   selectMaxVersionAll,
   selectMaxSurveyNo,
   //조사지 새로 등록(버전업)

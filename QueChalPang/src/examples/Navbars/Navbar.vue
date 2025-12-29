@@ -35,7 +35,7 @@ const priority = (auth) => {
 }
 const isConfirm = () => {
   if (isLogIn.value.isLogIn) {
-    if (isLogIn.value.info.member_confirm == 'l2') {
+    if (isLogIn.value.info.member_confirm == 'e2') {
       router.push({ name: 'notConfirmed' })
     }
   }
