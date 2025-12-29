@@ -98,6 +98,17 @@ JOIN center c
 WHERE d.dependant_no = ?;
 `;
 
+// [7-1-1] (보호자 예약) dependant_no로 담당자조회
+const selectManagerbyDeptno = `
+SELECT
+  m.member_id   AS manager_id,
+  m.member_name AS manager_name
+FROM dependant d
+JOIN member m
+  ON m.member_id = d.manager_main
+WHERE d.dependant_no = ?;
+`;
+
 // [7-2] (보호자 예약) 해당 날짜 예약된 시간(time) 목록
 const selectReservedTimes = `
 SELECT
@@ -136,6 +147,7 @@ module.exports = {
   selectGuardianResv,
   insertResv,
   selectCenterLunch,
+  selectManagerbyDeptno,
   selectReservedTimes,
   selectBlockedTimes,
   selectDependant,

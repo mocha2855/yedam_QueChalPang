@@ -1,18 +1,24 @@
-import ReservationGuardian from "@/views/ReservationGuardian.vue";
-import ReservationTeacher from "@/views/ReservationTeacher.vue";
+import ReservationGuardian from '@/views/ReservationGuardian.vue'
+import ReservationGuardianConfirm from '@/views/ReservationGuardianConfirm.vue'
+import ReservationTeacher from '@/views/ReservationTeacher.vue'
 
 const reservationRoutes = [
   {
     path: '/reservTeacher',
-    name: '/reservationTeacher',
+    name: 'reservationTeacher',
     component: ReservationTeacher,
   },
 
   {
     path: '/reservGuardian',
-    name: '/reservationGuardian',
+    name: 'reservationGuardian',
     component: ReservationGuardian,
+  },
+  {
+    path: '/reservGuardianConfirm',
+    name: 'reservationGuardianConfirm',
+    component: ReservationGuardianConfirm,
   },
 ]
 
-export default reservationRoutes;
+export default reservationRoutes
