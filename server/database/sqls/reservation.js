@@ -138,9 +138,14 @@ const selectDependant = `
   ORDER BY dependant_no;
 `;
 
-//[7]-5 (보호자 예약) 드롭다운 지원자 선택 후 지원신청서 선택하기
-const selectApplication = `
-
+//[7]-5 (보호자 예약) 드롭다운 지원자 선택 후 지원자의 지원신청서 선택하기
+const selectApplicationByDependant = `
+  SELECT 
+    a.application_no,
+    a.application_date
+  FROM application a
+  WHERE a.dependant_no = ?
+  ORDER BY application_date DESC, application_no DESC;
 `;
 
 module.exports = {
@@ -156,4 +161,5 @@ module.exports = {
   selectReservedTimes,
   selectBlockedTimes,
   selectDependant,
+  selectApplicationByDependant,
 };

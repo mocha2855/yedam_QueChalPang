@@ -139,4 +139,15 @@ router.get("/dependants/:guardianId", async (req, res) => {
   }
 });
 
+//[7]-5 (보호자 예약) 드롭다운 지원자 선택 후 지원자의 지원신청서 선택하기
+router.get("/applicationList/:dependantNo", async (req, res) => {
+  try {
+    const { dependantNo } = req.params;
+    const rows = await reservationService.findApplication(dependantNo);
+    res.json(rows);
+  } catch (err) {
+    console.error("applications error:", err);
+    res.status(500).json({ message: "applications fail", err: err.message });
+  }
+});
 module.exports = router;
