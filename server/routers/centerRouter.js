@@ -23,4 +23,16 @@ router.get(`/center/name/:name`, async (req, res) => {
   let result = await centerService.findByCenterName(name);
   res.send(result);
 });
+router.put(`/center/:no`, async (req, res) => {
+  const no = req.params.no;
+  const { name, email, address, tel, lunch } = req.body;
+  const value = [name, email, address, tel, lunch, no];
+  let result = await centerService.modifyByCenterNo(value);
+  res.send(result);
+});
+router.put(`/centerEnd/:no`, async (req, res) => {
+  const no = req.params.no;
+  let result = await centerService.endCenterByCenterNo(no);
+  res.send(result);
+});
 module.exports = router;

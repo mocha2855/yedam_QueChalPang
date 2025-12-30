@@ -10,7 +10,7 @@ import {
 } from 'vue'
 import { useStore } from 'vuex'
 import axios from 'axios'
-
+import { Modal } from 'bootstrap'
 import Navbar from '@/examples/PageLayout/Navbar.vue'
 import AppFooter from '@/examples/PageLayout/Footer.vue'
 import ArgonInput from '@/components/ArgonInput.vue'
@@ -46,6 +46,7 @@ onMounted(() => {
   script.async = true
   document.head.appendChild(script)
   window.receiveCenterData = receiveCenterData
+  modalControl = new Modal(modalRef.value)
 })
 onUnmounted(() => {
   delete window.receiveCenterData
@@ -210,9 +211,11 @@ const phoneCheck = async () => {
 // 인증번호 입력 후 인증번호 일치여부 확인하는 함수.
 const authCheck = async () => {
   if (phoneBtn.phoneBtnChecked == false) {
-    showAlert('인증번호 발송이 되지 않았습니다.')
+    msg.value = '인증번호 발송이 되지 않았습니다.'
+    openModal()
   } else if (phoneBtn.auth == '') {
-    showAlert('인증번호가 입력되지 않았습니다.')
+    msg.value = '인증번호가 입력되지 않았습니다.'
+    openModal()
   } else {
     console.log(`/api/authenticate/${isAuth.value}`)
 
@@ -222,11 +225,13 @@ const authCheck = async () => {
       // 인증이 완료된 경우 확인버튼 비활성화 및 스타일 변경.
       phoneBtn.phoneAuth = false
       phoneBtn.phoneAuthChecked = true
-      showAlert('본인인증이 완료되었습니다.')
+      msg.value = '본인인증이 완료되었습니다.'
+      openModal()
       //타이머 중단.
       clearInterval(loseTime)
     } else {
-      showAlert('인증번호가 일치하지 않습니다.')
+      msg.value = '인증번호가 일치하지 않습니다.'
+      openModal()
     }
   }
 }
@@ -280,8 +285,57 @@ const addMemberInfo = () => {
   let result = axios.post(`/member`, member)
   console.log(result)
 }
+
+const modalRef = ref(false)
+let modalControl = null
+// 모달 열기 함수
+const openModal = () => {
+  modalControl.show()
+}
+// 모달 닫기 함수
+const closeModal = () => {
+  modalControl.hide()
+}
 </script>
 <template>
+  <!-- Modal -->
+  <Teleport to="body">
+    <div class="modal fade" id="exampleModal" ref="modalRef" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="orange"
+              >
+                <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"></path></svg
+              >알림
+            </h5>
+
+            <span
+              @click="closeModal"
+              style="cursor: pointer; font-size: 1.5rem; font-weight: bold; line-height: 1"
+            >
+              &times;
+            </span>
+          </div>
+          <div class="modal-body text-center">
+            <h6>
+              {{ msg }}
+            </h6>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="closeModal">취소</button>
+            <button type="button" class="btn btn-primary" @click="closeModal">확인</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Teleport>
   <div class="fixed-top d-flex justify-content-end p-3">
     <div class="col-4">
       <ArgonAlert
