@@ -71,7 +71,7 @@ const updatePlanningInfo = async (planning_no, data) => {
   return post;
 };
 
-// 지원계획서 반려(담당자)
+// 지원계획서 반려(관리자)
 const updateRejectPlanningInfo = async (planning_no, data) => {
   let post = await mysql.bquery("rejectPlanningUpdateInfo", [
     data,
