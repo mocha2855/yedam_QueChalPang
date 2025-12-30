@@ -24,8 +24,8 @@ const findByNo = async (no) => {
   });
   //항목에 세부항목 담기
   title.subtitles = detail;
-  console.log(title);
-  console.log(qitem);
+  //console.log(title);
+  //console.log(qitem);
 
   return title;
 };
@@ -100,7 +100,11 @@ const modifySurvey = async (no, data) => {
   ]);
   // 2. 실제 데이터 수정
   if (survey_title) {
-    await mysql.squery("updateTitle", [survey_title, survey_title_no]);
+    await mysql.squery("updateTitle", [
+      survey_title,
+      survey_no,
+      survey_title_no,
+    ]);
   }
   if (subtitles) {
     for (const subtitle of subtitles) {

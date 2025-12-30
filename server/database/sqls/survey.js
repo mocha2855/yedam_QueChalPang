@@ -9,19 +9,9 @@ SELECT
   s.survey_end,
   s.survey_version_status,
   st.survey_title_no, 
-  st.survey_title,
-  ss.survey_subtitle_no, 
-  ss.survey_subtitle,
-  ss.survey_subtitle_detail,
-  sq.survey_qitem_no,
-  sq.survey_qitem_question,
-  sq.survey_qitem_type
-
+  st.survey_title
  FROM survey s
  LEFT JOIN survey_title st ON s.survey_no = st.survey_no
- LEFT JOIN survey_subtitle ss ON st.survey_title_no = ss.survey_title_no
- LEFT JOIN survey_qitem sq ON ss.survey_subtitle_no = sq.survey_subtitle_no
-
  WHERE s.survey_version_status = 'active'`;
 
 //항목 리스트 조회
