@@ -4,6 +4,7 @@ import Tables from '../views/Tables.vue'
 import Profile from '../views/Profile.vue'
 import Signup from '../views/Signup.vue' //회원가입
 import Signin from '../views/Signin.vue' //로그인
+import FindId from '../views/FindId.vue' //아이디찾기
 import application from '../views/application.vue' // 각종 지원서
 import applicationWait from '../views/components/applicationWait.vue' // 지원대기
 import applicationPlanning from '../views/components/applicationPlanning.vue' //지원계획서(작성 및 검토중)
@@ -46,6 +47,11 @@ const routes = [
     path: '/signup',
     name: 'Signup',
     component: Signup,
+  },
+  {
+    path: '/findId',
+    name: 'FindId',
+    component: FindId,
   },
   {
     path: '/application',

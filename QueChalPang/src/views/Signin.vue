@@ -54,6 +54,9 @@ const logIn = async () => {
 const goToBoardInfo = () => {
   router.push({ name: '/' })
 }
+const toFindId = () => {
+  router.push({ name: 'FindId' })
+}
 </script>
 <template>
   <div class="container top-0 position-sticky z-index-sticky">
@@ -72,7 +75,7 @@ const goToBoardInfo = () => {
       <div class="page-header min-vh-100">
         <div class="container">
           <div class="row">
-            <div class="mx-auto col-xl-4 col-lg-5 col-md-7 d-flex flex-column mx-lg-0">
+            <div class="mx-auto col-xl-5 col-lg-5 col-md-7 d-flex flex-column mx-lg-0">
               <div class="card card-plain">
                 <div class="pb-0 card-header text-start">
                   <h4 class="font-weight-bolder">로그인</h4>
@@ -100,8 +103,17 @@ const goToBoardInfo = () => {
                         v-model="member.pass"
                       />
                     </div>
-                    <argon-switch id="rememberMe" name="remember-me">아이디 기억하기</argon-switch>
-
+                    <div class="row d-flex justify-content-between">
+                      <div class="col-6">
+                        <argon-switch id="rememberMe" name="remember-me"
+                          >아이디 기억하기</argon-switch
+                        >
+                      </div>
+                      <div class="col-6 text-end" style="font-size: small; cursor: pointer">
+                        <span @click="toFindId()">아이디찾기</span> /
+                        <span @click="toResetPassword()">비밀번호 재설정</span>
+                      </div>
+                    </div>
                     <div class="text-center">
                       <argon-button
                         class="mt-4"
