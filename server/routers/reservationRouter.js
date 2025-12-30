@@ -155,6 +155,7 @@ router.get("/applicationList/:dependantNo", async (req, res) => {
 router.get("/centerAddrByResvId/:resvId", async (req, res) => {
   const { resvId } = req.params;
   const rows = await reservationService.findCenterAddrByResvId(resvId);
+  res.json(rows[0]);
 });
 
 module.exports = router;
