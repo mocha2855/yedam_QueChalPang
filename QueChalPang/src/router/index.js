@@ -4,7 +4,7 @@ import Tables from '../views/Tables.vue'
 import Profile from '../views/Profile.vue'
 import Signup from '../views/Signup.vue' //회원가입
 import Signin from '../views/Signin.vue' //로그인
-import application from '../views/application.vue' // 각종 지원서
+import Application from '../views/application.vue' // 각종 지원서
 import applicationWait from '../views/components/applicationWait.vue' // 지원대기
 import applicationPlanning from '../views/components/applicationPlanning.vue' //지원계획서(작성 및 검토중)
 import applicationPlanningSuccess from '../views/components/applicationPlanningSuccess.vue' //지원계획서(작성 및 검토중)
@@ -48,9 +48,9 @@ const routes = [
     component: Signup,
   },
   {
-    path: '/application',
-    name: 'application',
-    component: application,
+    path: '/application/:id',
+    name: 'Application',
+    component: Application,
     children: [
       {
         path: '/applicationWait/:id',

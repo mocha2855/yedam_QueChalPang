@@ -94,4 +94,6 @@ router.put("/rejectPlanningInfo/:no", async (req, res) => {
   res.send(post);
 });
 
+// 지원계획서 반려 후 수정(담당자)
+router.put;
 module.exports = router;
