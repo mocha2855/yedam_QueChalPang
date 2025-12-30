@@ -1,6 +1,5 @@
 <script setup>
 //survey이 active 한 건만 목록조회
-import { useRouter } from 'vue-router'
 import { computed, ref } from 'vue'
 import ArgonButton from '@/components/ArgonButton.vue'
 import ArgonInput from '@/components/ArgonInput.vue'
@@ -8,10 +7,7 @@ import { reactive } from 'vue'
 import axios from 'axios'
 import ArgonAlert from '@/components/ArgonAlert.vue'
 
-const router = useRouter()
-
 //주소api에서 쓰는 ref
-const postcode = ref('')
 const address = ref('')
 const detailAddress = ref('')
 const extraAddress = ref('')
@@ -44,7 +40,6 @@ const openPostcode = () => {
         extraAddress.value = ''
       }
 
-      postcode.value = data.zonecode // 우편번호
       address.value = addr // 기본 주소
       centerInfo.address = address.value
       console.log(centerInfo)
@@ -84,9 +79,6 @@ const checkCenterName = async () => {
     checked.value = true
   }
 }
-const centerList = () => {
-  router.push({ name: 'centerList' })
-}
 const addCenterInfo = async () => {
   if (!checked.value) {
     showAlert('센터명 중복확인을 하지 않으셨습니다.')
@@ -98,11 +90,16 @@ const addCenterInfo = async () => {
     showAlert('주소가 입력되지 않았습니다.')
     return
   }
-  centerInfo.address = address.value + ' ' + detailAddress.value
+  centerInfo.address = `${address.value}|${extraAddress.value}|${detailAddress.value}`
   let result = await axios.post('/api/center', centerInfo)
   let no = result.data.insertId
-  router.push({ path: `/center/${no}` })
+  if (no) {
+    // ★ 핵심: 여기서 부모에게 성공 알림을 보냅니다.
+    // 더 이상 여기서 직접 router.push를 하지 않습니다. (부모가 처리하도록 함)
+    emit('success', no)
+  }
 }
+const emit = defineEmits(['success'])
 </script>
 
 <template>
@@ -122,33 +119,20 @@ const addCenterInfo = async () => {
     <div class="row">
       <div class="col-12">
         <div class="card">
-          <div class="card-header pb-0">
-            <h6>센터 등록</h6>
-          </div>
           <div class="card-body px-0 pt-0 pb-2">
             <div class="position-relative">
               <!-- <div class="position-absolute bottom-0 end-8">
                 <ArgonButton color="danger" class="p-1 mr-1">선택 삭제</ArgonButton>
               </div> -->
-              <div class="position-absolute bottom-0 end-2">
-                <ArgonButton
-                  color="success"
-                  class="p-1 pb-2 pt-2"
-                  variant="gradient"
-                  @click="centerList()"
-                  >목록으로</ArgonButton
-                >
-              </div>
             </div>
             <div class="container">
               <div class="card-body">
                 <form role="form" v-on:submit.prevent="">
                   <div class="row">
-                    <div class="col-2"></div>
-                    <div class="col-1">
+                    <div class="col-3">
                       <h6>센터명</h6>
                     </div>
-                    <div class="col-4">
+                    <div class="col-6">
                       <argon-input
                         id="name"
                         type="text"
@@ -158,7 +142,7 @@ const addCenterInfo = async () => {
                         :disabled="checked"
                       />
                     </div>
-                    <div class="col-1">
+                    <div class="col-3">
                       <button
                         type="button"
                         :class="{
@@ -179,11 +163,10 @@ const addCenterInfo = async () => {
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-2"></div>
-                    <div class="col-1">
+                    <div class="col-3">
                       <h6>이메일</h6>
                     </div>
-                    <div class="col-5">
+                    <div class="col-8">
                       <argon-input
                         id="email"
                         type="email"
@@ -194,15 +177,14 @@ const addCenterInfo = async () => {
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-2"></div>
-                    <div class="col-1">
+                    <div class="col-3">
                       <h6>전화번호</h6>
                     </div>
-                    <div class="col-1">
+                    <div class="col-3">
                       <argon-input id="tel" maxlength="3" placeholder="02" v-model="tel.tel1" />
                     </div>
 
-                    <div class="col-2">
+                    <div class="col-3">
                       <argon-input
                         id="tel"
                         maxlength="4"
@@ -211,7 +193,7 @@ const addCenterInfo = async () => {
                         v-model="tel.tel2"
                       />
                     </div>
-                    <div class="col-2">
+                    <div class="col-3">
                       <argon-input
                         id="tel"
                         maxlength="4"
@@ -223,14 +205,13 @@ const addCenterInfo = async () => {
                   </div>
 
                   <div class="row">
-                    <div class="col-2"></div>
-                    <div class="col-1">
+                    <div class="col-3">
                       <h6>주소</h6>
                     </div>
-                    <div class="col-4">
-                      <argon-input v-model="postcode" placeholder="우편번호" disabled />
+                    <div class="col-6">
+                      <argon-input v-model="address" placeholder="주소" disabled />
                     </div>
-                    <div class="col-1">
+                    <div class="col-3">
                       <button
                         type="button"
                         class="p-1 pb-2 pt-2 btn btn-primary w-100"
@@ -240,50 +221,41 @@ const addCenterInfo = async () => {
                       </button>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-2"></div>
-                    <div class="col-1"></div>
-                    <div class="col-5">
-                      <argon-input v-model="address" placeholder="주소" disabled />
-                    </div>
-                  </div>
 
                   <div class="row">
-                    <div class="col-2"></div>
-                    <div class="col-1"></div>
-                    <div class="col-3">
+                    <div class="col-3"></div>
+                    <div class="col-6">
                       <argon-input
                         id="detail_input"
                         v-model="detailAddress"
                         placeholder="상세주소"
                       />
                     </div>
-                    <div class="col-2">
-                      <argon-input v-model="extraAddress" placeholder="참고항목" disabled />
+                    <div class="col-3">
+                      <argon-input v-model="extraAddress" placeholder="참고" disabled />
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-2"></div>
-                    <div class="col-1"><h6>점심시간</h6></div>
-                    <div class="col-5">
+                    <div class="col-3"><h6>점심시간</h6></div>
+                    <div class="col-8">
                       <select
                         name="lunch"
                         id="lunch"
                         class="form-select"
                         v-model="centerInfo.lunch"
                       >
-                        <option value="10">오전10시</option>
-                        <option value="11">오전11시</option>
-                        <option value="12">오후12시</option>
-                        <option value="13">오후1시</option>
-                        <option value="14">오후2시</option>
-                        <option value="15">오후3시</option>
+                        <option value="10:00">오전10시</option>
+                        <option value="11:00">오전11시</option>
+                        <option value="12:00">오후12시</option>
+                        <option value="13:00">오후1시</option>
+                        <option value="14:00">오후2시</option>
+                        <option value="15:00">오후3시</option>
                       </select>
                     </div>
                   </div>
                   <div class="row">
                     <div class="col-4"></div>
-                    <div class="text-center col-3">
+                    <div class="text-center col-5">
                       <argon-button
                         fullWidth
                         color="info"
