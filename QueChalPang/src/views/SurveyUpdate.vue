@@ -110,7 +110,7 @@
     </table>
     <div>
       <button class="btn btn-primary" @click="openModifyModal">저장</button>
-      <button class="btn btn-primary" @click="updateSurvey(surveyInfo.no)">취소</button>
+      <button class="btn btn-primary" @click="surveyInfo.close()">취소</button>
     </div>
   </div>
 </template>
@@ -187,18 +187,18 @@ onMounted(async () => {
 
 //수정(저장)버튼 누를 시 모달 창 열기
 const openModifyModal = () => {
-  console.log('🔔 모달 열기!')
   modal.open('reason', {
     onSubmit: async (reason) => {
       await updateSurvey(reason)
     },
   })
+  console.log(modal.type)
 }
 
 //조사지 수정 저장
 const updateSurvey = async (reason) => {
   const result = await axios.put(`/api/surveys/${surveyInfo.no}`, {
-    surveyInfo,
+    ...surveyInfo, //스프레드 연산자(객체 펼쳐줌)
     person: member.isLogIn.info.name,
     reason: reason,
   })

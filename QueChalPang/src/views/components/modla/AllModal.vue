@@ -1,6 +1,7 @@
 <template>
-  <div v-if="modal.visible" class="overlay">
-    <div class="modal">
+  <div v-if="modal.visible" class="overlay" @click="modal.close()">
+    <div class="custom-modal" @click.stop>
+      <!--@click.stop:내부클릭시 안닫힘-->
       <!--팀원들이 여기에 추가 -->
       <ReasonModal v-if="modal.type === 'reason'" />
     </div>
@@ -12,6 +13,7 @@ import { useModalStore } from '@/stores/Modal'
 import ReasonModal from './ReasonModal.vue'
 
 const modal = useModalStore()
+// console.log(modal)
 </script>
 
 <style scoped>
@@ -26,12 +28,5 @@ const modal = useModalStore()
   justify-content: center;
   align-items: center;
   z-index: 1000;
-}
-
-.modal {
-  background: white;
-  border-radius: 8px;
-  padding: 20px;
-  max-width: 500px;
 }
 </style>
