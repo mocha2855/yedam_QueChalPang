@@ -100,7 +100,11 @@ const modifySurvey = async (no, data) => {
   ]);
   // 2. 실제 데이터 수정
   if (survey_title) {
-    await mysql.squery("updateTitle", [survey_title, survey_title_no]);
+    await mysql.squery("updateTitle", [
+      survey_title,
+      survey_no,
+      survey_title_no,
+    ]);
   }
   if (subtitles) {
     for (const subtitle of subtitles) {

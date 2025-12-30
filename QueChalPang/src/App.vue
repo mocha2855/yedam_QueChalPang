@@ -7,6 +7,7 @@ import { useRoute } from 'vue-router'
 import Navbar from '@/examples/Navbars/Navbar.vue'
 import Sidenav from './examples/Sidenav'
 import Configurator from '@/examples/Configurator.vue'
+import AllModal from './views/components/modla/AllModal.vue'
 
 const store = useStore()
 const route = useRoute()
@@ -16,7 +17,12 @@ const showSidenav = computed(() => store.state.showSidenav)
 
 //인증 페이지면 풀화면
 const isAuthPage = computed(() => {
-  return route.path === '/signin' || route.path === '/signup' || route.path === '/centerPopup' || route.path === '/notConfirmed'
+  return (
+    route.path === '/signin' ||
+    route.path === '/signup' ||
+    route.path === '/centerPopup' ||
+    route.path === '/notConfirmed'
+  )
 })
 </script>
 
@@ -33,6 +39,7 @@ const isAuthPage = computed(() => {
     </main>
   </div>
   <Configurator />
+  <AllModal />
 </template>
 
 <style>

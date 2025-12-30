@@ -67,14 +67,18 @@
                   style="margin-top: 5px"
                 />
 
-                <select class="form-control" v-model="question.type" style="margin-top: 5px">
-                  <option>예/아니오</option>
+                <select
+                  class="form-control"
+                  v-model="question.survey_qitem_type"
+                  style="margin-top: 5px"
+                >
+                  <option>예/아니요</option>
                   <option>객관식</option>
                   <option>주관식</option>
                 </select>
 
                 <!-- 예/아니오일 때만 보임 -->
-                <div v-if="question.type === '예/아니오'" class="detail-option">
+                <div v-if="question.survey_qitem_type === '예/아니요'" class="detail-option">
                   <label class="checkbox-label">
                     <input type="checkbox" v-model="question.needDetail" />
                     "예" 선택 시 추가 입력 받기
@@ -105,15 +109,15 @@
       </tbody>
     </table>
     <div>
-      <button class="btn btn-primary" @click="updateSurvey(surveyInfo.no)">저장</button>
-    </div>
-    <div>
+      <button class="btn btn-primary" @click="openModifyModal">저장</button>
       <button class="btn btn-primary" @click="updateSurvey(surveyInfo.no)">취소</button>
     </div>
   </div>
 </template>
 <script setup>
 import { useSurveyStore } from '@/stores/survey'
+import { useModalStore } from '@/stores/Modal'
+import { useCounterStore } from '@/stores/member'
 import axios from 'axios'
 import { reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
@@ -121,6 +125,8 @@ import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 const store = useSurveyStore()
+const modal = useModalStore()
+const member = useCounterStore()
 
 const surveyInfo = reactive({
   no: '',
@@ -166,14 +172,6 @@ const deleteQuestion = (subtitleNo, questionNo) => {
   subtitle.questionList = subtitle.questionList.filter((q) => q.survey_qitem_no !== questionNo)
 }
 
-// DB에서 데이터 불러오기
-const loadSurvey = async () => {
-  const surveyNo = route.params.no
-  // console.log('불러올 번호:', surveyNo)
-
-  await axios.get(`/api/surveys/${surveyNo}`)
-}
-
 onMounted(async () => {
   await store.fetchSurveyDetail(route.params.no)
   const data = store.surveyDetail
@@ -181,13 +179,29 @@ onMounted(async () => {
     surveyInfo.no = data.survey_no || ''
     surveyInfo.title = data.survey_title || ''
     surveyInfo.subtitles = data.subtitles || []
+    surveyInfo.qitemType = data.qitems || ''
   }
-  console.log(surveyInfo)
+  console.log(data.survey_no)
+  console.log(data.qitems)
 })
 
+//수정(저장)버튼 누를 시 모달 창 열기
+const openModifyModal = () => {
+  console.log('🔔 모달 열기!')
+  modal.open('reason', {
+    onSubmit: async (reason) => {
+      await updateSurvey(reason)
+    },
+  })
+}
+
 //조사지 수정 저장
-const updateSurvey = async () => {
-  const result = await axios.put('/api/surveys/${surveyNo}', surveyInfo)
+const updateSurvey = async (reason) => {
+  const result = await axios.put(`/api/surveys/${surveyInfo.no}`, {
+    surveyInfo,
+    person: member.isLogIn.info.name,
+    reason: reason,
+  })
 
   //등록
   if (result.data) {
@@ -201,7 +215,4 @@ const updateSurvey = async () => {
 const goBack = () => {
   router.push({ name: 'SurveyList' })
 }
-onMounted(() => {
-  loadSurvey()
-})
 </script>
