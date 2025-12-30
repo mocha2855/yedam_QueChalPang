@@ -27,7 +27,11 @@
               <!-- 반려중 -->
               <div class="card-body">
                 <div class="formTop">
-                  <p><span>반려중 </span>지원계획{{ plan.ranking }}</p>
+                  <p>
+                    <span class="badge badge-sm bg-gradient-secondary">반려</span>지원계획{{
+                      plan.ranking
+                    }}
+                  </p>
                 </div>
 
                 <form action="#" name="planning">
@@ -172,7 +176,11 @@
           <div v-if="application.planningSuccess.length > 0">
             <div class="card mb-3" v-for="plan in application.planningSuccess" :key="plan">
               <div class="card-body">
-                <p><span>승인완료 </span>지원계획{{ plan.ranking }}</p>
+                <p>
+                  <span class="badge badge-sm bg-gradient-success">승인</span>지원계획{{
+                    plan.ranking
+                  }}
+                </p>
                 <form action="#" name="planning">
                   <div class="row g-3 mb-2 align-items-center">
                     <div class="col-2">
@@ -272,6 +280,10 @@ let memAuthority = counters.isLogIn.info.member_authority // 권한
 
 // 반려된 계획서 수정버튼
 const changePlanningStatus = async (data) => {
+  if (application.planningChanging.length != 0) {
+    alert('수정하던 작업을 마무리해주세요.')
+    return
+  }
   console.log(data)
   await axios
     .put('/api/successPlanningInfo/' + data, {

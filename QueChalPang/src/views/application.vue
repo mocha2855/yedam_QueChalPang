@@ -80,6 +80,23 @@ onBeforeMount(async () => {
       application.planningRejected[i].rejectChecked = false
     }
     console.log('반려', application.planningRejected)
+    // 반려 계획서 수정요청 계획서 날짜 형식 변경
+    for (let i = 0; i < application.planningChanging.length; i++) {
+      console.log(i)
+      application.planningChanging[i].planning_start = dateChange(
+        application.planningChanging[i].planning_start,
+      )
+      application.planningChanging[i].planning_end = dateChange(
+        application.planningChanging[i].planning_end,
+      )
+      application.planningChanging[i].planning_reject_date = dateChange(
+        application.planningChanging[i].planning_reject_date,
+      )
+      application.planningChanging[i].planning_date = dateChange(
+        application.planningChanging[i].planning_date,
+      )
+    }
+    console.log('반려', application.planningRejected)
   })
 })
 
@@ -88,48 +105,65 @@ watch(
   () => application.planningState,
   async () => {
     await application.countRealReview(route.params.id).then(() => {
-      for (let i = 0; i < application.planningReview.length; i++) {
-        console.log(i)
-        application.planningReview[i].planning_start = dateChange(
-          application.planningReview[i].planning_start,
-        )
-        application.planningReview[i].planning_end = dateChange(
-          application.planningReview[i].planning_end,
-        )
-        application.planningReview[i].checked = false
-        application.planningReview[i].rejectChecked = false
-      }
-      console.log('검토중: ', application.planningReview)
+      // for (let i = 0; i < application.planningReview.length; i++) {
+      //   console.log(i)
+      //   application.planningReview[i].planning_start = dateChange(
+      //     application.planningReview[i].planning_start,
+      //   )
+      //   application.planningReview[i].planning_end = dateChange(
+      //     application.planningReview[i].planning_end,
+      //   )
+      //   application.planningReview[i].checked = false
+      //   application.planningReview[i].rejectChecked = false
+      // }
+      // console.log('검토중: ', application.planningReview)
 
-      // 승인완료 계획서들 날짜 형식 변경
-      for (let i = 0; i < application.planningSuccess.length; i++) {
-        console.log(i)
+      // // 승인완료 계획서들 날짜 형식 변경
+      // for (let i = 0; i < application.planningSuccess.length; i++) {
+      //   console.log(i)
 
-        application.planningSuccess[i].planning_start = dateChange(
-          application.planningSuccess[i].planning_start,
-        )
-        application.planningSuccess[i].planning_end = dateChange(
-          application.planningSuccess[i].planning_end,
-        )
-      }
-      console.log('승인완료', application.planningSuccess)
+      //   application.planningSuccess[i].planning_start = dateChange(
+      //     application.planningSuccess[i].planning_start,
+      //   )
+      //   application.planningSuccess[i].planning_end = dateChange(
+      //     application.planningSuccess[i].planning_end,
+      //   )
+      // }
+      // console.log('승인완료', application.planningSuccess)
 
-      // 반려 계획서들 날짜 형식 변경
-      for (let i = 0; i < application.planningRejected.length; i++) {
-        console.log(i)
+      // // 반려 계획서들 날짜 형식 변경
+      // for (let i = 0; i < application.planningRejected.length; i++) {
+      //   console.log(i)
+      //   application.planningRejected[i].planning_start = dateChange(
+      //     application.planningRejected[i].planning_start,
+      //   )
+      //   application.planningRejected[i].planning_end = dateChange(
+      //     application.planningRejected[i].planning_end,
+      //   )
+      //   application.planningRejected[i].planning_reject_date = dateChange(
+      //     application.planningRejected[i].planning_reject_date,
+      //   )
+      //   application.planningRejected[i].checked = false
+      //   application.planningRejected[i].rejectChecked = false
+      // }
+      // console.log('반려', application.planningRejected)
 
-        application.planningRejected[i].planning_start = dateChange(
-          application.planningRejected[i].planning_start,
-        )
-        application.planningRejected[i].planning_end = dateChange(
-          application.planningRejected[i].planning_end,
-        )
-        application.planningRejected[i].planning_reject_date = dateChange(
-          application.planningRejected[i].planning_reject_date,
-        )
-        application.planningRejected[i].checked = false
-        application.planningRejected[i].rejectChecked = false
-      }
+      // // 반려 계획서 수정요청 계획서 날짜 형식 변경
+      // for (let i = 0; i < application.planningChanging.length; i++) {
+      //   console.log(i)
+      //   application.planningChanging[i].planning_start = dateChange(
+      //     application.planningChanging[i].planning_start,
+      //   )
+      //   application.planningChanging[i].planning_end = dateChange(
+      //     application.planningChanging[i].planning_end,
+      //   )
+      //   application.planningChanging[i].planning_reject_date = dateChange(
+      //     application.planningChanging[i].planning_reject_date,
+      //   )
+      //   application.planningChanging[i].planning_date = dateChange(
+      //     application.planningChanging[i].planning_date,
+      //   )
+      // }
       console.log('반려', application.planningRejected)
     })
   },

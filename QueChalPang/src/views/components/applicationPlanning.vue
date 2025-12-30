@@ -120,8 +120,118 @@
           </div>
         </div>
       </div>
+
+      <!-- 반려된 계획서 수정 -->
+      <div class="card mb-3">
+        <div
+          class="card-body"
+          v-if="memAuthority == 'a2' && application.planningChanging.length > 0"
+        >
+          <div class="card">
+            <div class="d-flex justify-content-between">
+              <div>
+                <p>
+                  <span class="badge badge-sm bg-gradient-secondary">반려</span>지원계획{{
+                    application.planningChanging[0].ranking
+                  }}
+                </p>
+              </div>
+              <div>
+                <p>작성일: {{ application.planningChanging[0].planning_date }}</p>
+              </div>
+            </div>
+
+            <form action="#" name="planning">
+              <div class="row g-3 mb-2 align-items-center">
+                <div class="col-2">
+                  <label for="planningtime" class="col-form-label">지원기간</label>
+                </div>
+                <div class="col-3">
+                  <input
+                    type="text"
+                    name="startDate"
+                    id="startDate"
+                    v-model="application.planningChanging[0].planning_start"
+                    class="form-control"
+                  />
+                </div>
+                <div class="col-3">
+                  <input
+                    type="text"
+                    name="endDate"
+                    id="endDate"
+                    v-model="application.planningChanging[0].planning_end"
+                    class="form-control"
+                  />
+                </div>
+                <div class="col-2">
+                  <label for="writer" class="col-form-label">작성자</label>
+                </div>
+                <div class="col-2">
+                  <input
+                    type="text"
+                    name="writer"
+                    id="writer"
+                    value="최강희"
+                    class="form-control"
+                    readonly
+                  />
+                </div>
+              </div>
+              <div class="row g-3 mb-2 align-items-center">
+                <div class="col-2">
+                  <label for="title" class="col-form-label">제목</label>
+                </div>
+                <div class="col-10">
+                  <input
+                    type="text"
+                    name="title"
+                    id="title"
+                    v-model="application.planningChanging[0].planning_title"
+                    class="form-control"
+                  />
+                </div>
+              </div>
+              <div class="row g-3 mb-2 align-items-center">
+                <div class="col-2">
+                  <label for="content" class="col-form-label">내용</label>
+                </div>
+                <div class="col-10">
+                  <input
+                    type="text"
+                    name="content"
+                    id="content"
+                    v-model="application.planningChanging[0].planning_content"
+                    class="form-control"
+                  />
+                </div>
+              </div>
+              <div class="row g-3 mb-2 align-items-center">
+                <div class="col-2">
+                  <label for="attachmentFile" class="col-form-label">첨부파일</label>
+                </div>
+                <div class="col-10">
+                  <input type="file" class="form-control" />
+                </div>
+              </div>
+            </form>
+
+            <div class="d-flex justify-content-end">
+              <button type="button" class="btn btn-primary btn-sm" @click="submitPlanningInfo">
+                승인요청
+              </button>
+            </div>
+            <rejecterModalLayout class="modal-wrap" v-if="checked">
+              <template v-slot:body>정말 승인요청하시겠습니까?</template>
+              <template v-slot:footer>
+                <button v-on:click="notChecked">취소</button>
+                <button v-on:click="sucessResult">확인</button>
+              </template>
+            </rejecterModalLayout>
+          </div>
+        </div>
+      </div>
     </div>
-    <!-- 반려된 계획서 수정 -->
 
     <!-- 검토중인 계획서 -->
 
@@ -134,125 +244,131 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <div
-    v-if="application.planningReview.length > 0 && application.planningReview.planning_reject == ''"
-  >
-    <div class="card mb-3" v-for="plan in application.planningReview" :key="plan">
-      <div class="card-body" v-if="application.planningReview.length > 0">
-        <div class="formTop">
-          <p v-if="memAuthority == 'a2'"><span>검토중 </span>지원계획{{ plan.ranking }}</p>
-          <p v-if="memAuthority == 'a3'">지원계획{{ plan.ranking }}</p>
-        </div>
-        <form action="#" name="planning">
-          <div class="row g-3 mb-2 align-items-center">
-            <div class="col-2">
-              <label for="planningtime" class="col-form-label">지원기간</label>
-            </div>
-            <div class="col-3">
-              <input
-                type="text"
-                name="startDate"
-                id="startDate"
-                v-model="plan.planning_start"
-                class="form-control"
-                readonly
-              />
-            </div>
-            <div class="col-3">
-              <input
-                type="text"
-                name="endDate"
-                id="endDate"
-                v-model="plan.planning_end"
-                class="form-control"
-                readonly
-              />
-            </div>
-            <div class="col-2">
-              <label for="writer" class="col-form-label">작성자</label>
-            </div>
-            <div class="col-2">
-              <input
-                type="text"
-                name="writer"
-                id="writer"
-                value="최강희"
-                class="form-control"
-                readonly
-              />
-            </div>
+    <div v-if="application.planningReview.length > 0 && application.planning_reject == ''">
+      <div class="card mb-3" v-for="plan in application.planningReview" :key="plan">
+        <div class="card-body" v-if="application.planningReview.length > 0">
+          <div class="formTop">
+            <p v-if="memAuthority == 'a2'">
+              <span class="badge badge-sm bg-gradient-secondary">검토중</span>지원계획{{
+                plan.ranking
+              }}
+            </p>
+            <p v-if="memAuthority == 'a3'">지원계획{{ plan.ranking }}</p>
           </div>
-          <div class="row g-3 mb-2 align-items-center">
-            <div class="col-2">
-              <label for="title" class="col-form-label">제목</label>
+          <form action="#" name="planning">
+            <div class="row g-3 mb-2 align-items-center">
+              <div class="col-2">
+                <label for="planningtime" class="col-form-label">지원기간</label>
+              </div>
+              <div class="col-3">
+                <input
+                  type="text"
+                  name="startDate"
+                  id="startDate"
+                  v-model="plan.planning_start"
+                  class="form-control"
+                  readonly
+                />
+              </div>
+              <div class="col-3">
+                <input
+                  type="text"
+                  name="endDate"
+                  id="endDate"
+                  v-model="plan.planning_end"
+                  class="form-control"
+                  readonly
+                />
+              </div>
+              <div class="col-2">
+                <label for="writer" class="col-form-label">작성자</label>
+              </div>
+              <div class="col-2">
+                <input
+                  type="text"
+                  name="writer"
+                  id="writer"
+                  value="최강희"
+                  class="form-control"
+                  readonly
+                />
+              </div>
             </div>
-            <div class="col-10">
-              <input
-                type="text"
-                name="title"
-                id="title"
-                v-model="plan.planning_title"
-                class="form-control"
-                readonly
-              />
+            <div class="row g-3 mb-2 align-items-center">
+              <div class="col-2">
+                <label for="title" class="col-form-label">제목</label>
+              </div>
+              <div class="col-10">
+                <input
+                  type="text"
+                  name="title"
+                  id="title"
+                  v-model="plan.planning_title"
+                  class="form-control"
+                  readonly
+                />
+              </div>
             </div>
-          </div>
-          <div class="row g-3 mb-2 align-items-center">
-            <div class="col-2">
-              <label for="content" class="col-form-label">내용</label>
+            <div class="row g-3 mb-2 align-items-center">
+              <div class="col-2">
+                <label for="content" class="col-form-label">내용</label>
+              </div>
+              <div class="col-10">
+                <input
+                  type="text"
+                  name="content"
+                  id="content"
+                  v-model="plan.planning_content"
+                  class="form-control"
+                  readonly
+                />
+              </div>
             </div>
-            <div class="col-10">
-              <input
-                type="text"
-                name="content"
-                id="content"
-                v-model="plan.planning_content"
-                class="form-control"
-                readonly
-              />
+            <div class="row g-3 mb-2 align-items-center">
+              <div class="col-2">
+                <label for="attachmentFile" class="col-form-label">첨부파일</label>
+              </div>
+              <div class="col-10">
+                <input type="text" class="form-control" readonly />
+              </div>
             </div>
-          </div>
-          <div class="row g-3 mb-2 align-items-center">
-            <div class="col-2">
-              <label for="attachmentFile" class="col-form-label">첨부파일</label>
-            </div>
-            <div class="col-10">
-              <input type="text" class="form-control" readonly />
-            </div>
-          </div>
-        </form>
+          </form>
 
-        <div class="d-flex justify-content-end" v-if="memAuthority == 'a3'">
-          <button type="button" class="btn btn-primary btn-sm" @click="modalOpen(plan.planning_no)">
-            승인
-          </button>
-          <button
-            type="button"
-            class="btn btn-primary btn-sm"
-            @click="modalClose(plan.planning_no)"
-          >
-            반려
-          </button>
+          <div class="d-flex justify-content-end" v-if="memAuthority == 'a3'">
+            <button
+              type="button"
+              class="btn btn-primary btn-sm"
+              @click="modalOpen(plan.planning_no)"
+            >
+              승인
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary btn-sm"
+              @click="modalClose(plan.planning_no)"
+            >
+              반려
+            </button>
+          </div>
+          <rejecterModalLayout class="modal-wrap" v-if="plan.checked">
+            <template v-slot:body>정말 승인하시겠습니까?</template>
+            <template v-slot:footer>
+              <button v-on:click="notChecked(plan.planning_no)">취소</button>
+              <button v-on:click="sucessResult">확인</button>
+            </template>
+          </rejecterModalLayout>
+          <rejecterModalLayout class="modal-wrap" v-if="plan.rejectChecked">
+            <template v-slot:header>반려사유를 적어주세요.</template>
+            <template v-slot:body>
+              <textarea v-model="rejectReason"> rejectReason </textarea>
+            </template>
+            <template v-slot:footer>
+              <button v-on:click="notChecked(plan.planning_no)">취소</button>
+              <button v-on:click="rejectResult">확인</button>
+            </template>
+          </rejecterModalLayout>
         </div>
-        <rejecterModalLayout class="modal-wrap" v-if="plan.checked">
-          <template v-slot:body>정말 승인하시겠습니까?</template>
-          <template v-slot:footer>
-            <button v-on:click="notChecked(plan.planning_no)">취소</button>
-            <button v-on:click="sucessResult">확인</button>
-          </template>
-        </rejecterModalLayout>
-        <rejecterModalLayout class="modal-wrap" v-if="plan.rejectChecked">
-          <template v-slot:header>반려사유를 적어주세요.</template>
-          <template v-slot:body>
-            <textarea v-model="rejectReason"> rejectReason </textarea>
-          </template>
-          <template v-slot:footer>
-            <button v-on:click="notChecked(plan.planning_no)">취소</button>
-            <button v-on:click="rejectResult">확인</button>
-          </template>
-        </rejecterModalLayout>
       </div>
     </div>
   </div>
@@ -360,12 +476,11 @@ const sucessResult = async () => {
       .then((res) => {
         console.log(res)
         alert('승인요청 완료')
+        application.planningState++
+        addCount.value = 0
+        formData.value = {}
+        count++
       })
-    addCount.value = 0
-    formData.value = {}
-    count++
-    application.planningState++
-    return
   }
   // 관리자
   if (memAuthority == 'a3') {

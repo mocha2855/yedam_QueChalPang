@@ -11,6 +11,7 @@ export const useApplicationStore = defineStore('application', {
       planningReview: [], // 검토중 계획서
       planningSuccess: [], // 승인완료 계획서
       planningRejected: [], // 반려된 계획서
+      planningChanging: [],
       planningState: 0,
     }
   },
@@ -33,11 +34,21 @@ export const useApplicationStore = defineStore('application', {
       this.planningReview = []
       this.planningSuccess = []
       this.planningRejected = []
+      this.planningChanging = []
       this.allPlanned = (await axios.get('/api/planningReview/' + no)).data
       for (let i = 0; i < this.allPlanned.length; i++) {
         console.log(this.allPlanned[i])
-        if (this.allPlanned[i].planning_status === 'i1') {
+        if (
+          this.allPlanned[i].planning_status === 'i1' &&
+          this.allPlanned[i].planning_reject_date == ''
+        ) {
           this.planningReview.push(this.allPlanned[i])
+        } else if (
+          this.allPlanned[i].planning_status === 'i1' &&
+          this.allPlanned[i].planning_reject != null &&
+          this.allPlanned[i].planning_reject_date != null
+        ) {
+          this.planningChanging.push(this.allPlanned[i])
         } else if (this.allPlanned[i].planning_status === 'i2') {
           this.planningSuccess.push(this.allPlanned[i])
         } else if (this.allPlanned[i].planning_status === 'i3') {
