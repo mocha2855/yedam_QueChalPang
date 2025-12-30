@@ -148,6 +148,16 @@ const selectApplicationByDependant = `
   ORDER BY application_date DESC, application_no DESC;
 `;
 
+//[8] (보호자 예약) 완료 후 센터주소 조회해서 지도에 표시하기
+//reservation 테이블에 새로 생기는 resv_id로 center_no조회하기
+const selectCenterAddress = `
+  SELECT c.center_name, c.center_address
+  FROM reservation r
+  JOIN member m ON m.member_id = r.manager_id
+  JOIN center c ON c.center_no = m.center_no
+  WHERE r.resv_id = ?
+`;
+
 module.exports = {
   selectTResvByDate,
   selectTResvbyManager,
@@ -162,4 +172,5 @@ module.exports = {
   selectBlockedTimes,
   selectDependant,
   selectApplicationByDependant,
+  selectCenterAddress,
 };

@@ -14,6 +14,7 @@ const {
   selectDependant,
   selectManagerbyDeptno,
   selectApplicationByDependant,
+  selectCenterAddress,
 } = require("../database/sqls/reservation.js");
 
 //[1]담당자 - 해당 날짜의 모든 예약 조회
@@ -120,6 +121,11 @@ const findApplication = async (dependantNo) => {
   return await mysql.rquery(selectApplicationByDependant, [dependantNo]);
 };
 
+//[8] (보호자 예약) 완료 후 센터주소 조회해서 지도에 표시하기
+const findCenterAddrByResvId = async (resvId) => {
+  return await mysql.rquery(selectCenterAddress, [resvId]);
+};
+
 module.exports = {
   findByDate,
   findTresvByManager,
@@ -132,4 +138,5 @@ module.exports = {
   findManagerbyDeptno,
   findDependants,
   findApplication,
+  findCenterAddrByResvId,
 };
