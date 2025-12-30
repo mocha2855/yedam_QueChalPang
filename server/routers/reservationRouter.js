@@ -150,4 +150,11 @@ router.get("/applicationList/:dependantNo", async (req, res) => {
     res.status(500).json({ message: "applications fail", err: err.message });
   }
 });
+
+//[8] (보호자 예약) 완료 후 센터주소 조회해서 지도에 표시하기
+router.get("/centerAddrByResvId/:resvId", async (req, res) => {
+  const { resvId } = req.params;
+  const rows = await reservationService.findCenterAddrByResvId(resvId);
+});
+
 module.exports = router;

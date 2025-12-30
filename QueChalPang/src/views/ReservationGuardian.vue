@@ -26,6 +26,8 @@ const goNext = () => {
       date: toYmd.value, //캘린더에서 선택한 날짜
       time: selectedTime.value, //타임슬롯에서 선택한 시간
 
+      applicationNo: selectedApplicationNo.value,
+
       //DB저장
       resv_day: toYmdDash.value,
       guardianId: guardianId.value,
@@ -326,7 +328,7 @@ watch(
           <div class="d-flex align-items-center justify-content-between mb-3">
             <div class="d-flex align-items-center gap-2">
               <h6 class="mb-0">선택된 날짜</h6>
-              <div class="fw-semibold">{{ selectedYmdKorean }}</div>
+              <div class="fw-semibold">{{ toYmd }}</div>
             </div>
 
             <button class="btn btn-primary btn-sm" :disabled="!selectedTime" @click="goNext">

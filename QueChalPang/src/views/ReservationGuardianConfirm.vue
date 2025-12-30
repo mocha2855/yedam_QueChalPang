@@ -7,6 +7,7 @@ import axios from 'axios'
 const route = useRoute()
 const router = useRouter()
 
+const applicationNo = computed(() => route.query.applicationNo)
 //front용 format
 const date = computed(() => route.query.date ?? '')
 const time = computed(() => route.query.time ?? '')
@@ -22,42 +23,47 @@ const scheduleLabel = computed(() => {
 const goBack = () => router.back()
 
 //DB용 format
-const resvDay = computed(()=>route.query.resv_day)
-const guardianId = computed(()=>route.query.guardianId)
-const managerId = computed(()=>route.query.managerId)
-const dependantNo = computed(()=>route.query.dependantNo)
+const resvDay = computed(() => route.query.resv_day)
+const guardianId = computed(() => route.query.guardianId)
+const managerId = computed(() => route.query.managerId)
+const dependantNo = computed(() => route.query.dependantNo)
 
 //[2025-12-26 14:00:00 ] 형태
-const timeslotCal = () =>{
+const timeslotCal = () => {
   const start_at = `${resvDay.value} ${time.value}:00`
 
-  //end_at시간 설정: start_at기준으로 한시간 더하기 
+  //end_at시간 설정: start_at기준으로 한시간 더하기
   const startDate = new Date(`${resvDay.value}T${time.value}:00`) //객채 한개 만들어줌
   startDate.setHours(startDate.getHours() + 1) //만든 객체에서 시간 가져와서 +1
 
-  const yyyy  = startDate.getFullYear()
-  const mm = String(startDate.getMonth() + 1).padStart(2,'0')
-  const dd = String(startDate.getDate()).padStart(2,'0')
-  const hh = String(startDate.getHours()).padStart(2,'0')
-  const mi = String(startDate.getMinutes()).padStart(2,'0')
+  const yyyy = startDate.getFullYear()
+  const mm = String(startDate.getMonth() + 1).padStart(2, '0')
+  const dd = String(startDate.getDate()).padStart(2, '0')
+  const hh = String(startDate.getHours()).padStart(2, '0')
+  const mi = String(startDate.getMinutes()).padStart(2, '0')
 
   const end_at = `${yyyy}-${mm}-${dd} ${hh}:${mi}:00`
 
-  return {start_at, end_at}
+  return { start_at, end_at }
 }
 
 //예약학 버튼을 누르면 다음 페이지로 쿼리를 함께 넘김
 const submitReservation = async () => {
-  
-  if(!resvDay.value||!guardianId.value||!dependantNo.value||!guardianId.value||!managerId.value){
-    alert("예약정보가 부족합니다. 다시 시도해주세요.")
+  if (
+    !resvDay.value ||
+    !guardianId.value ||
+    !dependantNo.value ||
+    !guardianId.value ||
+    !managerId.value
+  ) {
+    alert('예약정보가 부족합니다. 다시 시도해주세요.')
   }
 
-  const {start_at, end_at} = timeslotCal()
+  const { start_at, end_at } = timeslotCal()
 
   const resvdata = {
     dependant_no: Number(dependantNo.value),
-    application_no:20,
+    application_no: Number(applicationNo.value),
     guardian_id: String(guardianId.value),
     manager_id: String(managerId.value),
     resv_day: String(resvDay.value),
@@ -70,16 +76,15 @@ const submitReservation = async () => {
   router.push({
     name: 'ReservationGuardianMap',
     query: {
-      date : date.value,
+      date: date.value,
       time: time.value,
       guardian: name.value,
       dependant: dependant.value,
       manager: manager.value,
-      resvId: res.data?.resvId, 
+      resvId: res.data?.resvId,
     },
   })
 }
-
 </script>
 
 <template>
