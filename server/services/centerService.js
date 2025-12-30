@@ -27,9 +27,21 @@ const findByCenterName = async (name) => {
   console.log("result :", result);
   return result[0];
 };
+const modifyByCenterNo = async (value) => {
+  let result = await mysql.centerQuery("updateCenterInfo", value);
+  console.log("result : ", result);
+  return result[0];
+};
+const endCenterByCenterNo = async (no) => {
+  let result = await mysql.centerQuery("endCenter", no);
+  console.log("result : ", result);
+  return result[0];
+};
 module.exports = {
   findAllCenter,
   addCenterInfo,
   findByCenterNo,
   findByCenterName,
+  modifyByCenterNo,
+  endCenterByCenterNo,
 };
