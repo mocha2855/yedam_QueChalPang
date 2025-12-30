@@ -82,7 +82,9 @@
             >
               <span>{{ statu.status }}</span>
             </div>
-            <textarea v-model="dependantWait.status_reject"> dependantWait.status_reject </textarea>
+            <textarea v-model="dependantWait.status_reject" readonly>
+ dependantWait.status_reject </textarea
+            >
             <button v-on:click="modalOpen">승인요청</button>
 
             <rejecterModalLayout class="modal-wrap" v-show="checked">
@@ -181,7 +183,9 @@
             >
               <span>{{ statu.status }}</span>
             </div>
-            <textarea v-model="dependantWait.status_reject">dependantWait.status_reject </textarea>
+            <textarea v-model="dependantWait.status_reject" readonly>
+dependantWait.status_reject </textarea
+            >
             <button v-on:click="modalOpen">승인</button>
             <button v-on:click="modalReject">반려</button>
             <!-- 승인 버튼 누를 경우 -->

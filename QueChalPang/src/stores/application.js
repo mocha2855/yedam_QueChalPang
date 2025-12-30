@@ -37,13 +37,10 @@ export const useApplicationStore = defineStore('application', {
       for (let i = 0; i < this.allPlanned.length; i++) {
         console.log(this.allPlanned[i])
         if (this.allPlanned[i].planning_status === 'i1') {
-          console.log(this.allPlanned[i].planning_status === 'i1')
           this.planningReview.push(this.allPlanned[i])
         } else if (this.allPlanned[i].planning_status === 'i2') {
-          console.log(this.allPlanned[i].planning_status === 'i2')
           this.planningSuccess.push(this.allPlanned[i])
         } else if (this.allPlanned[i].planning_status === 'i3') {
-          console.log(this.allPlanned[i].planning_status === 'i3')
           this.planningRejected.push(this.allPlanned[i])
         }
       }
