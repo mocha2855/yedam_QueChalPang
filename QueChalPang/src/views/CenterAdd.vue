@@ -94,8 +94,6 @@ const addCenterInfo = async () => {
   let result = await axios.post('/api/center', centerInfo)
   let no = result.data.insertId
   if (no) {
-    // ★ 핵심: 여기서 부모에게 성공 알림을 보냅니다.
-    // 더 이상 여기서 직접 router.push를 하지 않습니다. (부모가 처리하도록 함)
     emit('success', no)
   }
 }

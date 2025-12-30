@@ -18,10 +18,10 @@ const showSidenav = computed(() => store.state.showSidenav)
 //인증 페이지면 풀화면
 const isAuthPage = computed(() => {
   return (
-    route.path === '/signin' ||
-    route.path === '/signup' ||
+    route.path.indexOf('sign') > 0 ||
     route.path === '/centerPopup' ||
-    route.path === '/notConfirmed'
+    route.path === '/notConfirmed' ||
+    route.path.indexOf('Id') > 0
   )
 })
 </script>

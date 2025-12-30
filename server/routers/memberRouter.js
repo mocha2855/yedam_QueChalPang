@@ -45,4 +45,9 @@ router.post(`/authenticate/:id`, async (req, res) => {
   console.log(result);
   res.send(result);
 });
+router.get("/member/:name/:phone/:way", async (req, res) => {
+  const { name, phone, way } = req.params;
+  let result = await memberService.searchId(name, phone, way);
+  res.send(result);
+});
 module.exports = router;
