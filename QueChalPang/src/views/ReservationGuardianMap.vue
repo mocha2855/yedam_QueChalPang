@@ -45,7 +45,7 @@ onMounted(async () => {
       level: 3,
     })
 
-    // 3️⃣ 주소 → 좌표
+    // 주소 → 좌표
     const geocoder = new window.kakao.maps.services.Geocoder()
 
     geocoder.addressSearch(centerAddr.value, (result, status) => {
