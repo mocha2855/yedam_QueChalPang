@@ -56,17 +56,7 @@ defineProps({
                 aria-hidden="true"
                 :class="isBlur ? 'text-dark' : 'text-white'"
               ></i>
-              Dashboard
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link class="nav-link me-2" to="/profile">
-              <i
-                class="fa fa-user opacity-6 me-1"
-                aria-hidden="true"
-                :class="isBlur ? 'text-dark' : 'text-white'"
-              ></i>
-              Profile
+              Home
             </router-link>
           </li>
           <li class="nav-item">
@@ -76,7 +66,7 @@ defineProps({
                 aria-hidden="true"
                 :class="isBlur ? 'text-dark' : 'text-white'"
               ></i>
-              Sign Up
+              회원가입
             </router-link>
           </li>
           <li class="nav-item">
@@ -86,11 +76,9 @@ defineProps({
                 aria-hidden="true"
                 :class="isBlur ? 'text-dark' : 'text-white'"
               ></i>
-              Sign In
+              로그인
             </router-link>
           </li>
-
-
         </ul>
         <ul class="navbar-nav d-lg-block d-none"></ul>
       </div>

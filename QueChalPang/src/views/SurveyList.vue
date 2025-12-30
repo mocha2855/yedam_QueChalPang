@@ -16,6 +16,9 @@ function surveyInfo(no) {
   router.push({ name: 'surveyInfo', params: { no: no } })
 }
 
+const surveyUpdate = (no) => {
+  router.push({ name: 'surveyUpdate', params: { no: no } })
+}
 const goTosurveyAdd = () => {
   router.push({ name: 'surveyAdd' })
 }
@@ -50,6 +53,9 @@ const goTosurveyAdd = () => {
                     <td>
                       <button class="btn btn-sm btn-info" @click="surveyInfo(survey.survey_no)">
                         상세보기
+                      </button>
+                      <button class="btn btn-sm btn-info" @click="surveyUpdate(survey.survey_no)">
+                        수정하기
                       </button>
                     </td>
                   </tr>

@@ -1,5 +1,4 @@
 //survey.js
-import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 export const useSurveyStore = defineStore('surveys', {
@@ -10,11 +9,11 @@ export const useSurveyStore = defineStore('surveys', {
       survey: [], //조사지 목록
       surveyDetail: [], //조사지 상세
       questionList: [], //질문 여러개 담을 것
-      err: ref(''),
+      err: '',
     }
   },
   actions: {
-    //조사지 목록
+    //조사지 상세 목록
     async fetchSurvey() {
       try {
         const response = await axios.get('/api/surveys')

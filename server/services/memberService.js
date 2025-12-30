@@ -92,6 +92,21 @@ const getAuth = async (id, num) => {
   return result;
 };
 
+const searchId = async (name, phone, way) => {
+  if (way == 1) {
+    let result = await mysql.memberQuery("countByMemberNameAndPhone", [
+      name,
+      phone,
+    ]);
+    return result;
+  } else if (way == 2) {
+    let result = await mysql.memberQuery("selectByMemberNameAndPhone", [
+      name,
+      phone,
+    ]);
+    return result;
+  }
+};
 module.exports = {
   findAllMember,
   findByMemberId,
@@ -100,4 +115,5 @@ module.exports = {
   addMemberInfo,
   phoneAuth,
   getAuth,
+  searchId,
 };
