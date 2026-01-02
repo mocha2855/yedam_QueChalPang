@@ -1,6 +1,6 @@
 <template>
-  <div class="container">
-    <div class="card mb-2" v-if="memAuthority == 'a2'">
+  <div class="container-fluid px-0">
+    <div class="card mb-2 w-100 h-100" v-if="memAuthority == 'a2'">
       <div class="card-body">
         <div class="row row-cols-auto">
           <div class="col">
@@ -220,6 +220,13 @@
               <button type="button" class="btn btn-primary btn-sm" @click="submitPlanningInfo">
                 승인요청
               </button>
+              <button
+                type="button"
+                class="btn btn-dark btn-sm"
+                @click="cancelPlanningInfo(application.planningChanging[0].planning_no)"
+              >
+                취소
+              </button>
             </div>
             <rejecterModalLayout class="modal-wrap" v-if="checked">
               <template v-slot:body>정말 승인요청하시겠습니까?</template>
@@ -235,7 +242,7 @@
 
     <!-- 검토중인 계획서 -->
 
-    <div class="card mb-2" v-else-if="memAuthority == 'a3'">
+    <div class="card mb-2" style="height: 100%" v-else-if="memAuthority == 'a3'">
       <div class="card-body">
         <div class="row row-cols-auto">
           <div class="col">
@@ -405,12 +412,13 @@ onBeforeMount(async () => {
   console.log(`addCount.value: ${addCount.value}`)
 })
 
-// 계획 추가시 배열에 숫자 증가.
+// 계획 추가 버튼
 let addCount = ref(0) // 계획추가 버튼용
 
 const addPlanningForm = () => {
-  if (addCount.value == 0) {
+  if (addCount.value == 0 && application.planningChanging.length == 0) {
     addCount.value = 1
+    application.planningState = 1
     return
   } else if (count != 1) {
     alert('작성하던 내용을 완료해주세요.')
@@ -422,6 +430,7 @@ const delForm = () => {
   if (addCount.value == 1) {
     addCount.value = 0
     formData.value = {}
+    application.planningState++
   }
 }
 
@@ -437,9 +446,12 @@ const submitPlanningInfo = async () => {
     formData.value.title == undefined ||
     formData.value.content == undefined
   ) {
+    application.planningState++
     alert('내용 입력을 완료해주세요')
     return
   }
+  application.planningState++
+
   checked.value = true
 }
 
@@ -544,6 +556,20 @@ const rejectResult = async () => {
       alert('반려했습니다.')
       rejectReason.value = undefined
       application.planningState++
+    })
+}
+
+// 반려 후 수정 중 취소 버튼(담당자)
+const cancelPlanningInfo = async (data) => {
+  console.log(data)
+  await axios
+    .put('/api/successPlanningInfo/' + data, {
+      planning_status: 'i3',
+    })
+    .then((res) => {
+      console.log(res)
+      application.planningState++
+      application.planningChanging = []
     })
 }
 </script>

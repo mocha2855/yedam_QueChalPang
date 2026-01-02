@@ -11,8 +11,8 @@ export const useApplicationStore = defineStore('application', {
       planningReview: [], // 검토중 계획서
       planningSuccess: [], // 승인완료 계획서
       planningRejected: [], // 반려된 계획서
-      planningChanging: [],
-      planningState: 0,
+      planningChanging: [], // 반려 후 수정중 계획서
+      planningState: 0, // 지원계획서 리로드용
     }
   },
   actions: {
@@ -37,22 +37,39 @@ export const useApplicationStore = defineStore('application', {
       this.planningChanging = []
       this.allPlanned = (await axios.get('/api/planningReview/' + no)).data
       for (let i = 0; i < this.allPlanned.length; i++) {
+        const dateChange = (day) => {
+          let date = new Date(day)
+          let realDate = `${date.getFullYear(day)}.${date.getMonth(day) + 1}.${date.getDay(day)}`
+          return realDate
+        }
+        this.allPlanned[i].planning_start = dateChange(this.allPlanned[i].planning_start)
+        this.allPlanned[i].planning_end = dateChange(this.allPlanned[i].planning_end)
+        this.allPlanned[i].planning_reject_date = dateChange(
+          this.allPlanned[i].planning_reject_date,
+        )
+        this.allPlanned[i].planning_date = dateChange(this.allPlanned[i].planning_date)
+        this.allPlanned[i].planning_date = dateChange(this.allPlanned[i].planning_approvedDate)
+
         console.log(this.allPlanned[i])
         if (
           this.allPlanned[i].planning_status === 'i1' &&
           this.allPlanned[i].planning_reject_date == ''
         ) {
           this.planningReview.push(this.allPlanned[i])
+          console.log('검토중: ', this.planningReview)
         } else if (
           this.allPlanned[i].planning_status === 'i1' &&
           this.allPlanned[i].planning_reject != null &&
           this.allPlanned[i].planning_reject_date != null
         ) {
           this.planningChanging.push(this.allPlanned[i])
+          console.log('반려수정중', this.planningChanging)
         } else if (this.allPlanned[i].planning_status === 'i2') {
           this.planningSuccess.push(this.allPlanned[i])
+          console.log('승인완료', this.planningSuccess)
         } else if (this.allPlanned[i].planning_status === 'i3') {
           this.planningRejected.push(this.allPlanned[i])
+          console.log('반려', this.planningRejected)
         }
       }
     },

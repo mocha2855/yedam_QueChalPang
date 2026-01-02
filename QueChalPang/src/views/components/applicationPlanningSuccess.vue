@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container-fluid px-0">
     <div
       class="card mb-2"
       v-if="
@@ -17,7 +17,7 @@
       <div class="card-body">
         <div
           class="none"
-          v-if="application.planningSuccess.length == 0 && application.planningRejected == 0"
+          v-if="application.planningSuccess.length == 0 && application.planningRejected.length == 0"
         >
           <h5>현재 지원계획서가<br />존재하지 않습니다.</h5>
         </div>
@@ -113,10 +113,10 @@
                   </div>
                   <div class="d-flex justify-content-between">
                     <div class="row g-3 mb-2 align-items-center">
-                      <div class="col-5">
+                      <div class="col-6">
                         <label for="planningtime" class="col-form-label">결재자</label>
                       </div>
-                      <div class="col-7">
+                      <div class="col-5">
                         <input
                           type="text"
                           name="startDate"
@@ -280,6 +280,10 @@ let memAuthority = counters.isLogIn.info.member_authority // 권한
 
 // 반려된 계획서 수정버튼
 const changePlanningStatus = async (data) => {
+  if (application.planningState == 1) {
+    alert('작성하던 계획서를 마무리해주세요!')
+    return
+  }
   if (application.planningChanging.length != 0) {
     alert('수정하던 작업을 마무리해주세요.')
     return
