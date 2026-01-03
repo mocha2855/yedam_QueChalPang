@@ -40,11 +40,6 @@ watch(
 
     const res = await axios.get(`/api/resvByDate/${mid}/${dateStr}`)
 
-    //콘솔확인용_나중에지우기
-    console.log('request:', `/api/resvByDate/${mid}/${dateStr}`)
-    console.log('response:', res.data)
-    console.log('reservedDays:', res.data)
-
     reservations.value = res.data
   },
   { immediate: true },
@@ -89,6 +84,7 @@ watch(
 )
 
 const lastSelectedDate = ref(selectedDate.value)
+
 watch(selectedDate, (v) => {
   // v-calendar가 같은 날짜를 다시 누르면 null로 만들 수 있음
   if (v === null) {
@@ -98,6 +94,22 @@ watch(selectedDate, (v) => {
   // 정상 선택이면 마지막 값 갱신
   lastSelectedDate.value = v
 })
+
+//모달창 여는거
+const onAccept = async (row) => {
+  const mid = managerId.value
+
+  await axios.put('/api/updateRstatus', {
+    resvId: row.resv_id,
+    managerId: mid,
+    resvStatus: 'f2',
+    rejectReason: null,
+  })
+
+  //승인대기 목록 다시 조회 -> 해당 확인중예약 테이블에서 사라짐
+  const res = await axios.get(`/api/resvByPendingList/${mid}`)
+  pendingReservedList.value = res.data ?? []
+}
 
 //콘솔확인용_나중에지우기
 console.log('counterStore:', counterStore)
@@ -121,14 +133,13 @@ console.log('login info:', isLogIn.value?.value?.info ?? isLogIn.value?.info)
       <!-- 부모 -->
       <div class="col-12 col-lg-6">
         <ReservationCright :selectedDate="selectedDate" :reservations="reservations" />
-        <!-- <ReservationCright/> -->
       </div>
     </div>
 
     <!-- 하단 승인대기중상담예약 섹션 -->
     <div class="row">
       <div class="col-12">
-        <ReservationTable :pendingReservedList="pendingReservedList" />
+        <ReservationTable :pendingReservedList="pendingReservedList" @accept="onAccept" />
       </div>
     </div>
   </div>
