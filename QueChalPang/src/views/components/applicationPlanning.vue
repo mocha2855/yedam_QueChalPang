@@ -60,9 +60,10 @@
                     type="text"
                     name="writer"
                     id="writer"
-                    value="최강희"
+                    v-model="memName"
                     class="form-control"
                     aria-describedby="passwordHelpInline"
+                    readonly
                   />
                 </div>
               </div>
@@ -295,8 +296,6 @@
       </div>
     </div>
 
-    <!-- 검토중인 계획서 -->
-
     <div class="card mb-2" style="height: 100%" v-else-if="memAuthority == 'a3'">
       <div class="card-body">
         <div class="row row-cols-auto">
@@ -307,7 +306,192 @@
       </div>
     </div>
 
-    <div v-if="application.planningReview.length > 0 && application.planning_reject == ''">
+    <!-- 반려 검토중 -->
+    <div
+      class="card mb-3"
+      v-for="plan in application.planningChangingReview"
+      :key="plan.planning_no"
+    >
+      <div class="card-body" v-if="application.planningChangingReview.length > 0">
+        <div class="card">
+          <div class="d-flex justify-content-between">
+            <div>
+              <p>
+                <span class="badge badge-sm bg-gradient-secondary">반려</span>지원계획{{
+                  plan.ranking
+                }}
+              </p>
+            </div>
+            <div>
+              <p>작성일: {{ plan.planning_date }}</p>
+            </div>
+          </div>
+
+          <form action="#" name="planning">
+            <div class="row g-3 mb-2 align-items-center">
+              <div class="col-2">
+                <label for="planningtime" class="col-form-label">지원기간</label>
+              </div>
+              <div class="col-3">
+                <input
+                  type="text"
+                  name="startDate"
+                  id="startDate"
+                  v-model="plan.planning_start"
+                  class="form-control"
+                />
+              </div>
+              <div class="col-3">
+                <input
+                  type="text"
+                  name="endDate"
+                  id="endDate"
+                  v-model="plan.planning_end"
+                  class="form-control"
+                />
+              </div>
+              <div class="col-2">
+                <label for="writer" class="col-form-label">작성자</label>
+              </div>
+              <div class="col-2">
+                <input
+                  type="text"
+                  name="writer"
+                  id="writer"
+                  value="최강희"
+                  class="form-control"
+                  readonly
+                />
+              </div>
+            </div>
+            <div class="row g-3 mb-2 align-items-center">
+              <div class="col-2">
+                <label for="title" class="col-form-label">제목</label>
+              </div>
+              <div class="col-10">
+                <input
+                  type="text"
+                  name="title"
+                  id="title"
+                  v-model="plan.planning_title"
+                  class="form-control"
+                />
+              </div>
+            </div>
+            <div class="row g-3 mb-2 align-items-center">
+              <div class="col-2">
+                <label for="content" class="col-form-label">내용</label>
+              </div>
+              <div class="col-10">
+                <input
+                  type="text"
+                  name="content"
+                  id="content"
+                  v-model="plan.planning_content"
+                  class="form-control"
+                />
+              </div>
+            </div>
+            <div class="row g-3 mb-2 align-items-center">
+              <div class="col-2">
+                <label for="attachmentFile" class="col-form-label">첨부파일</label>
+              </div>
+              <div class="col-10">
+                <input type="text" class="form-control" readonly />
+              </div>
+            </div>
+            <div class="d-flex justify-content-between">
+              <div class="row g-3 mb-2 align-items-center">
+                <div class="col-6">
+                  <label for="planningtime" class="col-form-label">결재자</label>
+                </div>
+                <div class="col-5">
+                  <input
+                    type="text"
+                    name="startDate"
+                    id="startDate"
+                    v-model="plan.planning_rejecter"
+                    class="form-control"
+                    readonly
+                  />
+                </div>
+              </div>
+              <div class="row g-3 mb-2 align-items-center">
+                <div class="col-5">
+                  <label for="writer" class="col-form-label">반려일</label>
+                </div>
+                <div class="col-7">
+                  <input
+                    type="text"
+                    name="writer"
+                    id="writer"
+                    class="form-control"
+                    v-model="plan.planning_reject_date"
+                    readonly
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="row g-3 mb-2 align-items-center">
+              <div class="col-2">
+                <label for="rejectReason" class="col-form-label">반려사유</label>
+              </div>
+              <div class="col-10">
+                <input
+                  type="text"
+                  name="rejectReason"
+                  id="rejectReason"
+                  v-model="plan.planning_reject"
+                  class="form-control"
+                  readonly
+                />
+              </div>
+            </div>
+          </form>
+
+          <div class="d-flex justify-content-end" v-if="memAuthority == 'a3'">
+            <button
+              type="button"
+              class="btn btn-primary btn-sm"
+              @click="modalOpen(plan.planning_no)"
+            >
+              승인
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary btn-sm"
+              @click="modalClose(plan.planning_no)"
+            >
+              반려
+            </button>
+          </div>
+          <rejecterModalLayout class="modal-wrap" v-if="plan.checked">
+            <template v-slot:body>정말 승인하시겠습니까?</template>
+            <template v-slot:footer>
+              <button v-on:click="sucessResult">확인</button>
+              <button v-on:click="notChecked(plan.planning_no)">취소</button>
+            </template>
+          </rejecterModalLayout>
+          <rejecterModalLayout class="modal-wrap" v-if="plan.rejectChecked">
+            <template v-slot:header>반려사유를 적어주세요.</template>
+            <template v-slot:body>
+              <textarea v-model="rejectReason"> rejectReason </textarea>
+            </template>
+            <template v-slot:footer>
+              <button v-on:click="rejectResult">확인</button>
+              <button v-on:click="notChecked(plan.planning_no)">취소</button>
+            </template>
+          </rejecterModalLayout>
+        </div>
+      </div>
+    </div>
+
+    <!--  검토중 계획서 -->
+    <div
+      v-if="
+        application.planningReview.length > 0 && application.planningReview.planning_reject == null
+      "
+    >
       <div class="card mb-3" v-for="plan in application.planningReview" :key="plan">
         <div class="card-body" v-if="application.planningReview.length > 0">
           <div class="formTop">
@@ -449,8 +633,8 @@ const counters = useCounterStore()
 const application = useApplicationStore()
 
 // 권한 및 담당 지원자 일치 확인
-// let id = counters.isLogIn.info.member_id
 let memAuthority = counters.isLogIn.info.member_authority // 권한
+let memName = counters.isLogIn.info.member_name // 작성자
 let realCount = ref() // 지원계획서 진짜 갯수
 
 onBeforeMount(async () => {
@@ -498,12 +682,17 @@ const submitPlanningInfo = async () => {
     formData.value.startDate == undefined ||
     formData.value.endDate == undefined ||
     formData.value.title == undefined ||
-    formData.value.content == undefined
+    formData.value.content == undefined ||
+    formData.value.startDate == '' ||
+    formData.value.endDate == '' ||
+    formData.value.title == '' ||
+    formData.value.content == ''
   ) {
     application.planningState++
     alert('내용 입력을 완료해주세요')
     return
   }
+  console.log('?: ', formData.value)
   application.planningState++
 
   checked.value = true
@@ -514,8 +703,19 @@ let planningNo = ref()
 let changingChecked = ref(false)
 
 const modalOpen = async (data) => {
+  // 검토중
   if (memAuthority == 'a3') {
     application.planningReview.forEach((review) => {
+      if (data == review.planning_no) {
+        review.checked = !review.checked
+        review.rejectChecked = false
+      }
+      planningNo.value = data
+      console.log(planningNo.value)
+      return
+    })
+    // 반려중
+    application.planningChangingReview.forEach((review) => {
       if (data == review.planning_no) {
         review.checked = !review.checked
         review.rejectChecked = false
@@ -584,6 +784,12 @@ const notChecked = (data) => {
         review.rejectChecked = false
       }
     })
+    application.planningChangingReview.forEach((review) => {
+      if (data == review.planning_no) {
+        review.checked = false
+        review.rejectChecked = false
+      }
+    })
   }
 }
 
@@ -591,6 +797,14 @@ const notChecked = (data) => {
 const modalClose = (data) => {
   if (memAuthority == 'a3') {
     application.planningReview.forEach((review) => {
+      if (data == review.planning_no) {
+        review.checked = false
+        review.rejectChecked = !review.rejectChecked
+        console.log(review.planning_no, review.rejectChecked)
+      }
+      planningNo.value = data
+    })
+    application.planningChangingReview.forEach((review) => {
       if (data == review.planning_no) {
         review.checked = false
         review.rejectChecked = !review.rejectChecked

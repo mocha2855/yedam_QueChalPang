@@ -38,23 +38,31 @@ export const useApplicationStore = defineStore('application', {
       this.planningChanging = []
       this.planningChangingReview = []
       this.allPlanned = (await axios.get('/api/planningReview/' + no)).data
-      const dateChange = (day) => {
-        let date = new Date(day)
-        let realDate = `${date.getFullYear(day)}.${date.getMonth(day) + 1}.${date.getDay(day)}`
-        return realDate
-      }
       for (let i = 0; i < this.allPlanned.length; i++) {
+        const dateChange = (day) => {
+          let date = new Date(day)
+          let realDate = `${date.getFullYear(day)}.${date.getMonth(day) + 1}.${date.getDay(day)}`
+          return realDate
+        }
         this.allPlanned[i].planning_start = dateChange(this.allPlanned[i].planning_start)
         this.allPlanned[i].planning_end = dateChange(this.allPlanned[i].planning_end)
-        this.allPlanned[i].planning_reject_date = dateChange(
-          this.allPlanned[i].planning_reject_date,
-        )
+        if (this.allPlanned[i].planning_reject_date != null) {
+          this.allPlanned[i].planning_reject_date = dateChange(
+            this.allPlanned[i].planning_reject_date,
+          )
+        }
         this.allPlanned[i].planning_date = dateChange(this.allPlanned[i].planning_date)
-        this.allPlanned[i].planning_date = dateChange(this.allPlanned[i].planning_approvedDate)
+        if (this.allPlanned[i].planning_approvedDate != null) {
+          this.allPlanned[i].planning_approvedDate = dateChange(
+            this.allPlanned[i].planning_approvedDate,
+          )
+        }
 
         if (
           this.allPlanned[i].planning_status === 'i1' &&
-          this.allPlanned[i].planning_reject_date == ''
+          this.allPlanned[i].planning_reject == null &&
+          this.allPlanned[i].planning_reject_date == null &&
+          this.allPlanned[i].planning_approvedDate == null
         ) {
           this.planningReview.push(this.allPlanned[i])
           console.log('검토중: ', this.planningReview)
@@ -72,6 +80,7 @@ export const useApplicationStore = defineStore('application', {
           this.allPlanned[i].planning_reject_date != null &&
           this.allPlanned[i].planning_approvedDate == null
         ) {
+          this.allPlanned[i].checked = false
           this.planningChangingReview.push(this.allPlanned[i])
           console.log('반려검토중', this.planningChangingReview)
         } else if (this.allPlanned[i].planning_status === 'i2') {
