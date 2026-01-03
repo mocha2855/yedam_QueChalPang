@@ -19,6 +19,7 @@ const showSidenav = computed(() => store.state.showSidenav)
 const isAuthPage = computed(() => {
   return (
     route.path.indexOf('sign') > 0 ||
+    route.path.indexOf('application') > 0 ||
     route.path === '/centerPopup' ||
     route.path === '/notConfirmed' ||
     route.path.indexOf('Id') > 0
