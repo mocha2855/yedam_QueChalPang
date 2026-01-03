@@ -22,7 +22,7 @@
           <h5>현재 지원계획서가<br />존재하지 않습니다.</h5>
         </div>
         <div v-else>
-          <div v-if="application.planningRejected.length > 0 && memAuthority == 'a2'">
+          <div v-if="application.planningRejected.length > 0">
             <div class="card mb-3" v-for="plan in application.planningRejected" :key="plan">
               <!-- 반려중 -->
               <div class="card-body">

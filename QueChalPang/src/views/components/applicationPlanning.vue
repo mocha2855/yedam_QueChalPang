@@ -125,7 +125,11 @@
       <div class="card mb-3">
         <div
           class="card-body"
-          v-if="memAuthority == 'a2' && application.planningChanging.length > 0"
+          v-if="
+            memAuthority == 'a2' &&
+            application.planningChanging.length > 0 &&
+            application.planningChanging.planning_approvedDate != ''
+          "
         >
           <div class="card">
             <div class="d-flex justify-content-between">
@@ -214,10 +218,57 @@
                   <input type="file" class="form-control" />
                 </div>
               </div>
+              <div class="d-flex justify-content-between">
+                <div class="row g-3 mb-2 align-items-center">
+                  <div class="col-6">
+                    <label for="planningtime" class="col-form-label">결재자</label>
+                  </div>
+                  <div class="col-5">
+                    <input
+                      type="text"
+                      name="startDate"
+                      id="startDate"
+                      v-model="application.planningChanging[0].planning_rejecter"
+                      class="form-control"
+                      readonly
+                    />
+                  </div>
+                </div>
+                <div class="row g-3 mb-2 align-items-center">
+                  <div class="col-5">
+                    <label for="writer" class="col-form-label">반려일</label>
+                  </div>
+                  <div class="col-7">
+                    <input
+                      type="text"
+                      name="writer"
+                      id="writer"
+                      class="form-control"
+                      v-model="application.planningChanging[0].planning_reject_date"
+                      readonly
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="row g-3 mb-2 align-items-center">
+                <div class="col-2">
+                  <label for="rejectReason" class="col-form-label">반려사유</label>
+                </div>
+                <div class="col-10">
+                  <input
+                    type="text"
+                    name="rejectReason"
+                    id="rejectReason"
+                    v-model="application.planningChanging[0].planning_reject"
+                    class="form-control"
+                    readonly
+                  />
+                </div>
+              </div>
             </form>
 
             <div class="d-flex justify-content-end">
-              <button type="button" class="btn btn-primary btn-sm" @click="submitPlanningInfo">
+              <button type="button" class="btn btn-primary btn-sm" @click="modalOpen">
                 승인요청
               </button>
               <button
@@ -228,11 +279,15 @@
                 취소
               </button>
             </div>
-            <rejecterModalLayout class="modal-wrap" v-if="checked">
+            <rejecterModalLayout class="modal-wrap" v-if="changingChecked">
               <template v-slot:body>정말 승인요청하시겠습니까?</template>
               <template v-slot:footer>
                 <button v-on:click="notChecked">취소</button>
-                <button v-on:click="sucessResult">확인</button>
+                <button
+                  v-on:click="submitChaingPlanningInfo(application.planningChanging[0].planning_no)"
+                >
+                  확인
+                </button>
               </template>
             </rejecterModalLayout>
           </div>
@@ -393,7 +448,6 @@ const route = useRoute()
 const counters = useCounterStore()
 const application = useApplicationStore()
 
-console.log(application.planningReview.planning_reject)
 // 권한 및 담당 지원자 일치 확인
 // let id = counters.isLogIn.info.member_id
 let memAuthority = counters.isLogIn.info.member_authority // 권한
@@ -457,6 +511,7 @@ const submitPlanningInfo = async () => {
 
 // 승인버튼
 let planningNo = ref()
+let changingChecked = ref(false)
 
 const modalOpen = async (data) => {
   if (memAuthority == 'a3') {
@@ -467,7 +522,13 @@ const modalOpen = async (data) => {
       }
       planningNo.value = data
       console.log(planningNo.value)
+      return
     })
+  }
+  // 반려후 승인요청버튼(담당자)
+  if (memAuthority == 'a2' && application.planningChanging != '') {
+    changingChecked.value = true
+    return
   }
 }
 
@@ -514,6 +575,7 @@ const sucessResult = async () => {
 const notChecked = (data) => {
   if (memAuthority == 'a2') {
     checked.value = false
+    changingChecked.value = false
   }
   if (memAuthority == 'a3') {
     application.planningReview.forEach((review) => {
@@ -567,9 +629,30 @@ const cancelPlanningInfo = async (data) => {
       planning_status: 'i3',
     })
     .then((res) => {
-      console.log(res)
       application.planningState++
+      console.log(res)
       application.planningChanging = []
+    })
+}
+
+// 반려 후 승인요청 모달창 승인 버튼(담당자)
+const submitChaingPlanningInfo = async (data) => {
+  console.log(data)
+  await axios //
+    .put('/api/submitChangingPlanningInfo/' + data, {
+      planning_id: application.dependantInfo.manager_id,
+      planning_rejecter: application.dependantInfo.application_rejector,
+      planning_start: application.planningChanging.planning_start,
+      planning_end: application.planningChanging.planning_end,
+      planning_title: application.planningChanging.planning_title,
+      planning_content: application.planningChanging.planning_content,
+      planning_approvedDate: null,
+    })
+    .then((res) => {
+      console.log(res)
+      application.planningChanging = []
+      changingChecked.value = false
+      alert('승인요청 완료')
     })
 }
 </script>

@@ -12,6 +12,7 @@ export const useApplicationStore = defineStore('application', {
       planningSuccess: [], // 승인완료 계획서
       planningRejected: [], // 반려된 계획서
       planningChanging: [], // 반려 후 수정중 계획서
+      planningChangingReview: [], // 반려 후 수정중 계획서
       planningState: 0, // 지원계획서 리로드용
     }
   },
@@ -35,13 +36,14 @@ export const useApplicationStore = defineStore('application', {
       this.planningSuccess = []
       this.planningRejected = []
       this.planningChanging = []
+      this.planningChangingReview = []
       this.allPlanned = (await axios.get('/api/planningReview/' + no)).data
+      const dateChange = (day) => {
+        let date = new Date(day)
+        let realDate = `${date.getFullYear(day)}.${date.getMonth(day) + 1}.${date.getDay(day)}`
+        return realDate
+      }
       for (let i = 0; i < this.allPlanned.length; i++) {
-        const dateChange = (day) => {
-          let date = new Date(day)
-          let realDate = `${date.getFullYear(day)}.${date.getMonth(day) + 1}.${date.getDay(day)}`
-          return realDate
-        }
         this.allPlanned[i].planning_start = dateChange(this.allPlanned[i].planning_start)
         this.allPlanned[i].planning_end = dateChange(this.allPlanned[i].planning_end)
         this.allPlanned[i].planning_reject_date = dateChange(
@@ -50,7 +52,6 @@ export const useApplicationStore = defineStore('application', {
         this.allPlanned[i].planning_date = dateChange(this.allPlanned[i].planning_date)
         this.allPlanned[i].planning_date = dateChange(this.allPlanned[i].planning_approvedDate)
 
-        console.log(this.allPlanned[i])
         if (
           this.allPlanned[i].planning_status === 'i1' &&
           this.allPlanned[i].planning_reject_date == ''
@@ -60,10 +61,19 @@ export const useApplicationStore = defineStore('application', {
         } else if (
           this.allPlanned[i].planning_status === 'i1' &&
           this.allPlanned[i].planning_reject != null &&
-          this.allPlanned[i].planning_reject_date != null
+          this.allPlanned[i].planning_reject_date != null &&
+          this.allPlanned[i].planning_approvedDate != null
         ) {
           this.planningChanging.push(this.allPlanned[i])
           console.log('반려수정중', this.planningChanging)
+        } else if (
+          this.allPlanned[i].planning_status === 'i1' &&
+          this.allPlanned[i].planning_reject != null &&
+          this.allPlanned[i].planning_reject_date != null &&
+          this.allPlanned[i].planning_approvedDate == null
+        ) {
+          this.planningChangingReview.push(this.allPlanned[i])
+          console.log('반려검토중', this.planningChangingReview)
         } else if (this.allPlanned[i].planning_status === 'i2') {
           this.planningSuccess.push(this.allPlanned[i])
           console.log('승인완료', this.planningSuccess)

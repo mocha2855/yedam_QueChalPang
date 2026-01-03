@@ -59,8 +59,6 @@ onBeforeMount(async () => {
   // 지원자 정보
   await application.checkdependantInfo(route.params.id)
   console.log('checkdependantInfo: ', application.dependantInfo)
-
-  await application.countRealReview(route.params.id)
 })
 
 // if (BeforeRouteLeave) {

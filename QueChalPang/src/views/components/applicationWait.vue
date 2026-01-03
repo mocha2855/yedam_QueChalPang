@@ -244,65 +244,50 @@ let id = counters.isLogIn.info.member_id
 // 대기 단계 상태 파악
 
 onBeforeMount(async () => {
-  await axios //
-    .get(`/api/application/${route.params.id}`)
-    .then((res) => {
-      console.log(res.data[0])
-      let data = res.data
-      console.log(1, data[0])
-    }),
-    await axios //
-      .get(`/api/applicationAuthority/` + id)
-      .then((req) => {
-        console.log(req.data[0])
-        memAuthority.value = req.data[0].member_authority
-        console.log(memAuthority.value)
+  if (memAuthority == 'a3') {
+    console.log(memAuthority == 'a3')
+    if (application.dependantInfo.status == 'e3') {
+      application.dependantInfo.status = '계획'
+    } else if (application.dependantInfo.status == 'e4') {
+      application.dependantInfo.status = '중점'
+    } else {
+      application.dependantInfo.status = '긴급'
+    }
+    console.log(result.status)
+    console.log('ㅁ', application.dependantInfo.status)
 
-        if (memAuthority.value == 'a3') {
-          console.log(memAuthority.value == 'a3')
-          if (application.dependantInfo.status == 'e3') {
-            application.dependantInfo.status = '계획'
-          } else if (application.dependantInfo.status == 'e4') {
-            application.dependantInfo.status = '중점'
-          } else {
-            application.dependantInfo.status = '긴급'
-          }
-          console.log(result.status)
-          console.log('ㅁ', application.dependantInfo.status)
+    status.forEach((statu) => {
+      console.log(statu.status)
+      if (statu.status == application.dependantInfo.status) {
+        console.log(statu.status == application.dependantInfo.status)
+        statu.complete = true
+        result.status = application.dependantInfo.status
+        console.log(result.status)
+      }
+    })
+  }
+  if (
+    memAuthority == 'a2' &&
+    application.dependantInfo.resv_status == 'f3' &&
+    application.dependantInfo.status !== 'e1' &&
+    application.dependantInfo.status_status == 'i3'
+  ) {
+    if (application.dependantInfo.status == 'e3') {
+      application.dependantInfo.status = '계획'
+    } else if (application.dependantInfo.status == 'e4') {
+      application.dependantInfo.status = '중점'
+    } else {
+      application.dependantInfo.status = '긴급'
+    }
 
-          status.forEach((statu) => {
-            console.log(statu.status)
-            if (statu.status == application.dependantInfo.status) {
-              console.log(statu.status == application.dependantInfo.status)
-              statu.complete = true
-              result.status = application.dependantInfo.status
-              console.log(result.status)
-            }
-          })
-        }
-        if (
-          memAuthority.value == 'a2' &&
-          application.dependantInfo.resv_status == 'f3' &&
-          application.dependantInfo.status !== 'e1' &&
-          application.dependantInfo.status_status == 'i3'
-        ) {
-          if (application.dependantInfo.status == 'e3') {
-            application.dependantInfo.status = '계획'
-          } else if (application.dependantInfo.status == 'e4') {
-            application.dependantInfo.status = '중점'
-          } else {
-            application.dependantInfo.status = '긴급'
-          }
-
-          status.forEach((statu) => {
-            if (statu.status == application.dependantInfo.status) {
-              statu.complete = true
-              result.status = application.dependantInfo.status
-              console.log(result.status)
-            }
-          })
-        }
-      })
+    status.forEach((statu) => {
+      if (statu.status == application.dependantInfo.status) {
+        statu.complete = true
+        result.status = application.dependantInfo.status
+        console.log(result.status)
+      }
+    })
+  }
 })
 
 // 대기단계 선택 값 출력
@@ -334,10 +319,10 @@ let checked = ref(false)
 
 const modalOpen = () => {
   if (rejectCheck.value == false)
-    if (memAuthority.value == 'a3') {
+    if (memAuthority == 'a3') {
       console.log(application.dependantInfo.status)
       checked.value = !checked.value
-    } else if ((memAuthority.value == 'a2', result.status != '')) {
+    } else if ((memAuthority == 'a2', result.status != '')) {
       checked.value = !checked.value
     } else alert('대기단계를 선택해주세요')
 }

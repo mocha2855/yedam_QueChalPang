@@ -41,6 +41,11 @@ const rejectPlanningUpdateInfo = `update planning
 set planning_reject_date = current_timestamp(), planning_approvedDate = current_timestamp(), ?
 where planning_no = ?`;
 
+// 지원계획서 반려 후 승인요청(담당자)
+const changingPlanningUpdateInfo = `update planning 
+set ?
+where planning_no = ?`;
+
 module.exports = {
   authoritySelectById,
   selectById,
@@ -53,4 +58,5 @@ module.exports = {
   insertPlannginInfo,
   sucessPlanningUpdateInfo,
   rejectPlanningUpdateInfo,
+  changingPlanningUpdateInfo,
 };

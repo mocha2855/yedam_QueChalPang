@@ -94,6 +94,13 @@ router.put("/rejectPlanningInfo/:no", async (req, res) => {
   res.send(post);
 });
 
-// 지원계획서 반려 후 수정(담당자)
-router.put;
+// 지원계획서 반려 후 승인요청(담당자)
+router.put("/submitChangingPlanningInfo/:no", async (req, res) => {
+  let no = req.params.no;
+  let data = req.body;
+  console.log(data);
+  let post = await applicationService.updateChangingPlanningInfo(no, data);
+  res.send(post);
+});
+
 module.exports = router;

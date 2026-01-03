@@ -80,6 +80,15 @@ const updateRejectPlanningInfo = async (planning_no, data) => {
   return post;
 };
 
+// 지원계획서 반려 후 승인요청(담당자)
+const updateChangingPlanningInfo = async (planning_no, data) => {
+  let post = await mysql.bquery("changingPlanningUpdateInfo", [
+    data,
+    planning_no,
+  ]);
+  return post;
+};
+
 module.exports = {
   authorityFindById,
   findById,
@@ -92,4 +101,5 @@ module.exports = {
   addPlanningInfo,
   updatePlanningInfo,
   updateRejectPlanningInfo,
+  updateChangingPlanningInfo,
 };
