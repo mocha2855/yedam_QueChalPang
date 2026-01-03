@@ -7,7 +7,7 @@ import { useRoute } from 'vue-router'
 import Navbar from '@/examples/Navbars/Navbar.vue'
 import Sidenav from './examples/Sidenav'
 import Configurator from '@/examples/Configurator.vue'
-import AllModal from './views/components/modla/AllModal.vue'
+import AllModal from './views/components/modal/AllModal.vue'
 
 const store = useStore()
 const route = useRoute()

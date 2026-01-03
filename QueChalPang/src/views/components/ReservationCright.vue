@@ -1,10 +1,10 @@
 <!-- src/components/ReservationCright.vue -->
- <!-- 자식 -->
+<!-- 자식 -->
 <script setup>
 import { computed } from 'vue'
 
 const props = defineProps({
-  selectedDate: { type: Date, required: true }, //부모가 무조건 selectedDate를 내려줘야 함 
+  selectedDate: { type: Date, required: true }, //부모가 무조건 selectedDate를 내려줘야 함
   reservations: { type: Array, default: () => [] },
 })
 
@@ -26,16 +26,28 @@ const timeText = (start_at) => {
   })
 }
 
-//예약상태 변환하기 !!! 
+//예약상태 변환하기 !!!
+// const statusMap = {
+//   f1: '확인중',
+//   f2: '예약확정',
+//   f3: '상담완료',
+//   f4: '취소',
+// }
+
+//예약상태 변환하고 클래스주기
 const statusMap = {
-  f1: '확인중',
-  f2: '예약확정',
-  f3: '상담완료',
-  f4: '취소',
+  f1: { label: '확인중', class: 'status-wait' },
+  f2: { label: '예약확정', class: 'status-confirm' },
+  f3: { label: '상담완료', class: 'status-done' },
+  f4: { label: '상담취소', class: 'status-cancel' },
 }
 
-const statusText = (status) => {
-  return statusMap[status] ?? status
+// const statusText = (status) => {
+//   return statusMap[status] ?? status
+// }
+
+const statusInfo = (s) => {
+  return statusMap[s] ?? { label: s ?? '', class: 'status-default' }
 }
 </script>
 
@@ -46,27 +58,18 @@ const statusText = (status) => {
     </div>
 
     <div class="card-body px-0 pt-0 pb-2">
-      <div v-if="reservations.length === 0" class="px-3 py-3 text-muted"> 해당 날짜에 예약이 없습니다.
-</div>
+      <div v-if="reservations.length === 0" class="px-3 py-3 text-muted">
+        해당 날짜에 예약이 없습니다.
+      </div>
 
       <div v-else class="table-responsive p-0">
         <table class="table align-items-center mb-0">
           <thead>
             <tr>
-              <th class="text-center text-primary">
-                보호자
-              </th>
-                   <th class="text-center text-primary">
-
-                지원자
-              </th>
-                    <th class="text-center text-primary">
-
-                상담시작시간
-              </th>
-              <th class="text-center text-primary">
-                상태
-              </th>
+              <th class="text-center text-primary">보호자</th>
+              <th class="text-center text-primary">지원자</th>
+              <th class="text-center text-primary">상담시작시간</th>
+              <th class="text-center text-primary">상태</th>
               <th class="text-center text-primary">일지</th>
             </tr>
           </thead>
@@ -82,21 +85,22 @@ const statusText = (status) => {
               </td>
 
               <td class="align-middle text-center">
-                <span class="text-secondary text-xs font-weight-bold text-dark ">
+                <span class="text-secondary text-xs font-weight-bold text-dark">
                   {{ timeText(r.start_at) }}
                 </span>
               </td>
 
-               <td class="align-middle text-center">
-                <span class="text-secondary text-xs font-weight-bold text-dark">
-                  {{statusText(r.status)}}
+              <td class="align-middle text-center">
+                <!-- <span class="text-secondary text-xs font-weight-bold text-dark">
+                  {{ statusText(r.status) }}
+                </span> -->
+                <span class="status-badge" :class="statusInfo(r.status).class">
+                  {{ statusInfo(r.status).label }}
                 </span>
               </td>
 
-               <td class="align-middle text-center">
-                <button>
-                  작성
-                </button>
+              <td class="align-middle text-center">
+                <button>작성</button>
               </td>
             </tr>
           </tbody>
@@ -105,3 +109,36 @@ const statusText = (status) => {
     </div>
   </div>
 </template>
+<style>
+.status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  min-width: 72px;
+}
+
+.status-wait {
+  background-color: #a2d1ff;
+  color: rgb(0, 78, 194);
+}
+
+.status-confirm {
+  background-color: #198754;
+}
+
+.status-done {
+  background-color: #212529;
+}
+
+.status-cancel {
+  background-color: #dc3545;
+}
+
+.status-default {
+  background-color: #ebebeb;
+}
+</style>
