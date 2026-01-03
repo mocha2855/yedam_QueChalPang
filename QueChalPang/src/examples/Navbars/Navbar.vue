@@ -101,7 +101,7 @@ isConfirm()
             </router-link>
           </li>
 
-          <li class="nav-item">
+          <li v-if="isLogIn.info.member_authority === 'a4'" class="nav-item">
             <router-link
               to="/surveys"
               class="nav-link text-black"
