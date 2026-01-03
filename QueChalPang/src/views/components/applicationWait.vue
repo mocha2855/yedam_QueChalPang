@@ -1,15 +1,15 @@
 <template>
   <div>
     <!-- 담당자로 접속시 -->
-    <div v-if="memAuthority == 'a2' && dependantWait.manager_id == id">
+    <div v-if="memAuthority == 'a2' && application.dependantInfo.manager_id == id">
       <div class="card-header">
         <h5>대기단계 승인요청</h5>
         <div class="card-body">
           <div
             v-if="
-              dependantWait.resv_status == 'f3' &&
-              dependantWait.status == 'e1' &&
-              dependantWait.status_status == null
+              application.dependantInfo.resv_status == 'f3' &&
+              application.dependantInfo.status == 'e1' &&
+              application.dependantInfo.status_status == null
             "
           >
             <p>최강희님의 대기 단계를 설정해주세요.</p>
@@ -41,24 +41,29 @@
               </template>
             </rejecterModalLayout>
           </div>
-          <div v-else-if="dependantWait.resv_status !== 'f3' && dependantWait.status == 'e1'">
+          <div
+            v-else-if="
+              application.dependantInfo.resv_status !== 'f3' &&
+              application.dependantInfo.status == 'e1'
+            "
+          >
             <p>상담 전입니다. 상담을 먼저 진행해주세요.</p>
           </div>
           <div
             v-else-if="
-              dependantWait.resv_status == 'f3' &&
-              dependantWait.status !== 'e1' &&
-              dependantWait.status_status == 'i1'
+              application.dependantInfo.resv_status == 'f3' &&
+              application.dependantInfo.status !== 'e1' &&
+              application.dependantInfo.status_status == 'i1'
             "
           >
             <p>대기 단계 선택을 완료했습니다.</p>
           </div>
           <div
             v-else-if="
-              dependantWait.resv_status == 'f3' &&
-              dependantWait.status != 'e1' &&
-              dependantWait.status != 'e2' &&
-              dependantWait.status_status == 'i2'
+              application.dependantInfo.resv_status == 'f3' &&
+              application.dependantInfo.status != 'e1' &&
+              application.dependantInfo.status != 'e2' &&
+              application.dependantInfo.status_status == 'i2'
             "
           >
             <p>대기단계 승인이 완료됐습니다. 지원계획서를 작성해주세요.</p>
@@ -66,9 +71,9 @@
           <!-- 반려되었을 경우 -->
           <div
             v-else-if="
-              dependantWait.resv_status == 'f3' &&
-              dependantWait.status !== 'e1' &&
-              dependantWait.status_status == 'i3'
+              application.dependantInfo.resv_status == 'f3' &&
+              application.dependantInfo.status !== 'e1' &&
+              application.dependantInfo.status_status == 'i3'
             "
           >
             <p>반려되셨습니다.</p>
@@ -82,8 +87,8 @@
             >
               <span>{{ statu.status }}</span>
             </div>
-            <textarea v-model="dependantWait.status_reject" readonly>
- dependantWait.status_reject </textarea
+            <textarea v-model="application.dependantInfo.status_reject" readonly>
+ application.dependantInfo.status_reject </textarea
             >
             <button v-on:click="modalOpen">승인요청</button>
 
@@ -99,17 +104,17 @@
       </div>
     </div>
     <!-- 관리자로 접속시 -->
-    <div v-else-if="memAuthority == 'a3' && dependantWait.application_rejector == id">
+    <div v-else-if="memAuthority == 'a3' && application.dependantInfo.application_rejector == id">
       <div class="card-header">
         <h5>대기단계 승인요청</h5>
         <div class="card-body">
           <div
             v-if="
-              dependantWait.resv_status == 'f3' &&
-              dependantWait.status != 'e1' &&
-              dependantWait.status != 'e2' &&
-              dependantWait.status_status == 'i1' &&
-              dependantWait.status_reject == null
+              application.dependantInfo.resv_status == 'f3' &&
+              application.dependantInfo.status != 'e1' &&
+              application.dependantInfo.status != 'e2' &&
+              application.dependantInfo.status_status == 'i1' &&
+              application.dependantInfo.status_reject == null
             "
           >
             <p>최강희님의 대기 단계를 승인해주세요.</p>
@@ -146,20 +151,20 @@
           </div>
           <div
             v-else-if="
-              dependantWait.resv_status == 'f3' &&
-              dependantWait.status != 'e1' &&
-              dependantWait.status != 'e2' &&
-              dependantWait.status_status == 'i2'
+              application.dependantInfo.resv_status == 'f3' &&
+              application.dependantInfo.status != 'e1' &&
+              application.dependantInfo.status != 'e2' &&
+              application.dependantInfo.status_status == 'i2'
             "
           >
             <p>승인완료 하셨습니다.</p>
           </div>
           <div
             v-else-if="
-              dependantWait.resv_status == 'f3' &&
-              dependantWait.status != 'e1' &&
-              dependantWait.status != 'e2' &&
-              dependantWait.status_status == 'i3'
+              application.dependantInfo.resv_status == 'f3' &&
+              application.dependantInfo.status != 'e1' &&
+              application.dependantInfo.status != 'e2' &&
+              application.dependantInfo.status_status == 'i3'
             "
           >
             <p>반려 하셨습니다.</p>
@@ -167,11 +172,11 @@
           <!-- 반려 후 재승인요청 -->
           <div
             v-if="
-              dependantWait.resv_status == 'f3' &&
-              dependantWait.status != 'e1' &&
-              dependantWait.status != 'e2' &&
-              dependantWait.status_status == 'i1' &&
-              dependantWait.status_reject != null
+              application.dependantInfo.resv_status == 'f3' &&
+              application.dependantInfo.status != 'e1' &&
+              application.dependantInfo.status != 'e2' &&
+              application.dependantInfo.status_status == 'i1' &&
+              application.dependantInfo.status_reject != null
             "
           >
             <p>최강희님의 대기 단계를 재승인해주세요.</p>
@@ -183,8 +188,8 @@
             >
               <span>{{ statu.status }}</span>
             </div>
-            <textarea v-model="dependantWait.status_reject" readonly>
-dependantWait.status_reject </textarea
+            <textarea v-model="application.dependantInfo.status_reject" readonly>
+application.dependantInfo.status_reject </textarea
             >
             <button v-on:click="modalOpen">승인</button>
             <button v-on:click="modalReject">반려</button>
@@ -220,7 +225,9 @@ import { ref, reactive, onBeforeMount } from 'vue'
 import axios from 'axios'
 import rejecterModalLayout from '../layouts/rejecterModalLayout.vue'
 import { useCounterStore } from '@/stores/member'
+import { useApplicationStore } from '@/stores/application'
 
+const application = useApplicationStore()
 const counters = useCounterStore()
 const route = useRoute()
 let result = reactive({ status: '' })
@@ -232,10 +239,9 @@ let status = reactive([
 ])
 
 // 접속자 권한 구분
-let memAuthority = ref()
+let memAuthority = counters.isLogIn.info.member_authority
 let id = counters.isLogIn.info.member_id
 // 대기 단계 상태 파악
-let dependantWait = ref([])
 
 onBeforeMount(async () => {
   await axios //
@@ -243,9 +249,7 @@ onBeforeMount(async () => {
     .then((res) => {
       console.log(res.data[0])
       let data = res.data
-      console.log(data[0].application_no)
-      dependantWait.value = data[0]
-      console.log(dependantWait.value.manager_id == id)
+      console.log(1, data[0])
     }),
     await axios //
       .get(`/api/applicationAuthority/` + id)
@@ -256,55 +260,50 @@ onBeforeMount(async () => {
 
         if (memAuthority.value == 'a3') {
           console.log(memAuthority.value == 'a3')
-          if (dependantWait.value.status == 'e3') {
-            dependantWait.value.status = '계획'
-          } else if (dependantWait.value.status == 'e4') {
-            dependantWait.value.status = '중점'
+          if (application.dependantInfo.status == 'e3') {
+            application.dependantInfo.status = '계획'
+          } else if (application.dependantInfo.status == 'e4') {
+            application.dependantInfo.status = '중점'
           } else {
-            dependantWait.value.status = '긴급'
+            application.dependantInfo.status = '긴급'
           }
           console.log(result.status)
-          console.log('ㅁ', dependantWait.value.status)
+          console.log('ㅁ', application.dependantInfo.status)
 
           status.forEach((statu) => {
             console.log(statu.status)
-            if (statu.status == dependantWait.value.status) {
-              console.log(statu.status == dependantWait.value.status)
+            if (statu.status == application.dependantInfo.status) {
+              console.log(statu.status == application.dependantInfo.status)
               statu.complete = true
-              result.status = dependantWait.value.status
+              result.status = application.dependantInfo.status
               console.log(result.status)
             }
           })
         }
         if (
           memAuthority.value == 'a2' &&
-          dependantWait.value.resv_status == 'f3' &&
-          dependantWait.value.status !== 'e1' &&
-          dependantWait.value.status_status == 'i3'
+          application.dependantInfo.resv_status == 'f3' &&
+          application.dependantInfo.status !== 'e1' &&
+          application.dependantInfo.status_status == 'i3'
         ) {
-          if (dependantWait.value.status == 'e3') {
-            dependantWait.value.status = '계획'
-          } else if (dependantWait.value.status == 'e4') {
-            dependantWait.value.status = '중점'
+          if (application.dependantInfo.status == 'e3') {
+            application.dependantInfo.status = '계획'
+          } else if (application.dependantInfo.status == 'e4') {
+            application.dependantInfo.status = '중점'
           } else {
-            dependantWait.value.status = '긴급'
+            application.dependantInfo.status = '긴급'
           }
 
           status.forEach((statu) => {
-            if (statu.status == dependantWait.value.status) {
+            if (statu.status == application.dependantInfo.status) {
               statu.complete = true
-              result.status = dependantWait.value.status
+              result.status = application.dependantInfo.status
               console.log(result.status)
             }
           })
         }
       })
 })
-
-// 지원자 확인
-
-// 대기단계 보낼 값
-//let result = reactive({ status: '', rejecor: '' })
 
 // 대기단계 선택 값 출력
 
@@ -336,7 +335,7 @@ let checked = ref(false)
 const modalOpen = () => {
   if (rejectCheck.value == false)
     if (memAuthority.value == 'a3') {
-      console.log(dependantWait.value.status)
+      console.log(application.dependantInfo.status)
       checked.value = !checked.value
     } else if ((memAuthority.value == 'a2', result.status != '')) {
       checked.value = !checked.value
@@ -367,12 +366,6 @@ axios //
     console.log(rejected.value)
   })
 
-// const showValue = () => {
-//   console.log(event.target.value)
-//   // result.rejector = event.target.value
-//   //console.log(result)
-// }
-
 // 승인요청 모달창
 const realResult = async () => {
   if (result.status == '계획') {
@@ -398,7 +391,7 @@ const realResult = async () => {
       console.log(res)
       let data = res.data
       console.log(data[0].application_no)
-      dependantWait.value = data[0]
+      application.dependantInfo = data[0]
     })
 }
 
@@ -425,7 +418,7 @@ const sucessResult = async () => {
       console.log(res)
       let data = res.data
       console.log(data[0].application_no)
-      dependantWait.value = data[0]
+      application.dependantInfo = data[0]
     })
 }
 
@@ -451,7 +444,7 @@ const rejectResult = async () => {
         console.log(res)
         let data = res.data
         console.log(data[0].application_no)
-        dependantWait.value = data[0]
+        application.dependantInfo = data[0]
       })
   }
 }
