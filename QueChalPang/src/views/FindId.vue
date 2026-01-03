@@ -45,7 +45,7 @@ const matchName = async () => {
   let result1 = await axios.get(`/api/member/${member.name}/${member.phone}/1`)
   result1 = result1.data[0]
   if (result1.count == 1) {
-    // let result2= await axios.post(`/api/authenticate`,{})
+    // let result2= await axios.post(`/api/authenticate`,{phone:member.phone})
   } else {
     alert('입력하신 번호와 성함이 일치하는 계정이 존재하지 않습니다.')
   }

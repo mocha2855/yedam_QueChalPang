@@ -80,7 +80,6 @@ const addSurvey = async (data) => {
 
 //survey 수정
 const modifySurvey = async (no, data) => {
-  //수정이력 먼저 저장
   const {
     survey_title_no,
     survey_title,
@@ -88,7 +87,6 @@ const modifySurvey = async (no, data) => {
     person,
     reason,
     subtitles,
-    qitems,
   } = data;
 
   //수정이력 저장
@@ -98,14 +96,12 @@ const modifySurvey = async (no, data) => {
     person,
     reason,
   ]);
-  // 2. 실제 데이터 수정
+
+  // 실제 데이터 수정
   if (survey_title) {
-    await mysql.squery("updateTitle", [
-      survey_title,
-      survey_no,
-      survey_title_no,
-    ]);
+    await mysql.squery("updateTitle", [survey_title, survey_title_no]);
   }
+
   if (subtitles) {
     for (const subtitle of subtitles) {
       await mysql.squery("updateSubtitle", [
@@ -113,20 +109,21 @@ const modifySurvey = async (no, data) => {
         subtitle.survey_subtitle_detail,
         subtitle.survey_subtitle_no,
       ]);
+
+      if (subtitle.questionList) {
+        for (const question of subtitle.questionList) {
+          await mysql.squery("updateQitem", [
+            question.survey_qitem_question,
+            question.survey_qitem_type,
+            question.survey_qitem_no,
+          ]);
+        }
+      }
     }
   }
-  if (qitems) {
-    for (const qitem of qitems) {
-      await mysql.squery("updateQitem", [
-        qitem.survey_qitem_question,
-        qitem.survey_qitem_type,
-        qitem.survey_qitem_no,
-      ]);
-    }
-  }
+
   return result;
 };
-
 module.exports = {
   findAll,
   findByNo,
