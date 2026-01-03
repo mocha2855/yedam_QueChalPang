@@ -64,18 +64,17 @@ const deleteReserv = `
 //[5]보호자 - 예약 내역 조회
 const selectGuardianResv = `
   SELECT
-    g.member_name    AS guardian_name,
-    d.dependant_name AS dependant_name,    
-    r.start_at       AS start_at,
-    r.resv_status         AS status,
-    r.guardian_id,
-    r.manager_id
+    r.resv_id,
+    d.dependant_name     AS dependant_name,
+    r.start_at           AS start_at,
+    r.application_no     AS application_no,
+    r.created_at         AS created_at,
+    r.resv_status        AS status
   FROM reservation r
-  JOIN member g
-    ON g.member_id = r.guardian_id
   JOIN dependant d
     ON d.dependant_no = r.dependant_no
   WHERE r.guardian_id = ?
+  ORDER BY r.start_at DESC;
 `;
 
 //[6]보호자 - 예약 요청
