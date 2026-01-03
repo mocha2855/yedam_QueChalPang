@@ -3,13 +3,14 @@
 <script setup>
 import { ref } from 'vue'
 import ConfirmModal from './modal/ConfirmModal.vue'
+import RejectReasonModal from './modal/RejectReasonModal.vue'
 
 const { pendingReservedList } = defineProps({
   pendingReservedList: { type: Array, required: true },
 })
 
 //accept를 부모한테(ResersavionTeacher.vue) 보내게 해줌.
-const emit = defineEmits(['accept'])
+const emit = defineEmits(['accept', 'reject'])
 
 const timeText = (start_at) => {
   if (!start_at) return ''
@@ -22,6 +23,7 @@ const statusText = (status) => statusMap[status] ?? status ?? ''
 
 const selectedRow = ref(null)
 const showConfirm = ref(false)
+const showReject = ref(false)
 
 //수락 버튼 클릭하면 모달창 실행
 //매개변수 row : 테이블 한 줄의 데이터 -> resv_id, guardian_name, ...
@@ -35,9 +37,21 @@ const confirmAccept = () => {
   closeModal()
 }
 
+//반려버튼
+const openRejectModal = (row) => {
+  selectedRow.value = row
+  showReject.value = true
+}
+
+const confirmReject = (reason) => {
+  emit('reject', { row: selectedRow.value, reason })
+  closeModal()
+}
+
 const closeModal = () => {
   selectedRow.value = null
   showConfirm.value = false
+  showReject.value = false
 }
 </script>
 
@@ -87,11 +101,11 @@ const closeModal = () => {
               </td>
 
               <td class="align-middle">
-                <button class="btn btn-success btn-sm me-2" @click="openAcceptModal(r)">
+                <button class="btn btn-success btn-sm me-2" v-on:click="openAcceptModal(r)">
                   <!-- openAcceptModel(r)의 r은 현재 클릭한 행의 데이터들.  -->
                   수락
                 </button>
-                <button class="btn btn-danger btn-sm" disabled>반려</button>
+                <button class="btn btn-danger btn-sm" v-on:click="openRejectModal(r)">반려</button>
               </td>
             </tr>
           </tbody>
@@ -105,6 +119,13 @@ const closeModal = () => {
     :show="showConfirm"
     message="예약을 확정하시겠습니까?"
     v-on:confirm="confirmAccept"
+    v-on:cancel="closeModal"
+  />
+
+  <RejectReasonModal
+    :show="showReject"
+    title="예약신청 반려 사유 작성"
+    v-on:confirm="confirmReject"
     v-on:cancel="closeModal"
   />
 </template>
