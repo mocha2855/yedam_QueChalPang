@@ -434,43 +434,4 @@ const rejectResult = async () => {
   }
 }
 </script>
-<style scoped>
-.card-header {
-  display: flex;
-  width: 100%;
-  height: 448.5px;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-.card-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.container p {
-  text-align: center;
-}
-.three {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background-color: blanchedalmond;
-  display: inline-block;
-  text-align: center;
-}
-.three p {
-  text-align: center;
-  line-height: 100px;
-}
-button {
-  clear: both;
-  display: block;
-  margin: 0 auto;
-}
-.changed {
-  background-color: green;
-  color: #fff;
-}
-</style>
+<style scoped></style>

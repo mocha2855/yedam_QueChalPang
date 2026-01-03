@@ -402,7 +402,7 @@
             </div>
             <div class="d-flex justify-content-between">
               <div class="row g-3 mb-2 align-items-center">
-                <div class="col-6">
+                <div class="col-7">
                   <label for="planningtime" class="col-form-label">결재자</label>
                 </div>
                 <div class="col-5">

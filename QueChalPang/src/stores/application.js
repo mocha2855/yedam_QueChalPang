@@ -20,6 +20,16 @@ export const useApplicationStore = defineStore('application', {
     // 지원자 정보 확인
     async checkdependantInfo(no) {
       this.dependantInfo = (await axios.get(`/api/application/` + no)).data[0]
+      if (this.dependantInfo.status == 'e3') {
+        this.dependantInfo.status = '계획'
+      }
+      if (this.dependantInfo.status == 'e4') {
+        this.dependantInfo.status = '중점'
+      }
+      if (this.dependantInfo.status == 'e5') {
+        this.dependantInfo.status = '긴급'
+      }
+
       return this.dependantInfo
     },
 

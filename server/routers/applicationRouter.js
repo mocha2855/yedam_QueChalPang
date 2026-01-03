@@ -3,12 +3,10 @@ const express = require("express");
 const router = express.Router();
 const applicationService = require("../services/applicationServiceJH.js");
 
-// 접속자 권한 확인
-router.get(`/applicationAuthority/:no`, async (req, res) => {
+// 지원자 정보
+router.get(`/dependantInfo/:no`, async (req, res) => {
   let no = req.params.no;
-  console.log(no);
-  let post = await applicationService.authorityFindById(no);
-  console.log(post);
+  let post = await applicationService.dependantFindById(no);
   res.send(post);
 });
 
