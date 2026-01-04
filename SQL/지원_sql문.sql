@@ -4,6 +4,13 @@ insert into test_tbl
 values (1);
 commit;
 
+
+select * from member;
+SELECT * FROM member 
+WHERE member_authority IN ('u1', 'a3');
+
+
+
 delete from survey where survey_no= '11';
 delete from survey_title where survey_title_no= '1';
 delete from survey_subtitle where survey_subtitle_no= '14';
