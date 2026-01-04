@@ -2,7 +2,7 @@
 import { onBeforeUnmount, onBeforeMount, reactive } from 'vue'
 import { useStore } from 'vuex'
 import { useCounterStore } from '@/stores/member'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import axios from 'axios'
 import Navbar from '@/examples/PageLayout/Navbar.vue'
 import ArgonInput from '@/components/ArgonInput.vue'
@@ -14,6 +14,7 @@ const body = document.getElementsByTagName('body')[0]
 const store = useStore()
 const counterStore = useCounterStore()
 const router = useRouter()
+const route = useRoute()
 const { isLogIn } = storeToRefs(counterStore)
 const member = reactive({
   id: '',
@@ -27,6 +28,9 @@ onBeforeMount(() => {
   store.state.showSidenav = false
   store.state.showFooter = false
   body.classList.remove('bg-gray-100')
+  if (route.query.id != '') {
+    member.id = route.query.id
+  }
 })
 
 onBeforeUnmount(() => {
@@ -56,6 +60,9 @@ const goToBoardInfo = () => {
 }
 const toFindId = () => {
   router.push({ name: 'FindId' })
+}
+const toResetPassword = () => {
+  router.push({ name: 'ResetPass' })
 }
 </script>
 <template>

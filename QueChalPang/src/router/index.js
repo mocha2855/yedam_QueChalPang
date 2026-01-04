@@ -6,6 +6,7 @@ import Signup from '../views/Signup.vue' //회원가입
 import Signin from '../views/Signin.vue' //로그인
 import Application from '../views/application.vue' // 각종 지원서
 import FindId from '../views/FindId.vue' //아이디찾기
+import ResetPass from '../views/ResetPass.vue' //비밀번호 재설정 페이지
 import applicationWait from '../views/components/applicationWait.vue' // 지원대기
 import applicationPlanning from '../views/components/applicationPlanning.vue' //지원계획서(작성 및 검토중)
 import applicationPlanningSuccess from '../views/components/applicationPlanningSuccess.vue' //지원계획서(작성 및 검토중)
@@ -52,6 +53,11 @@ const routes = [
     path: '/findId',
     name: 'FindId',
     component: FindId,
+  },
+  {
+    path: '/resetPassword',
+    name: 'ResetPass',
+    component: ResetPass,
   },
   {
     path: '/application/:id',
