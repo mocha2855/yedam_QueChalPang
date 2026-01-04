@@ -157,6 +157,29 @@ const selectCenterAddress = `
   WHERE r.resv_id = ?
 `;
 
+//담당자 상담차단 관련
+//[9]매니저id로 센터점심 조회
+const selectCenterLunchByManager = `
+  SELECT c.center_lunch
+  FROM member m
+  JOIN center c ON c.center_no = m.center_no
+  WHERE m.member_id = ?;
+`;
+
+//[10]상담시간 차단하기
+const updateScheduleBlock = `
+  INSERT INTO schedule_block (member_id, block_date, block_time)
+  VALUES (?, ?, ?);
+`;
+
+//[11]상담시간 차단해제하기
+const deleteScheduleBlock = `
+  DELETE FROM schedule_block
+  WHERE member_id = ?
+    AND block_date = ?
+    AND block_time = ?;
+`;
+
 module.exports = {
   selectTResvByDate,
   selectTResvbyManager,
@@ -172,4 +195,7 @@ module.exports = {
   selectDependant,
   selectApplicationByDependant,
   selectCenterAddress,
+  selectCenterLunchByManager,
+  updateScheduleBlock,
+  deleteScheduleBlock,
 };

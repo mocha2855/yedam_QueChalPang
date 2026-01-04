@@ -15,6 +15,9 @@ const {
   selectManagerbyDeptno,
   selectApplicationByDependant,
   selectCenterAddress,
+  selectCenterLunchByManager,
+  updateScheduleBlock,
+  deleteScheduleBlock,
 } = require("../database/sqls/reservation.js");
 
 //[1]담당자 - 해당 날짜의 모든 예약 조회
@@ -126,6 +129,46 @@ const findCenterAddrByResvId = async (resvId) => {
   return await mysql.rquery(selectCenterAddress, [resvId]);
 };
 
+//담당자 상담차단 관련
+//[9]매니저id로 센터점심 조회
+const findCenterLunchByManager = async (managerId) => {
+  return await mysql.rquery("selectCenterLunchByManager", [managerId]);
+};
+
+//[9]-1
+const findManagerAvailability = async (managerId, date) => {
+  // 1) 센터점심시간 가져오기
+  let centerLunch = null;
+  const lunchRows = await mysql.rquery(selectCenterLunchByManager, [managerId]);
+
+  if (lunchRows.length > 0) {
+    centerLunch = lunchRows[0].center_lunch;
+  }
+
+  // 2) 예약된 시간 목록
+  const reserved = await mysql.rquery(selectReservedTimes, [managerId, date]);
+
+  // 3) 차단된 시간 목록
+  const blocked = await mysql.rquery(selectBlockedTimes, [managerId, date]);
+
+  return {
+    managerId,
+    centerLunch,
+    reservedTimes: reserved.map((r) => r.reserved_time),
+    blockedTimes: blocked.map((b) => b.block_time),
+  };
+};
+
+//[10]상담시간 차단하기
+const modifyScheduleBlock = async (managerId, date, time) => {
+  return await mysql.rquery(updateScheduleBlock, [managerId, date, time]);
+};
+
+//[11]상담시간 차단해제하기
+const removeScheduleBlock = async (managerId, date, time) => {
+  return await mysql.rquery(deleteScheduleBlock, [managerId, date, time]);
+};
+
 module.exports = {
   findByDate,
   findTresvByManager,
@@ -139,4 +182,8 @@ module.exports = {
   findDependants,
   findApplication,
   findCenterAddrByResvId,
+  findCenterLunchByManager,
+  findManagerAvailability,
+  modifyScheduleBlock,
+  removeScheduleBlock,
 };
