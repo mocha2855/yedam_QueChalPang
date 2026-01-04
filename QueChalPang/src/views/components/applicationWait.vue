@@ -1,20 +1,21 @@
 <template>
-  <div>
+  <div class="d-flex justify-content-center align-items-center vh-100">
     <!-- 담당자로 접속시 -->
     <div v-if="memAuthority == 'a2' && application.dependantInfo.manager_id == id">
-      <div class="card-header">
-        <h5>대기단계 승인요청</h5>
-        <div class="card-body">
-          <div
-            v-if="
-              application.dependantInfo.resv_status == 'f3' &&
-              application.dependantInfo.status == 'e1' &&
-              application.dependantInfo.status_status == null
-            "
-          >
-            <p>최강희님의 대기 단계를 설정해주세요.</p>
+      <div
+        v-if="
+          application.dependantInfo.resv_status == 'f3' &&
+          application.dependantInfo.status == 'e1' &&
+          application.dependantInfo.status_status == null
+        "
+      >
+        <div v-if="!checked">
+          <h5 class="mb-4" :value="props.dependantInfo.member_name" style="text-align: center">
+            {{ props.dependantInfo.dependant_name }}님의<br />대기 단계를 설정해주세요.
+          </h5>
+          <div>
             <div
-              class="three"
+              class="circle mx-2"
               v-for="statu in status"
               v-bind:class="{ changed: statu.complete }"
               v-bind:key="statu"
@@ -22,214 +23,255 @@
             >
               <span>{{ statu.status }}</span>
             </div>
-            <button v-on:click="modalOpen">승인요청</button>
-
-            <rejecterModalLayout class="modal-wrap" v-show="checked">
-              <!-- <template v-slot:header>승인요청 받을 기관관리자를 선택해주세요.</template>
-        <template v-slot:body>
-          <select name="rejector" id="rejector" v-on:change="showValue()">
-            <option value="">관리자 선택</option>
-            <option v-for="reject in rejected" v-bind:key="reject" v-bind:value="reject">
-              {{ reject }}
-            </option>
-          </select>
-        </template> -->
-              <template v-slot:body>승인요청하시겠습니까?</template>
-              <template v-slot:footer>
-                <button v-on:click="realResult">승인요청</button>
-                <button v-on:click="notChecked">취소</button>
-              </template>
-            </rejecterModalLayout>
           </div>
-          <div
-            v-else-if="
-              application.dependantInfo.resv_status !== 'f3' &&
-              application.dependantInfo.status == 'e1'
-            "
-          >
-            <p>상담 전입니다. 상담을 먼저 진행해주세요.</p>
-          </div>
-          <div
-            v-else-if="
-              application.dependantInfo.resv_status == 'f3' &&
-              application.dependantInfo.status !== 'e1' &&
-              application.dependantInfo.status_status == 'i1'
-            "
-          >
-            <p>대기 단계 선택을 완료했습니다.</p>
-          </div>
-          <div
-            v-else-if="
-              application.dependantInfo.resv_status == 'f3' &&
-              application.dependantInfo.status != 'e1' &&
-              application.dependantInfo.status != 'e2' &&
-              application.dependantInfo.status_status == 'i2'
-            "
-          >
-            <p>대기단계 승인이 완료됐습니다. 지원계획서를 작성해주세요.</p>
-          </div>
-          <!-- 반려되었을 경우 -->
-          <div
-            v-else-if="
-              application.dependantInfo.resv_status == 'f3' &&
-              application.dependantInfo.status !== 'e1' &&
-              application.dependantInfo.status_status == 'i3'
-            "
-          >
-            <p>반려되셨습니다.</p>
-            <p>최강희님의 대기 단계를 다시 설정해주세요.</p>
-            <div
-              class="three"
-              v-for="statu in status"
-              v-bind:class="{ changed: statu.complete }"
-              v-bind:key="statu"
-              v-on:click="showStatus(statu.status)"
-            >
-              <span>{{ statu.status }}</span>
-            </div>
-            <textarea v-model="application.dependantInfo.status_reject" readonly>
- application.dependantInfo.status_reject </textarea
-            >
-            <button v-on:click="modalOpen">승인요청</button>
-
-            <rejecterModalLayout class="modal-wrap" v-show="checked">
-              <template v-slot:body>승인요청하시겠습니까?</template>
-              <template v-slot:footer>
-                <button v-on:click="realResult">승인요청</button>
-                <button v-on:click="notChecked">취소</button>
-              </template>
-            </rejecterModalLayout>
-          </div>
+          <button class="btn-save my-4" type="button" v-on:click="modalOpen" style="float: right">
+            승인요청
+          </button>
         </div>
+        <ApplicationModal v-if="checked">
+          <template v-slot:header><h2></h2></template>
+          <template v-slot:body
+            ><h2 style="text-align: center">
+              대기단계를
+              <span :value="result.status" style="color: orange">{{ result.status }}</span
+              >으로 <br />승인요청하시겠습니까?
+            </h2></template
+          >
+          <template v-slot:footer>
+            <button class="btn-save" v-on:click="realResult">승인요청</button>
+            <button class="btn-cancel" v-on:click="notChecked">취소</button>
+          </template>
+        </ApplicationModal>
+      </div>
+      <div
+        v-else-if="
+          application.dependantInfo.resv_status != 'f3' && application.dependantInfo.status == 'e1'
+        "
+      >
+        <h3>상담 전입니다. 상담을 먼저 진행해주세요.</h3>
+      </div>
+      <div
+        v-else-if="
+          application.dependantInfo.resv_status == 'f3' &&
+          application.dependantInfo.status !== 'e1' &&
+          application.dependantInfo.status_status == 'i1'
+        "
+      >
+        <h3>대기 단계 선택을 완료했습니다.</h3>
+      </div>
+      <div
+        v-else-if="
+          application.dependantInfo.resv_status == 'f3' &&
+          application.dependantInfo.status != 'e1' &&
+          application.dependantInfo.status != 'e2' &&
+          application.dependantInfo.status_status == 'i2'
+        "
+      >
+        <h3>대기단계 승인이 완료됐습니다. 지원계획서를 작성해주세요.</h3>
+      </div>
+      <!-- 반려되었을 경우 -->
+
+      <div
+        v-else-if="
+          application.dependantInfo.resv_status == 'f3' &&
+          application.dependantInfo.status !== 'e1' &&
+          application.dependantInfo.status_status == 'i3'
+        "
+      >
+        <div v-if="!checked">
+          <h3 :value="props.dependantInfo.member_name" style="text-align: center">
+            반려되셨습니다.<br />
+            {{ props.dependantInfo.member_name }}님의 대기 단계를 다시 설정해주세요.
+          </h3>
+          <div class="mb-4">
+            <div
+              class="circle mx-2"
+              v-for="statu in status"
+              v-bind:class="{ changed: statu.complete }"
+              v-bind:key="statu"
+              v-on:click="showStatus(statu.status)"
+            >
+              <span>{{ statu.status }}</span>
+            </div>
+          </div>
+          <textarea class="reason-input" v-model="application.dependantInfo.status_reject" disabled>
+ application.dependantInfo.status_reject </textarea
+          >
+          <button type="button" class="btn-save" v-on:click="modalOpen" style="float: right">
+            승인요청
+          </button>
+        </div>
+        <ApplicationModal v-if="checked">
+          <template v-slot:header><h2></h2></template>
+          <template v-slot:body
+            ><h2 style="text-align: center">
+              대기단계를
+              <span :value="result.status" style="color: orange">{{ result.status }}</span
+              >으로 <br />재승인요청하시겠습니까?
+            </h2></template
+          >
+          <template v-slot:footer>
+            <button class="btn-save" v-on:click="realResult">승인요청</button>
+            <button class="btn-cancel" v-on:click="notChecked">취소</button>
+          </template>
+        </ApplicationModal>
       </div>
     </div>
     <!-- 관리자로 접속시 -->
     <div v-else-if="memAuthority == 'a3' && application.dependantInfo.application_rejector == id">
-      <div class="card-header">
-        <h5>대기단계 승인요청</h5>
-        <div class="card-body">
-          <div
-            v-if="
-              application.dependantInfo.resv_status == 'f3' &&
-              application.dependantInfo.status != 'e1' &&
-              application.dependantInfo.status != 'e2' &&
-              application.dependantInfo.status_status == 'i1' &&
-              application.dependantInfo.status_reject == null
-            "
-          >
-            <p>최강희님의 대기 단계를 승인해주세요.</p>
+      <div
+        v-if="
+          application.dependantInfo.resv_status == 'f3' &&
+          application.dependantInfo.status != 'e1' &&
+          application.dependantInfo.status != 'e2' &&
+          application.dependantInfo.status_status == 'i1' &&
+          application.dependantInfo.status_reject == null
+        "
+      >
+        <div v-if="!checked && !rejectCheck">
+          <h5 class="mb-4" :value="props.dependantInfo.member_name" style="text-align: center">
+            {{ props.dependantInfo.dependant_name }}님의<br />대기 단계를 승인해주세요.
+          </h5>
+          <div class="mb-4">
             <div
-              class="three"
+              class="circle mx-2"
               v-for="statu in status"
               v-bind:class="{ changed: statu.complete }"
               v-bind:key="statu"
             >
               <span>{{ statu.status }}</span>
             </div>
-            <button v-on:click="modalOpen">승인</button>
-            <button v-on:click="modalReject">반려</button>
-            <!-- 승인 버튼 누를 경우 -->
-            <rejecterModalLayout class="modal-wrap" v-show="checked">
-              <template v-slot:body>정말 승인하시겠습니까?</template>
-              <template v-slot:footer>
-                <button v-on:click="sucessResult">확인</button>
-                <button v-on:click="notChecked">취소</button>
-              </template>
-            </rejecterModalLayout>
-            <!-- 반려버튼 누를 경우 -->
+          </div>
+          <div style="float: right">
+            <button class="btn-save" v-on:click="modalOpen">승인</button>
+            <button class="btn-cancel" v-on:click="modalReject">반려</button>
+          </div>
+        </div>
+        <!-- 승인 버튼 누를 경우 -->
 
-            <rejecterModalLayout class="modal-wrap" v-show="rejectCheck">
-              <template v-slot:header>반려사유를 적어주세요.</template>
-              <template v-slot:body>
-                <textarea v-model="rejectReason"> rejectReason </textarea>
-              </template>
-              <template v-slot:footer>
-                <button v-on:click="rejectResult">확인</button>
-                <button v-on:click="notChecked">취소</button>
-              </template>
-            </rejecterModalLayout>
-          </div>
-          <div
-            v-else-if="
-              application.dependantInfo.resv_status == 'f3' &&
-              application.dependantInfo.status != 'e1' &&
-              application.dependantInfo.status != 'e2' &&
-              application.dependantInfo.status_status == 'i2'
-            "
+        <ApplicationModal v-if="checked">
+          <template v-slot:header><h2></h2></template>
+          <template v-slot:body
+            ><h2 style="text-align: center">
+              대기단계를
+              <span :value="result.status" style="color: orange">{{ result.status }}</span
+              >으로 <br />승인하시겠습니까?
+            </h2></template
           >
-            <p>승인완료 하셨습니다.</p>
-          </div>
-          <div
-            v-else-if="
-              application.dependantInfo.resv_status == 'f3' &&
-              application.dependantInfo.status != 'e1' &&
-              application.dependantInfo.status != 'e2' &&
-              application.dependantInfo.status_status == 'i3'
-            "
-          >
-            <p>반려 하셨습니다.</p>
-          </div>
-          <!-- 반려 후 재승인요청 -->
-          <div
-            v-if="
-              application.dependantInfo.resv_status == 'f3' &&
-              application.dependantInfo.status != 'e1' &&
-              application.dependantInfo.status != 'e2' &&
-              application.dependantInfo.status_status == 'i1' &&
-              application.dependantInfo.status_reject != null
-            "
-          >
-            <p>최강희님의 대기 단계를 재승인해주세요.</p>
+          <template v-slot:footer>
+            <button class="btn-save" v-on:click="sucessResult">승인요청</button>
+            <button class="btn-cancel" v-on:click="notChecked">취소</button>
+          </template>
+        </ApplicationModal>
+
+        <!-- 반려버튼 누를 경우 -->
+
+        <ApplicationModal v-if="rejectCheck">
+          <template v-slot:header><h2></h2></template>
+          <template v-slot:footer>
+            <button class="btn-save" v-on:click="rejectResult">반려</button>
+            <button class="btn-cancel" v-on:click="notChecked">취소</button>
+          </template>
+        </ApplicationModal>
+      </div>
+      <div
+        v-else-if="
+          application.dependantInfo.resv_status == 'f3' &&
+          application.dependantInfo.status != 'e1' &&
+          application.dependantInfo.status != 'e2' &&
+          application.dependantInfo.status_status == 'i2'
+        "
+      >
+        <h3>승인완료 하셨습니다.</h3>
+      </div>
+      <div
+        v-else-if="
+          application.dependantInfo.resv_status == 'f3' &&
+          application.dependantInfo.status != 'e1' &&
+          application.dependantInfo.status != 'e2' &&
+          application.dependantInfo.status_status == 'i3'
+        "
+      >
+        <h3>반려 하셨습니다.</h3>
+      </div>
+      <!-- 반려 후 재승인요청 -->
+      <div
+        v-if="
+          application.dependantInfo.resv_status == 'f3' &&
+          application.dependantInfo.status != 'e1' &&
+          application.dependantInfo.status != 'e2' &&
+          application.dependantInfo.status_status == 'i1' &&
+          application.dependantInfo.status_reject != null
+        "
+      >
+        <div v-if="!checked && !rejectCheck">
+          <h5 class="mb-4" :value="props.dependantInfo.member_name" style="text-align: center">
+            {{ props.dependantInfo.dependant_name }}님의<br />대기 단계를 승인해주세요.
+          </h5>
+          <div class="mb-4">
             <div
-              class="three"
+              class="circle mx-2"
               v-for="statu in status"
               v-bind:class="{ changed: statu.complete }"
               v-bind:key="statu"
             >
               <span>{{ statu.status }}</span>
             </div>
-            <textarea v-model="application.dependantInfo.status_reject" readonly>
-application.dependantInfo.status_reject </textarea
-            >
-            <button v-on:click="modalOpen">승인</button>
-            <button v-on:click="modalReject">반려</button>
-            <!-- 승인 버튼 누를 경우 -->
-            <rejecterModalLayout class="modal-wrap" v-show="checked">
-              <template v-slot:body>정말 승인하시겠습니까?</template>
-              <template v-slot:footer>
-                <button v-on:click="sucessResult">확인</button>
-                <button v-on:click="notChecked">취소</button>
-              </template>
-            </rejecterModalLayout>
-            <!-- 반려버튼 누를 경우 -->
+          </div>
 
-            <rejecterModalLayout class="modal-wrap" v-show="rejectCheck">
-              <template v-slot:header>반려사유를 적어주세요.</template>
-              <template v-slot:body>
-                <textarea v-model="rejectReason"> rejectReason </textarea>
-              </template>
-              <template v-slot:footer>
-                <button v-on:click="rejectResult">확인</button>
-                <button v-on:click="notChecked">취소</button>
-              </template>
-            </rejecterModalLayout>
+          <textarea class="reason-input" v-model="application.dependantInfo.status_reject" disabled>
+ application.dependantInfo.status_reject </textarea
+          >
+          <div style="float: right">
+            <button class="btn-save" v-on:click="modalOpen">승인</button>
+            <button class="btn-cancel" v-on:click="modalReject">반려</button>
           </div>
         </div>
       </div>
+      <!-- 승인 버튼 누를 경우 -->
+
+      <ApplicationModal v-if="checked">
+        <template v-slot:header><h2></h2></template>
+        <template v-slot:body
+          ><h2 style="text-align: center">
+            대기단계를
+            <span :value="result.status" style="color: orange">{{ result.status }}</span
+            >으로 <br />승인하시겠습니까?
+          </h2></template
+        >
+        <template v-slot:footer>
+          <button class="btn-save" v-on:click="sucessResult">승인</button>
+          <button class="btn-cancel" v-on:click="notChecked">취소</button>
+        </template>
+      </ApplicationModal>
+
+      <!-- 반려버튼 누를 경우 -->
+
+      <ApplicationModal v-if="rejectCheck">
+        <template v-slot:header><h2></h2></template>
+        <template v-slot:footer>
+          <button class="btn-save" v-on:click="rejectResult">반려</button>
+          <button class="btn-cancel" v-on:click="notChecked">취소</button>
+        </template>
+      </ApplicationModal>
     </div>
   </div>
 </template>
 <script setup>
 import { useRoute } from 'vue-router'
-import { ref, reactive, onBeforeMount } from 'vue'
+import { ref, reactive, onBeforeMount, defineProps } from 'vue'
 import axios from 'axios'
-import rejecterModalLayout from '../layouts/rejecterModalLayout.vue'
 import { useCounterStore } from '@/stores/member'
 import { useApplicationStore } from '@/stores/application'
+import { useModalStore } from '@/stores/Modal'
+import ApplicationModal from './modal/ApplicationModal.vue'
 
 const application = useApplicationStore()
 const counters = useCounterStore()
+const modal = useModalStore()
 const route = useRoute()
+const props = defineProps({ dependantInfo: Object })
+console.log('props.dependantInfo: ', props.dependantInfo)
 let result = reactive({ status: '' })
 
 let status = reactive([
@@ -241,21 +283,11 @@ let status = reactive([
 // 접속자 권한 구분
 let memAuthority = counters.isLogIn.info.member_authority
 let id = counters.isLogIn.info.member_id
+
 // 대기 단계 상태 파악
 
 onBeforeMount(async () => {
   if (memAuthority == 'a3') {
-    console.log(memAuthority == 'a3')
-    if (application.dependantInfo.status == 'e3') {
-      application.dependantInfo.status = '계획'
-    } else if (application.dependantInfo.status == 'e4') {
-      application.dependantInfo.status = '중점'
-    } else {
-      application.dependantInfo.status = '긴급'
-    }
-    console.log(result.status)
-    console.log('ㅁ', application.dependantInfo.status)
-
     status.forEach((statu) => {
       console.log(statu.status)
       if (statu.status == application.dependantInfo.status) {
@@ -272,14 +304,6 @@ onBeforeMount(async () => {
     application.dependantInfo.status !== 'e1' &&
     application.dependantInfo.status_status == 'i3'
   ) {
-    if (application.dependantInfo.status == 'e3') {
-      application.dependantInfo.status = '계획'
-    } else if (application.dependantInfo.status == 'e4') {
-      application.dependantInfo.status = '중점'
-    } else {
-      application.dependantInfo.status = '긴급'
-    }
-
     status.forEach((statu) => {
       if (statu.status == application.dependantInfo.status) {
         statu.complete = true
@@ -318,13 +342,27 @@ const showStatus = (req) => {
 let checked = ref(false)
 
 const modalOpen = () => {
-  if (rejectCheck.value == false)
-    if (memAuthority == 'a3') {
-      console.log(application.dependantInfo.status)
-      checked.value = !checked.value
-    } else if ((memAuthority == 'a2', result.status != '')) {
-      checked.value = !checked.value
-    } else alert('대기단계를 선택해주세요')
+  // 반려후 대기단계 변경 안할시(담당자)
+  if (
+    memAuthority == 'a2' &&
+    application.dependantInfo.status_status == 'i3' &&
+    application.dependantInfo.status == result.status
+  ) {
+    alert('대기단계를 변경해주세요.')
+    return
+  }
+
+  if (memAuthority == 'a3') {
+    console.log(application.dependantInfo.status)
+    checked.value = !checked.value
+    return
+  } else if ((memAuthority == 'a2', result.status != '')) {
+    checked.value = !checked.value
+    return
+  } else {
+    alert('대기단계를 선택해주세요')
+    return
+  }
 }
 
 // 반려 버튼
@@ -384,6 +422,7 @@ const realResult = async () => {
 const notChecked = () => {
   checked.value = false
   rejectCheck.value = false
+  modal.rejectReason = null
 }
 
 // 승인 모달창, 재승인
@@ -395,43 +434,92 @@ const sucessResult = async () => {
     })
     .then((res) => {
       console.log(res)
+      alert('승인완료')
+      checked.value = false
     })
-  alert('승인완료')
-  await axios //
-    .get('/api/application/' + route.params.id)
-    .then((res) => {
-      console.log(res)
-      let data = res.data
-      console.log(data[0].application_no)
-      application.dependantInfo = data[0]
-    })
+  await application.checkdependantInfo(route.params.id)
 }
 
 // 반려모달창 확인 버튼
-let rejectReason = ref()
 
 const rejectResult = async () => {
-  if (rejectReason.value == undefined) {
+  if (modal.rejectReason == undefined) {
     alert('반려 사유 입력!')
     return
   } else {
     await axios //
       .put('/api/rejectstatus/' + route.params.id, {
-        status_reject: rejectReason.value,
+        status_reject: modal.rejectReason,
       })
       .then((req) => {
+        alert('반려 완료')
         console.log(req)
+        rejectCheck.value = false
       })
-    alert('반려 완료')
-    await axios //
-      .get('/api/application/' + route.params.id)
-      .then((res) => {
-        console.log(res)
-        let data = res.data
-        console.log(data[0].application_no)
-        application.dependantInfo = data[0]
-      })
+    await application.checkdependantInfo(route.params.id)
   }
 }
 </script>
-<style scoped></style>
+<style scoped>
+.circle {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background-color: blanchedalmond;
+  display: inline-block;
+  text-align: center;
+  line-height: 150px;
+  font-weight: bold;
+  font-size: large;
+}
+
+.changed {
+  background-color: green;
+  color: #fff;
+}
+
+.btn-save,
+.btn-cancel {
+  padding: 12px 40px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-save {
+  background: #2196f3;
+  color: white;
+}
+
+.btn-save:hover {
+  background: #1976d2;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+}
+
+.btn-cancel {
+  background: #f44336;
+  color: white;
+}
+
+.btn-cancel:hover {
+  background: #d32f2f;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+}
+.reason-input {
+  width: 100%;
+  min-height: 150px;
+  padding: 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 15px;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+</style>

@@ -33,7 +33,10 @@
       <ul class="nav nav-tabs">
         <li class="nav-item">
           <RouterLink
-            v-bind:to="{ name: 'applicationWait', params: { id: route.params.id } }"
+            v-bind:to="{
+              name: 'applicationWait',
+              params: { id: route.params.id },
+            }"
             class="nav-link"
             >지원신청서</RouterLink
           >
@@ -49,19 +52,21 @@
           <a class="nav-link" href="#">지원결과서</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link disabled" aria-disabled="true">상담내역</a>
+          <a class="nav-link">상담내역</a>
         </li>
       </ul>
-      <div class="card">
+      <div class="card h-100">
         <div class="card-body">
           <router-view name="right" />
         </div>
       </div>
     </div>
     <div class="col">
-      <div class="card">
+      <div class="card h-100">
         <div class="card-body">
-          <router-view />
+          <router-view v-slot="{ Component }">
+            <component :is="Component" :dependantInfo="dependantInfo"> </component>
+          </router-view>
         </div>
       </div>
     </div>
@@ -81,7 +86,7 @@ const store = useStore()
 
 const route = useRoute()
 
-let dependantInfo = ref([]) // 지원자 실명
+let dependantInfo = ref({}) // 지원자 실명
 
 onBeforeMount(async () => {
   store.state.showSidenav = false

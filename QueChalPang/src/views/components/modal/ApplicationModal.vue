@@ -1,35 +1,35 @@
 <template>
   <div class="reason-modal-wrapper">
     <div class="modal-header">
-      <h2>수정이력등록</h2>
-      <button class="close-btn" @click="modal.close()">X</button>
+      <slot name="header">
+        <h2>수정이력등록</h2>
+
+        <button class="close-btn" @click="modal.close()">X</button>
+      </slot>
     </div>
-    <div class="modal-body">
-      <h3>수정사유</h3>
-      <textarea
-        class="reason-input"
-        v-model="modal.rejectReason"
-        placeholder="수정사유를 입력해주세요."
-      ></textarea>
-    </div>
+    <slot name="body">
+      <div class="modal-body">
+        <h3>반려사유를 적어주세요</h3>
+        <textarea
+          class="reason-input"
+          v-model="modal.rejectReason"
+          placeholder="반려사유를 입력해주세요."
+        ></textarea>
+      </div>
+    </slot>
     <div class="modal-footer">
-      <button class="btn-save" @click="save">저장</button>
-      <button class="btn-cancel" @click="modal.close()">취소</button>
+      <slot name="footer">
+        <button class="btn-save" @click="save">저장</button>
+        <button class="btn-cancel" @click="modal.close()">취소</button>
+      </slot>
     </div>
   </div>
 </template>
 
 <script setup>
 import { useModalStore } from '@/stores/Modal'
-import { ref } from 'vue'
 
 const modal = useModalStore()
-const reason = ref('')
-
-function save() {
-  modal.payload?.onSubmit(reason.value) //? => payload 있을 때 실행 없으면 무시
-  modal.close()
-}
 </script>
 <style scoped>
 .reason-modal-wrapper {
@@ -78,6 +78,7 @@ function save() {
 /* 본문 */
 .modal-body {
   padding: 30px 25px;
+  text-align: center;
 }
 
 .reason-input {

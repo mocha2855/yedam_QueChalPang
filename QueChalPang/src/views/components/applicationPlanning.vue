@@ -654,6 +654,10 @@ onBeforeMount(async () => {
 let addCount = ref(0) // 계획추가 버튼용
 
 const addPlanningForm = () => {
+  if (application.dependantInfo.status_status != 'i2') {
+    alert('대기단계 선택을 먼저 완료해주세요')
+    return
+  }
   if (addCount.value == 0 && application.planningChanging.length == 0) {
     addCount.value = 1
     application.planningState = 1

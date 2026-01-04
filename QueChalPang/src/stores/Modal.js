@@ -7,6 +7,7 @@ export const useModalStore = defineStore('modal', {
     visible: false,
     type: null,
     payload: null,
+    rejectReason: [],
   }),
 
   actions: {
