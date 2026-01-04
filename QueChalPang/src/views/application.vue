@@ -49,20 +49,24 @@
           </RouterLink>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">지원결과서</a>
+          <RouterLink
+            v-bind:to="{ name: 'applicationResult', params: { id: route.params.id } }"
+            class="nav-link"
+            >지원결과서</RouterLink
+          >
         </li>
         <li class="nav-item">
           <a class="nav-link">상담내역</a>
         </li>
       </ul>
-      <div class="card h-100">
-        <div class="card-body">
+      <div class="card h-100" style="width: 100%">
+        <div class="card-body h-100 w-100">
           <router-view name="right" />
         </div>
       </div>
     </div>
-    <div class="col">
-      <div class="card h-100">
+    <div class="col d-flex justify-content-center align-items-center vh-100">
+      <div class="card h-100 w-100">
         <div class="card-body">
           <router-view v-slot="{ Component }">
             <component :is="Component" :dependantInfo="dependantInfo"> </component>
@@ -75,7 +79,7 @@
 <script setup>
 import { useApplicationStore } from '@/stores/application'
 import { useCounterStore } from '@/stores/member'
-import { watch, onBeforeMount, ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
@@ -90,6 +94,8 @@ let dependantInfo = ref({}) // 지원자 실명
 
 onBeforeMount(async () => {
   store.state.showSidenav = false
+
+  await application.countRealReview(route.params.id)
 
   // 지원자 정보(신청서)
   await application.checkdependantInfo(route.params.id)
@@ -109,14 +115,5 @@ onBeforeMount(async () => {
       console.log('dependant: ', dependantInfo.value)
     })
 })
-
-// 검토중 즉각으로 가져오기
-watch(
-  () => application.planningState,
-  async () => {
-    await application.countRealReview(route.params.id)
-  },
-  { immediate: true },
-)
 </script>
 <style scoped></style>

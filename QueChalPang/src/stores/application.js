@@ -6,7 +6,7 @@ export const useApplicationStore = defineStore('application', {
   state: () => {
     return {
       dependantInfo: [], // 지원자 정보
-      planned: [], // 계획 추가 시 몇번째 파악
+      planned: 0, // 계획 추가 시 몇번째 파악
       allPlanned: [], // 계획서 불러오기
       planningReview: [], // 검토중 계획서
       planningSuccess: [], // 승인완료 계획서

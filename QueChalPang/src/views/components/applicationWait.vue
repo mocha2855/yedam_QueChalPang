@@ -48,7 +48,7 @@
           application.dependantInfo.resv_status != 'f3' && application.dependantInfo.status == 'e1'
         "
       >
-        <h3>상담 전입니다. 상담을 먼저 진행해주세요.</h3>
+        <h4>상담 전입니다.<br />상담을 먼저 진행해주세요.</h4>
       </div>
       <div
         v-else-if="
@@ -57,7 +57,7 @@
           application.dependantInfo.status_status == 'i1'
         "
       >
-        <h3>대기 단계 선택을 완료했습니다.</h3>
+        <h4>대기 단계 선택을 완료했습니다.</h4>
       </div>
       <div
         v-else-if="
@@ -67,7 +67,7 @@
           application.dependantInfo.status_status == 'i2'
         "
       >
-        <h3>대기단계 승인이 완료됐습니다. 지원계획서를 작성해주세요.</h3>
+        <h4>대기단계 승인이 완료됐습니다.<br />지원계획서를 작성해주세요.</h4>
       </div>
       <!-- 반려되었을 경우 -->
 
@@ -79,10 +79,10 @@
         "
       >
         <div v-if="!checked">
-          <h3 :value="props.dependantInfo.member_name" style="text-align: center">
+          <h4 :value="props.dependantInfo.member_name" style="text-align: center">
             반려되셨습니다.<br />
             {{ props.dependantInfo.member_name }}님의 대기 단계를 다시 설정해주세요.
-          </h3>
+          </h4>
           <div class="mb-4">
             <div
               class="circle mx-2"
@@ -182,7 +182,7 @@
           application.dependantInfo.status_status == 'i2'
         "
       >
-        <h3>승인완료 하셨습니다.</h3>
+        <h4>승인완료 하셨습니다.</h4>
       </div>
       <div
         v-else-if="
@@ -192,7 +192,7 @@
           application.dependantInfo.status_status == 'i3'
         "
       >
-        <h3>반려 하셨습니다.</h3>
+        <h4>반려 하셨습니다.</h4>
       </div>
       <!-- 반려 후 재승인요청 -->
       <div

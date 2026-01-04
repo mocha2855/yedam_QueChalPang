@@ -36,8 +36,7 @@ const modal = useModalStore()
   background: white;
   border-radius: 10px;
   overflow: hidden;
-  width: 550px;
-  max-width: 90vw;
+  width: 100%;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 

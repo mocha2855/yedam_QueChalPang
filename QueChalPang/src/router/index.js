@@ -8,7 +8,9 @@ import Application from '../views/application.vue' // 각종 지원서
 import FindId from '../views/FindId.vue' //아이디찾기
 import applicationWait from '../views/components/applicationWait.vue' // 지원대기
 import applicationPlanning from '../views/components/applicationPlanning.vue' //지원계획서(작성 및 검토중)
-import applicationPlanningSuccess from '../views/components/applicationPlanningSuccess.vue' //지원계획서(작성 및 검토중)
+import applicationPlanningSuccess from '../views/components/applicationPlanningSuccess.vue' //지원계획서(승인, 반려)
+import applicationResult from '../views/components/applicationResult.vue' //지원결과서(작성 및 검토중)
+import applicationResultSuccess from '../views/components/applicationResultSuccess.vue' //지원결과서(승인, 반려)
 import surveyRoutes from './survey' //시스템관리자 조사지
 import centerPopup from '../views/centerPopup.vue' //센터검색팝업
 import reservationRoutes from './reservation'
@@ -69,6 +71,14 @@ const routes = [
         components: {
           default: applicationPlanning,
           right: applicationPlanningSuccess,
+        },
+      },
+      {
+        path: '/applicationResult/:id',
+        name: 'applicationResult',
+        components: {
+          default: applicationResult,
+          right: applicationResultSuccess,
         },
       },
     ],
