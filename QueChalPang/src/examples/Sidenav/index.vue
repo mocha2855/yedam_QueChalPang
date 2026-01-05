@@ -4,6 +4,7 @@ import { computed } from 'vue'
 import { useStore } from 'vuex'
 import SidenavList from './SidenavList.vue'
 import ApprovalSidenavList from './AprrovalSidenav' //승인관리 사이드바 추가
+import MypageSidenav from './MypageSidenav.vue'
 import logo from '@/assets/img/logo-ct-dark.png'
 import logoWhite from '@/assets/img/logo-ct.png'
 
@@ -17,6 +18,9 @@ const darkMode = computed(() => store.state.darkMode)
 const isApprovalPage = computed(() => {
   return route.path.includes('Approval')
 })
+const isMyPage = computed(() => {
+  return route.path.includes('myPage')
+})
 </script>
 <template>
   <div
@@ -26,7 +30,7 @@ const isApprovalPage = computed(() => {
   />
 
   <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-radius-xl" id="sidenav-main">
-    <div class="sidenav-header">
+    <div class="sidenav-header" v-if="!isMyPage">
       <i
         class="top-0 p-3 cursor-pointer fas fa-times text-secondary opacity-5 position-absolute end-0 d-none d-xl-none"
         aria-hidden="true"
@@ -48,6 +52,8 @@ const isApprovalPage = computed(() => {
 
     <!-- 승인 관리면 ApprovalSidenavList -->
     <ApprovalSidenavList v-if="isApprovalPage" />
+    <!-- 마이페이지면 MypageSidenav -->
+    <MypageSidenav v-if="isMyPage" />
     <!-- 아니면 기본 SidenavList -->
     <SidenavList v-else />
   </aside>
