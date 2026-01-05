@@ -3,26 +3,27 @@ import ReservationGuardianConfirm from '@/views/ReservationGuardianConfirm.vue'
 import ReservationTeacher from '@/views/ReservationTeacher.vue'
 import ReservationGuardianMap from '@/views/ReservationGuardianMap.vue'
 import ReservationGuardianHistory from '@/views/ReservationGuardianHistory.vue'
+import ReservationBlock from '@/views/ReservationBlock.vue'
 
 const reservationRoutes = [
   {
-    path: '/reservTeacher',
+    path: '/resrvTeacher',
     name: 'reservationTeacher',
     component: ReservationTeacher,
   },
 
   {
-    path: '/reservGuardian',
+    path: '/resrvGuardian',
     name: 'reservationGuardian',
     component: ReservationGuardian,
   },
   {
-    path: '/reservGuardianConfirm',
+    path: '/resrvGuardianConfirm',
     name: 'reservationGuardianConfirm',
     component: ReservationGuardianConfirm,
   },
   {
-    path: '/reservGuardianMap',
+    path: '/resrvGuardianMap',
     name: 'ReservationGuardianMap',
     component: ReservationGuardianMap,
   },
@@ -30,6 +31,11 @@ const reservationRoutes = [
     path: '/resrvGuardianHistory',
     name: 'ReservationGuardianHistory',
     component: ReservationGuardianHistory,
+  },
+  {
+    path: '/resrvBlock',
+    name: 'ReservationBlock',
+    component: ReservationBlock,
   },
 ]
 
