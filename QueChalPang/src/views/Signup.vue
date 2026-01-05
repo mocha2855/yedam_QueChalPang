@@ -11,13 +11,14 @@ import {
 import { useStore } from 'vuex'
 import axios from 'axios'
 import { Modal } from 'bootstrap'
+import { useRouter } from 'vue-router'
 import Navbar from '@/examples/PageLayout/Navbar.vue'
 import AppFooter from '@/examples/PageLayout/Footer.vue'
 import ArgonInput from '@/components/ArgonInput.vue'
 import ArgonButton from '@/components/ArgonButton.vue'
 import ArgonAlert from '@/components/ArgonAlert.vue'
 const body = document.getElementsByTagName('body')[0]
-
+const router = useRouter()
 const store = useStore()
 //주소api에서 쓰는 ref
 const postcode = ref('')
@@ -103,6 +104,7 @@ const phoneBtn = reactive({
   phoneAuthChecked: false,
   auth: '',
 })
+const isSignUp = ref(false)
 const msg = ref('')
 const argonAlert = ref(false)
 const selectedCenter = ref({ center_name: '', center_no: 0 })
@@ -254,7 +256,7 @@ const receiveCenterData = (data) => {
   member.center_no = selectedCenter.value.center_no
 }
 // 최종 회원가입시 동작하는 함수.
-const addMemberInfo = () => {
+const addMemberInfo = async () => {
   console.log(member)
   member.address = member.address + ' ' + detailAddress.value
   if (!member.id) {
@@ -282,8 +284,13 @@ const addMemberInfo = () => {
   } else if (phoneBtn.phoneBtn || phoneBtn.phoneAuth) {
     showAlert('휴대폰 인증이 진행되지 않았습니다.')
   }
-  let result = axios.post(`/member`, member)
+  let result = await axios.post(`/api/member`, member)
   console.log(result)
+  if (result.data.affectedRows > 0) {
+    isSignUp.value = true
+    msg.value = `회원가입이 완료되었습니다. 사이트 이용은 관리자 승인 후 이용이 가능합니다.`
+    openModal()
+  }
 }
 
 const modalRef = ref(false)
@@ -295,6 +302,9 @@ const openModal = () => {
 // 모달 닫기 함수
 const closeModal = () => {
   modalControl.hide()
+  if (isSignUp.value) {
+    router.push({ name: 'Signin', query: { id: member.id } })
+  }
 }
 </script>
 <template>
