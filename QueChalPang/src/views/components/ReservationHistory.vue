@@ -1,3 +1,5 @@
+
+
 <!-- src/components/ReservationHistory.vue -->
 <script setup>
 import { ref, computed, onMounted } from 'vue'
@@ -9,12 +11,14 @@ const counterStore = useCounterStore()
 const { isLogIn } = storeToRefs(counterStore)
 
 const guardianId = computed(() => isLogIn.value?.info?.member_id)
+
 const statusMap = {
   f1: { label: '확인중', class: 'status-wait' },
   f2: { label: '예약확정', class: 'status-confirm' },
   f3: { label: '상담완료', class: 'status-done' },
   f4: { label: '상담취소', class: 'status-cancel' },
 }
+
 const rows = ref([])
 
 //statusMap[s]값이 statusMap에 있으면 그 값을,
@@ -31,7 +35,7 @@ const timeText = (dt) => (dt ? String(dt).slice(11, 16) : '') // "HH:MM"
 const fetchHistory = async () => {
   if (!guardianId.value) return
 
-  const res = await axios.get(`/api/gresvByDate//${guardianId.value}`)
+  const res = await axios.get(`/api/gresvByDate/${guardianId.value}`)
   rows.value = res.data ?? []
 }
 
