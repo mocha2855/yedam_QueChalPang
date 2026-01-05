@@ -6,7 +6,7 @@
         v-if="
           application.dependantInfo.resv_status == 'f3' &&
           application.dependantInfo.status == 'e1' &&
-          application.dependantInfo.status_status == null
+          application.dependantInfo.status_status == ''
         "
       >
         <div v-if="!checked">
