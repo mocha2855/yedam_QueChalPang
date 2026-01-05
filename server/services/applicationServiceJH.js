@@ -1,8 +1,8 @@
 const mysql = require("../database/mapper");
 
-// 접속자 권한 확인
-const authorityFindById = async (no) => {
-  let post = await mysql.bquery("authoritySelectById", no);
+// 지원자 정보
+const dependantFindById = async (no) => {
+  let post = mysql.bquery("dependantSelectById", no);
   return post;
 };
 
@@ -80,8 +80,17 @@ const updateRejectPlanningInfo = async (planning_no, data) => {
   return post;
 };
 
+// 지원계획서 반려 후 승인요청(담당자)
+const updateChangingPlanningInfo = async (planning_no, data) => {
+  let post = await mysql.bquery("changingPlanningUpdateInfo", [
+    data,
+    planning_no,
+  ]);
+  return post;
+};
+
 module.exports = {
-  authorityFindById,
+  dependantFindById,
   findById,
   rejectorFindById,
   applicationModifyInfo,
@@ -92,4 +101,5 @@ module.exports = {
   addPlanningInfo,
   updatePlanningInfo,
   updateRejectPlanningInfo,
+  updateChangingPlanningInfo,
 };

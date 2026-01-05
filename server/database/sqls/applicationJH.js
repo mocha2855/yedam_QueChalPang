@@ -1,5 +1,9 @@
-// 접속자 권한 파악
-const authoritySelectById = `select * from member where member_id = ?`;
+// 지원자 정보
+const dependantSelectById = `select * 
+from dependant d1
+join disability d2 on d1.disability_no = d2.disability_no
+join member m on d1.member_id = m.member_id
+where d1.dependant_no=?`;
 
 // 대기 단계 상태 건색
 const selectById = `select * 
@@ -41,8 +45,13 @@ const rejectPlanningUpdateInfo = `update planning
 set planning_reject_date = current_timestamp(), planning_approvedDate = current_timestamp(), ?
 where planning_no = ?`;
 
+// 지원계획서 반려 후 승인요청(담당자)
+const changingPlanningUpdateInfo = `update planning 
+set ?
+where planning_no = ?`;
+
 module.exports = {
-  authoritySelectById,
+  dependantSelectById,
   selectById,
   rejectorSelectById,
   applicationUpdateInfo,
@@ -53,4 +62,5 @@ module.exports = {
   insertPlannginInfo,
   sucessPlanningUpdateInfo,
   rejectPlanningUpdateInfo,
+  changingPlanningUpdateInfo,
 };
