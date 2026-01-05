@@ -14,6 +14,7 @@ import centerPopup from '../views/centerPopup.vue' //센터검색팝업
 import reservationRoutes from './reservation'
 import notConfirmed from '../views/notConfirmed.vue' //지원대기상태인 경우 이동하는 페이지
 import centerRoutes from './center' //센터관리페이지
+import approvalRoutes from './approval' //멤버 승인 페이지
 
 const routes = [
   {
@@ -87,6 +88,7 @@ const routes = [
   ...surveyRoutes,
   ...reservationRoutes,
   ...centerRoutes,
+  ...approvalRoutes,
 ]
 
 const router = createRouter({

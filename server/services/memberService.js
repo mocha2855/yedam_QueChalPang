@@ -107,6 +107,24 @@ const searchId = async (name, phone, way) => {
     return result;
   }
 };
+//승인 관련 서비스 추가
+// 1. 승인 관리 목록
+const getApprovalList = async () => {
+  let list = await mysql.memberQuery("selectMemberApproval");
+  return list;
+};
+
+// 2. 승인 처리 (l2 -> l1)
+const approveMember = async (id) => {
+  let result = await mysql.memberQuery("updateMemberConfirm", ["l1", id]);
+  return result;
+};
+
+// 3. 대기 건수
+const getPendingCount = async () => {
+  let result = await mysql.memberQuery("countPendingMembers");
+  return result[0].count;
+};
 module.exports = {
   findAllMember,
   findByMemberId,
@@ -116,4 +134,7 @@ module.exports = {
   phoneAuth,
   getAuth,
   searchId,
+  getApprovalList,
+  approveMember,
+  getPendingCount,
 };
