@@ -1,5 +1,6 @@
+<!-- views/TablesManager.vue -->
 <script setup>
-import SurveyTableManager from './components/SurveyTableManager.vue'
+import SurveyTableManager from './components/survey/SurveyTableManager.vue'
 </script>
 <template>
   <div class="py-4 container-fluid">

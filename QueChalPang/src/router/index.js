@@ -4,7 +4,7 @@ import Tables from '../views/Tables.vue'
 import TablesManager from '../views/TablesManager.vue'
 import Signup from '../views/Signup.vue' //회원가입
 import Signin from '../views/Signin.vue' //로그인
-import Application from '../views/application.vue' // 각종 지원서
+import Application from '../views/Application.vue'
 import FindId from '../views/FindId.vue' //아이디찾기
 import ResetPass from '../views/ResetPass.vue' //비밀번호 재설정 페이지
 import applicationWait from '../views/components/applicationWait.vue' // 지원대기

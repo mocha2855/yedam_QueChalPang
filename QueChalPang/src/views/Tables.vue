@@ -1,5 +1,5 @@
 <script setup>
-import SurveyTable from './components/SurveyTable.vue'
+import SurveyTable from './components/survey/SurveyTable.vue'
 </script>
 <template>
   <div class="py-4 container-fluid">
