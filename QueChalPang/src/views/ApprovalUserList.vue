@@ -21,6 +21,20 @@ const getStatus = (confirm) => {
   if (confirm == 'l2') return '승인대기'
   if (confirm == 'l3') return '거절'
 }
+// 승인 처리
+const handleApprove = async (id) => {
+  if (confirm('승인하시겠습니까?')) {
+    await store.approveMember(id)
+    alert('승인되었습니다.')
+  }
+}
+// 승인 거절 처리
+const handleReject = async (id) => {
+  if (confirm('거절하시겠습니까?')) {
+    await store.rejectMember(id)
+    alert('거절되었습니다.')
+  }
+}
 
 //선택 승인 처리
 const approveSelected = async () => {
@@ -62,16 +76,13 @@ const approveSelected = async () => {
   alert(`${pendingIds.length}명이 승인되었습니다.`)
   checkedIds.value = []
 }
-// 승인 거절 처리
-const handleReject = async (id) => {
-  if (confirm('거절하시겠습니까?')) {
-    await store.rejectMember(id)
-    alert('거절되었습니다.')
-  }
-}
+
 onBeforeMount(async () => {
   await store.getApprovalList()
 })
+const approvalUpdate = (id) => {
+  router.push({ name: 'ApprovalUpdate', params: { id: id } })
+}
 </script>
 
 <template>
@@ -79,11 +90,17 @@ onBeforeMount(async () => {
     <div class="row">
       <div class="col-12">
         <div class="card">
-          <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-            <h6>일반회원 승인 관리</h6>
-            <p class="text-sm mb-0" style="color: #000">
-              승인 대기: {{ userPendingList.length }}건
-            </p>
+          <div class="card-header pb-0">
+            <div class="d-flex justify-content-between align-items-start">
+              <!-- 왼쪽: 제목 + 버튼 (세로) -->
+              <div>
+                <h6 class="mb-2">일반회원 승인 관리</h6>
+              </div>
+              <!-- 오른쪽: 승인 대기 건수 -->
+              <p class="text-sm mb-0" style="color: #000">
+                승인 대기: {{ userPendingList?.length || 0 }}건
+              </p>
+            </div>
           </div>
 
           <div class="card-header pb-0 d-flex justify-content-end align-items-center gap-2">
@@ -212,7 +229,7 @@ onBeforeMount(async () => {
                       <button
                         v-if="member.member_confirm === 'l1'"
                         class="btn btn-sm btn-outline-secondary"
-                        @click="surveyUpdate(survey.survey_no)"
+                        @click="approvalUpdate(member.member_id)"
                       >
                         수정하기
                       </button>
