@@ -109,24 +109,31 @@ onBeforeMount(async () => {
               승인 대기: {{ managerPendingList.length }}건
             </p>
           </div>
-          <div class="card-header pb-0 d-flex justify-content-end align-items-center gap-2">
-            <button
-              class="btn btn-success btn-sm"
-              :disabled="checkedIds.length === 0"
-              @click="approveSelected"
-            >
-              선택 승인
+          <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+            <!-- 왼쪽: 회원추가 -->
+            <button class="btn btn-sm btn-primary" @click="goToUserAdd">
+              <i class="fas fa-plus"></i> 담당자추가
             </button>
 
-            <button
-              class="btn btn-outline-danger btn-sm"
-              :disabled="checkedIds.length === 0"
-              @click="deleteSelected"
-            >
-              선택 삭제
-            </button>
+            <!-- 오른쪽: 선택 버튼들 -->
+            <div class="d-flex gap-2">
+              <button
+                class="btn btn-success btn-sm"
+                :disabled="checkedIds.length === 0"
+                @click="approveSelected"
+              >
+                선택 승인
+              </button>
+
+              <button
+                class="btn btn-outline-danger btn-sm"
+                :disabled="checkedIds.length === 0"
+                @click="deleteSelected"
+              >
+                선택 삭제
+              </button>
+            </div>
           </div>
-
           <div class="card-body px-0 pt-0 pb-2">
             <div class="table-responsive p-0">
               <table class="table align-items-center">
