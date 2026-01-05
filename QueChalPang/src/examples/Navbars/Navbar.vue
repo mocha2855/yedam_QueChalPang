@@ -87,23 +87,33 @@ console.log(isLogIn.value.info.member_id)
             </router-link>
           </li>
 
-          <li class="nav-item">
+          <li v-if="isLogIn.info.member_authority === 'a2'" class="nav-item">
             <router-link
               to="/resrvTeacher"
               class="nav-link text-black"
               :class="getRoute() === 'reservTeacher' ? 'font-weight-bold opacity-10' : 'opacity-6'"
             >
-              <i class="ni ni-world-2 me-2"></i>상담예약 관리
+              <i class="ni ni-world-2 me-2"></i>예약관리
             </router-link>
           </li>
 
-          <li class="nav-item">
+          <li v-if="isLogIn.info.member_authority === 'a1'" class="nav-item">
             <router-link
               to="/resrvGuardian"
               class="nav-link text-black"
               :class="getRoute() === 'reservGuardian' ? 'font-weight-bold opacity-10' : 'opacity-6'"
             >
-              <i class="ni ni-world-2 me-2"></i>상담예약하기
+              <i class="ni ni-world-2 me-2"></i>상담예약신청
+            </router-link>
+          </li>
+
+          <li v-if="isLogIn.info.member_authority === 'a1'" class="nav-item">
+            <router-link
+              to="/qnaGuardian"
+              class="nav-link text-black"
+              :class="getRoute() === 'qnaGuardian' ? 'font-weight-bold opacity-10' : 'opacity-6'"
+            >
+              <i class="ni ni-world-2 me-2"></i>문의하기
             </router-link>
           </li>
 
@@ -125,6 +135,15 @@ console.log(isLogIn.value.info.member_id)
               "
             >
               <i class="ni ni-world-2 me-2"></i>센터관리
+            </router-link>
+          </li>
+          <li v-if="isLogIn.info.member_authority === ('a4' || 'a2')" class="nav-item">
+            <router-link
+              to="/ApprovalUserList"
+              class="nav-link text-black"
+              :class="getRoute() === 'surveys' ? 'font-weight-bold opacity-10' : 'opacity-6'"
+            >
+              <i class="ni ni-world-2 me-2"></i>회원관리
             </router-link>
           </li>
         </ul>
