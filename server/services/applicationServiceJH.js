@@ -101,17 +101,17 @@ const findAppById = async (id, search, value, authority) => {
     }
     result = await mysql.bquery("selectApplicationsById", [search, value, id]);
   } else if (authority == "a2") {
-    result = await mysql.bquery("selectApplicationsByTeacher", [id, id]);
+    result = await mysql.bquery("selectApplicationsByTeacher", [
+      id,
+      id,
+      id,
+      id,
+    ]);
   } else if (authority == "a3") {
     console.log("a3");
   }
   console.log(result);
   return result;
-};
-
-//드롭다운용 - 지원자별 신청서 목록 DJ
-const findAppsByDependant = async (dependantNo) => {
-  return await mysql.bquery("selectAppsByDependant", [dependantNo]);
 };
 
 // 검토 중, 반려, 승인 지원계획서 불러오기
@@ -164,5 +164,4 @@ module.exports = {
   updateResultInfo,
   updateRejectResultInfo,
   updateChangingResultInfo,
-  findAppsByDependant,
 };

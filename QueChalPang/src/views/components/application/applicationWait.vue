@@ -264,7 +264,7 @@ import axios from 'axios'
 import { useCounterStore } from '@/stores/member'
 import { useApplicationStore } from '@/stores/application'
 import { useModalStore } from '@/stores/Modal'
-import ApplicationModal from './modal/ApplicationModal.vue'
+import ApplicationModal from '../modal/ApplicationModal.vue'
 
 const application = useApplicationStore()
 const counters = useCounterStore()
@@ -312,6 +312,7 @@ onBeforeMount(async () => {
       }
     })
   }
+  await application.loadApplicationContext(route.params.id)
 })
 
 // 대기단계 선택 값 출력
@@ -408,14 +409,8 @@ const realResult = async () => {
     .then((req) => {
       console.log(req)
     })
-  await axios //
-    .get('/api/application/' + route.params.id)
-    .then((res) => {
-      console.log(res)
-      let data = res.data
-      console.log(data[0].application_no)
-      application.dependantInfo = data[0]
-    })
+
+  await application.loadApplicationContext(route.params.id)
 }
 
 // 취소버튼
