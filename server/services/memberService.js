@@ -55,12 +55,12 @@ const isExist = async (key, value) => {
 const addMemberInfo = async (input) => {
   let value = [
     input.id,
-    input.pass,
+    input.pw,
     input.name,
     input.email,
     input.phone,
     input.address,
-    input.center,
+    input.center_no,
     input.authority,
   ];
   console.log(value);
