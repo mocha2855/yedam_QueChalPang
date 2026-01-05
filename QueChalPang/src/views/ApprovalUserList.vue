@@ -1,5 +1,7 @@
 <script setup>
 import { useApprovalStore } from '@/stores/approval'
+import { useCounterStore } from '@/stores/member'
+
 import { useRouter } from 'vue-router'
 import { onBeforeMount, ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
@@ -8,13 +10,14 @@ import ArgonPagination from '@/components/ArgonPagination.vue'
 import ArgonPaginationItem from '@/components/ArgonPaginationItem.vue'
 
 const store = useApprovalStore()
+const member = useCounterStore()
 const { userList, userPendingList } = storeToRefs(store)
 const router = useRouter()
 const checkedIds = ref([]) // 선택 체크
 
 // 페이지네이션 추가
-const currentPage = ref(1)
-const itemsPerPage = 10
+const currentPage = ref(1) // 현재 페이지 번호 (처음엔 1페이지)
+const itemsPerPage = 10 // 한 페이지에 보여줄 개수
 
 // 총 페이지 수
 const totalPages = computed(() => {
@@ -23,15 +26,16 @@ const totalPages = computed(() => {
 
 // 현재 페이지에 표시할 데이터
 const paginatedList = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage
-  const end = start + itemsPerPage
-  return userList.value.slice(start, end)
+  const start = (currentPage.value - 1) * itemsPerPage // 시작 인덱스
+  const end = start + itemsPerPage // 끝 인덱스
+  return userList.value.slice(start, end) // 해당 범위만 잘라내기
 })
 
 // 페이지 변경
 const goToPage = (page) => {
   if (page >= 1 && page <= totalPages.value) {
-    currentPage.value = page
+    // 유효한 페이지인지 확인
+    currentPage.value = page // 페이지 변경
     checkedIds.value = [] // 페이지 변경시 체크 초기화
   }
 }
@@ -154,6 +158,14 @@ const deleteSelected = async () => {
 }
 
 onBeforeMount(async () => {
+  const authority = member.isLogIn.info.member_authority
+
+  if (authority !== 'a4' && authority !== 'a2') {
+    // ✅ a4도 아니고 a2도 아니면 막음
+    alert('담당자 또는 시스템 관리자만 접근할 수 있습니다.')
+    router.push({ name: 'Dashboard' })
+    return
+  }
   await store.getApprovalList()
 })
 const approvalUpdate = (id) => {
@@ -236,6 +248,7 @@ const approvalUpdate = (id) => {
                   </tr>
                 </thead>
                 <tbody>
+                  <!--페이지별로 보여줌-->
                   <tr
                     v-for="member in paginatedList"
                     :key="member.member_id"
