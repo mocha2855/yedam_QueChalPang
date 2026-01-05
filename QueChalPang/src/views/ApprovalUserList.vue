@@ -62,6 +62,13 @@ const approveSelected = async () => {
   alert(`${pendingIds.length}명이 승인되었습니다.`)
   checkedIds.value = []
 }
+// 승인 거절 처리
+const handleReject = async (id) => {
+  if (confirm('거절하시겠습니까?')) {
+    await store.rejectMember(id)
+    alert('거절되었습니다.')
+  }
+}
 onBeforeMount(async () => {
   await store.getApprovalList()
 })
