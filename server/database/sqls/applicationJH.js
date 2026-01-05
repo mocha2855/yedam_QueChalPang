@@ -56,6 +56,74 @@ const selectApplicationsById = `select a.dependant_no,dependant_name,survey_no,a
 from application a 
 join dependant d on d.dependant_no = a.dependant_no 
 where ?? like concat('%',?,'%') and a.member_id = ?`;
+
+//지원현황 목록 불러오기 (담당자) DJ
+// 지원현황 목록 불러오기 (담당자) - 계획서/결과서 상태 카운트 포함
+const selectApplicationsByTeacher = `
+SELECT
+  a.application_no,
+  a.dependant_no,
+  d.dependant_name,
+  g.member_name AS guardian_name,
+  t.member_name AS manager_name,
+  a.application_date,
+  a.status,
+  a.status_reject,
+  a.status_status,
+
+  COALESCE(p.p_i1, 0) AS p_i1,
+  COALESCE(p.p_i2, 0) AS p_i2,
+  COALESCE(p.p_i3, 0) AS p_i3,
+
+  COALESCE(r.r_i1, 0) AS r_i1,
+  COALESCE(r.r_i2, 0) AS r_i2,
+  COALESCE(r.r_i3, 0) AS r_i3
+
+FROM application a
+JOIN dependant d
+  ON d.dependant_no = a.dependant_no
+JOIN member g
+  ON g.member_id = a.member_id
+LEFT JOIN member t
+  ON t.member_id = d.manager_main
+
+LEFT JOIN (
+  SELECT
+    application_no,
+    SUM(CASE WHEN planning_status = 'i1' THEN 1 ELSE 0 END) AS p_i1,
+    SUM(CASE WHEN planning_status = 'i2' THEN 1 ELSE 0 END) AS p_i2,
+    SUM(CASE WHEN planning_status = 'i3' THEN 1 ELSE 0 END) AS p_i3
+  FROM planning
+  GROUP BY application_no
+) p
+  ON p.application_no = a.application_no
+
+LEFT JOIN (
+  SELECT
+    p2.application_no,
+    SUM(CASE WHEN r2.result_status = 'i1' THEN 1 ELSE 0 END) AS r_i1,
+    SUM(CASE WHEN r2.result_status = 'i2' THEN 1 ELSE 0 END) AS r_i2,
+    SUM(CASE WHEN r2.result_status = 'i3' THEN 1 ELSE 0 END) AS r_i3
+  FROM result r2
+  JOIN planning p2
+    ON p2.planning_no = r2.planning_no
+  GROUP BY p2.application_no
+) r
+  ON r.application_no = a.application_no
+
+WHERE d.manager_main = ?
+   OR d.manager_sub  = ?
+ORDER BY a.application_date DESC
+`;
+
+//드롭다운용 - 지원자별 신청서 목록 DJ
+const selectAppsByDependant = `
+  SELECT application_no, application_date
+  FROM application
+  WHERE dependant_no = ?
+  ORDER BY application_date DESC
+`;
+
 // 검토 중, 반려, 승인 지원결과서 불러오기
 const selectResultReviewById = `select r.*, p.ranking, m.member_name manager_name, m2.member_name rejecter_name
 from (select *, rank() over (order by planning_date) ranking from planning where application_no = ?) p
@@ -101,4 +169,6 @@ module.exports = {
   sucessResultUpdateInfo,
   rejectResultUpdateInfo,
   changingResultUpdateInfo,
+  selectApplicationsByTeacher,
+  selectAppsByDependant,
 };

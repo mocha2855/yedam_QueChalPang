@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Dashboard from '../views/Dashboard.vue'
 import Tables from '../views/Tables.vue'
-import Profile from '../views/Profile.vue'
+import TablesManager from '../views/TablesManager.vue'
 import Signup from '../views/Signup.vue' //회원가입
 import Signin from '../views/Signin.vue' //로그인
-import Application from '../views/application.vue' // 각종 지원서
+import Application from '../views/Application.vue'
 import FindId from '../views/FindId.vue' //아이디찾기
 import ResetPass from '../views/ResetPass.vue' //비밀번호 재설정 페이지
 import applicationWait from '../views/components/applicationWait.vue' // 지원대기
@@ -12,8 +12,8 @@ import applicationPlanning from '../views/components/applicationPlanning.vue' //
 import applicationPlanningSuccess from '../views/components/applicationPlanningSuccess.vue' //지원계획서(승인, 반려)
 import applicationResult from '../views/components/applicationResult.vue' //지원결과서(작성 및 검토중)
 import applicationResultSuccess from '../views/components/applicationResultSuccess.vue' //지원결과서(승인, 반려)
-import surveyRoutes from './survey' //시스템관리자 조사지
 import centerPopup from '../views/centerPopup.vue' //센터검색팝업
+import surveyRoutes from './survey' //시스템관리자 조사지
 import reservationRoutes from './reservation' //상담예약하기
 import qnaRoutes from './qna' //상담예약하기
 import notConfirmed from '../views/notConfirmed.vue' //지원대기상태인 경우 이동하는 페이지
@@ -39,11 +39,10 @@ const routes = [
     name: 'Tables',
     component: Tables,
   },
-
   {
-    path: '/profile',
-    name: 'Profile',
-    component: Profile,
+    path: '/tablesManager',
+    name: 'TablesManager',
+    component: TablesManager,
   },
   {
     path: '/signin',

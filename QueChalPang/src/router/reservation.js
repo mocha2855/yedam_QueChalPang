@@ -1,9 +1,10 @@
-import ReservationGuardian from '@/views/ReservationGuardian.vue'
-import ReservationGuardianConfirm from '@/views/ReservationGuardianConfirm.vue'
-import ReservationTeacher from '@/views/ReservationTeacher.vue'
-import ReservationGuardianMap from '@/views/ReservationGuardianMap.vue'
-import ReservationGuardianHistory from '@/views/ReservationGuardianHistory.vue'
-import ReservationBlock from '@/views/ReservationBlock.vue'
+// router / reservation.js
+import ReservationGuardian from '@/views/reservation/ReservationGuardian.vue'
+import ReservationGuardianConfirm from '@/views/reservation/ReservationGuardianConfirm.vue'
+import ReservationTeacher from '@/views/reservation/ReservationTeacher.vue'
+import ReservationGuardianMap from '@/views/reservation/ReservationGuardianMap.vue'
+import ReservationGuardianHistory from '@/views/reservation/ReservationGuardianHistory.vue'
+import ReservationBlock from '@/views/reservation/ReservationBlock.vue'
 
 const reservationRoutes = [
   {
