@@ -24,9 +24,12 @@ const getApplicationList = async () => {
     const r1 = Number(row.r_i1 ?? 0)
     const r2 = Number(row.r_i2 ?? 0)
     const r3 = Number(row.r_i3 ?? 0)
+    console.log('ROW CHECK', row.dependant_no, row.dependant_name, row.application_no)
 
     return {
       ...row,
+      planningCount: p1 + p2 + p3, //계획서 총개수
+      resultCount: r1 + r2 + r3, //결과서 총개수
       counts: {
         i1: p1 + r1,
         i2: p2 + r2,
@@ -64,9 +67,17 @@ const addApp = () => {
   router.push({ name: 'AddApplication' })
 }
 
-//지원신청서 보기 버튼 누르면 해당 지원자의 가장 최신의 지원신청서 페이지로 이동
+//지원신청서 보기 버튼 누르면 해당 지원자의 지원신청서 페이지로 이동
 const goToApplication = (appNo) => {
   router.push({ name: 'applicationWait', params: { id: appNo } })
+}
+
+const goToPlanning = (applicationNo) => {
+  router.push({ name: 'applicationPlanning', params: { id: applicationNo } })
+}
+
+const goToResult = (applicationNo) => {
+  router.push({ name: 'applicationResult', params: { id: applicationNo } })
 }
 </script>
 
@@ -141,7 +152,10 @@ const goToApplication = (appNo) => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(row, index) in applicationList" :key="row.application_no">
+            <tr
+              v-for="(row, index) in applicationList"
+              :key="row.application_no ?? `d-${row.dependant_no}`"
+            >
               <td class="align-middle text-center text-sm">
                 <p class="text-xs font-weight-bold mb-0">{{ index + 1 }}</p>
               </td>
@@ -152,22 +166,29 @@ const goToApplication = (appNo) => {
                 <p class="text-xs font-weight-bold mb-0">{{ row.guardian_name }}</p>
               </td>
               <td class="align-middle text-center text-sm">
-                <p class="text-xs font-weight-bold mb-0">{{ row.application_no }}</p>
+                <p class="text-xs font-weight-bold mb-0">
+                  {{ row.application_no ?? 'N/A' }}
+                </p>
               </td>
 
               <td class="align-middle text-center text-sm">
-                <span class="text-secondary text-xs font-weight-bold">{{
-                  changeDateFormat(row.application_date)
-                }}</span>
+                <span class="text-secondary text-xs font-weight-bold">
+                  {{ row.application_date ? changeDateFormat(row.application_date) : 'N/A' }}
+                </span>
               </td>
               <td class="align-middle text-center">
-                <button
-                  class="btn btn-success btn-sm mb-0"
-                  type="button"
-                  @click="goToApplication(row.application_no)"
-                >
-                  보기
-                </button>
+                <template v-if="row.application_no">
+                  <button
+                    class="btn btn-success btn-sm mb-0"
+                    type="button"
+                    @click="goToApplication(row.application_no)"
+                  >
+                    보기
+                  </button>
+                </template>
+                <template v-else>
+                  <span class="badge badge-sm bg-secondary">없음</span>
+                </template>
               </td>
               <td class="align-middle text-center text-sm">
                 <span class="text-secondary text-xs font-weight-bold">{{ row.manager_name }}</span>
@@ -189,12 +210,18 @@ const goToApplication = (appNo) => {
                 </p>
               </td>
               <td class="align-middle text-center text-sm">
-                <span
-                  class="badge badge-sm"
-                  :class="{ 'bg-secondary': true, 'bg-gradient-success': false }"
-                  :style="{ cursor: 'pointer' }"
-                  >없음</span
-                >
+                <template v-if="row?.application_no && row.planningCount > 0">
+                  <button
+                    class="btn btn-success btn-sm mb-0"
+                    type="button"
+                    @click="goToPlanning(row.application_no)"
+                  >
+                    보기
+                  </button>
+                </template>
+                <template v-else>
+                  <span class="badge badge-sm bg-secondary">없음</span>
+                </template>
               </td>
               <td class="align-middle text-center text-sm">
                 <span
@@ -205,12 +232,18 @@ const goToApplication = (appNo) => {
                 >
               </td>
               <td class="align-middle text-center text-sm">
-                <span
-                  class="badge badge-sm"
-                  :class="{ 'bg-secondary': false, 'bg-gradient-success': true }"
-                  :style="{ cursor: 'pointer' }"
-                  >보기</span
-                >
+                <template v-if="row?.application_no && row.resultCount > 0">
+                  <button
+                    class="btn btn-success btn-sm mb-0"
+                    type="button"
+                    @click="goToResult(row.application_no)"
+                  >
+                    보기
+                  </button>
+                </template>
+                <template v-else>
+                  <span class="badge badge-sm bg-secondary">없음</span>
+                </template>
               </td>
             </tr>
           </tbody>
