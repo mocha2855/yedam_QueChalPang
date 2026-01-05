@@ -1,12 +1,12 @@
 <script setup>
 import { useApprovalStore } from '@/stores/approval'
 import { useRouter } from 'vue-router'
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount, ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import ArgonButton from '@/components/ArgonButton.vue'
 
 const store = useApprovalStore()
-const { userList, userPendingList } = storeToRefs(store)
+const { managerList, managerPendingList } = storeToRefs(store)
 const router = useRouter()
 const checkedIds = ref([]) // 선택 체크
 
@@ -22,13 +22,43 @@ const getStatus = (confirm) => {
   if (confirm == 'l3') return '거절'
 }
 
+const isAllChecked = computed({
+  //개별선택 -> 전체 체크 반영
+  get() {
+    return checkedIds.value.length === managerList.value.length && managerList.length > 0
+  },
+  //전체선택 -> 개별 반영
+  set(val) {
+    if (val) {
+      checkedIds.value = managerList.value.map((m) => m.member_id)
+    } else {
+      checkedIds.value = []
+    }
+  },
+})
+
+// 승인 처리
+const handleApprove = async (id) => {
+  if (confirm('승인하시겠습니까?')) {
+    await store.approveMember(id)
+    alert('승인되었습니다.')
+  }
+}
+// 승인 거절 처리
+const handleReject = async (id) => {
+  if (confirm('거절하시겠습니까?')) {
+    await store.rejectMember(id)
+    alert('거절되었습니다.')
+  }
+}
+
 //선택 승인 처리
 const approveSelected = async () => {
   if (checkedIds.value.length === 0) return
 
   //승인대기만 필터링
   const pendingIds = checkedIds.value.filter((id) => {
-    const member = userList.value.find((m) => m.member_id === id)
+    const member = managerList.value.find((m) => m.member_id === id)
     return member && member.member_confirm === 'l2'
   })
 
@@ -62,6 +92,7 @@ const approveSelected = async () => {
   alert(`${pendingIds.length}명이 승인되었습니다.`)
   checkedIds.value = []
 }
+
 onBeforeMount(async () => {
   await store.getApprovalList()
 })
@@ -73,12 +104,11 @@ onBeforeMount(async () => {
       <div class="col-12">
         <div class="card">
           <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-            <h6>일반회원 승인 관리</h6>
+            <h6>담당자 승인 관리</h6>
             <p class="text-sm mb-0" style="color: #000">
-              승인 대기: {{ userPendingList.length }}건
+              승인 대기: {{ managerPendingList.length }}건
             </p>
           </div>
-
           <div class="card-header pb-0 d-flex justify-content-end align-items-center gap-2">
             <button
               class="btn btn-success btn-sm"
@@ -136,16 +166,11 @@ onBeforeMount(async () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="member in userList"
-                    :key="member.member_id"
-                    :class="{ 'row-rejected': member.member_confirm === 'l3' }"
-                  >
+                  <tr v-for="member in managerList" :key="member.member_id">
                     <!-- 개별 선택 체크박스 -->
                     <td class="align-middle text-center">
                       <input type="checkbox" :value="member.member_id" v-model="checkedIds" />
                     </td>
-
                     <td class="align-middle text-center">
                       <p class="text-sm font-weight-bold mb-0">
                         {{ member.member_id }}
@@ -153,10 +178,8 @@ onBeforeMount(async () => {
                     </td>
                     <td
                       class="text-sm"
-                      @click="member.member_confirm !== 'l3' ? memberInfo(member.member_id) : null"
-                      :style="{
-                        cursor: member.member_confirm !== 'l3' ? 'pointer' : 'not-allowed',
-                      }"
+                      @click="memberInfo(member.member_id)"
+                      style="cursor: pointer"
                     >
                       {{ member.member_name }}
                     </td>
@@ -170,7 +193,7 @@ onBeforeMount(async () => {
                       <span
                         :class="{
                           badge: true,
-                          'badge-md': true,
+                          'badge-sm': true,
                           'bg-gradient-success': member.member_confirm == 'l1',
                           'bg-gradient-warning': member.member_confirm == 'l2',
                           'bg-gradient-danger': member.member_confirm == 'l3',
@@ -220,18 +243,3 @@ onBeforeMount(async () => {
     </div>
   </div>
 </template>
-<style scoped>
-/* 거절 row  */
-.row-rejected {
-  background-color: #f8f9fa;
-  opacity: 0.6;
-}
-
-.row-rejected td {
-  color: #adb5bd;
-}
-
-.row-rejected:hover {
-  background-color: #f8f9fa;
-}
-</style>

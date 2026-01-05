@@ -131,6 +131,15 @@ isConfirm()
               <i class="ni ni-world-2 me-2"></i>센터관리
             </router-link>
           </li>
+          <li v-if="isLogIn.info.member_authority === ('a4' || 'a2')" class="nav-item">
+            <router-link
+              to="/ApprovalUserList"
+              class="nav-link text-black"
+              :class="getRoute() === 'surveys' ? 'font-weight-bold opacity-10' : 'opacity-6'"
+            >
+              <i class="ni ni-world-2 me-2"></i>회원관리
+            </router-link>
+          </li>
         </ul>
 
         <ul class="navbar-nav justify-content-end">
