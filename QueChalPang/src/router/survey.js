@@ -1,7 +1,7 @@
-import SurveyList from '../views/SurveyList.vue'
-import SurveyInfo from '../views/SurveyInfo.vue'
-import SurveyAdd from '../views/SurveyAdd.vue'
-import SurveyUpdate from '@/views/SurveyUpdate.vue'
+import SurveyList from '../views/survey/SurveyList.vue'
+import SurveyInfo from '../views/survey/SurveyInfo.vue'
+import SurveyAdd from '../views/survey/SurveyAdd.vue'
+import SurveyUpdate from '../views/survey/SurveyUpdate.vue'
 
 const surveyRoutes = [
   {

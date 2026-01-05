@@ -100,6 +100,7 @@ router.put("/submitChangingPlanningInfo/:no", async (req, res) => {
   let post = await applicationService.updateChangingPlanningInfo(no, data);
   res.send(post);
 });
+
 // 지원서 전체 가져오기(일반사용자)
 router.get("/searchApplicationById/:id/:authority", async (req, res) => {
   let { id, authority } = req.params;
@@ -154,6 +155,13 @@ router.put("/submitChangingResultInfo/:no", async (req, res) => {
   console.log(data);
   let post = await applicationService.updateChangingResultInfo(no, data);
   res.send(post);
+});
+
+//드롭다운용 - 지원자별 신청서 목록 DJ
+router.get("/applicationsBydependant/:dependantNo", async (req, res) => {
+  const { dependantNo } = req.params;
+  const list = await applicationService.findAppsByDependant(dependantNo);
+  res.send(list);
 });
 
 module.exports = router;
