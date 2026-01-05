@@ -100,11 +100,17 @@ const findAppById = async (id, search, value, authority) => {
     }
     result = await mysql.bquery("selectApplicationsById", [search, value, id]);
   } else if (authority == "a2") {
-    console.log("a2");
+    if (search == undefined) {
+      search = "dependant_name";
+    }
+    if (value == undefined) {
+      value = "";
+    }
+    console.log(search, value, id);
+    result = await mysql.bquery("selectApplicationsById2", [search, value, id]);
   } else if (authority == "a3") {
-    console.log("a3");
+    return null;
   }
-  console.log(result);
   return result;
 };
 

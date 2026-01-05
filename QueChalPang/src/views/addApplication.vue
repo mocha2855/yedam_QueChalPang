@@ -6,9 +6,7 @@ import axios from 'axios'
 const member = useCounterStore().isLogIn.info
 const surveyList = ref([])
 const getApplicationList = async () => {
-  console.log(member)
   let result = await axios.get(`/api/allsurveys`)
-  console.log(result)
   surveyList.value = result.data
 }
 const structuredSurvey = computed(() => {
@@ -79,10 +77,9 @@ const selectOption = () => {
   dependants.value.forEach((val) => {
     if (val.dependant_no == selectedOption.value) {
       selectedDependant.value = val
-      console.log(val)
-      console.log(selectedDependant.value)
     }
   })
+  console.log(selectedDependant.value)
 }
 onBeforeMount(() => {
   getApplicationList()
@@ -122,6 +119,34 @@ const returnGender = (input) => {
         <h6 class="mb-0">지원자 정보</h6>
       </div>
     </div>
+    <!-- <div class="card mb-3">
+      <div class="card-body row row-cols-3">
+        <div class="fs-5 col" :value="selectedDependant.dependant_no">
+          <span class="fs-5">지원자: </span>
+          <span class="fw-bold fs-5">{{ selectedDependant.dependant_name }}</span>
+        </div>
+        <div class="fs-5 col" :value="selectedDependant.dependant_name">
+          <span class="fs-5">보호자: </span>
+          <span class="fw-bold fs-5">{{ selectedDependant.member_name }}</span>
+        </div>
+        <div class="fs-5 col" :value="returnStatus(selectedDependant.status)">
+          <span class="fs-5">대기단계: </span>
+          <span class="fw-bold fs-5">{{ returnStatus(selectedDependant.status) }}</span>
+        </div>
+        <div class="fs-5 col" :value="selectedDependant.despendant_gender">
+          <span class="fs-5">성별: </span>
+          <span class="fw-bold fs-5">{{ selectedDependant.despendant_gender }}</span>
+        </div>
+        <div class="fs-5 col" :value="selectedDependant.dependant_birth">
+          <span class="fs-5">생일: </span>
+          <span class="fw-bold fs-5">{{ selectedDependant.dependant_birth }}</span>
+        </div>
+        <div class="fs-5 col" :value="selectedDependant.disability_name">
+          <span class="fs-5">장애유형: </span>
+          <span class="fw-bold fs-5">{{ selectedDependant.disability_name }}</span>
+        </div>
+      </div>
+    </div> -->
     <div class="card-body px-0 pt-0 pb-2">
       <div class="table-responsive p-0">
         <table class="table align-items-center mb-0">
@@ -149,7 +174,7 @@ const returnGender = (input) => {
             <th class="text-uppercase text-primary text-sm font-weight-bolder opacity-7 ps-2">
               보호자
             </th>
-            <td class="align-middle text-center text-sm">{{ member.member_name }}</td>
+            <td class="align-middle text-center text-sm">{{ selectedDependant.member_name }}</td>
             <th class="text-uppercase text-primary text-sm font-weight-bolder opacity-7 ps-2">
               대기단계
             </th>
