@@ -107,6 +107,38 @@ const findAppById = async (id, search, value, authority) => {
   console.log(result);
   return result;
 };
+
+// 검토 중, 반려, 승인 지원계획서 불러오기
+const findResultReviewById = async (no) => {
+  let post = await mysql.bquery("selectResultReviewById", no);
+  return post;
+};
+
+// 지원결과서 승인요청
+const addResultInfo = async (planning_no, data) => {
+  let param = { planning_no, ...data };
+  let post = await mysql.bquery("insertResultInfo", param);
+  return post;
+};
+
+// 지원결과서 승인(관리자)
+const updateResultInfo = async (result_no, data) => {
+  let post = await mysql.bquery("sucessResultUpdateInfo", [data, result_no]);
+  return post;
+};
+
+// 지원결과서 반려(관리자)
+const updateRejectResultInfo = async (result_no, data) => {
+  let post = await mysql.bquery("rejectResultUpdateInfo", [data, result_no]);
+  return post;
+};
+
+// 지원결과서 반려 후 승인요청(담당자)
+const updateChangingResultInfo = async (result_no, data) => {
+  let post = await mysql.bquery("changingResultUpdateInfo", [data, result_no]);
+  return post;
+};
+
 module.exports = {
   dependantFindById,
   findById,
@@ -121,4 +153,9 @@ module.exports = {
   updateRejectPlanningInfo,
   updateChangingPlanningInfo,
   findAppById,
+  findResultReviewById,
+  addResultInfo,
+  updateResultInfo,
+  updateRejectResultInfo,
+  updateChangingResultInfo,
 };

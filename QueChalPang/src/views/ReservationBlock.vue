@@ -173,6 +173,9 @@ const calendarAttrs = computed(() => [
 <template>
   <div class="py-4 container-fluid">
     <div class="row g-4">
+      <div>
+        <button class="btn btn-warning btn-lg fs-6" @click="$router.back()">← 뒤로가기</button>   
+      </div>
       <!-- 좌: 달력 -->
       <div class="col-12 col-lg-5">
         <div class="card p-3 h-100 shadow-sm">

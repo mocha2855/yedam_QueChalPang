@@ -8,6 +8,7 @@ const route = useRoute()
 const router = useRouter()
 
 const applicationNo = computed(() => route.query.applicationNo)
+
 //front용 format
 const date = computed(() => route.query.date ?? '')
 const time = computed(() => route.query.time ?? '')

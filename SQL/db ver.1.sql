@@ -286,6 +286,10 @@ REFERENCES `attachment` (
 	`attachment_no`
 );
 
+-- 결과서 작성일 timestamp추가(260105)
+alter table result modify column result_date timestamp default current_timestamp() on update current_timestamp(
+
+
 DROP TABLE IF EXISTS `app_answer`;
 
 CREATE TABLE `app_answer` (

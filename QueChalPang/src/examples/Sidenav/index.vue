@@ -3,13 +3,20 @@
 import { computed } from 'vue'
 import { useStore } from 'vuex'
 import SidenavList from './SidenavList.vue'
+import ApprovalSidenavList from './AprrovalSidenav' //승인관리 사이드바 추가
 import logo from '@/assets/img/logo-ct-dark.png'
 import logoWhite from '@/assets/img/logo-ct.png'
 
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
 const store = useStore()
 const layout = computed(() => store.state.layout)
 const sidebarType = computed(() => store.state.sidebarType)
 const darkMode = computed(() => store.state.darkMode)
+const isApprovalPage = computed(() => {
+  return route.path.includes('Approval')
+})
 </script>
 <template>
   <div
@@ -39,7 +46,10 @@ const darkMode = computed(() => store.state.darkMode)
 
     <hr class="mt-0 horizontal dark" />
 
-    <sidenav-list />
+    <!-- 승인 관리면 ApprovalSidenavList -->
+    <ApprovalSidenavList v-if="isApprovalPage" />
+    <!-- 아니면 기본 SidenavList -->
+    <SidenavList v-else />
   </aside>
 </template>
 

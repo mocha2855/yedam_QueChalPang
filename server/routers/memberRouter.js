@@ -87,4 +87,17 @@ router.get(`/dependant/:id/:authority`, async (req, res) => {
   let result = await memberService.findDependants(id, authority);
   res.send(result);
 });
+
+// 승인 거절 처리
+router.post(`/member/:id/reject`, async (req, res) => {
+  let id = req.params.id;
+  let result = await memberService.rejectMember(id);
+  res.send(result);
+});
+
+// 승인 거절 건수
+router.get(`/members/rejected/count`, async (req, res) => {
+  let count = await memberService.getRejectedCount();
+  res.send({ count });
+});
 module.exports = router;

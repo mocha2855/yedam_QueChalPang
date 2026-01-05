@@ -159,6 +159,17 @@ const findDependants = async (id, authority) => {
   }
   return result;
 };
+// 4. 승인 거절 처리 (l2 -> l3)
+const rejectMember = async (id) => {
+  let result = await mysql.memberQuery("updateMemberConfirm", ["l3", id]);
+  return result;
+};
+
+// 3. 거절 건수
+const getRejectedCount = async () => {
+  let result = await mysql.memberQuery("countRejectedMembers");
+  return result[0].count;
+};
 module.exports = {
   findAllMember,
   findByMemberId,
@@ -173,4 +184,6 @@ module.exports = {
   approveMember,
   getPendingCount,
   findDependants,
+  rejectMember,
+  getRejectedCount,
 };

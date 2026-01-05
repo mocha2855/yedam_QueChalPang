@@ -28,13 +28,14 @@ from dependant d where member_id=?`;
 // 승인 관리 목록 조회
 const selectMemberApproval = `
   select * from member 
-  where member_authority in ('u1','a3')
+  where member_authority in ('a1','a2','a3')
+  order by member_date desc;
 `;
 
-// 회원 승인 처리 (l2 -> l1)
+// 회원 승인 처리 (l2 -> l1 or l3)
 const updateMemberConfirm = `
   update member 
-  set member_confirm = ?, member_updated_at = now()
+  set member_confirm = ?
   where member_id = ?
 `;
 
@@ -42,7 +43,13 @@ const updateMemberConfirm = `
 const countPendingMembers = `
   select count(*) as count from member 
   where member_confirm = 'l2' 
-  and member_authority in ('u1','a3')
+  and member_authority in ('a1','a2','a3')
+`;
+//승인 거절 건수
+const countRejectedMembers = `
+  select count(*) as count from member 
+  where member_confirm = 'l3' 
+  and member_authority in ('a1','a2','a3')
 `;
 module.exports = {
   selectAllMember,
@@ -63,4 +70,5 @@ module.exports = {
   updateMemberConfirm,
   countPendingMembers,
   selectDependants,
+  countRejectedMembers,
 };
