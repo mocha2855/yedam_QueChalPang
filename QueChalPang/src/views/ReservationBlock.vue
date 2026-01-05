@@ -80,7 +80,7 @@ const slots = computed(() =>
 
 const blockedList = computed(() => Array.from(blockedTimes.value).sort())
 
-// (Guardian fetchAvailability 패턴 그대로)
+// Guardian fetchAvailability 패턴 그대로
 const fetchAvailabilityByManager = async () => {
   if (!managerId.value || !selectedDate.value) return
 
@@ -116,7 +116,7 @@ watch(
   { immediate: true },
 )
 
-// 토글(차단/해제) - 지금은 프론트만(반응성 100% 보장)
+// 토글(차단/해제)
 // 클릭하면 바로 DB에 저장/삭제 후 다시 조회
 const toggleBlock = async (slot) => {
   if (slot.locked) return
@@ -198,7 +198,7 @@ const calendarAttrs = computed(() => [
         </div>
       </div>
 
-      <!-- 우: 시간 슬롯 -->
+      <!-- 우 -->
       <div class="col-12 col-lg-7">
         <div class="card p-3 shadow-sm">
           <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
@@ -218,7 +218,6 @@ const calendarAttrs = computed(() => [
             </div>
           </div>
 
-          <!-- 범례 -->
           <div class="legend mb-3">
             <span class="legend-item"><span class="legend-dot dot-open"></span> 가능</span>
             <span class="legend-item"
@@ -230,7 +229,6 @@ const calendarAttrs = computed(() => [
             <span class="legend-item"><span class="legend-dot dot-lunch"></span> 점심(잠금)</span>
           </div>
 
-          <!-- 시간 슬롯 그리드 -->
           <div class="slot-grid">
             <button
               v-for="s in slots"
@@ -273,9 +271,6 @@ const calendarAttrs = computed(() => [
             </div>
           </div>
 
-          <div class="mt-3 small text-muted">
-            (API 연결 후) 토글 시 즉시 저장하거나, “저장” 버튼으로 일괄 저장 방식도 가능해요.
-          </div>
         </div>
       </div>
     </div>
