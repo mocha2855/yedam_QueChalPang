@@ -1,6 +1,7 @@
 const selectAllMember = `select * from member`;
 const selectByMemberId = `select member_id,member_name,member_confirm,member_authority,center_no from member where member_id = ?`;
 const selectByMemberNameAndPhone = `select member_id from member where member_name=? and member_phone=?`;
+const countByMemberIdAndPhone = `select count(*) as count from member where member_id=? and member_phone=?`;
 const countByMemberNameAndPhone = `select count(*) as count from member where member_name=? and member_phone=?`;
 const countByMemberPass = `select count(*) as count from member where member_id=? and member_pass=sha2(?,256)`;
 const countByMemberId = `select count(*) as count from member where member_id=?`;
@@ -10,6 +11,7 @@ const insertMemberInfo = `insert into member(member_id,member_pass,member_name,m
 const insertSmsInfo = `insert into sms(sms_no) values (?)`;
 const selectBySmsId = `select count(*) as count from sms where sms_id = ? and sms_no = ? and sms_created_at >= now() - interval 3 minute`;
 const deleteOver3m = `call delete_over_3m`;
+const updatePassword = `update member set member_pass=sha2(?,256) where member_id=?`;
 
 //회원가입 시 승인/대기
 // 승인 관리 목록 조회
@@ -44,6 +46,8 @@ module.exports = {
   deleteOver3m,
   countByMemberNameAndPhone,
   selectByMemberNameAndPhone,
+  countByMemberIdAndPhone,
+  updatePassword,
   selectMemberApproval,
   updateMemberConfirm,
   countPendingMembers,

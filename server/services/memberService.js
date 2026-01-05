@@ -1,5 +1,5 @@
 const mysql = require("../database/mapper.js");
-
+require("dotenv").config();
 // 문자발송 api 가져오기
 const { SolapiMessageService: msgModule } = require("solapi");
 const messageService = new msgModule(
@@ -69,20 +69,28 @@ const addMemberInfo = async (input) => {
 };
 //인증을 위한 랜덤번호 6자리 생성
 const phoneAuth = async (input) => {
+  console.log(input.phone);
   let randval = Math.floor(Math.random() * 1000000)
     .toString()
     .padStart(6, "0");
   const message = {
     // 문자 내용 (최대 2,000Bytes / 90Bytes 이상 장문문자)
-    text: `[인증문자] 인증번호는 ${randval} 입니다.`,
+    text: `인증번호는 ${randval} 입니다.`,
     // 수신번호 (문자 받는 이)
-    to: input.phone,
+    to: input.phone.replaceAll("-", ""),
     // 발신번호 (문자 보내는 이)
     from: "01055938876",
   };
-  messageService.send(message).then(console.log).catch(console.error);
-  let result = await mysql.memberQuery("insertSmsInfo", randval);
-  return result;
+  try {
+    console.log(message);
+    const response = await messageService.send(message);
+    console.log("발송 성공 결과:", response);
+    await messageService.send(message).then(console.log).catch(console.error);
+    let result = await mysql.memberQuery("insertSmsInfo", randval);
+    return result;
+  } catch (error) {
+    throw error;
+  }
 };
 // 입력한 인증번호 맞는지 체크.
 const getAuth = async (id, num) => {
@@ -104,8 +112,22 @@ const searchId = async (name, phone, way) => {
       name,
       phone,
     ]);
+    console.log(result);
+    return result;
+  } else if (way == 3) {
+    let result = await mysql.memberQuery("countByMemberIdAndPhone", [
+      name,
+      phone,
+    ]);
+    console.log(result);
     return result;
   }
+};
+
+const updatePassword = async (id, password) => {
+  let result = await mysql.memberQuery("updatePassword", [password, id]);
+  console.log(result);
+  return result;
 };
 //승인 관련 서비스 추가
 // 1. 승인 관리 목록
@@ -134,6 +156,7 @@ module.exports = {
   phoneAuth,
   getAuth,
   searchId,
+  updatePassword,
   getApprovalList,
   approveMember,
   getPendingCount,
