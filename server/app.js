@@ -20,9 +20,11 @@ const applicationRouter = require("./routers/applicationRouter.js"); // 대기�
 const memberRouter = require("./routers/memberRouter.js"); // member의 라우터
 const centerRouter = require("./routers/centerRouter.js"); // center의 라우터
 const reservationRouter = require("./routers/reservationRouter.js");
+const qnaRouter = require("./routers/qnaRouter.js");
 const surveyRouter = require("./routers/surveyRouter.js");
 
 app.use("/api", reservationRouter);
+app.use("/api", qnaRouter);
 app.use("/api", applicationRouter); // http://localhost:3000/api/application
 app.use("/api", memberRouter); // http://localhost:3000/api/members
 app.use("/api", centerRouter); // http://localhost:3000/api/members

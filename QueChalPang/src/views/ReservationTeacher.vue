@@ -6,6 +6,7 @@ import 'v-calendar/style.css'
 
 import { useCounterStore } from '@/stores/member'
 import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
 
 import ReservationTable from './components/ReservationTable.vue'
 import ReservationCright from './components/ReservationCright.vue'
@@ -19,6 +20,8 @@ const selectedDate = ref(new Date())
 const reservations = ref([])
 const reservedDays = ref([])
 const pendingReservedList = ref([])
+
+const router = useRouter();
 
 //DatePicker에서 Date 객체가 와서 서버 쿼리에 맞게 YYYY-MM-DD 문자열로 변환
 //외우면 좋음.
@@ -135,6 +138,12 @@ const onReject = async ({ row, reason }) => {
   reservations.value = cal.data ?? []
 }
 
+const goTimeBlock = () => {
+  router.push({
+    name: 'ReservationBlock',
+  })
+}
+
 //콘솔확인용_나중에지우기
 console.log('counterStore:', counterStore)
 console.log('isLogIn:', isLogIn)
@@ -144,6 +153,11 @@ console.log('login info:', isLogIn.value?.value?.info ?? isLogIn.value?.info)
 
 <template>
   <div class="py-4 container-fluid">
+     <div class="col-12 d-flex justify-content-start">
+        <button class="btn btn-primary btn-lg fs-6" @click="goTimeBlock">
+          상담시간 차단하기
+        </button>
+    </div>    
     <!-- 캘린더 -->
     <div class="row g-4 mb-4">
       <div class="col-12 col-lg-6">
