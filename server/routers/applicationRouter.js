@@ -100,6 +100,18 @@ router.put("/submitChangingPlanningInfo/:no", async (req, res) => {
   let post = await applicationService.updateChangingPlanningInfo(no, data);
   res.send(post);
 });
+// 지원서 전체 가져오기(일반사용자)
+router.get("/searchApplicationById/:id/:authority", async (req, res) => {
+  let { id, authority } = req.params;
+  let { search, value } = req.query;
+  let result = await applicationService.findAppById(
+    id,
+    search,
+    value,
+    authority
+  );
+  res.send(result);
+});
 
 // 검토 중, 반려, 승인 지원결과서 불러오기
 router.get("/reulstReview/:no", async (req, res) => {

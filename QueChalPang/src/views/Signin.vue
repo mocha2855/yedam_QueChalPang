@@ -46,7 +46,6 @@ const logIn = async () => {
   let result = await axios.post(`/api/member/login`, member)
   result = result.data
   console.log(result)
-  alert(result.msg)
   if (result.isCorrect) {
     isLogIn.value.isLogIn = true
     isLogIn.value.info = result.member[0]

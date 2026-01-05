@@ -51,6 +51,11 @@ const changingPlanningUpdateInfo = `update planning
 set ?
 where planning_no = ?`;
 
+// 지원현황에서 목록 불러오기(일반사용자)
+const selectApplicationsById = `select a.dependant_no,dependant_name,survey_no,a.member_id,application_date,status,(select member_name from member where member_id=application_rejector) as application_rejector,status_reject,status_status 
+from application a 
+join dependant d on d.dependant_no = a.dependant_no 
+where ?? like concat('%',?,'%') and a.member_id = ?`;
 // 검토 중, 반려, 승인 지원결과서 불러오기
 const selectResultReviewById = `select r.*, p.ranking, m.member_name manager_name, m2.member_name rejecter_name
 from (select *, rank() over (order by planning_date) ranking from planning where application_no = ?) p
@@ -90,6 +95,7 @@ module.exports = {
   sucessPlanningUpdateInfo,
   rejectPlanningUpdateInfo,
   changingPlanningUpdateInfo,
+  selectApplicationsById,
   selectResultReviewById,
   insertResultInfo,
   sucessResultUpdateInfo,

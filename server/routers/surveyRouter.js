@@ -30,5 +30,10 @@ router.put(`/surveys/:no`, async (req, res) => {
   let result = await surveyService.modifySurvey(no, data);
   res.send(result);
 });
-
+// 지원신청서 등록을 위한 survey 전체 조회(active인 것만)
+router.get(`/allsurveys`, async (req, res) => {
+  let result = await surveyService.findAllSurveys();
+  console.log(result);
+  res.send(result);
+});
 module.exports = router;
