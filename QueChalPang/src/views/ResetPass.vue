@@ -10,11 +10,14 @@ import router from '@/router'
 
 const body = document.getElementsByTagName('body')[0]
 const store = useStore()
+
+// --- 상태 관리 ---
 const phoneNumbers = reactive({
   phone1: '010',
   phone2: '',
   phone3: '',
 })
+
 const phoneBtn = reactive({
   phoneBtn: true,
   phoneBtnChecked: false,
@@ -22,16 +25,28 @@ const phoneBtn = reactive({
   phoneAuthChecked: false,
   auth: '',
 })
+
 const isAuth = ref('')
+const isStep2 = ref(false)
+
+// 비밀번호 입력 데이터
+const passwordData = reactive({
+  password: '',
+  passwordConfirm: '',
+})
 
 const fullNumber = computed(() => {
   return `${phoneNumbers.phone1}-${phoneNumbers.phone2}-${phoneNumbers.phone3}`
 })
+
 const member = reactive({
-  name: '',
+  userId: '', // [수정] 이름 대신 아이디를 사용
   phone: '',
 })
+
 let modalControl = null
+
+// --- 라이프사이클 훅 ---
 onBeforeMount(() => {
   store.state.hideConfigButton = true
   store.state.showConfig = false
@@ -49,36 +64,56 @@ onBeforeUnmount(() => {
   store.state.showFooter = true
   body.classList.add('bg-gray-100')
 })
+
 onMounted(() => {
   modalControl = new Modal(modalRef.value)
 })
-const matchName = async () => {
-  member.phone = fullNumber.value
-  let result1 = await axios.get(`/api/member/${member.name}/${member.phone}/1`)
-  result1 = result1.data[0]
-  if (result1.count == 1) {
-    // 성공시 버튼 비활성화 및 스타일 변경
-    phoneBtn.phoneBtn = false
-    phoneBtn.phoneBtnChecked = true
-    // 인증번호 생성을 위한 axios 작업
-    let res = await axios.post('/api/authenticate', { phone: member.phone })
-    // 인증번호 생성 후 auto_increment로 생성된 sms_id값 받아오기
-    isAuth.value = res.data.insertId
-    console.log(isAuth.value)
-    //인증은 3분간만 유효하기 때문에 타이머 180초로 세팅
-    timer.value = 180
-    //타이머 작동
-    loseTime = setInterval(losingTime, 1000)
-    console.log(res)
-  } else {
-    msg.value = '입력하신 번호와 성함이 일치하는 계정이 존재하지 않습니다.'
+
+// --- 기능 로직 ---
+
+// 1. 회원 존재 여부 확인 (아이디 + 핸드폰) 및 인증번호 발송
+const matchId = async () => {
+  // 함수명 변경 matchName -> matchId
+  if (!member.userId || !phoneNumbers.phone2 || !phoneNumbers.phone3) {
+    msg.value = '아이디와 휴대폰 번호를 모두 입력해주세요.'
     openModal()
     return
   }
+
+  member.phone = fullNumber.value
+
+  try {
+    let result1 = await axios.get(`/api/member/${member.userId}/${member.phone}/3`)
+
+    // 데이터 구조 안전하게 접근
+    const userData = result1.data && result1.data[0] ? result1.data[0] : null
+
+    if (userData && userData.count == 1) {
+      phoneBtn.phoneBtn = false
+      phoneBtn.phoneBtnChecked = true
+
+      let res = await axios.post('/api/authenticate', { phone: member.phone })
+
+      isAuth.value = res.data.insertId
+
+      timer.value = 180
+      loseTime = setInterval(losingTime, 1000)
+    } else {
+      msg.value = '입력하신 번호와 아이디가 일치하는 계정이 존재하지 않습니다.'
+      openModal()
+      return
+    }
+  } catch (error) {
+    console.error(error)
+    msg.value = '서버 통신 중 오류가 발생했습니다.'
+    openModal()
+  }
 }
+
 let loseTime
 const msg = ref('')
 const timer = ref(180)
+
 const timeFormat = computed(() => {
   let minute = `${Math.floor(timer.value / 60)}`
   let second = timer.value % 60 < 10 ? `0${timer.value % 60}` : `${timer.value % 60}`
@@ -88,85 +123,108 @@ const timeFormat = computed(() => {
   }
   return times
 })
-// 인증번호 입력 후 인증번호 일치여부 확인하는 함수.
+
+const losingTime = () => {
+  if (timer.value > 0) timer.value = timer.value - 1
+}
+
+// 2. 인증번호 확인
 const authCheck = async () => {
   if (phoneBtn.phoneBtnChecked == false) {
     msg.value = '인증번호 발송이 되지 않았습니다.'
     openModal()
+    return
   } else if (phoneBtn.auth == '') {
     msg.value = '인증번호가 입력되지 않았습니다.'
     openModal()
-  } else {
-    console.log(`/api/authenticate/${isAuth.value}`)
+    return
+  }
 
+  try {
     let res = await axios.post(`/api/authenticate/${isAuth.value}`, { auth: phoneBtn.auth })
-    console.log(res.data[0].count)
+
     if (res.data[0].count > 0) {
-      // 인증이 완료된 경우 확인버튼 비활성화 및 스타일 변경.
       phoneBtn.phoneAuth = false
       phoneBtn.phoneAuthChecked = true
-      msg.value = '본인인증이 완료되었습니다.'
-      openModal()
-      //타이머 중단.
       clearInterval(loseTime)
+
+      msg.value = '본인인증이 완료되었습니다. 새로운 비밀번호를 입력해주세요.'
+      isStep2.value = true
+      openModal()
     } else {
       msg.value = '인증번호가 일치하지 않습니다.'
       openModal()
     }
+  } catch (error) {
+    console.error(error)
+    msg.value = '인증 확인 중 오류가 발생했습니다.'
+    openModal()
   }
 }
-// 인증 타이머 동작시 실행되는 함수.
-const losingTime = () => {
-  timer.value = timer.value - 1
-}
-const modalRef = ref(false)
 
-// 모달 열기 함수
+// 3. 비밀번호 변경 요청
+const resetPassword = async () => {
+  if (passwordData.password === '') {
+    msg.value = '새로운 비밀번호를 입력해주세요.'
+    openModal()
+    return
+  }
+  if (passwordData.password !== passwordData.passwordConfirm) {
+    msg.value = '비밀번호가 일치하지 않습니다.'
+    openModal()
+    return
+  }
+
+  try {
+    const payload = {
+      id: member.userId,
+      password: passwordData.password,
+    }
+
+    let result = await axios.put('/api/modifyMemberPass', payload)
+    result = result.data
+    console.log('Password Reset Payload:', payload)
+    console.log(result)
+    if (result.affectedRows > 0) {
+      msg.value = '비밀번호가 성공적으로 변경되었습니다.\n로그인 페이지로 이동합니다.'
+      isPasswordChanged = true
+      openModal()
+      return
+    } else {
+      msg.value = '비밀번호가 변경되지 않았습니다. 입력하신 비밀번호가 기존 비밀번호와 일치합니다.'
+      isPasswordChanged = true
+      openModal()
+      return
+    }
+  } catch (error) {
+    console.error(error)
+    msg.value = '비밀번호 변경 중 오류가 발생했습니다.'
+    openModal()
+  }
+}
+
+const modalRef = ref(false)
+let isPasswordChanged = false
+
 const openModal = () => {
   modalControl.show()
 }
-// 모달 닫기 함수
+
 const closeModal = () => {
   modalControl.hide()
-  if (isFound) {
-    router.push({
-      name: 'Signin',
-      query: {
-        id: member.id,
-      },
-    })
+  if (isPasswordChanged) {
+    router.push({ name: 'Signin', query: { id: member.userId } })
   }
 }
-let isFound = false
-const showId = async () => {
-  let result = await axios.get(`/api/member/${member.name}/${member.phone}/2`)
-  console.log(result)
-  member.id = result.data[0].member_id
-  console.log(member)
-  msg.value = `${member.name}님의 아이디는 ${member.id} 입니다.`
-  isFound = true
-  openModal()
-}
 </script>
+
 <template>
-  <!-- Modal -->
   <Teleport to="body">
     <div class="modal fade" id="exampleModal" ref="modalRef" tabindex="-1" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="orange"
-              >
-                <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"></path></svg
-              >알림
-            </h5>
-
+            <h5 class="modal-title">알림</h5>
             <span
               @click="closeModal"
               style="cursor: pointer; font-size: 1.5rem; font-weight: bold; line-height: 1"
@@ -174,30 +232,29 @@ const showId = async () => {
               &times;
             </span>
           </div>
-          <div class="modal-body text-center">
-            <h6>
-              {{ msg }}
-            </h6>
+          <div class="modal-body text-center" style="white-space: pre-line">
+            <h6>{{ msg }}</h6>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="closeModal">취소</button>
             <button type="button" class="btn btn-primary" @click="closeModal">확인</button>
           </div>
         </div>
       </div>
     </div>
   </Teleport>
+
   <div class="container top-0 position-sticky z-index-sticky">
     <div class="row">
       <div class="col-12">
         <navbar
-          isBlur="blur  border-radius-lg my-3 py-2 start-0 end-0 mx-4 shadow"
+          isBlur="blur border-radius-lg my-3 py-2 start-0 end-0 mx-4 shadow"
           v-bind:darkMode="true"
           isBtn="bg-gradient-success"
         />
       </div>
     </div>
   </div>
+
   <main class="mt-0 main-content">
     <section>
       <div class="page-header min-vh-100">
@@ -205,21 +262,23 @@ const showId = async () => {
           <div class="mx-auto w-50">
             <div class="card card-plain">
               <div class="pb-0 card-header text-start">
-                <h4 class="font-weight-bolder">아이디 찾기</h4>
-                <p class="mb-0">아이디를 찾기 위해 이름과 휴대폰 번호를 입력해주세요.</p>
+                <h4 class="font-weight-bolder">비밀번호 재설정</h4>
+                <p class="mb-0">아이디와 휴대폰 번호로 본인인증을 진행해주세요.</p>
               </div>
               <div class="card-body">
                 <form v-on:submit.prevent="">
                   <div class="mb-3">
                     <argon-input
-                      id="name"
+                      id="userId"
                       type="text"
-                      placeholder="이름"
-                      name="name"
+                      placeholder="아이디"
+                      name="userId"
                       size="lg"
-                      v-model="member.name"
+                      v-model="member.userId"
+                      :disabled="isStep2"
                     />
                   </div>
+
                   <div class="row mb-3">
                     <argon-input
                       class="col-3"
@@ -240,6 +299,7 @@ const showId = async () => {
                       name="phone2"
                       size="lg"
                       v-model="phoneNumbers.phone2"
+                      :disabled="phoneBtn.phoneBtnChecked"
                     />
                     <argon-input
                       class="col-3"
@@ -250,6 +310,7 @@ const showId = async () => {
                       name="phone3"
                       size="lg"
                       v-model="phoneNumbers.phone3"
+                      :disabled="phoneBtn.phoneBtnChecked"
                     />
                     <button
                       :class="{
@@ -259,11 +320,12 @@ const showId = async () => {
                         'btn-secondary': phoneBtn.phoneBtnChecked,
                         disabled: phoneBtn.phoneBtnChecked,
                       }"
-                      @click="matchName()"
+                      @click="matchId()"
                     >
                       본인인증
                     </button>
                   </div>
+
                   <div class="row d-flex justify-content-between">
                     <div class="col-9 position-relative">
                       <argon-input
@@ -273,8 +335,10 @@ const showId = async () => {
                         name="certification"
                         size="lg"
                         v-model="phoneBtn.auth"
+                        :disabled="phoneBtn.phoneAuthChecked"
                       />
                       <label
+                        v-if="!phoneBtn.phoneAuthChecked && phoneBtn.phoneBtnChecked"
                         for="certification"
                         class="position-absolute end-0 top-50 translate-middle-y me-4 mb-0"
                         style="z-index: 5; color: #666; font-size: 0.9rem; pointer-events: none"
@@ -296,16 +360,44 @@ const showId = async () => {
                     </button>
                   </div>
 
+                  <div v-if="isStep2" class="mt-4">
+                    <hr class="horizontal dark my-4" />
+                    <p class="text-uppercase text-sm">새 비밀번호 입력</p>
+
+                    <div class="mb-3">
+                      <argon-input
+                        id="newPassword"
+                        type="password"
+                        placeholder="새 비밀번호"
+                        name="newPassword"
+                        size="lg"
+                        v-model="passwordData.password"
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <argon-input
+                        id="confirmPassword"
+                        type="password"
+                        placeholder="새 비밀번호 확인"
+                        name="confirmPassword"
+                        size="lg"
+                        v-model="passwordData.passwordConfirm"
+                      />
+                    </div>
+                  </div>
+
                   <div class="row text-center">
                     <div class="col-12">
                       <argon-button
+                        v-if="isStep2"
                         class="mt-4"
                         variant="gradient"
                         color="success"
                         fullWidth
                         size="lg"
-                        @click="showId()"
-                        >아이디 찾기
+                        @click="resetPassword()"
+                      >
+                        비밀번호 변경
                       </argon-button>
                     </div>
                   </div>

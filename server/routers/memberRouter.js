@@ -26,11 +26,13 @@ router.get(`/member/:key/:value`, async (req, res) => {
   let result = await memberService.isExist(key, value);
   res.send(result);
 });
+//회원가입
 router.post(`/member`, async (req, res) => {
   let input = req.body;
   let output = await memberService.addMemberInfo(input);
   res.send(output);
 });
+// 인증번호 발송
 router.post(`/authenticate`, async (req, res) => {
   let input = req.body;
   console.log("input", input);
@@ -38,6 +40,7 @@ router.post(`/authenticate`, async (req, res) => {
   console.log(output);
   res.send(output);
 });
+// 인증번호 일치여부 확인
 router.post(`/authenticate/:id`, async (req, res) => {
   let id = req.params.id;
   let num = req.body.auth;
@@ -45,9 +48,37 @@ router.post(`/authenticate/:id`, async (req, res) => {
   console.log(result);
   res.send(result);
 });
+// 이름,전화번호에 맞는 계정 존재여부 확인
 router.get("/member/:name/:phone/:way", async (req, res) => {
   const { name, phone, way } = req.params;
   let result = await memberService.searchId(name, phone, way);
   res.send(result);
+});
+// 비밀번호 재설정
+router.put("/modifyMemberPass", async (req, res) => {
+  const { id, password } = req.body;
+  let result = await memberService.updatePassword(id, password);
+  res.send(result);
+});
+
+// 승인 관리 라우터 추가
+
+// 승인 관리 목록 조회
+router.get(`/members/approval`, async (req, res) => {
+  let list = await memberService.getApprovalList();
+  res.send(list);
+});
+
+// 승인 처리
+router.post(`/member/:id/approve`, async (req, res) => {
+  let id = req.params.id;
+  let result = await memberService.approveMember(id);
+  res.send(result);
+});
+
+// 승인 대기 건수
+router.get(`/members/approval/count`, async (req, res) => {
+  let count = await memberService.getPendingCount();
+  res.send({ count });
 });
 module.exports = router;
