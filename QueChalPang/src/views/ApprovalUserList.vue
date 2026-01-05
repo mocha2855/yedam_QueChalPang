@@ -1,15 +1,40 @@
 <script setup>
 import { useApprovalStore } from '@/stores/approval'
 import { useRouter } from 'vue-router'
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount, ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import ArgonButton from '@/components/ArgonButton.vue'
+import ArgonPagination from '@/components/ArgonPagination.vue'
+import ArgonPaginationItem from '@/components/ArgonPaginationItem.vue'
 
 const store = useApprovalStore()
 const { userList, userPendingList } = storeToRefs(store)
 const router = useRouter()
 const checkedIds = ref([]) // 선택 체크
 
+// 페이지네이션 추가
+const currentPage = ref(1)
+const itemsPerPage = 10
+
+// 총 페이지 수
+const totalPages = computed(() => {
+  return Math.ceil(userList.value.length / itemsPerPage)
+})
+
+// 현재 페이지에 표시할 데이터
+const paginatedList = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return userList.value.slice(start, end)
+})
+
+// 페이지 변경
+const goToPage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page
+    checkedIds.value = [] // 페이지 변경시 체크 초기화
+  }
+}
 // 회원 상세 페이지로 이동
 const memberInfo = (id) => {
   router.push({ path: `/member/${id}` })
@@ -20,7 +45,22 @@ const getStatus = (confirm) => {
   if (confirm == 'l1') return '승인완료'
   if (confirm == 'l2') return '승인대기'
   if (confirm == 'l3') return '거절'
+  if (confirm == 'l4') return '삭제됨'
 }
+const isAllChecked = computed({
+  //개별선택 -> 전체 체크 반영
+  get() {
+    return checkedIds.value.length === userList.value.length && userList.length > 0
+  },
+  //전체선택 -> 개별 반영
+  set(val) {
+    if (val) {
+      checkedIds.value = userList.value.map((m) => m.member_id)
+    } else {
+      checkedIds.value = []
+    }
+  },
+})
 // 승인 처리
 const handleApprove = async (id) => {
   if (confirm('승인하시겠습니까?')) {
@@ -74,6 +114,42 @@ const approveSelected = async () => {
   }
 
   alert(`${pendingIds.length}명이 승인되었습니다.`)
+  checkedIds.value = []
+}
+const deleteSelected = async () => {
+  if (checkedIds.value.length === 0) return
+
+  // 삭제 가능한 것만 필터링 (l4가 아닌 것들)
+  const deletableIds = checkedIds.value.filter((id) => {
+    const member = userList.value.find((m) => m.member_id === id)
+    return member && member.member_confirm !== 'l4'
+  })
+
+  if (deletableIds.length === 0) {
+    alert('삭제 가능한 회원을 선택해주세요.')
+    checkedIds.value = []
+    return
+  }
+
+  if (deletableIds.length < checkedIds.value.length) {
+    const di = checkedIds.value.length - deletableIds.length
+    const ok = confirm(
+      `${di}명은 이미 삭제되었습니다.\n${deletableIds.length}명을 삭제하시겠습니까?`,
+    )
+    if (!ok) {
+      checkedIds.value = []
+      return
+    }
+  } else {
+    const ok = confirm(`${deletableIds.length}명을 삭제하시겠습니까?`)
+    if (!ok) return
+  }
+
+  for (const id of deletableIds) {
+    await store.deleteMember(id)
+  }
+
+  alert(`${deletableIds.length}명이 삭제되었습니다.`)
   checkedIds.value = []
 }
 
@@ -161,9 +237,12 @@ const approvalUpdate = (id) => {
                 </thead>
                 <tbody>
                   <tr
-                    v-for="member in userList"
+                    v-for="member in paginatedList"
                     :key="member.member_id"
-                    :class="{ 'row-rejected': member.member_confirm === 'l3' }"
+                    :class="{
+                      'row-rejected': member.member_confirm === 'l3',
+                      'row-deleted': member.member_confirm === 'l4',
+                    }"
                   >
                     <!-- 개별 선택 체크박스 -->
                     <td class="align-middle text-center">
@@ -198,6 +277,7 @@ const approvalUpdate = (id) => {
                           'bg-gradient-success': member.member_confirm == 'l1',
                           'bg-gradient-warning': member.member_confirm == 'l2',
                           'bg-gradient-danger': member.member_confirm == 'l3',
+                          'bg-gradient-secondary': member.member_confirm == 'l4',
                         }"
                       >
                         {{ getStatus(member.member_confirm) }}
@@ -237,6 +317,33 @@ const approvalUpdate = (id) => {
                   </tr>
                 </tbody>
               </table>
+            </div>
+            <!-- 페이지네이션 추가! -->
+            <div class="d-flex justify-content-center mt-3">
+              <argon-pagination color="success">
+                <!-- 이전 버튼 -->
+                <argon-pagination-item
+                  prev
+                  :disabled="currentPage === 1"
+                  @click="goToPage(currentPage - 1)"
+                />
+
+                <!-- 페이지 번호들 -->
+                <argon-pagination-item
+                  v-for="page in totalPages"
+                  :key="page"
+                  :label="String(page)"
+                  :active="currentPage === page"
+                  @click="goToPage(page)"
+                />
+
+                <!-- 다음 버튼 -->
+                <argon-pagination-item
+                  next
+                  :disabled="currentPage === totalPages"
+                  @click="goToPage(currentPage + 1)"
+                />
+              </argon-pagination>
             </div>
           </div>
         </div>
