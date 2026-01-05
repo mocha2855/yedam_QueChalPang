@@ -119,12 +119,12 @@
 
 <script setup>
 import { useMyPageStore } from '@/stores/mypage'
-import { useCounterStore } from '@/stores/member'
+//import { useCounterStore } from '@/stores/member'
 import { useRoute } from 'vue-router'
 const route = useRoute()
 
 const myPage = useMyPageStore()
-const counter = useCounterStore()
+//const counter = useCounterStore()
 
 import { onBeforeMount } from 'vue'
 import ArgonButton from '@/components/ArgonButton.vue'
