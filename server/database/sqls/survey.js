@@ -137,7 +137,23 @@ INSERT INTO survey_history (
   survey_history_reason,
   survey_history_date ) 
  VALUES(?,?,?,?,NOW())`;
-
+// 지원신청서 등록을 위한 활성상태의 조사지 전체 조회.
+const selectAllSurveys = `SELECT s.survey_no,
+        s.survey_version,
+        s.survey_start,
+        s.survey_end,
+        t.survey_title_no,
+        t.survey_title,
+        ss.survey_subtitle_no,
+        ss.survey_subtitle,
+        ss.survey_subtitle_detail,
+        q.survey_qitem_no,
+        q.survey_qitem_question,
+        q.survey_qitem_type 
+FROM survey s JOIN survey_title t on s.survey_no = t.survey_no 
+              JOIN survey_subtitle ss ON t.survey_title_no = ss.survey_title_no 
+              JOIN survey_qitem q ON ss.survey_subtitle_no = q.survey_subtitle_no 
+WHERE survey_version_status = 'active'`;
 module.exports = {
   selectAll,
   selectTitle,
@@ -157,4 +173,7 @@ module.exports = {
   updateSubtitle,
   updateQitem,
   insertSurveyHistory,
+
+  // 지원신청서 등록용
+  selectAllSurveys,
 };

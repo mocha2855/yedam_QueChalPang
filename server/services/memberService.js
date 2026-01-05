@@ -147,6 +147,18 @@ const getPendingCount = async () => {
   let result = await mysql.memberQuery("countPendingMembers");
   return result[0].count;
 };
+
+// 지원자 관련
+// 지원자 조회
+const findDependants = async (id, authority) => {
+  let result;
+  if (authority == "a1") {
+    result = await mysql.memberQuery("selectDependants", id);
+  } else if (authority == "a2") {
+    result = await mysql.memberQuery("selectDependants2", id);
+  }
+  return result;
+};
 module.exports = {
   findAllMember,
   findByMemberId,
@@ -160,4 +172,5 @@ module.exports = {
   getApprovalList,
   approveMember,
   getPendingCount,
+  findDependants,
 };

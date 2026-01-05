@@ -88,7 +88,25 @@ const updateChangingPlanningInfo = async (planning_no, data) => {
   ]);
   return post;
 };
-
+// 지원신청현황 가져오기(일반사용자)
+const findAppById = async (id, search, value, authority) => {
+  let result;
+  if (authority == "a1") {
+    if (search == undefined) {
+      search = "a.member_id";
+    }
+    if (value == undefined) {
+      value = "";
+    }
+    result = await mysql.bquery("selectApplicationsById", [search, value, id]);
+  } else if (authority == "a2") {
+    console.log("a2");
+  } else if (authority == "a3") {
+    console.log("a3");
+  }
+  console.log(result);
+  return result;
+};
 module.exports = {
   dependantFindById,
   findById,
@@ -102,4 +120,5 @@ module.exports = {
   updatePlanningInfo,
   updateRejectPlanningInfo,
   updateChangingPlanningInfo,
+  findAppById,
 };

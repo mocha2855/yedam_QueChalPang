@@ -81,4 +81,10 @@ router.get(`/members/approval/count`, async (req, res) => {
   let count = await memberService.getPendingCount();
   res.send({ count });
 });
+// 지원자 목록조회
+router.get(`/dependant/:id/:authority`, async (req, res) => {
+  let { id, authority } = req.params;
+  let result = await memberService.findDependants(id, authority);
+  res.send(result);
+});
 module.exports = router;
