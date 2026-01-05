@@ -22,12 +22,14 @@
                   width: 200px;
                   height: 50px;
                 "
+                v-on:change="selectPlan(e)"
               >
                 <option
                   class="dropdown-item"
                   v-for="(plan, index) in application.planningSuccess"
                   :value="plan"
                   v-bind:key="index"
+                  style="color: #000; text-align: center"
                 >
                   지원계획서{{ plan.ranking }}
                 </option>
@@ -680,6 +682,10 @@ const application = useApplicationStore()
 let memAuthority = counters.isLogIn.info.member_authority // 권한
 let memName = counters.isLogIn.info.member_name // 작성자
 let realCount = ref(0) // 지원계획서 진짜 갯수
+
+const selectPlan = (e) => {
+  console.log(e)
+}
 
 onBeforeMount(async () => {
   // 계획서 갯수 파악
