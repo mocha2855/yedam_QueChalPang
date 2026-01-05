@@ -47,6 +47,12 @@ const clearInfo = () => {
   router.push({ name: '/' })
 }
 isConfirm()
+
+// 마이페이지 이동
+const goMyPage = () => {
+  router.push({ name: 'myPage', params: { id: isLogIn.value.info.member_id } })
+}
+console.log(isLogIn.value.info.member_id)
 </script>
 
 <template>
@@ -142,13 +148,20 @@ isConfirm()
                   {{ priority(isLogIn.info?.member_authority) }} {{ isLogIn.info?.member_name }}님
                 </span>
               </router-link>
-              <span
-                class="cursor-pointer nav-link font-weight-bold text-black p-0"
-                @click.prevent="clearInfo()"
-                @click="logOut"
-              >
-                로그아웃
-              </span>
+
+              <div class="btn-group" role="group" aria-label="Basic example">
+                <button type="button" class="btn btn-primary mb-0" @click="goMyPage">
+                  마이페이지
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-primary mb-0"
+                  @click.prevent="clearInfo()"
+                  @click="logOut"
+                >
+                  로그아웃
+                </button>
+              </div>
             </span>
           </li>
 

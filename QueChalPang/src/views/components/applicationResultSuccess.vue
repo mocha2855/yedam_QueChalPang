@@ -6,26 +6,28 @@
         id == application.dependantInfo.application_rejector
       "
     >
-      <h6>지원계획서</h6>
+      <h5>지원결과서</h5>
 
       <div
-        v-if="application.planningSuccess.length == 0 && application.planningRejected.length == 0"
+        v-if="application.resultSuccess.length == 0 && application.resultRejected.length == 0"
         class="d-flex justify-content-center align-items-center h-100"
       >
-        <h5>현재 지원계획서가<br />존재하지 않습니다.</h5>
+        <h5>현재 지원결과서가<br />존재하지 않습니다.</h5>
       </div>
       <div class="card-body p-0" v-else>
         <div>
-          <div v-if="application.planningRejected.length > 0">
-            <div class="card mb-3" v-for="plan in application.planningRejected" :key="plan">
+          <div v-if="application.resultRejected.length > 0">
+            <div class="card mb-3" v-for="plan in application.resultRejected" :key="plan">
               <!-- 반려중 -->
               <div class="card-body">
-                <div class="formTop">
-                  <h5>
-                    <span class="badge badge-sm bg-gradient-secondary">반려</span>지원계획{{
-                      plan.ranking
-                    }}
-                  </h5>
+                <div class="row row-cols-auto">
+                  <div class="col">
+                    <h5 class="badge badge-sm bg-gradient-secondary" style="height: 20px">반려</h5>
+                  </div>
+                  <div class="col px-0">
+                    <h5 class="mb-0">지원결과{{ plan.ranking }}</h5>
+                    <p>지원계획서{{ plan.ranking }}에 대한 지원결과서</p>
+                  </div>
                 </div>
 
                 <form action="#" name="planning">
@@ -61,7 +63,7 @@
                         type="text"
                         name="writer"
                         id="writer"
-                        value="최강희"
+                        v-model="plan.manager_name"
                         class="form-control"
                         readonly
                       />
@@ -76,7 +78,7 @@
                         type="text"
                         name="title"
                         id="title"
-                        v-model="plan.planning_title"
+                        v-model="plan.result_title"
                         class="form-control"
                         readonly
                       />
@@ -91,7 +93,7 @@
                         type="text"
                         name="content"
                         id="content"
-                        v-model="plan.planning_content"
+                        v-model="plan.result_content"
                         class="form-control"
                         readonly
                       />
@@ -131,7 +133,7 @@
                           name="writer"
                           id="writer"
                           class="form-control"
-                          v-model="plan.planning_reject_date"
+                          v-model="plan.result_reject_date"
                           readonly
                         />
                       </div>
@@ -146,7 +148,7 @@
                         type="text"
                         name="rejectReason"
                         id="rejectReason"
-                        v-model="plan.planning_reject"
+                        v-model="plan.result_reject"
                         class="form-control"
                         readonly
                       />
@@ -156,7 +158,7 @@
                   <button
                     type="button"
                     v-if="memAuthority == 'a2'"
-                    @click="changePlanningStatus(plan.planning_no)"
+                    @click="changeResultStatus(plan.result_no)"
                     class="float-end btn btn-primary btn-sm"
                   >
                     수정
@@ -167,14 +169,19 @@
           </div>
 
           <!-- 승인완료된 계획서 -->
-          <div v-if="application.planningSuccess.length > 0">
-            <div class="card mb-3" v-for="plan in application.planningSuccess" :key="plan">
+          <div v-if="application.resultSuccess.length > 0">
+            <div class="card mb-3" v-for="plan in application.resultSuccess" :key="plan">
               <div class="card-body">
-                <h5>
-                  <span class="badge badge-sm bg-gradient-success">승인</span>지원계획{{
-                    plan.ranking
-                  }}
-                </h5>
+                <div class="row row-cols-auto">
+                  <div class="col">
+                    <h5 class="badge badge-sm bg-gradient-success" style="height: 20px">승인</h5>
+                  </div>
+                  <div class="col px-0">
+                    <h5 class="mb-0">지원결과{{ plan.ranking }}</h5>
+                    <p>지원계획서{{ plan.ranking }}에 대한 지원결과서</p>
+                  </div>
+                </div>
+
                 <form action="#" name="planning">
                   <div class="row g-3 mb-2 align-items-center">
                     <div class="col-2">
@@ -208,7 +215,7 @@
                         type="text"
                         name="writer"
                         id="writer"
-                        value="최강희"
+                        v-model="plan.manager_name"
                         class="form-control"
                         readonly
                       />
@@ -223,7 +230,7 @@
                         type="text"
                         name="title"
                         id="title"
-                        v-model="plan.planning_title"
+                        v-model="plan.result_title"
                         class="form-control"
                         readonly
                       />
@@ -238,7 +245,7 @@
                         type="text"
                         name="content"
                         id="content"
-                        v-model="plan.planning_content"
+                        v-model="plan.result_content"
                         class="form-control"
                         readonly
                       />
@@ -275,23 +282,23 @@ let id = counters.isLogIn.info.member_id
 let memAuthority = counters.isLogIn.info.member_authority // 권한
 
 // 반려된 계획서 수정버튼
-const changePlanningStatus = async (data) => {
+const changeResultStatus = async (data) => {
   if (application.planningState == 1) {
     alert('작성하던 계획서를 마무리해주세요!')
     return
   }
-  if (application.planningChanging.length != 0) {
+  if (application.resultChanging.length != 0) {
     alert('수정하던 작업을 마무리해주세요.')
     return
   }
   console.log(data)
   await axios
-    .put('/api/successPlanningInfo/' + data, {
-      planning_status: 'i1',
+    .put('/api/successResultInfo/' + data, {
+      result_status: 'i1',
     })
     .then((res) => {
       console.log(res)
-      application.countRealReview(route.params.id)
+      application.countRealResult(route.params.id)
       application.planningState = 2
     })
 }

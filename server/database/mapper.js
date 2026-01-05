@@ -6,6 +6,7 @@ const applicationSql = require("./sqls/applicationJH.js");
 const memberSql = require("./sqls/member.js");
 const centerSql = require("./sqls/center.js");
 const surveySql = require("./sqls/survey");
+const mypagesql = require("./sqls/myPage.js");
 
 console.log(process.env.MARIADB_HOST);
 
@@ -29,7 +30,7 @@ const rquery = async (sql, params = []) => {
   }
 };
 
-// 대기단계
+// 대기단계, 계획서, 결과서
 const bquery = async (selected, values) => {
   let conn = null;
   try {
@@ -83,4 +84,27 @@ const memberQuery = async (selected, values) => {
   }
 };
 
-module.exports = { rquery, bquery, squery, memberQuery, centerQuery };
+// 마이페이지
+const myPageQuery = async (selected, values) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    let executeSql = mypagesql[selected];
+
+    console.log(selected, values);
+
+    let result = (await conn.query(executeSql, values))[0];
+    return result;
+  } finally {
+    if (conn) conn.release(); // pool로 반환.
+  }
+};
+
+module.exports = {
+  rquery,
+  bquery,
+  squery,
+  memberQuery,
+  centerQuery,
+  myPageQuery,
+};
