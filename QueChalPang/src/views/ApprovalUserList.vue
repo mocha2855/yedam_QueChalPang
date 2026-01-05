@@ -57,7 +57,7 @@ onBeforeMount(async () => {
                       이메일
                     </th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder">
-                      연락처
+                      가입일
                     </th>
                     <th
                       class="text-center text-uppercase text-secondary text-xxs font-weight-bolder"
@@ -67,7 +67,7 @@ onBeforeMount(async () => {
                     <th
                       class="text-center text-uppercase text-secondary text-xxs font-weight-bolder"
                     >
-                      관리
+                      수정
                     </th>
                   </tr>
                 </thead>
@@ -89,7 +89,7 @@ onBeforeMount(async () => {
                       {{ member.member_email }}
                     </td>
                     <td class="text-sm">
-                      {{ member.member_phone }}
+                      {{ member.member_date.substring(0, 10) }}
                     </td>
                     <td class="align-middle text-center">
                       <span
@@ -112,7 +112,14 @@ onBeforeMount(async () => {
                       >
                         승인
                       </ArgonButton>
-                      <span v-else class="text-xs text-secondary">-</span>
+                      <span v-else class="text-xs text-secondary">
+                        <button
+                          class="btn btn-sm btn-outline-secondary"
+                          @click="surveyUpdate(survey.survey_no)"
+                        >
+                          수정하기
+                        </button></span
+                      >
                     </td>
                   </tr>
                 </tbody>
