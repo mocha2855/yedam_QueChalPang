@@ -13,8 +13,6 @@ const structuredSurvey = computed(() => {
   const surveyMap = {}
 
   surveyList.value.forEach((row) => {
-    // 1. Survey 레벨 (설문지) 초기화
-    // surveyMap에 해당 survey_no가 없으면 새로 만듭니다.
     if (!surveyMap[row.survey_no]) {
       surveyMap[row.survey_no] = {
         survey_no: row.survey_no,
@@ -22,27 +20,21 @@ const structuredSurvey = computed(() => {
         survey_title: row.survey_title,
         survey_start: row.survey_start,
         survey_end: row.survey_end,
-        // 하위 항목인 subtitle을 담을 임시 객체 (중복 제거용)
         _subtitlesMap: {},
       }
     }
 
     const survey = surveyMap[row.survey_no]
 
-    // 2. Subtitle 레벨 (소주제) 초기화
-    // 해당 설문지 안에 이 subtitle_no가 없으면 새로 만듭니다.
     if (!survey._subtitlesMap[row.survey_subtitle_no]) {
       survey._subtitlesMap[row.survey_subtitle_no] = {
         survey_subtitle_no: row.survey_subtitle_no,
         survey_subtitle: row.survey_subtitle,
         survey_subtitle_detail: row.survey_subtitle_detail,
-        // 하위 항목인 질문들을 담을 배열
         questions: [],
       }
     }
 
-    // 3. Question 레벨 (문항) 추가
-    // 소주제 안에 질문을 밀어 넣습니다.
     survey._subtitlesMap[row.survey_subtitle_no].questions.push({
       survey_qitem_no: row.survey_qitem_no,
       survey_qitem_question: row.survey_qitem_question,
@@ -50,9 +42,7 @@ const structuredSurvey = computed(() => {
     })
   })
 
-  // 4. Map 형태를 최종 배열 형태로 변환
   return Object.values(surveyMap).map((survey) => {
-    // _subtitlesMap 객체를 subtitles 배열로 변환하고, 임시 맵(_subtitlesMap)은 제거
     const subtitles = Object.values(survey._subtitlesMap)
     delete survey._subtitlesMap
 
@@ -104,12 +94,14 @@ const changeDateFormat = (input) => {
   return result
 }
 const returnGender = (input) => {
+  console.log(input)
   if (input == 'g1') {
     return '남'
   } else {
     return '여'
   }
 }
+const answers = ref({})
 </script>
 
 <template>
@@ -220,17 +212,64 @@ const returnGender = (input) => {
         </div>
 
         <div v-for="sub in survey.subtitles" :key="sub.survey_subtitle_no" class="row mb-4">
-          <div class="col-2"></div>
-          <div class="col-10">
-            <label class="text-lg">{{ sub.survey_subtitle }}</label>
-            <span class="text-xs text-gray">{{ sub.survey_subtitle_detail }}</span>
+          <div class="col-12">
+            <label style="padding-left: 1%" class="text-lg">{{ sub.survey_subtitle }}</label>
+            <p style="padding-left: 2%" class="text-xs text-gray">
+              {{ sub.survey_subtitle_detail }}
+            </p>
           </div>
 
           <ul>
-            <li v-for="q in sub.questions" :key="q.survey_qitem_no">
-              Q. {{ q.survey_qitem_question }} [{{ q.survey_qitem_type }}]
+            <li
+              v-for="q in sub.questions"
+              :key="q.survey_qitem_no"
+              class="mb-3 list-unstyled"
+              style="padding-left: 1%"
+            >
+              <p class="mb-1 fw-bold">Q. {{ q.survey_qitem_question }}</p>
+
+              <div v-if="q.survey_qitem_type === '예/아니요'">
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    :name="'question_' + q.survey_qitem_no"
+                    :id="'radio_yes_' + q.survey_qitem_no"
+                    value="Y"
+                    v-model="answers[q.survey_qitem_no]"
+                  />
+                  <label class="form-check-label" :for="'radio_yes_' + q.survey_qitem_no">예</label>
+                </div>
+
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    :name="'question_' + q.survey_qitem_no"
+                    :id="'radio_no_' + q.survey_qitem_no"
+                    value="N"
+                    v-model="answers[q.survey_qitem_no]"
+                  />
+                  <label class="form-check-label" :for="'radio_no_' + q.survey_qitem_no"
+                    >아니오</label
+                  >
+                </div>
+              </div>
+
+              <div v-else>
+                <input
+                  style="display: flex"
+                  type="text"
+                  class="form-control"
+                  v-model="answers[q.survey_qitem_no]"
+                />
+              </div>
             </li>
           </ul>
+        </div>
+        <div class="col-5"></div>
+        <div class="col-2">
+          <button class="btn bg-gradient-primary">등록</button>
         </div>
       </div>
     </div>
