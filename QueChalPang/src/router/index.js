@@ -19,6 +19,8 @@ import qnaRoutes from './qna' //상담예약하기
 import notConfirmed from '../views/notConfirmed.vue' //지원대기상태인 경우 이동하는 페이지
 import centerRoutes from './center' //센터관리페이지
 import approvalRoutes from './approval' //멤버 승인 페이지
+import addApplication from '../views/addApplication.vue'
+import myPage from '../views/myPage.vue' // 마이페이지
 
 const routes = [
   {
@@ -102,11 +104,22 @@ const routes = [
     name: 'notConfirmed',
     component: notConfirmed,
   },
+
+  {
+    path: '/addApplication',
+    name: 'AddApplication',
+    component: addApplication,
+  },
   ...surveyRoutes,
   ...reservationRoutes,
   ...centerRoutes,
   ...approvalRoutes,
   ...qnaRoutes,
+  {
+    path: '/myPage/:id',
+    name: 'myPage',
+    component: myPage,
+  },
 ]
 
 const router = createRouter({

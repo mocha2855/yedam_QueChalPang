@@ -7,7 +7,7 @@
         <button type="button" class="btn btn-primary btn-sm" @click="addResultForm">
           결과추가
         </button>
-        <ApplicationModal v-if="selectPlan">
+        <ApplicationModal v-if="selectPlan && !selectPlanCheck">
           <template v-slot:header><h2></h2></template>
           <template v-slot:body>
             <h4 style="text-align: center">결과서를 작성할<br />지원계획서를선택해주세요</h4>
@@ -22,12 +22,14 @@
                   width: 200px;
                   height: 50px;
                 "
+                v-on:change="selectPlanList"
               >
                 <option
                   class="dropdown-item"
                   v-for="(plan, index) in application.planningSuccess"
                   :value="plan"
                   v-bind:key="index"
+                  style="color: #000; text-align: center"
                 >
                   지원계획서{{ plan.ranking }}
                 </option>
@@ -35,19 +37,19 @@
             </div>
           </template>
           <template v-slot:footer>
-            <button class="btn-save" v-on:click="sucessResult">확인</button>
-            <button class="btn-cancel" v-on:click="notChecked">취소</button>
+            <button class="btn-save" v-on:click="checkPlan">확인</button>
+            <button class="btn-cancel" v-on:click="UnCheckPlan">취소</button>
           </template>
         </ApplicationModal>
       </div>
 
       <div class="card mb-3">
-        <div class="card-body" v-if="memAuthority == 'a2' && addCount == 1">
+        <div class="card-body" v-if="selectPlanCheck">
           <div :value="realCount">
             <div v-if="!checked">
               <div class="d-flex justify-content-between">
                 <div>
-                  <h5>지원결과{{ realCount }} 입력</h5>
+                  <h5>지원결과{{ resultList.ranking }} 입력</h5>
                 </div>
                 <div style="float: right">
                   <button type="button" class="btn btn-primary btn-sm">임시저장</button>
@@ -62,22 +64,22 @@
                   </div>
                   <div class="col-3">
                     <input
-                      type="date"
+                      type="text"
                       name="startDate"
                       id="startDate"
-                      v-model="formData.startDate"
+                      v-model="resultList.planning_start"
                       class="form-control"
-                      aria-describedby="passwordHelpInline"
+                      disabled
                     />
                   </div>
                   <div class="col-3">
                     <input
-                      type="date"
+                      type="text"
                       name="endDate"
                       id="endDate"
-                      v-model="formData.endDate"
+                      v-model="resultList.planning_end"
                       class="form-control"
-                      aria-describedby="passwordHelpInline"
+                      disabled
                     />
                   </div>
                   <div class="col-2">
@@ -91,7 +93,7 @@
                       v-model="memName"
                       class="form-control"
                       aria-describedby="passwordHelpInline"
-                      readonly
+                      disabled
                     />
                   </div>
                 </div>
@@ -135,7 +137,7 @@
                 </div>
               </form>
               <div class="d-flex justify-content-end">
-                <button type="button" class="btn btn-primary btn-sm" @click="submitPlanningInfo">
+                <button type="button" class="btn btn-primary btn-sm" @click="submitResultInfo">
                   승인요청
                 </button>
               </div>
@@ -161,22 +163,25 @@
         class="card mb-3"
         v-if="
           memAuthority == 'a2' &&
-          application.planningChanging.length > 0 &&
-          application.planningChanging.planning_approvedDate != ''
+          application.resultChanging.length > 0 &&
+          application.resultChanging.result_approvedDate != ''
         "
       >
         <div v-if="!changingChecked">
           <div class="card-body">
             <div class="d-flex justify-content-between">
-              <div>
-                <h5>
-                  <span class="badge badge-sm bg-gradient-secondary">반려</span>지원결과{{
-                    application.planningChanging[0].ranking
-                  }}
-                </h5>
+              <div class="row row-cols-auto">
+                <div class="col">
+                  <h5 class="badge badge-sm bg-gradient-secondary" style="height: 20px">반려</h5>
+                </div>
+                <div class="col px-0">
+                  <h5 class="mb-0">지원결과{{ application.resultChanging[0].ranking }}</h5>
+                  <p>지원계획서{{ application.resultChanging[0].ranking }}에 대한 지원결과서</p>
+                </div>
               </div>
+
               <div>
-                <p>작성일: {{ application.planningChanging[0].planning_date }}</p>
+                <p>작성일: {{ application.resultChanging[0].result_date }}</p>
               </div>
             </div>
 
@@ -190,8 +195,9 @@
                     type="text"
                     name="startDate"
                     id="startDate"
-                    v-model="application.planningChanging[0].planning_start"
+                    v-model="application.resultChanging[0].planning_start"
                     class="form-control"
+                    disabled
                   />
                 </div>
                 <div class="col-3">
@@ -199,8 +205,9 @@
                     type="text"
                     name="endDate"
                     id="endDate"
-                    v-model="application.planningChanging[0].planning_end"
+                    v-model="application.resultChanging[0].planning_end"
                     class="form-control"
+                    disabled
                   />
                 </div>
                 <div class="col-2">
@@ -211,9 +218,9 @@
                     type="text"
                     name="writer"
                     id="writer"
-                    value="최강희"
+                    v-model="memName"
                     class="form-control"
-                    readonly
+                    disabled
                   />
                 </div>
               </div>
@@ -226,7 +233,7 @@
                     type="text"
                     name="title"
                     id="title"
-                    v-model="application.planningChanging[0].planning_title"
+                    v-model="application.resultChanging[0].result_title"
                     class="form-control"
                   />
                 </div>
@@ -240,7 +247,7 @@
                     type="text"
                     name="content"
                     id="content"
-                    v-model="application.planningChanging[0].planning_content"
+                    v-model="application.resultChanging[0].result_content"
                     class="form-control"
                   />
                 </div>
@@ -263,7 +270,7 @@
                       type="text"
                       name="startDate"
                       id="startDate"
-                      v-model="application.planningChanging[0].planning_rejecter"
+                      v-model="application.resultChanging[0].planning_rejecter"
                       class="form-control"
                       readonly
                     />
@@ -279,7 +286,7 @@
                       name="writer"
                       id="writer"
                       class="form-control"
-                      v-model="application.planningChanging[0].planning_reject_date"
+                      v-model="application.resultChanging[0].result_reject_date"
                       readonly
                     />
                   </div>
@@ -294,7 +301,7 @@
                     type="text"
                     name="rejectReason"
                     id="rejectReason"
-                    v-model="application.planningChanging[0].planning_reject"
+                    v-model="application.resultChanging[0].result_reject"
                     class="form-control"
                     readonly
                   />
@@ -309,7 +316,7 @@
               <button
                 type="button"
                 class="btn btn-danger btn-sm"
-                @click="cancelPlanningInfo(application.planningChanging[0].planning_no)"
+                @click="cancelResultnfo(application.resultChanging[0].result_no)"
               >
                 취소
               </button>
@@ -326,7 +333,7 @@
           <template v-slot:footer>
             <button
               class="btn-save"
-              v-on:click="submitChaingPlanningInfo(application.planningChanging[0].planning_no)"
+              v-on:click="submitChaingResultInfo(application.resultChanging[0].result_no)"
             >
               확인
             </button>
@@ -341,23 +348,22 @@
     </div>
 
     <!-- 반려 검토중 -->
-    <div
-      class="card mb-3"
-      v-for="plan in application.planningChangingReview"
-      :key="plan.planning_no"
-    >
-      <div class="card-body" v-if="application.planningChangingReview.length > 0">
+    <div class="card mb-3" v-for="plan in application.resultChangingReview" :key="plan.result_no">
+      <div class="card-body" v-if="application.resultChangingReview.length > 0">
         <div v-if="!plan.checked && !plan.rejectChecked">
           <div class="d-flex justify-content-between">
-            <div>
-              <h5>
-                <span class="badge badge-sm bg-gradient-secondary">반려</span>지원결과{{
-                  plan.ranking
-                }}
-              </h5>
+            <div class="row row-cols-auto">
+              <div class="col">
+                <h5 class="badge badge-sm bg-gradient-secondary" style="height: 20px">반려</h5>
+              </div>
+              <div class="col px-0">
+                <h5 class="mb-0">지원결과{{ plan.ranking }}</h5>
+                <p>지원계획서{{ plan.ranking }}에 대한 지원결과서</p>
+              </div>
             </div>
+
             <div>
-              <p>작성일: {{ plan.planning_date }}</p>
+              <p>작성일: {{ plan.result_date }}</p>
             </div>
           </div>
 
@@ -392,7 +398,7 @@
                   type="text"
                   name="writer"
                   id="writer"
-                  value="최강희"
+                  v-model="plan.manager_name"
                   class="form-control"
                   readonly
                 />
@@ -407,7 +413,7 @@
                   type="text"
                   name="title"
                   id="title"
-                  v-model="plan.planning_title"
+                  v-model="plan.result_title"
                   class="form-control"
                 />
               </div>
@@ -421,7 +427,7 @@
                   type="text"
                   name="content"
                   id="content"
-                  v-model="plan.planning_content"
+                  v-model="plan.result_content"
                   class="form-control"
                 />
               </div>
@@ -444,7 +450,7 @@
                     type="text"
                     name="startDate"
                     id="startDate"
-                    v-model="plan.planning_rejecter"
+                    v-model="plan.rejecter_name"
                     class="form-control"
                     readonly
                   />
@@ -460,7 +466,7 @@
                     name="writer"
                     id="writer"
                     class="form-control"
-                    v-model="plan.planning_reject_date"
+                    v-model="plan.result_reject_date"
                     readonly
                   />
                 </div>
@@ -475,7 +481,7 @@
                   type="text"
                   name="rejectReason"
                   id="rejectReason"
-                  v-model="plan.planning_reject"
+                  v-model="plan.result_reject"
                   class="form-control"
                   readonly
                 />
@@ -484,17 +490,13 @@
           </form>
 
           <div class="d-flex justify-content-end" v-if="memAuthority == 'a3'">
-            <button
-              type="button"
-              class="btn btn-primary btn-sm"
-              @click="modalOpen(plan.planning_no)"
-            >
+            <button type="button" class="btn btn-primary btn-sm" @click="modalOpen(plan.result_no)">
               승인
             </button>
             <button
               type="button"
               class="btn btn-primary btn-sm"
-              @click="modalClose(plan.planning_no)"
+              @click="modalClose(plan.result_no)"
             >
               반려
             </button>
@@ -509,16 +511,16 @@
             </h4></template
           >
           <template v-slot:footer>
-            <button class="btn-save" v-on:click="sucessResult">확인</button>
-            <button class="btn-cancel" v-on:click="notChecked(plan.planning_no)">취소</button>
+            <button class="btn-save" v-on:click="sucessResult(plan.result_no)">확인</button>
+            <button class="btn-cancel" v-on:click="notChecked(plan.result_no)">취소</button>
           </template>
         </ApplicationModal>
 
         <ApplicationModal v-if="plan.rejectChecked">
           <template v-slot:header><h2></h2></template>
           <template v-slot:footer>
-            <button class="btn-save" v-on:click="rejectResult">반려</button>
-            <button class="btn-cancel" v-on:click="notChecked(plan.planning_no)">취소</button>
+            <button class="btn-save" v-on:click="rejectResult(plan.result_no)">반려</button>
+            <button class="btn-cancel" v-on:click="notChecked(plan.result_no)">취소</button>
           </template>
         </ApplicationModal>
       </div>
@@ -526,20 +528,30 @@
 
     <!--  검토중 결과서 -->
     <div
-      v-if="
-        application.planningReview.length > 0 && application.planningReview.planning_reject == null
-      "
+      v-if="application.resultReview.length > 0 && application.resultReview.result_reject == null"
     >
-      <div class="card mb-3" v-for="plan in application.planningReview" :key="plan">
-        <div class="card-body" v-if="application.planningReview.length > 0">
+      <div class="card mb-3" v-for="plan in application.resultReview" :key="plan">
+        <div class="card-body">
           <div v-if="!plan.checked && !plan.rejectChecked">
             <div class="formTop">
-              <h5 v-if="memAuthority == 'a2'">
-                <span class="badge badge-sm bg-gradient-secondary">검토중</span>지원결과{{
-                  plan.ranking
-                }}
-              </h5>
-              <p v-if="memAuthority == 'a3'">지원결과{{ plan.ranking }}</p>
+              <div v-if="memAuthority == 'a2'" class="row row-cols-auto">
+                <div class="col">
+                  <h5 class="badge badge-sm bg-gradient-secondary" style="height: 20px">검토중</h5>
+                </div>
+                <div class="col px-0">
+                  <h5 class="mb-0">지원결과{{ plan.ranking }}</h5>
+                  <p>지원계획서{{ plan.ranking }}에 대한 지원결과서</p>
+                </div>
+              </div>
+
+              <div v-if="memAuthority == 'a3'" class="row row-cols-1">
+                <div class="col">
+                  <h5 class="mb-0">지원결과{{ plan.ranking }}</h5>
+                </div>
+                <div class="col">
+                  <p>지원계획서{{ plan.ranking }}에 대한 지원결과서</p>
+                </div>
+              </div>
             </div>
             <form action="#" name="planning">
               <div class="row g-3 mb-2 align-items-center">
@@ -574,7 +586,7 @@
                     type="text"
                     name="writer"
                     id="writer"
-                    value="최강희"
+                    v-model="application.dependantRealInfo.manager_name"
                     class="form-control"
                     readonly
                   />
@@ -589,7 +601,7 @@
                     type="text"
                     name="title"
                     id="title"
-                    v-model="plan.planning_title"
+                    v-model="plan.result_title"
                     class="form-control"
                     readonly
                   />
@@ -604,7 +616,7 @@
                     type="text"
                     name="content"
                     id="content"
-                    v-model="plan.planning_content"
+                    v-model="plan.result_content"
                     class="form-control"
                     readonly
                   />
@@ -624,14 +636,14 @@
               <button
                 type="button"
                 class="btn btn-primary btn-sm"
-                @click="modalOpen(plan.planning_no)"
+                @click="modalOpen(plan.result_no)"
               >
                 승인
               </button>
               <button
                 type="button"
                 class="btn btn-danger btn-sm"
-                @click="modalClose(plan.planning_no)"
+                @click="modalClose(plan.result_no)"
               >
                 반려
               </button>
@@ -645,15 +657,15 @@
               </h4></template
             >
             <template v-slot:footer>
-              <button class="btn-save" v-on:click="sucessResult">확인</button>
-              <button class="btn-cancel" v-on:click="notChecked(plan.planning_no)">취소</button>
+              <button class="btn-save" v-on:click="sucessResult(plan.result_no)">확인</button>
+              <button class="btn-cancel" v-on:click="notChecked(plan.result_no)">취소</button>
             </template>
           </ApplicationModal>
           <ApplicationModal v-if="plan.rejectChecked">
             <template v-slot:header><h2></h2></template>
             <template v-slot:footer>
-              <button class="btn-save" v-on:click="rejectResult">반려</button>
-              <button class="btn-cancel" v-on:click="notChecked(plan.planning_no)">취소</button>
+              <button class="btn-save" v-on:click="rejectResult(plan.result_no)">반려</button>
+              <button class="btn-cancel" v-on:click="notChecked(plan.result_no)">취소</button>
             </template>
           </ApplicationModal>
         </div>
@@ -681,6 +693,12 @@ let memAuthority = counters.isLogIn.info.member_authority // 권한
 let memName = counters.isLogIn.info.member_name // 작성자
 let realCount = ref(0) // 지원계획서 진짜 갯수
 
+// 계획서 선택 드롭다운
+let resultList = ref()
+const selectPlanList = () => {
+  console.log(resultList.value)
+}
+
 onBeforeMount(async () => {
   // 계획서 갯수 파악
   await application.countPlanning(route.params.id)
@@ -696,17 +714,38 @@ onBeforeMount(async () => {
   console.log(`addCount.value: ${addCount.value}`)
 })
 
-// 계획 추가 버튼
+// 계획선택 모달창 확인버튼
+let selectPlanCheck = ref(false)
+const checkPlan = () => {
+  if (resultList.value == undefined) {
+    alert('계획서 선택을 완료해주세요')
+    return
+  }
+  selectPlanCheck.value = !selectPlanCheck.value
+}
+
+// 계획선택 모달창 취소버튼
+const UnCheckPlan = () => {
+  selectPlan.value = !selectPlan.value
+  resultList.value = undefined
+  if (addCount.value == 1) {
+    addCount.value = 0
+    formData.value = {}
+    application.planningState = 0
+  }
+}
+
+// 결과 추가 버튼
 let addCount = ref(0) // 계획추가 버튼용
 let selectPlan = ref(false)
 
 const addResultForm = () => {
+  if (application.resultChanging.length > 0) {
+    alert('수정하던 작업을 마무리해주세요.')
+    return
+  }
   selectPlan.value = true
   if (addCount.value == 0) {
-    if (application.planningChanging.length > 0) {
-      alert('수정하던 작업을 마무리해주세요.')
-      return
-    }
     addCount.value = 1
     return
   }
@@ -724,6 +763,10 @@ const addResultForm = () => {
 
 // 삭제 버튼
 const delForm = () => {
+  selectPlan.value = false
+  selectPlanCheck.value = false
+  resultList.value = undefined
+
   if (addCount.value == 1) {
     addCount.value = 0
     formData.value = {}
@@ -736,14 +779,10 @@ let formData = ref({})
 let count = ref(0) // 승인요청 횟수
 let checked = ref(false)
 
-const submitPlanningInfo = async () => {
+const submitResultInfo = async () => {
   if (
-    formData.value.startDate == undefined ||
-    formData.value.endDate == undefined ||
     formData.value.title == undefined ||
     formData.value.content == undefined ||
-    formData.value.startDate == '' ||
-    formData.value.endDate == '' ||
     formData.value.title == '' ||
     formData.value.content == ''
   ) {
@@ -756,47 +795,43 @@ const submitPlanningInfo = async () => {
 }
 
 // 승인버튼
-let planningNo = ref()
 let changingChecked = ref(false)
 
 const modalOpen = async (data) => {
+  console.log(data)
   // 검토중
   if (memAuthority == 'a3') {
-    application.planningReview.forEach((review) => {
-      if (data == review.planning_no) {
+    if (application.planningState == 3) {
+      alert('먼저 작업 중인 것을 완료해주세요.')
+      return
+    }
+    application.resultReview.forEach((review) => {
+      if (data == review.result_no) {
         review.checked = !review.checked
         review.rejectChecked = false
+        application.planningState = 3
+        return
       }
-      planningNo.value = data
-      console.log(planningNo.value)
-      return
     })
     // 반려중
-    application.planningChangingReview.forEach((review) => {
-      if (data == review.planning_no) {
+    application.resultChangingReview.forEach((review) => {
+      if (data == review.result_no) {
         review.checked = !review.checked
         review.rejectChecked = false
+        application.planningState = 3
+
+        return
       }
-      planningNo.value = data
-      console.log(planningNo.value)
-      return
     })
   }
   // 반려후 승인요청버튼(담당자)
-  if (memAuthority == 'a2' && application.planningChanging != '') {
-    console.log(
-      'application.planningChanging.planning_start: ',
-      application.planningChanging[0].planning_start,
-    )
+  if (memAuthority == 'a2' && application.resultChanging != '') {
+    console.log('application.resultChanging: ', application.resultChanging[0])
     if (
-      application.planningChanging[0].planning_start == undefined ||
-      application.planningChanging[0].planning_end == undefined ||
-      application.planningChanging[0].planning_title == undefined ||
-      application.planningChanging[0].planning_content == undefined ||
-      application.planningChanging[0].planning_start == '' ||
-      application.planningChanging[0].planning_end == '' ||
-      application.planningChanging[0].planning_title == '' ||
-      application.planningChanging[0].planning_content == ''
+      application.resultChanging[0].result_title == undefined ||
+      application.resultChanging[0].result_content == undefined ||
+      application.resultChanging[0].result_title == '' ||
+      application.resultChanging[0].result_content == ''
     ) {
       alert('내용 입력을 완료해주세요')
       return
@@ -807,41 +842,44 @@ const modalOpen = async (data) => {
 }
 
 // 승인모달창-확인버튼
-const sucessResult = async () => {
-  console.log(memAuthority == 'a2')
+const sucessResult = async (data) => {
+  console.log(data)
   // 담당자
   if (memAuthority == 'a2') {
     await axios //
-      .post('/api/submitPlanningInfo/' + route.params.id, {
+      .post('/api/submitResultInfo/' + resultList.value.planning_no, {
         planning_id: application.dependantInfo.manager_id,
         planning_rejecter: application.dependantInfo.application_rejector,
-        planning_start: formData.value.startDate,
-        planning_end: formData.value.endDate,
-        planning_title: formData.value.title,
-        planning_content: formData.value.content,
+        planning_start: resultList.value.planning_start,
+        planning_end: resultList.value.planning_end,
+        result_title: formData.value.title,
+        result_content: formData.value.content,
       })
       .then((res) => {
         console.log(res)
         alert('승인요청 완료')
-        application.countRealReview(route.params.id)
-        realCount.value = application.planned.data[0].counts + 2
-        console.log(realCount.value)
+        application.countRealResult(route.params.id)
         checked.value = false
+        selectPlanCheck.value = false
+        selectPlan.value = false
+
         addCount.value = 0
         formData.value = {}
+        resultList.value = {}
         count.value = 1
       })
   }
   // 관리자
   if (memAuthority == 'a3') {
     await axios //
-      .put('/api/successPlanningInfo/' + planningNo.value, {
-        planning_status: 'i2',
+      .put('/api/successResultInfo/' + data, {
+        result_status: 'i2',
       })
       .then((res) => {
         console.log(res)
         alert('승인완료했습니다.')
-        application.countRealReview(route.params.id)
+        application.planningState = 0
+        application.countRealResult(route.params.id)
       })
   }
 }
@@ -853,17 +891,19 @@ const notChecked = (data) => {
     changingChecked.value = false
   }
   if (memAuthority == 'a3') {
-    application.planningReview.forEach((review) => {
-      if (data == review.planning_no) {
+    application.resultReview.forEach((review) => {
+      if (data == review.result_no) {
         review.checked = false
         review.rejectChecked = false
         modal.rejectReason = null
+        application.planningState = 0
       }
     })
-    application.planningChangingReview.forEach((review) => {
-      if (data == review.planning_no) {
+    application.resultChangingReview.forEach((review) => {
+      if (data == review.result_no) {
         review.checked = false
         review.rejectChecked = false
+        application.planningState = 0
       }
     })
   }
@@ -871,75 +911,84 @@ const notChecked = (data) => {
 
 // 반려버튼
 const modalClose = (data) => {
+  console.log(data)
   if (memAuthority == 'a3') {
-    application.planningReview.forEach((review) => {
-      if (data == review.planning_no) {
+    if (application.planningState == 3) {
+      alert('작성하던 작업을 완료해주세요.')
+      return
+    }
+    application.resultReview.forEach((review) => {
+      if (data == review.result_no) {
         review.checked = false
         review.rejectChecked = !review.rejectChecked
         console.log(review.planning_no, review.rejectChecked)
+        application.planningState = 3
+        return
       }
-      planningNo.value = data
+      // planningNo.value = data
     })
-    application.planningChangingReview.forEach((review) => {
-      if (data == review.planning_no) {
+    application.resultChangingReview.forEach((review) => {
+      if (data == review.result_no) {
         review.checked = false
         review.rejectChecked = !review.rejectChecked
         console.log(review.planning_no, review.rejectChecked)
+        application.planningState = 3
       }
-      planningNo.value = data
+      // planningNo.value = data
     })
   }
 }
 
 // 반려모달창-확인버튼
-const rejectResult = async () => {
+const rejectResult = async (data) => {
   if (modal.rejectReason == undefined) {
     alert('반려사유를 작성해주세요.')
     return
   }
   await axios //
-    .put('/api/rejectPlanningInfo/' + planningNo.value, {
-      planning_status: 'i3',
-      planning_reject: modal.rejectReason,
+    .put('/api/rejectResultInfo/' + data, {
+      result_status: 'i3',
+      result_reject: modal.rejectReason,
     })
     .then((res) => {
       console.log(res)
       alert('반려했습니다.')
       modal.rejectReason = undefined
-      application.countRealReview(route.params.id)
+      application.countRealResult(route.params.id)
+      application.planningState = 0
     })
 }
 
 // 반려 후 수정 중 취소 버튼(담당자)
-const cancelPlanningInfo = async (data) => {
+const cancelResultnfo = async (data) => {
   console.log(data)
   await axios
-    .put('/api/successPlanningInfo/' + data, {
-      planning_status: 'i3',
+    .put('/api/successResultInfo/' + data, {
+      result_status: 'i3',
     })
     .then(() => {
-      application.planningChanging = []
-      application.countRealReview(route.params.id)
+      application.resultChanging = []
+      application.countRealResult(route.params.id)
     })
 }
 
 // 반려 후 승인요청 모달창 승인 버튼(담당자)
-const submitChaingPlanningInfo = async (data) => {
+const submitChaingResultInfo = async (data) => {
   console.log(data)
   await axios //
-    .put('/api/submitChangingPlanningInfo/' + data, {
-      planning_id: application.dependantInfo.manager_id,
-      planning_rejecter: application.dependantInfo.application_rejector,
-      planning_start: application.planningChanging[0].planning_start,
-      planning_end: application.planningChanging[0].planning_end,
-      planning_title: application.planningChanging[0].planning_title,
-      planning_content: application.planningChanging[0].planning_content,
-      planning_approvedDate: null,
+    .put('/api/submitChangingResultInfo/' + data, {
+      planning_id: application.resultChanging[0].planning_id,
+      planning_rejecter: application.resultChanging[0].planning_rejecter,
+      planning_start: application.resultChanging[0].planning_start,
+      planning_end: application.resultChanging[0].planning_end,
+      result_title: application.resultChanging[0].result_title,
+      result_content: application.resultChanging[0].result_content,
+      result_approvedDate: null,
     })
     .then((res) => {
       console.log(res)
-      application.planningChanging = []
-      application.countRealReview(route.params.id)
+      application.resultChanging = []
+      application.countRealResult(route.params.id)
       changingChecked.value = false
       alert('승인요청 완료')
     })
