@@ -158,4 +158,52 @@ router.get("/centerAddrByResvId/:resvId", async (req, res) => {
   res.json(rows[0]);
 });
 
+//담당자 상담차단 관련
+//[9]담당자 상담차단 시간들 띄우기
+router.get("/managerAvailability/:managerId/:date", async (req, res) => {
+  const { managerId, date } = req.params;
+  try {
+    const data = await reservationService.findManagerAvailability(
+      managerId,
+      date
+    );
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "조회 실패", err: err.message });
+  }
+});
+
+//[10]상담시간 차단하기
+router.post("/scheduleBlock", async (req, res) => {
+  const { managerId, date, time } = req.body;
+  try {
+    const result = await reservationService.modifyScheduleBlock(
+      managerId,
+      date,
+      time
+    );
+    res.json({ message: "차단 저장", result });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "차단 저장 실패", err: err.message });
+  }
+});
+
+//[11]상담시간 차단해제하기
+router.delete("/scheduleBlock", async (req, res) => {
+  const { managerId, date, time } = req.body;
+  try {
+    const result = await reservationService.removeScheduleBlock(
+      managerId,
+      date,
+      time
+    );
+    res.json({ message: "차단 저장", result });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "차단 저장 실패", err: err.message });
+  }
+});
+
 module.exports = router;

@@ -60,4 +60,25 @@ router.put("/modifyMemberPass", async (req, res) => {
   let result = await memberService.updatePassword(id, password);
   res.send(result);
 });
+
+// 승인 관리 라우터 추가
+
+// 승인 관리 목록 조회
+router.get(`/members/approval`, async (req, res) => {
+  let list = await memberService.getApprovalList();
+  res.send(list);
+});
+
+// 승인 처리
+router.post(`/member/:id/approve`, async (req, res) => {
+  let id = req.params.id;
+  let result = await memberService.approveMember(id);
+  res.send(result);
+});
+
+// 승인 대기 건수
+router.get(`/members/approval/count`, async (req, res) => {
+  let count = await memberService.getPendingCount();
+  res.send({ count });
+});
 module.exports = router;

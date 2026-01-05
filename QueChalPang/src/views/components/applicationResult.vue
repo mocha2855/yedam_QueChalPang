@@ -2,11 +2,43 @@
   <div>
     <div v-if="memAuthority == 'a2'">
       <div>
-        <h5 style="float: left">지원계획 입력하기</h5>
+        <h5 style="float: left">지원결과 입력하기</h5>
 
-        <button type="button" class="btn btn-primary btn-sm" @click="addPlanningForm">
-          계획추가
+        <button type="button" class="btn btn-primary btn-sm" @click="addResultForm">
+          결과추가
         </button>
+        <ApplicationModal v-if="selectPlan">
+          <template v-slot:header><h2></h2></template>
+          <template v-slot:body>
+            <h4 style="text-align: center">결과서를 작성할<br />지원계획서를선택해주세요</h4>
+            <div class="d-flex justify-content-center">
+              <select
+                class="btn btn-light"
+                v-model="resultList"
+                style="
+                  text-align: center;
+                  font-weight: bold;
+                  font-size: large;
+                  width: 200px;
+                  height: 50px;
+                "
+              >
+                <option
+                  class="dropdown-item"
+                  v-for="(plan, index) in application.planningSuccess"
+                  :value="plan"
+                  v-bind:key="index"
+                >
+                  지원계획서{{ plan.ranking }}
+                </option>
+              </select>
+            </div>
+          </template>
+          <template v-slot:footer>
+            <button class="btn-save" v-on:click="sucessResult">확인</button>
+            <button class="btn-cancel" v-on:click="notChecked">취소</button>
+          </template>
+        </ApplicationModal>
       </div>
 
       <div class="card mb-3">
@@ -15,7 +47,7 @@
             <div v-if="!checked">
               <div class="d-flex justify-content-between">
                 <div>
-                  <h5>지원계획{{ realCount }} 입력</h5>
+                  <h5>지원결과{{ realCount }} 입력</h5>
                 </div>
                 <div style="float: right">
                   <button type="button" class="btn btn-primary btn-sm">임시저장</button>
@@ -66,7 +98,7 @@
 
                 <div class="row g-3 mb-2 align-items-center">
                   <div class="col-2">
-                    <label for="title" class="col-form-label">제목</label>
+                    <label for="title" class="col-form-label">결과</label>
                   </div>
                   <div class="col-10">
                     <input
@@ -112,7 +144,7 @@
               <template v-slot:header><h2></h2></template>
               <template v-slot:body
                 ><h4 style="text-align: center">
-                  지원계획서를<br />정말 승인요청하시겠습니까?
+                  지원결과서를<br />정말 승인요청하시겠습니까?
                 </h4></template
               >
               <template v-slot:footer>
@@ -124,7 +156,7 @@
         </div>
       </div>
 
-      <!-- 반려된 계획서 수정 -->
+      <!-- 반려된 결과서 수정 -->
       <div
         class="card mb-3"
         v-if="
@@ -138,7 +170,7 @@
             <div class="d-flex justify-content-between">
               <div>
                 <h5>
-                  <span class="badge badge-sm bg-gradient-secondary">반려</span>지원계획{{
+                  <span class="badge badge-sm bg-gradient-secondary">반려</span>지원결과{{
                     application.planningChanging[0].ranking
                   }}
                 </h5>
@@ -187,7 +219,7 @@
               </div>
               <div class="row g-3 mb-2 align-items-center">
                 <div class="col-2">
-                  <label for="title" class="col-form-label">제목</label>
+                  <label for="title" class="col-form-label">결과</label>
                 </div>
                 <div class="col-10">
                   <input
@@ -288,7 +320,7 @@
           <template v-slot:header><h2></h2></template>
           <template v-slot:body
             ><h4 style="text-align: center">
-              지원계획서를<br />정말 승인요청하시겠습니까?
+              지원결과서를<br />정말 승인요청하시겠습니까?
             </h4></template
           >
           <template v-slot:footer>
@@ -305,7 +337,7 @@
     </div>
 
     <div style="height: 100%" v-else-if="memAuthority == 'a3'">
-      <h5>지원계획 승인대기</h5>
+      <h5>지원결과 승인대기</h5>
     </div>
 
     <!-- 반려 검토중 -->
@@ -319,7 +351,7 @@
           <div class="d-flex justify-content-between">
             <div>
               <h5>
-                <span class="badge badge-sm bg-gradient-secondary">반려</span>지원계획{{
+                <span class="badge badge-sm bg-gradient-secondary">반려</span>지원결과{{
                   plan.ranking
                 }}
               </h5>
@@ -368,7 +400,7 @@
             </div>
             <div class="row g-3 mb-2 align-items-center">
               <div class="col-2">
-                <label for="title" class="col-form-label">제목</label>
+                <label for="title" class="col-form-label">결과</label>
               </div>
               <div class="col-10">
                 <input
@@ -473,7 +505,7 @@
           <template v-slot:header><h2></h2></template>
           <template v-slot:body
             ><h4 style="text-align: center" :value="plan.ranking">
-              지원계획서{{ plan.ranking }}를<br />정말 승인하시겠습니까?
+              지원결과서{{ plan.ranking }}를<br />정말 승인하시겠습니까?
             </h4></template
           >
           <template v-slot:footer>
@@ -492,7 +524,7 @@
       </div>
     </div>
 
-    <!--  검토중 계획서 -->
+    <!--  검토중 결과서 -->
     <div
       v-if="
         application.planningReview.length > 0 && application.planningReview.planning_reject == null
@@ -503,11 +535,11 @@
           <div v-if="!plan.checked && !plan.rejectChecked">
             <div class="formTop">
               <h5 v-if="memAuthority == 'a2'">
-                <span class="badge badge-sm bg-gradient-secondary">검토중</span>지원계획{{
+                <span class="badge badge-sm bg-gradient-secondary">검토중</span>지원결과{{
                   plan.ranking
                 }}
               </h5>
-              <p v-if="memAuthority == 'a3'">지원계획{{ plan.ranking }}</p>
+              <p v-if="memAuthority == 'a3'">지원결과{{ plan.ranking }}</p>
             </div>
             <form action="#" name="planning">
               <div class="row g-3 mb-2 align-items-center">
@@ -550,7 +582,7 @@
               </div>
               <div class="row g-3 mb-2 align-items-center">
                 <div class="col-2">
-                  <label for="title" class="col-form-label">제목</label>
+                  <label for="title" class="col-form-label">결과</label>
                 </div>
                 <div class="col-10">
                   <input
@@ -609,7 +641,7 @@
             <template v-slot:header><h2></h2></template>
             <template v-slot:body
               ><h4 style="text-align: center" :value="plan.ranking">
-                지원계획서{{ plan.ranking }}를<br />정말 승인하시겠습니까?
+                지원결과서{{ plan.ranking }}를<br />정말 승인하시겠습니까?
               </h4></template
             >
             <template v-slot:footer>
@@ -666,8 +698,10 @@ onBeforeMount(async () => {
 
 // 계획 추가 버튼
 let addCount = ref(0) // 계획추가 버튼용
+let selectPlan = ref(false)
 
-const addPlanningForm = () => {
+const addResultForm = () => {
+  selectPlan.value = true
   if (addCount.value == 0) {
     if (application.planningChanging.length > 0) {
       alert('수정하던 작업을 마무리해주세요.')

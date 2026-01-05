@@ -83,7 +83,7 @@ isConfirm()
 
           <li class="nav-item">
             <router-link
-              to="/reservTeacher"
+              to="/resrvTeacher"
               class="nav-link text-black"
               :class="getRoute() === 'reservTeacher' ? 'font-weight-bold opacity-10' : 'opacity-6'"
             >
@@ -93,7 +93,7 @@ isConfirm()
 
           <li class="nav-item">
             <router-link
-              to="/reservGuardian"
+              to="/resrvGuardian"
               class="nav-link text-black"
               :class="getRoute() === 'reservGuardian' ? 'font-weight-bold opacity-10' : 'opacity-6'"
             >

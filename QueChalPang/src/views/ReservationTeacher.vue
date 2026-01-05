@@ -11,7 +11,6 @@ import ReservationTable from './components/ReservationTable.vue'
 import ReservationCright from './components/ReservationCright.vue'
 
 const counterStore = useCounterStore()
-
 const { isLogIn } = storeToRefs(counterStore)
 
 const managerId = computed(() => isLogIn.value?.info?.member_id)
