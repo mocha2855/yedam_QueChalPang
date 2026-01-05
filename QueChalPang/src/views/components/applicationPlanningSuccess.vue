@@ -6,7 +6,7 @@
         id == application.dependantInfo.application_rejector
       "
     >
-      <h6>지원계획서</h6>
+      <h5>지원계획서</h5>
 
       <div
         v-if="application.planningSuccess.length == 0 && application.planningRejected.length == 0"

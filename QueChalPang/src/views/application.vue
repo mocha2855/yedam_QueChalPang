@@ -8,25 +8,31 @@
   >
     <div class="col">
       <p>지원자 정보</p>
-      <div class="card">
+      <div class="card mb-3">
         <div class="card-body row row-cols-3">
           <div class="fs-5 col" :value="dependantInfo.dependant_name">
-            지원자: {{ dependantInfo.dependant_name }}
+            <span class="fs-5">지원자: </span>
+            <span class="fw-bold fs-5">{{ dependantInfo.dependant_name }}</span>
           </div>
           <div class="fs-5 col" :value="dependantInfo.dependant_name">
-            보호자: {{ dependantInfo.member_name }}
+            <span class="fs-5">보호자: </span>
+            <span class="fw-bold fs-5">{{ dependantInfo.member_name }}</span>
           </div>
           <div class="fs-5 col" :value="application.dependantInfo.status">
-            대기단계: {{ application.dependantInfo.status }}
+            <span class="fs-5">대기단계: </span>
+            <span class="fw-bold fs-5">{{ application.dependantInfo.status }}</span>
           </div>
           <div class="fs-5 col" :value="dependantInfo.despendant_gender">
-            성별: {{ dependantInfo.despendant_gender }}
+            <span class="fs-5">성별: </span>
+            <span class="fw-bold fs-5">{{ dependantInfo.despendant_gender }}</span>
           </div>
           <div class="fs-5 col" :value="dependantInfo.dependant_birth">
-            생일: {{ dependantInfo.dependant_birth }}
+            <span class="fs-5">생일: </span>
+            <span class="fw-bold fs-5">{{ dependantInfo.dependant_birth }}</span>
           </div>
           <div class="fs-5 col" :value="dependantInfo.disability_name">
-            장애유형: {{ dependantInfo.disability_name }}
+            <span class="fs-5">장애유형: </span>
+            <span class="fw-bold fs-5">{{ dependantInfo.disability_name }}</span>
           </div>
         </div>
       </div>
@@ -65,7 +71,7 @@
         </div>
       </div>
     </div>
-    <div class="col d-flex justify-content-center align-items-center vh-100">
+    <div class="col d-flex justify-content-center align-items-center h-100">
       <div class="card h-100 w-100">
         <div class="card-body">
           <router-view v-slot="{ Component }">
@@ -96,10 +102,12 @@ onBeforeMount(async () => {
   store.state.showSidenav = false
 
   await application.countRealReview(route.params.id)
+  await application.countRealResult(route.params.id)
 
   // 지원자 정보(신청서)
   await application.checkdependantInfo(route.params.id)
   console.log('checkdependantInfo: ', application.dependantInfo)
+  await application.searchdependantInfo(application.dependantInfo.dependant_no)
 
   // 지원자 정보(실명)
   await axios //

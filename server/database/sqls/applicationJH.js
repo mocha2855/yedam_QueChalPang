@@ -1,8 +1,9 @@
 // 지원자 정보
-const dependantSelectById = `select * 
+const dependantSelectById = `select d1.*,d2.*, m.*, m2.member_name "manager_name" 
 from dependant d1
 join disability d2 on d1.disability_no = d2.disability_no
 join member m on d1.member_id = m.member_id
+join member m2 on d1.manager_main = m2.member_id
 where d1.dependant_no=?`;
 
 // 대기 단계 상태 건색
@@ -50,6 +51,32 @@ const changingPlanningUpdateInfo = `update planning
 set ?
 where planning_no = ?`;
 
+// 검토 중, 반려, 승인 지원결과서 불러오기
+const selectResultReviewById = `select r.*, p.ranking, m.member_name manager_name, m2.member_name rejecter_name
+from (select *, rank() over (order by planning_date) ranking from planning where application_no = ?) p
+join result r on p.planning_no = r.planning_no
+join member m on r.planning_id = m.member_id
+join member m2 on r.planning_rejecter = m2.member_id
+`;
+
+// 지원결과서 승인요청(담당자)
+const insertResultInfo = `insert into result set ?`;
+
+// 지원결과서 승인 및 재승인
+const sucessResultUpdateInfo = `update result
+set ?
+where result_no = ?`;
+
+// 지원결과서 반려
+const rejectResultUpdateInfo = `update result 
+set result_reject_date = current_timestamp(), result_approvedDate = current_timestamp(), ?
+where result_no = ?`;
+
+// 지원결과서 반려 후 승인요청(담당자)
+const changingResultUpdateInfo = `update result 
+set ?
+where result_no = ?`;
+
 module.exports = {
   dependantSelectById,
   selectById,
@@ -63,4 +90,9 @@ module.exports = {
   sucessPlanningUpdateInfo,
   rejectPlanningUpdateInfo,
   changingPlanningUpdateInfo,
+  selectResultReviewById,
+  insertResultInfo,
+  sucessResultUpdateInfo,
+  rejectResultUpdateInfo,
+  changingResultUpdateInfo,
 };

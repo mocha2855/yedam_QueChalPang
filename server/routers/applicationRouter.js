@@ -101,4 +101,47 @@ router.put("/submitChangingPlanningInfo/:no", async (req, res) => {
   res.send(post);
 });
 
+// 검토 중, 반려, 승인 지원결과서 불러오기
+router.get("/reulstReview/:no", async (req, res) => {
+  let no = req.params.no;
+  let post = await applicationService.findResultReviewById(no);
+  res.send(post);
+});
+
+// 지원결과서 승인요청(담당자)
+router.post("/submitResultInfo/:no", async (req, res) => {
+  let data = req.body;
+  console.log(data);
+  let no = req.params.no;
+  let post = await applicationService.addResultInfo(no, data);
+  res.send(post);
+});
+
+// 지원결과서 승인(관리자)
+router.put("/successResultInfo/:no", async (req, res) => {
+  let no = req.params.no;
+  let data = req.body;
+  console.log(data);
+  let post = await applicationService.updateResultInfo(no, data);
+  res.send(post);
+});
+
+// 지원결과서 반려(관리자)
+router.put("/rejectResultInfo/:no", async (req, res) => {
+  let no = req.params.no;
+  let data = req.body;
+  console.log(data);
+  let post = await applicationService.updateRejectResultInfo(no, data);
+  res.send(post);
+});
+
+// 지원결과서 반려 후 승인요청(담당자)
+router.put("/submitChangingResultInfo/:no", async (req, res) => {
+  let no = req.params.no;
+  let data = req.body;
+  console.log(data);
+  let post = await applicationService.updateChangingResultInfo(no, data);
+  res.send(post);
+});
+
 module.exports = router;
