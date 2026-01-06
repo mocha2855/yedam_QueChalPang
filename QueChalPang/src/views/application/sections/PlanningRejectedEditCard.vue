@@ -1,19 +1,18 @@
-<!-- 담당자가 반려된 지원계획서를 수정 후 재승인요청 -->
-<!-- 반려된 계획서 수정 -->
+<!-- 반려 수정 -->
 <template>
-  <div class="card mb-3" v-if="plan && plan.planning_approvedDate != ''">
+  <div class="card mb-3" v-if="show">
     <div v-if="!changingChecked">
       <div class="card-body">
         <div class="d-flex justify-content-between">
           <div>
             <h5>
               <span class="badge badge-sm bg-gradient-secondary">반려</span>지원계획{{
-                plan.ranking
+                localPlan.ranking
               }}
             </h5>
           </div>
           <div>
-            <p>작성일: {{ plan.planning_date }}</p>
+            <p>작성일: {{ localPlan.planning_date }}</p>
           </div>
         </div>
 
@@ -28,7 +27,7 @@
             </div>
             <div class="col-2"><label class="col-form-label">작성자</label></div>
             <div class="col-2">
-              <input type="text" value="최강희" class="form-control" readonly />
+              <input type="text" :value="writerName" class="form-control" readonly />
             </div>
           </div>
 
@@ -55,16 +54,22 @@
             <div class="row g-3 mb-2 align-items-center">
               <div class="col-6"><label class="col-form-label">결재자</label></div>
               <div class="col-5">
-                <input type="text" :value="plan.planning_rejecter" class="form-control" readonly />
+                <input
+                  type="text"
+                  v-model="localPlan.planning_rejecter"
+                  class="form-control"
+                  readonly
+                />
               </div>
             </div>
+
             <div class="row g-3 mb-2 align-items-center">
               <div class="col-5"><label class="col-form-label">반려일</label></div>
               <div class="col-7">
                 <input
                   type="text"
-                  :value="plan.planning_reject_date"
                   class="form-control"
+                  v-model="localPlan.planning_reject_date"
                   readonly
                 />
               </div>
@@ -74,23 +79,24 @@
           <div class="row g-3 mb-2 align-items-center">
             <div class="col-2"><label class="col-form-label">반려사유</label></div>
             <div class="col-10">
-              <input type="text" :value="plan.planning_reject" class="form-control" readonly />
+              <input
+                type="text"
+                v-model="localPlan.planning_reject"
+                class="form-control"
+                readonly
+              />
             </div>
           </div>
         </form>
 
         <div class="d-flex justify-content-end">
-          <button
-            type="button"
-            class="btn btn-primary btn-sm"
-            @click="$emit('openConfirm', plan.planning_no, { ...localPlan })"
-          >
+          <button type="button" class="btn btn-primary btn-sm" @click="openConfirm">
             승인요청
           </button>
           <button
             type="button"
             class="btn btn-danger btn-sm"
-            @click="$emit('cancelEdit', plan.planning_no)"
+            @click="emit('cancel', localPlan.planning_no)"
           >
             취소
           </button>
@@ -98,47 +104,37 @@
       </div>
     </div>
 
-    <ApplicationModal v-if="changingChecked">
-      <template #header><h2></h2></template>
-      <template #body>
-        <h4 style="text-align: center">지원계획서를<br />정말 승인요청하시겠습니까?</h4>
-      </template>
-      <template #footer>
-        <button class="btn-save" @click="$emit('confirm', plan.planning_no, { ...localPlan })">
-          확인
-        </button>
-        <button class="btn-cancel" @click="$emit('cancel', plan.planning_no)">취소</button>
-      </template>
-    </ApplicationModal>
+    <ConfirmModal
+      :show="changingChecked"
+      message="지원계획서를<br/>정말 승인요청하시겠습니까?"
+      @confirm="emit('submitChanging', localPlan.planning_no)"
+      @cancel="changingChecked = false"
+    />
   </div>
 </template>
 
 <script setup>
 import { reactive, watch } from 'vue'
-import ApplicationModal from '../modal/ApplicationModal.vue'
 
 const props = defineProps({
-  plan: Object,
-  changingChecked: Boolean,
+  plan: { type: Object, required: true },
 })
 
-defineEmits(['openConfirm', 'confirm', 'cancel', 'cancelEdit'])
+const emit = defineEmits(['update:plan', 'submit', 'cancel'])
 
-const localPlan = reactive({
-  planning_start: '',
-  planning_end: '',
-  planning_title: '',
-  planning_content: '',
-})
+const localPlan = reactive({})
 
+// props 변경 시 로컬로 복사
 watch(
   () => props.plan,
   (p) => {
-    localPlan.planning_start = p?.planning_start ?? ''
-    localPlan.planning_end = p?.planning_end ?? ''
-    localPlan.planning_title = p?.planning_title ?? ''
-    localPlan.planning_content = p?.planning_content ?? ''
+    Object.assign(localPlan, p || {})
   },
   { immediate: true, deep: true },
 )
+
+// 필요하면 "임시저장/승인요청" 같은 버튼에서 부모로 올림
+// const syncToParent = () => {
+//   emit('update:plan', { ...localPlan })
+// }
 </script>

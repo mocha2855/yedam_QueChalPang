@@ -2,8 +2,8 @@
 <!-- 하단 승인대기중상담예약 섹션 -->
 <script setup>
 import { ref } from 'vue'
-import ConfirmModal from '../modal/ConfirmModal.vue'
-import RejectReasonModal from '../modal/RejectReasonModal.vue'
+import ConfirmModal from '../modals/ConfirmModal.vue'
+import RejectReasonModal from '../modals/RejectReasonModal.vue'
 
 const { pendingReservedList } = defineProps({
   pendingReservedList: { type: Array, required: true },
