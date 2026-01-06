@@ -53,6 +53,9 @@ defineProps({
   maxlength: {
     type: Number,
   },
+  minlength: {
+    type: Number,
+  },
 })
 
 const getClasses = (size, success, error) => {
@@ -90,6 +93,7 @@ const hasIcon = (icon) => (icon ? 'input-group' : null)
         :isRequired="isRequired"
         :disabled="disabled"
         :maxlength="maxlength"
+        :minlength="minlength"
         @input="emit('update:modelValue', $event.target.value)"
       />
       <span v-if="iconDir === 'right'" class="input-group-text">
@@ -98,3 +102,10 @@ const hasIcon = (icon) => (icon ? 'input-group' : null)
     </div>
   </div>
 </template>
+<style>
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+</style>

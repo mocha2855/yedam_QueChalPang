@@ -34,7 +34,12 @@ const selectCenter = (center) => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="center in list" :key="center.id" @click="selectCenter(center)">
+            <tr
+              v-for="center in list"
+              :key="center.id"
+              @click="selectCenter(center)"
+              style="cursor: pointer"
+            >
               <td>
                 <div class="d-flex px-2">
                   <div class="my-auto">

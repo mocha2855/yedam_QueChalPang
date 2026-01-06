@@ -113,7 +113,7 @@
 <script setup>
 import { useApplicationStore } from '@/stores/application'
 import { useCounterStore } from '@/stores/member'
-import { onBeforeMount, ref, watch } from 'vue'
+import { onBeforeMount, onBeforeUnmount, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
@@ -125,7 +125,7 @@ const route = useRoute()
 
 const selectedAppNo = ref(null)
 const applicationOptions = ref([])
-
+const body = document.getElementsByTagName('body')[0]
 let dependantInfo = ref({}) // 지원자 실명
 
 const returnStatus = (stat) => {
@@ -169,6 +169,14 @@ onBeforeMount(async () => {
   } else {
     dependantInfo.value = {}
   }
+})
+onBeforeUnmount(() => {
+  store.state.hideConfigButton = false
+  store.state.showConfig = false
+  store.state.showNavbar = true
+  store.state.showSidenav = true
+  store.state.showFooter = true
+  body.classList.add('bg-gray-100')
 })
 
 const fetchApplicationOptions = async (dependantNo) => {
