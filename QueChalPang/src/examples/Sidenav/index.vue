@@ -18,6 +18,7 @@ const darkMode = computed(() => store.state.darkMode)
 const isApprovalPage = computed(() => {
   return route.path.includes('Approval')
 })
+// 마이페이지(내정보보기)
 const isMyPage = computed(() => {
   return route.path.includes('myPage')
 })

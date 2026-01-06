@@ -35,7 +35,10 @@ const { userPendingList, managerPendingList } = storeToRefs(store)
       </li>
 
       <li class="nav-item">
-        <sidenav-item to="/ApprovalManagerList" navText="지원자 등록">
+        <sidenav-item
+          :to="{ name: 'myPageList', params: { id: counter.isLogIn.info.member_id } }"
+          navText="지원자 목록"
+        >
           <template v-slot:icon>
             <i class="ni ni-badge text-success text-sm opacity-10"></i>
           </template>
