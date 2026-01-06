@@ -51,7 +51,6 @@
                         v-model="selectGender"
                         style="text-align: left"
                         v-else
-                        @change="changeValue(dependantDetail.disability_name)"
                       >
                         <option
                           class="dropdown-item"
@@ -138,7 +137,7 @@
                           v-model="selectDisability"
                           style="text-align: left"
                           v-bind:disabled="changeMangerInfo"
-                          @change="changeValue(dependantDetail.disability_name)"
+                          @change="changeValue(selectDisability)"
                         >
                           <option
                             class="dropdown-item"
@@ -265,11 +264,21 @@ let selectDisability = ref()
 
 // 장애유형
 let disabilityName = ref([
+  '지체 장애',
+  '뇌병변 장애',
+  '시각 장애',
+  '청각 장애',
+  '언어 장애',
+  '안면 장애',
+  '신장 장애',
+  '심장 장애',
+  '간 장애',
+  '호흡기 장애',
+  '장루·요루 장애',
+  '뇌전증 장애',
   '지적 장애',
-  '전반적 발달장애',
   '자폐성 장애',
-  '자폐 스펙트럼 장애',
-  'ADHD',
+  '정신 장애',
   '직접입력',
 ])
 
@@ -339,4 +348,7 @@ const changeValue = (data) => {
     writingDisability.value = true
   }
 }
+
+// 저장버튼
+const completeChangeInfo = () => {}
 </script>
