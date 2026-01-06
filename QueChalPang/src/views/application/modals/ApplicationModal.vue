@@ -27,7 +27,7 @@
 </template>
 
 <script setup>
-import { useModalStore } from '@/stores/modal'
+import { useModalStore } from '@/stores/Modal'
 
 const modal = useModalStore()
 </script>

@@ -7,6 +7,7 @@ router.get(`/members`, async (req, res) => {
   let list = await memberService.findAllMember();
   res.send(list);
 });
+
 //멤버 단건조회(조건 id)
 router.get(`/member/:id`, async (req, res) => {
   let id = req.params.id;
@@ -31,6 +32,12 @@ router.post(`/member`, async (req, res) => {
   let input = req.body;
   let output = await memberService.addMemberInfo(input);
   res.send(output);
+});
+// 담당자 등록
+router.post(`/member/manager`, async (req, res) => {
+  let managerData = req.body;
+  let result = await memberService.addManager(managerData);
+  res.send(result);
 });
 // 인증번호 발송
 router.post(`/authenticate`, async (req, res) => {

@@ -67,6 +67,25 @@ const addMemberInfo = async (input) => {
   let result = await mysql.memberQuery("insertMemberInfo", value);
   return result;
 };
+
+// 담당자/관리자 등록
+const addManager = async (input) => {
+  let value = [
+    input.member_id,
+    input.member_password,
+    input.member_name,
+    input.member_email,
+    input.member_tel,
+    input.member_address,
+    input.center_no,
+    input.member_authority,
+    input.member_confirm,
+  ];
+  console.log(value);
+  let result = await mysql.memberQuery("insertManagerInfo", value);
+  return result;
+};
+
 //인증을 위한 랜덤번호 6자리 생성
 const phoneAuth = async (input) => {
   console.log(input.phone);
@@ -212,4 +231,5 @@ module.exports = {
   getRejectedCount,
   removeMemberById,
   modifyByMemberId,
+  addManager,
 };

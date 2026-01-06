@@ -188,7 +188,7 @@
 
 <script setup>
 import { useSurveyStore } from '@/stores/survey'
-import { useModalStore } from '@/stores/modal'
+import { useModalStore } from '@/stores/Modal'
 import { useCounterStore } from '@/stores/member'
 import axios from 'axios'
 import { reactive, onMounted, ref } from 'vue'
