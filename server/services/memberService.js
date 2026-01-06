@@ -157,6 +157,7 @@ const findDependants = async (id, authority) => {
   } else if (authority == "a2") {
     result = await mysql.memberQuery("selectDependants2", id);
   }
+  console.log(result);
   return result;
 };
 // 4. 승인 거절 처리 (l2 -> l3)

@@ -17,14 +17,27 @@ dependant_birth,
 dependant_date,
 dependant_name,
 dependant_no,
-despendant_gender,
+dependant_gender,
 (select disability_name from disability where disability_no = d.disability_no) as disability_name,
 manager_main,
 manager_sub,
-member_id,
+(select member_name from member where member_id=d.member_id) as member_name,
 (select min(status) from application where dependant_no=d.dependant_no) as status
 from dependant d where member_id=?`;
 
+const selectDependants2 = `select dependant_address,
+dependant_birth,
+dependant_date,
+dependant_name,
+dependant_no,
+dependant_gender,
+(select disability_name from disability where disability_no = d.disability_no) as disability_name,
+manager_main,
+manager_sub,
+(select member_name from member where member_id=d.member_id) as member_name,
+(select min(status) from application where dependant_no=d.dependant_no) as status
+from dependant d where d.manager_main=?
+`;
 //회원가입 시 승인/대기
 // 승인 관리 목록 조회
 const selectMemberApproval = `
@@ -114,4 +127,5 @@ module.exports = {
   updateMemberInfo,
   updateMemberInfoPassword,
   deleteMemberById,
+  selectDependants2,
 };

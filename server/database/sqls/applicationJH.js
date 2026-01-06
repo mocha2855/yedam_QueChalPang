@@ -7,9 +7,24 @@ join member m2 on d1.manager_main = m2.member_id
 where d1.dependant_no=?`;
 
 // 대기 단계 상태 건색
-const selectById = `select * 
-from (select * from application where application_no = ?) a 
-join reservation r on a.application_no = r.application_no order by r.created_at desc limit 1`;
+// const selectById = `select *
+// from (select * from application where application_no = ?) a
+// join reservation r on a.application_no = r.application_no order by r.created_at desc limit 1`;
+const selectById = `
+  SELECT
+    a.*,
+    COALESCE(r.manager_id, d.manager_main) AS manager_id,
+    r.resv_status,
+    r.created_at
+  FROM application a
+  JOIN dependant d
+    ON d.dependant_no = a.dependant_no
+  LEFT JOIN reservation r
+    ON r.application_no = a.application_no
+  WHERE a.application_no = ?
+  ORDER BY r.created_at DESC
+  LIMIT 1
+`;
 
 // 결재자 선택
 const rejectorSelectById = `select member_name 
@@ -56,72 +71,100 @@ const selectApplicationsById = `select a.dependant_no,dependant_name,survey_no,a
 from application a 
 join dependant d on d.dependant_no = a.dependant_no 
 where ?? like concat('%',?,'%') and a.member_id = ?`;
+// 지원현황에서 목록 불러오기(담당자)
+const selectApplicationsById2 = `select a.dependant_no,dependant_name,survey_no,a.member_id,application_date,status,(select member_name from member where member_id=application_rejector) as application_rejector,status_reject,status_status 
+from application a 
+join dependant d on d.dependant_no = a.dependant_no 
+where ?? like concat('%',?,'%') and d.manager_main = ?`;
 
-//지원현황 목록 불러오기 (담당자) DJ
-// 지원현황 목록 불러오기 (담당자) - 계획서/결과서 상태 카운트 포함
+//지원현황 목록 불러오기 (담당자) DJ - dependant 기준으로 (신청서 없어도 뜨게)
 const selectApplicationsByTeacher = `
-SELECT
-  a.application_no,
-  a.dependant_no,
-  d.dependant_name,
-  g.member_name AS guardian_name,
-  t.member_name AS manager_name,
-  a.application_date,
-  a.status,
-  a.status_reject,
-  a.status_status,
-
-  COALESCE(p.p_i1, 0) AS p_i1,
-  COALESCE(p.p_i2, 0) AS p_i2,
-  COALESCE(p.p_i3, 0) AS p_i3,
-
-  COALESCE(r.r_i1, 0) AS r_i1,
-  COALESCE(r.r_i2, 0) AS r_i2,
-  COALESCE(r.r_i3, 0) AS r_i3
-
-FROM application a
-JOIN dependant d
-  ON d.dependant_no = a.dependant_no
-JOIN member g
-  ON g.member_id = a.member_id
-LEFT JOIN member t
-  ON t.member_id = d.manager_main
-
-LEFT JOIN (
+SELECT *
+FROM (
   SELECT
-    application_no,
-    SUM(CASE WHEN planning_status = 'i1' THEN 1 ELSE 0 END) AS p_i1,
-    SUM(CASE WHEN planning_status = 'i2' THEN 1 ELSE 0 END) AS p_i2,
-    SUM(CASE WHEN planning_status = 'i3' THEN 1 ELSE 0 END) AS p_i3
-  FROM planning
-  GROUP BY application_no
-) p
-  ON p.application_no = a.application_no
+    a.application_no,
+    d.dependant_no,
+    d.dependant_name,
 
-LEFT JOIN (
+    g.member_name AS guardian_name,      
+    t.member_name AS manager_name,
+
+    a.application_date,
+    a.status,
+
+    COALESCE(p.p_i1, 0) AS p_i1,
+    COALESCE(p.p_i2, 0) AS p_i2,
+    COALESCE(p.p_i3, 0) AS p_i3,
+
+    COALESCE(r.r_i1, 0) AS r_i1,
+    COALESCE(r.r_i2, 0) AS r_i2,
+    COALESCE(r.r_i3, 0) AS r_i3
+
+  FROM application a
+  JOIN dependant d
+    ON d.dependant_no = a.dependant_no
+  JOIN member g
+    ON g.member_id = d.member_id
+  LEFT JOIN member t
+    ON t.member_id = d.manager_main
+
+  LEFT JOIN (
+    SELECT
+      application_no,
+      SUM(planning_status = 'i1') AS p_i1,
+      SUM(planning_status = 'i2') AS p_i2,
+      SUM(planning_status = 'i3') AS p_i3
+    FROM planning
+    GROUP BY application_no
+  ) p ON p.application_no = a.application_no
+
+  LEFT JOIN (
+    SELECT
+      pl.application_no,
+      SUM(r.result_status = 'i1') AS r_i1,
+      SUM(r.result_status = 'i2') AS r_i2,
+      SUM(r.result_status = 'i3') AS r_i3
+    FROM result r
+    JOIN planning pl
+      ON pl.planning_no = r.planning_no
+    GROUP BY pl.application_no
+  ) r ON r.application_no = a.application_no
+
+  WHERE d.manager_main = ?
+     OR d.manager_sub  = ?
+
+  UNION ALL
+
   SELECT
-    p2.application_no,
-    SUM(CASE WHEN r2.result_status = 'i1' THEN 1 ELSE 0 END) AS r_i1,
-    SUM(CASE WHEN r2.result_status = 'i2' THEN 1 ELSE 0 END) AS r_i2,
-    SUM(CASE WHEN r2.result_status = 'i3' THEN 1 ELSE 0 END) AS r_i3
-  FROM result r2
-  JOIN planning p2
-    ON p2.planning_no = r2.planning_no
-  GROUP BY p2.application_no
-) r
-  ON r.application_no = a.application_no
+    NULL AS application_no,
+    d.dependant_no,
+    d.dependant_name,
 
-WHERE d.manager_main = ?
-   OR d.manager_sub  = ?
-ORDER BY a.application_date DESC
-`;
+    g.member_name AS guardian_name,
+    t.member_name AS manager_name,
 
-//드롭다운용 - 지원자별 신청서 목록 DJ
-const selectAppsByDependant = `
-  SELECT application_no, application_date
-  FROM application
-  WHERE dependant_no = ?
-  ORDER BY application_date DESC
+    NULL AS application_date,
+    'e1' AS status,           
+
+    0 AS p_i1, 0 AS p_i2, 0 AS p_i3,
+    0 AS r_i1, 0 AS r_i2, 0 AS r_i3
+
+  FROM dependant d
+  JOIN member g
+    ON g.member_id = d.member_id
+  LEFT JOIN member t
+    ON t.member_id = d.manager_main
+
+  WHERE (d.manager_main = ? OR d.manager_sub = ?)
+    AND NOT EXISTS (
+      SELECT 1
+      FROM application a2
+      WHERE a2.dependant_no = d.dependant_no
+    )
+) X
+ORDER BY
+  X.application_date DESC,
+  X.dependant_no DESC
 `;
 
 // 검토 중, 반려, 승인 지원결과서 불러오기
@@ -169,6 +212,6 @@ module.exports = {
   sucessResultUpdateInfo,
   rejectResultUpdateInfo,
   changingResultUpdateInfo,
+  selectApplicationsById2,
   selectApplicationsByTeacher,
-  selectAppsByDependant,
 };
