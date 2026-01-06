@@ -100,4 +100,32 @@ router.get(`/members/rejected/count`, async (req, res) => {
   let count = await memberService.getRejectedCount();
   res.send({ count });
 });
+
+//회원 수정
+router.put(`/member/:id`, async (req, res) => {
+  const id = req.params.id;
+  const { name, email, phone, address, center, authority, password } = req.body;
+
+  let value;
+  let hasPassword = false;
+
+  if (password && password.trim() !== "") {
+    // 비밀번호 있으면
+    value = [name, email, phone, address, center, authority, password, id];
+    hasPassword = true;
+  } else {
+    // 비밀번호 없으면
+    value = [name, email, phone, address, center, authority, id];
+    hasPassword = false;
+  }
+
+  let result = await memberService.modifyByMemberId(value, hasPassword);
+  res.send(result);
+});
+// 회원 삭제
+router.delete(`/member/:id`, async (req, res) => {
+  const id = req.params.id;
+  let result = await memberService.removeMemberById(id);
+  res.send(result);
+});
 module.exports = router;

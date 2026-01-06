@@ -92,6 +92,42 @@ const approveSelected = async () => {
   alert(`${pendingIds.length}명이 승인되었습니다.`)
   checkedIds.value = []
 }
+const deleteSelected = async () => {
+  if (checkedIds.value.length === 0) return
+
+  // 삭제 가능한 것만 필터링 (l4가 아닌 것들)
+  const deletableIds = checkedIds.value.filter((id) => {
+    const member = managerList.value.find((m) => m.member_id === id)
+    return member && member.member_confirm !== 'l4'
+  })
+
+  if (deletableIds.length === 0) {
+    alert('삭제 가능한 회원을 선택해주세요.')
+    checkedIds.value = []
+    return
+  }
+
+  if (deletableIds.length < checkedIds.value.length) {
+    const di = checkedIds.value.length - deletableIds.length
+    const ok = confirm(
+      `${di}명은 이미 삭제되었습니다.\n${deletableIds.length}명을 삭제하시겠습니까?`,
+    )
+    if (!ok) {
+      checkedIds.value = []
+      return
+    }
+  } else {
+    const ok = confirm(`${deletableIds.length}명을 삭제하시겠습니까?`)
+    if (!ok) return
+  }
+
+  for (const id of deletableIds) {
+    await store.deleteMember(id)
+  }
+
+  alert(`${deletableIds.length}명이 삭제되었습니다.`)
+  checkedIds.value = []
+}
 
 onBeforeMount(async () => {
   await store.getApprovalList()

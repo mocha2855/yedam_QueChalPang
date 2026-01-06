@@ -1,5 +1,5 @@
 const selectAllMember = `select * from member`;
-const selectByMemberId = `select member_id,member_name,member_confirm,member_authority,center_no from member where member_id = ?`;
+const selectByMemberId = `select member_id, member_email, member_phone,member_address,member_name,member_confirm,member_authority,center_no from member where member_id = ?`;
 const selectByMemberNameAndPhone = `select member_id from member where member_name=? and member_phone=?`;
 const countByMemberIdAndPhone = `select count(*) as count from member where member_id=? and member_phone=?`;
 const countByMemberNameAndPhone = `select count(*) as count from member where member_name=? and member_phone=?`;
@@ -24,6 +24,7 @@ manager_sub,
 (select member_name from member where member_id=d.member_id) as member_name,
 (select min(status) from application where dependant_no=d.dependant_no) as status
 from dependant d where member_id=?`;
+
 const selectDependants2 = `select dependant_address,
 dependant_birth,
 dependant_date,
@@ -42,6 +43,7 @@ from dependant d where d.manager_main=?
 const selectMemberApproval = `
   select * from member 
   where member_authority in ('a1','a2','a3')
+  and member_confirm != 'l4'
   order by member_date desc;
 `;
 
@@ -57,13 +59,51 @@ const countPendingMembers = `
   select count(*) as count from member 
   where member_confirm = 'l2' 
   and member_authority in ('a1','a2','a3')
+  and member_confirm != 'l4'
 `;
 //승인 거절 건수
 const countRejectedMembers = `
   select count(*) as count from member 
   where member_confirm = 'l3' 
   and member_authority in ('a1','a2','a3')
+  and member_confirm != 'l4'
+
 `;
+
+// 회원 정보 수정 (비밀번호 포함)
+const updateMemberInfo = `
+  UPDATE member 
+  SET 
+    member_name = ?,
+    member_email = ?,
+    member_phone = ?,
+    member_address = ?,
+    center_no = ?,
+    member_authority = ?,
+    member_pass = SHA2(?, 256)
+  WHERE member_id = ?
+`;
+
+// 회원 정보 수정 (비밀번호 제외)
+const updateMemberInfoPassword = `
+  UPDATE member 
+  SET 
+    member_name = ?,
+    member_email = ?,
+    member_phone = ?,
+    member_address = ?,
+    center_no = ?,
+    member_authority = ?
+  WHERE member_id = ?
+`;
+
+// 삭제 (상태 변경)
+const deleteMemberById = `
+  UPDATE member 
+  SET member_confirm = 'l4'
+  WHERE member_id = ?
+`;
+
 module.exports = {
   selectAllMember,
   selectByMemberId,
@@ -84,5 +124,8 @@ module.exports = {
   countPendingMembers,
   selectDependants,
   countRejectedMembers,
+  updateMemberInfo,
+  updateMemberInfoPassword,
+  deleteMemberById,
   selectDependants2,
 };
