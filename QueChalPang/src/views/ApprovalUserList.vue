@@ -161,15 +161,15 @@ onBeforeMount(async () => {
   const authority = member.isLogIn.info.member_authority
 
   if (authority !== 'a4' && authority !== 'a2') {
-    // ✅ a4도 아니고 a2도 아니면 막음
+    // a4도 아니고 a2도 아니면 막음
     alert('담당자 또는 시스템 관리자만 접근할 수 있습니다.')
     router.push({ name: 'Dashboard' })
     return
   }
   await store.getApprovalList()
 })
-const approvalUpdate = (id) => {
-  router.push({ name: 'ApprovalUpdate', params: { id: id } })
+const approvalUserUpdate = (id) => {
+  router.push({ name: 'ApprovalUserUpdate', params: { id: id } })
 }
 </script>
 
@@ -303,14 +303,14 @@ const approvalUpdate = (id) => {
                       >
                         <ArgonButton
                           color="success"
-                          size="sm"
+                          size="xs"
                           @click="handleApprove(member.member_id)"
                         >
                           승인
                         </ArgonButton>
                         <ArgonButton
                           color="danger"
-                          size="sm"
+                          size="xs"
                           @click="handleReject(member.member_id)"
                         >
                           거절
@@ -322,7 +322,7 @@ const approvalUpdate = (id) => {
                       <button
                         v-if="member.member_confirm === 'l1'"
                         class="btn btn-sm btn-outline-secondary"
-                        @click="approvalUpdate(member.member_id)"
+                        @click="approvalUserUpdate(member.member_id)"
                       >
                         수정하기
                       </button>

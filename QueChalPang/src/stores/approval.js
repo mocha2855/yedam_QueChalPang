@@ -182,7 +182,7 @@ export const useApprovalStore = defineStore('approval', {
     //관리자 거절 목록
     adminRejectedList: (state) => {
       return state.approvalList.filter(
-        (member) => member.member_authority === 'a2' && member.member_confirm === 'l3',
+        (member) => member.member_authority === 'a3' && member.member_confirm === 'l3',
       )
     },
   },

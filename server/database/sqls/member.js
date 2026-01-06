@@ -1,5 +1,9 @@
 const selectAllMember = `select * from member`;
-const selectByMemberId = `select member_id, member_email, member_phone,member_address,member_name,member_confirm,member_authority,center_no from member where member_id = ?`;
+const selectByMemberId = `
+SELECT m.member_id, m.member_email, m.member_phone,m.member_address,m.member_name,m.member_confirm,m.member_authority,m.center_no,c.center_name
+FROM member m 
+LEFT JOIN center c ON m.center_no = c.center_no
+WHERE member_id = ?`;
 const selectByMemberNameAndPhone = `select member_id from member where member_name=? and member_phone=?`;
 const countByMemberIdAndPhone = `select count(*) as count from member where member_id=? and member_phone=?`;
 const countByMemberNameAndPhone = `select count(*) as count from member where member_name=? and member_phone=?`;
