@@ -118,7 +118,12 @@ router.post("/addApplicationById/:id/:authority", async (req, res) => {
   let result = await applicationService.insertAppById(input, id, authority);
   res.send(result);
 });
-
+// 지원신청서 조회(일반사용자 및 담당자)
+router.get(`/applicationInfo/:no`, async (req, res) => {
+  let { no } = req.params;
+  let result = await applicationService.findAppByNo(no);
+  res.send(result);
+});
 // 검토 중, 반려, 승인 지원결과서 불러오기
 router.get("/resultReview/:no", async (req, res) => {
   let no = req.params.no;

@@ -142,6 +142,12 @@ const insertAppById = async (input, id, authority) => {
   let result = await mysql.bquery("insertAppAnswer", [bulkData]);
   return result;
 };
+
+// 지원신청서 조회
+const findAppByNo = async (no) => {
+  let result = await mysql.bquery("selectAppByNo", no);
+  return result;
+};
 // 검토 중, 반려, 승인 지원계획서 불러오기
 const findResultReviewById = async (no) => {
   let post = await mysql.bquery("selectResultReviewById", no);
@@ -193,4 +199,5 @@ module.exports = {
   updateRejectResultInfo,
   updateChangingResultInfo,
   insertAppById,
+  findAppByNo,
 };

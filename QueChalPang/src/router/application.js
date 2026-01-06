@@ -4,7 +4,8 @@ import applicationPlanning from '../views/components/application/applicationPlan
 import applicationPlanningSuccess from '../views/components/application/applicationPlanningSuccess.vue' //지원계획서(승인, 반려)
 import applicationResult from '../views/components/application/applicationResult.vue' //지원결과서(작성 및 검토중)
 import applicationResultSuccess from '../views/components/application/applicationResultSuccess.vue' //지원결과서(승인, 반려)
-
+import addApplication from '../views/addApplication.vue'
+import ApplicationInfo from '../views/components/application/ApplicationInfo.vue'
 const applicationRoutes = [
   {
     path: '/application/:id',
@@ -14,7 +15,7 @@ const applicationRoutes = [
       {
         path: '/applicationWait/:id',
         name: 'applicationWait',
-        component: applicationWait,
+        components: { default: applicationWait, right: ApplicationInfo },
       },
       {
         path: '/applicationPlanning/:id',
@@ -33,6 +34,11 @@ const applicationRoutes = [
         },
       },
     ],
+  },
+  {
+    path: '/addApplication',
+    name: 'AddApplication',
+    component: addApplication,
   },
 ]
 export default applicationRoutes

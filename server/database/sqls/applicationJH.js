@@ -80,7 +80,31 @@ where ?? like concat('%',?,'%') and d.manager_main = ?`;
 const insertApplication = `insert into application(dependant_no,survey_no,member_id,application_date,status) values (?,?,?,now(),'e1')`;
 // 지원신청서 조사지 답변 등록
 const insertAppAnswer = `insert into app_answer(survey_qitem_no,application_no,app_answer_type,app_date,app_reason) values ? `;
+// 등록된 지원신청서 정보 가져오기
+const selectAppByNo = `SELECT s.survey_no,
+        s.survey_version,
+        s.survey_start,
+        s.survey_end,
+        t.survey_title_no,
+        t.survey_title,
+        ss.survey_subtitle_no,
+        ss.survey_subtitle,
+        ss.survey_subtitle_detail,
+        q.survey_qitem_no,
+        q.survey_qitem_question,
+        q.survey_qitem_type,
+        a.app_answer_no,
+        a.app_answer_type,
+        a.app_date,
+        a.app_reason,
+        (select dependant_no from application aa where application_no = a.application_no)as dependant_no,
+        (select status from application aa where application_no = a.application_no) as status
 
+FROM survey s JOIN survey_title t on s.survey_no = t.survey_no 
+              JOIN survey_subtitle ss ON t.survey_title_no = ss.survey_title_no 
+              JOIN survey_qitem q ON ss.survey_subtitle_no = q.survey_subtitle_no 
+              JOIN app_answer a ON a.survey_qitem_no = q.survey_qitem_no
+              WHERE a.application_no=?`;
 //지원현황 목록 불러오기 (담당자) DJ - dependant 기준으로 (신청서 없어도 뜨게)
 const selectApplicationsByTeacher = `
 SELECT *
@@ -220,4 +244,5 @@ module.exports = {
   insertApplication,
   insertAppAnswer,
   selectApplicationsByTeacher,
+  selectAppByNo,
 };

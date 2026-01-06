@@ -14,6 +14,7 @@ onBeforeMount(() => {
   store.state.showSidenav = false
   store.state.showFooter = false
   body.classList.remove('bg-gray-100')
+  getCenterList()
 })
 onBeforeUnmount(() => {
   store.state.hideConfigButton = false

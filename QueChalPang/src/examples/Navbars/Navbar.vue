@@ -57,10 +57,9 @@ console.log(isLogIn.value.info.member_id)
 const supportRoute = computed(() => {
   const auth = isLogIn.value?.info?.member_authority
 
-  if (auth === 'a1' ) return '/tables'
+  if (auth === 'a1') return '/tables'
   return '/tablesManager'
 })
-
 </script>
 
 <template>
@@ -85,7 +84,7 @@ const supportRoute = computed(() => {
             </router-link>
           </li>
 
-          <li class="nav-item">
+          <li v-if="isLogIn.isLogIn" class="nav-item">
             <router-link
               :to="supportRoute"
               class="nav-link text-black"
