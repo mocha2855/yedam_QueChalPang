@@ -45,6 +45,7 @@
                         id="tel"
                         v-if="changeMangerInfo"
                         v-model="dependantDetail.dependant_gender"
+                        v-bind:disabled="changeMangerInfo"
                       />
                       <select
                         class="btn btn px-0 col-6 mx-0"
@@ -90,7 +91,7 @@
                     <div class="col-8 mb-2" v-else>
                       <div class="row gx-1">
                         <div class="col-7 px-0">
-                          <argon-input v-model="postcode" placeholder="우편번호" disabled />
+                          <argon-input v-model="detailAddress" placeholder="주소" disabled />
                         </div>
                         <div class="col-2">
                           <button
@@ -104,17 +105,14 @@
                       </div>
                     </div>
 
-                    <div class="row">
-                      <div class="col-1 px-0"><h6 class="mt-2"></h6></div>
-                      <div class="col-5 mb-2" v-if="!changeMangerInfo">
-                        <argon-input v-model="detailAddress" placeholder="주소" disabled />
-                      </div>
-                    </div>
-
                     <div class="row" v-if="!changeMangerInfo">
                       <div class="col-1 px-0"><h6 class="mt-2"></h6></div>
                       <div class="col-5 mb-2" v-if="!changeMangerInfo">
-                        <argon-input id="detail_input" placeholder="상세주소" />
+                        <argon-input
+                          id="detail_input"
+                          placeholder="상세주소"
+                          v-model="writingAddress"
+                        />
                       </div>
                     </div>
                     <hr class="mb-4" style="height: 1px; background-color: black" />
@@ -151,7 +149,7 @@
                         </select>
                         <div class="col-5 mb-2 px-0 ms-2" v-if="writingDisability">
                           <argon-input
-                            id="detail_input"
+                            id="disability_input"
                             placeholder="장애유형을 입력해주세요."
                             v-model="realDisability"
                           />
@@ -221,6 +219,7 @@ import { useRoute } from 'vue-router'
 import { useMyPageStore } from '@/stores/mypage'
 import { useCounterStore } from '@/stores/member'
 import ArgonInput from '@/components/ArgonInput.vue'
+import axios from 'axios'
 
 const counter = useCounterStore()
 const mypage = useMyPageStore()
@@ -264,6 +263,7 @@ let selectDisability = ref()
 
 // 장애유형
 let disabilityName = ref([
+  '선택',
   '지체 장애',
   '뇌병변 장애',
   '시각 장애',
@@ -287,6 +287,17 @@ let changeMangerInfo = ref(true)
 
 const changeInfo = () => {
   changeMangerInfo.value = false
+  let count = 0
+  disabilityName.value.forEach((data) => {
+    if (data == dependantDetail.value.disability_name) {
+      count++
+      console.log(count)
+    }
+  })
+
+  if (count == 0) {
+    selectDisability.value = '선택'
+  }
 }
 
 // 취소버튼
@@ -297,12 +308,15 @@ const returnInfo = () => {
   detailAddress.value = dependantDetail.value.dependant_address
   selectGender.value = dependantDetail.value.dependant_gender
   selectDisability.value = dependantDetail.value.disability_name
+  realDisability.value = ''
+  writingDisability.value = ''
 }
 
 // 주소 api에서 사용하는 함수들
 const postcode = ref('')
 const extraAddress = ref('')
 const detailAddress = ref('')
+const writingAddress = ref('')
 
 const openPostcode = () => {
   new window.daum.Postcode({
@@ -350,5 +364,28 @@ const changeValue = (data) => {
 }
 
 // 저장버튼
-const completeChangeInfo = () => {}
+// 주소 합체
+
+const completeChangeInfo = async () => {
+  console.log(`${detailAddress.value} ${writingAddress.value}`)
+  console.log(selectDisability.value, realDisability.value)
+  if (
+    selectDisability.value == '직접입력' &&
+    (realDisability.value == '' || realDisability.value == null)
+  ) {
+    document.getElementById('disability_input').focus()
+    alert('장애유형을 입력해주세요')
+    return
+  } else if (selectDisability.value == '선택') {
+    alert('장애유형을 선택해주세요.')
+    return
+  }
+
+  await axios //
+    .put('/api/changeDependantInfo/' + dependantDetail.value.dependant_no, {
+      dependant_gender: selectGender.value,
+      dependant_address: `${detailAddress.value} ${writingAddress.value}`,
+      disability_name: selectDisability.value,
+    })
+}
 </script>

@@ -13,14 +13,20 @@ const findDependantById = async (id) => {
   return post;
 };
 
-// 정보 변경
+// 본인 정보 변경
 const updateManagerInfo = async (member_id, data) => {
   let post = await mysql.myPageQuery("updateManagerInfo", [data, member_id]);
   return post;
 };
 
+// 담당 지원자 정보 변경
+const updateDependantInfo = async (id, data) => {
+  let post = await mysql.myPageQuery("updateDependantInfo", [data, id]);
+  return post;
+};
 module.exports = {
   findManagerById,
   findDependantById,
   updateManagerInfo,
+  updateDependantInfo,
 };

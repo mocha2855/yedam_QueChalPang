@@ -11,11 +11,15 @@ join member m2 on d.member_id = m2.member_id
 join disability d2 on d.disability_no = d2.disability_no 
 where m.member_id =?`;
 
-// 정보변경
+// 본인 정보변경
 const updateManagerInfo = `update member set ? where member_id = ?`;
+
+// 지원자 정보변경
+const updateDependantInfo = `update (select * from dependant d1 join disability d2 on d1.disability_no = d2.disability_no where dependant_no = ?) set ? `;
 
 module.exports = {
   selectMnagerById,
   selectDependantById,
   updateManagerInfo,
+  updateDependantInfo,
 };
