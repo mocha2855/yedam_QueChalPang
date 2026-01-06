@@ -1,6 +1,6 @@
 <!-- Navbar.vue -->
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useCounterStore } from '@/stores/member'
@@ -53,6 +53,14 @@ const goMyPage = () => {
   router.push({ name: 'myPage', params: { id: isLogIn.value.info.member_id } })
 }
 console.log(isLogIn.value.info.member_id)
+
+const supportRoute = computed(() => {
+  const auth = isLogIn.value?.info?.member_authority
+
+  if (auth === 'a1' ) return '/tables'
+  return '/tablesManager'
+})
+
 </script>
 
 <template>
@@ -79,9 +87,9 @@ console.log(isLogIn.value.info.member_id)
 
           <li class="nav-item">
             <router-link
-              to="/tables"
+              :to="supportRoute"
               class="nav-link text-black"
-              :class="getRoute() === 'tables' ? 'font-weight-bold opacity-10' : 'opacity-6'"
+              :class="getRoute().includes('tables') ? 'font-weight-bold opacity-10' : 'opacity-6'"
             >
               <i class="ni ni-calendar-grid-58 me-2"></i>지원현황
             </router-link>

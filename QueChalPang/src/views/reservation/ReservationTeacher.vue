@@ -8,8 +8,8 @@ import { useCounterStore } from '@/stores/member'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
-import ReservationTable from './components/ReservationTable.vue'
-import ReservationCright from './components/ReservationCright.vue'
+import ReservationTable from '../components/reservation/ReservationTable.vue'
+import ReservationCright from '../components/reservation/ReservationCright.vue'
 
 const counterStore = useCounterStore()
 const { isLogIn } = storeToRefs(counterStore)
@@ -21,7 +21,7 @@ const reservations = ref([])
 const reservedDays = ref([])
 const pendingReservedList = ref([])
 
-const router = useRouter();
+const router = useRouter()
 
 //DatePicker에서 Date 객체가 와서 서버 쿼리에 맞게 YYYY-MM-DD 문자열로 변환
 //외우면 좋음.
@@ -153,11 +153,9 @@ console.log('login info:', isLogIn.value?.value?.info ?? isLogIn.value?.info)
 
 <template>
   <div class="py-4 container-fluid">
-     <div class="col-12 d-flex justify-content-start">
-        <button class="btn btn-primary btn-lg fs-6" @click="goTimeBlock">
-          상담시간 차단하기
-        </button>
-    </div>    
+    <div class="col-12 d-flex justify-content-start">
+      <button class="btn btn-primary btn-lg fs-6" @click="goTimeBlock">상담시간 차단하기</button>
+    </div>
     <!-- 캘린더 -->
     <div class="row g-4 mb-4">
       <div class="col-12 col-lg-6">

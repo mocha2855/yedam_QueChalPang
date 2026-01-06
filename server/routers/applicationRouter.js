@@ -19,8 +19,7 @@ router.get(`/application/:no`, async (req, res) => {
 
 // 결재자 선택화면 목록
 router.get(`/rejectApplication`, async (req, res) => {
-  let no = req.params.no;
-  let post = await applicationService.rejectorFindById(no);
+  let post = await applicationService.rejectorFindById();
   res.send(post);
 });
 
@@ -55,14 +54,14 @@ router.put("/compSuccessApplication/:no", async (req, res) => {
 router.get("/planning/:no", async (req, res) => {
   let no = req.params.no;
   let post = await applicationService.findPlanningById(no);
-  res.send(post);
+  res.send(post ?? [{ counts: 0 }]);
 });
 
 // 검토 중, 반려, 승인 지원계획서 불러오기
 router.get("/planningReview/:no", async (req, res) => {
   let no = req.params.no;
   let post = await applicationService.findplanningReviewById(no);
-  res.send(post);
+  res.send(post ?? []);
 });
 
 // 지원계획서 승인요청(담당자)
@@ -100,6 +99,7 @@ router.put("/submitChangingPlanningInfo/:no", async (req, res) => {
   let post = await applicationService.updateChangingPlanningInfo(no, data);
   res.send(post);
 });
+
 // 지원서 전체 가져오기(일반사용자)
 router.get("/searchApplicationById/:id/:authority", async (req, res) => {
   let { id, authority } = req.params;
@@ -114,10 +114,10 @@ router.get("/searchApplicationById/:id/:authority", async (req, res) => {
 });
 
 // 검토 중, 반려, 승인 지원결과서 불러오기
-router.get("/reulstReview/:no", async (req, res) => {
+router.get("/resultReview/:no", async (req, res) => {
   let no = req.params.no;
   let post = await applicationService.findResultReviewById(no);
-  res.send(post);
+  res.send(post ?? []);
 });
 
 // 지원결과서 승인요청(담당자)
