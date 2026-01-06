@@ -38,4 +38,12 @@ router.put("/changeDependantInfo/:id", async (req, res) => {
   res.send(post);
 });
 
+// 담당자 지원자 정보 등록
+router.post("/addDependantInfo", async (req, res) => {
+  let data = req.body;
+  console.log(data);
+  let post = await mypageService.addDependantInfo(data);
+  res.send(post);
+});
+
 module.exports = router;

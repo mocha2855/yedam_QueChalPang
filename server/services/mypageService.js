@@ -24,9 +24,17 @@ const updateDependantInfo = async (id, data) => {
   let post = await mysql.myPageQuery("updateDependantInfo", [data, id]);
   return post;
 };
+
+// 담당 지원자 정보 등록
+const addDependantInfo = async (data) => {
+  let post = await mysql.myPageQuery("insertDependantInfo", data);
+  return post;
+};
+
 module.exports = {
   findManagerById,
   findDependantById,
   updateManagerInfo,
   updateDependantInfo,
+  addDependantInfo,
 };
