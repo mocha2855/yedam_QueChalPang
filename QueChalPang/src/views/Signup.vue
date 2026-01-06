@@ -152,6 +152,13 @@ const idCheck = async () => {
     showAlert('아이디가 입력되지 않았습니다. 아이디를 입력해주세요.')
     return
   }
+  if (member.id.length < 6) {
+    showAlert('아이디는 최소 6자 이상 입력해야합니다.')
+    return
+  } else if (member.id.length > 100) {
+    showAlert('아이디는 100자를 넘을 수 없습니다.')
+    return
+  }
   let result = await axios.get(`/api/member/id/${member.id}`)
   console.log(result.data.result[0].count)
   if (result.data.result[0].count == 1) {
@@ -186,7 +193,11 @@ const phoneCheck = async () => {
   if (phone2.value == '') {
     showAlert('휴대폰 번호가 입력되지 않았습니다.')
     return
+  } else if (isNaN(phone2.value)) {
+    showAlert('번호가 아닌 문자가 입력되었습니다. 숫자만 입력해주세요.')
+    return
   }
+
   let phone = `${phone2.value.slice(0, 4)}-${phone2.value.slice(-4)}`
   member.phone = `010-${phone}`
   // 휴대폰 번호 중복체크
@@ -261,28 +272,43 @@ const addMemberInfo = async () => {
   member.address = member.address + ' ' + detailAddress.value
   if (!member.id) {
     showAlert('아이디가 입력되지 않았습니다.')
+    return
+  } else if (member.pw.length < 6) {
+    showAlert('비밀번호는 최소 6글자 이상 입력이 필요합니다.')
+    return
   } else if (member.pw == '') {
     showAlert('비밀번호가 입력되지 않았습니다.')
-  } else if (!pwc.value) {
+    return
+  } else if (pwc.value == '') {
     showAlert('비밀번호 확인이 입력되지 않았습니다.')
+    return
   } else if (pwc.value != member.pw) {
     showAlert('비밀번호와 비밀번호 확인이 일치하지 않습니다.')
-  } else if (!member.name) {
+    return
+  } else if (member.name == '') {
     showAlert('이름이 입력되지 않았습니다.')
-  } else if (!member.email) {
+    return
+  } else if (member.email == '') {
     showAlert('이메일이 입력되지 않았습니다.')
-  } else if (!member.phone) {
+    return
+  } else if (member.phone == '') {
     showAlert('휴대폰번호가 입력되지 않았습니다.')
+    return
   } else if (member.address.replace(' ', '') == '') {
     showAlert('주소가 입력되지 않았습니다.')
+    return
   } else if (member.center_no == 0) {
     showAlert('센터가 입력되지 않았습니다.')
+    return
   } else if (idBtn.value) {
     showAlert('아이디 중복확인이 되지 않았습니다.')
+    return
   } else if (emailBtn.value) {
     showAlert('이메일 중복확인이 되지 않았습니다.')
+    return
   } else if (phoneBtn.phoneBtn || phoneBtn.phoneAuth) {
     showAlert('휴대폰 인증이 진행되지 않았습니다.')
+    return
   }
   let result = await axios.post(`/api/member`, member)
   console.log(result)
@@ -417,9 +443,15 @@ const closeModal = () => {
                       type="text"
                       placeholder="아이디"
                       aria-label="Id"
+                      minlength="6"
+                      maxlength="100"
                       v-model="member.id"
                       :disabled="idBtnChecked"
+                      class="mb-0"
                     />
+                    <label class="m-0" v-if="idBtnChecked" for="id"
+                      >아이디 중복확인이 완료되었습니다.</label
+                    >
                   </div>
                   <div class="col-4">
                     <button
@@ -462,6 +494,7 @@ const closeModal = () => {
                 <div class="row">
                   <div class="col-8">
                     <argon-input
+                      class="mb-0"
                       id="email"
                       type="email"
                       placeholder="example@example.com"
@@ -469,6 +502,9 @@ const closeModal = () => {
                       v-model="member.email"
                       :disabled="emailBtnChecked"
                     />
+                    <label class="m-0" v-if="emailBtnChecked" for="email"
+                      >이메일 중복확인이 완료되었습니다.</label
+                    >
                   </div>
                   <div class="col-4">
                     <button
@@ -488,21 +524,22 @@ const closeModal = () => {
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-3">
-                    <argon-input id="phone" modelValue="010" disabled="true" />
+                  <div class="col-3 mb-0">
+                    <argon-input id="phone" modelValue="010" disabled="true" class="mb-0" />
                   </div>
 
-                  <div class="col-5">
+                  <div class="col-5 mb-0">
                     <argon-input
                       id="phone"
                       v-model="phone2"
                       maxlength="8"
                       :disabled="phoneBtn.phoneBtnChecked"
                       placeholder="00000000"
+                      class="mb-0"
                     />
                   </div>
 
-                  <div class="col-4">
+                  <div class="col-4 mb-0">
                     <button
                       type="button"
                       :class="{
@@ -511,6 +548,7 @@ const closeModal = () => {
                         'btn-olive': phoneBtn.phoneBtn,
                         'btn-secondary': phoneBtn.phoneBtnChecked,
                         disabled: phoneBtn.phoneBtnChecked,
+                        'mb-0': phoneBtn.phoneBtnChecked,
                         'w-100': true,
                       }"
                       @click="phoneCheck()"
@@ -518,10 +556,14 @@ const closeModal = () => {
                       본인인증
                     </button>
                   </div>
+                  <div v-if="phoneBtn.phoneBtnChecked" class="col-12">
+                    <label for="phone">인증번호가 발송되었습니다.</label>
+                  </div>
                 </div>
                 <div class="row">
                   <div class="col-8 position-relative">
                     <label
+                      v-if="!phoneBtn.phoneAuthChecked"
                       for="certification"
                       class="position-absolute bottom-10 end-10 translate-middle-y"
                       >{{ timeFormat }}</label
@@ -532,7 +574,11 @@ const closeModal = () => {
                       maxlength="6"
                       placeholder="인증번호"
                       :disabled="phoneBtn.phoneAuthChecked"
+                      class="mb-0"
                     />
+                    <label v-if="phoneBtn.phoneAuthChecked" for="certification"
+                      >인증이 완료되었습니다.</label
+                    >
                   </div>
                   <div class="col-4">
                     <button
