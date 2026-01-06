@@ -1,5 +1,122 @@
 <template>
   <div class="d-flex justify-content-center align-items-center vh-100">
+    <!-- 일반사용자로 접속시 -->
+    <div v-if="memAuthority == 'a1' && application.dependantInfo.member_id == id">
+      <div
+        v-if="
+          application.dependantInfo.resv_status == 'f3' &&
+          application.dependantInfo.status == 'e1' &&
+          application.dependantInfo.status_status == ''
+        "
+      >
+        <div v-if="!checked">
+          <h5 class="mb-4" :value="props.dependantInfo.member_name" style="text-align: center">
+            {{ props.dependantInfo.dependant_name }}님의<br />대기 단계를 설정해주세요.
+          </h5>
+          <div>
+            <div
+              class="circle mx-2"
+              v-for="statu in status"
+              v-bind:class="{ changed: statu.complete }"
+              v-bind:key="statu"
+              v-on:click="showStatus(statu.status)"
+            >
+              <span>{{ statu.status }}</span>
+            </div>
+          </div>
+          <button class="btn-save my-4" type="button" v-on:click="modalOpen" style="float: right">
+            승인요청
+          </button>
+        </div>
+        <ApplicationModal v-if="checked">
+          <template v-slot:header><h2></h2></template>
+          <template v-slot:body
+            ><h2 style="text-align: center">
+              대기단계를
+              <span :value="result.status" style="color: orange">{{ result.status }}</span
+              >으로 <br />승인요청하시겠습니까?
+            </h2></template
+          >
+          <template v-slot:footer>
+            <button class="btn-save" v-on:click="realResult">승인요청</button>
+            <button class="btn-cancel" v-on:click="notChecked">취소</button>
+          </template>
+        </ApplicationModal>
+      </div>
+      <div
+        v-else-if="
+          application.dependantInfo.resv_status != 'f3' && application.dependantInfo.status == 'e1'
+        "
+      >
+        <h4>상담 전입니다.<br />상담을 먼저 진행해주세요.</h4>
+      </div>
+      <div
+        v-else-if="
+          application.dependantInfo.resv_status == 'f3' &&
+          application.dependantInfo.status !== 'e1' &&
+          application.dependantInfo.status_status == 'i1'
+        "
+      >
+        <h4>대기 단계 선택을 완료했습니다.</h4>
+      </div>
+      <div
+        v-else-if="
+          application.dependantInfo.resv_status == 'f3' &&
+          application.dependantInfo.status != 'e1' &&
+          application.dependantInfo.status != 'e2' &&
+          application.dependantInfo.status_status == 'i2'
+        "
+      >
+        <h4>대기단계 승인이 완료됐습니다.<br />지원계획서를 작성해주세요.</h4>
+      </div>
+      <!-- 반려되었을 경우 -->
+
+      <div
+        v-else-if="
+          application.dependantInfo.resv_status == 'f3' &&
+          application.dependantInfo.status !== 'e1' &&
+          application.dependantInfo.status_status == 'i3'
+        "
+      >
+        <div v-if="!checked">
+          <h4 :value="props.dependantInfo.member_name" style="text-align: center">
+            반려되셨습니다.<br />
+            {{ props.dependantInfo.member_name }}님의 대기 단계를 다시 설정해주세요.
+          </h4>
+          <div class="mb-4">
+            <div
+              class="circle mx-2"
+              v-for="statu in status"
+              v-bind:class="{ changed: statu.complete }"
+              v-bind:key="statu"
+              v-on:click="showStatus(statu.status)"
+            >
+              <span>{{ statu.status }}</span>
+            </div>
+          </div>
+          <textarea class="reason-input" v-model="application.dependantInfo.status_reject" disabled>
+           application.dependantInfo.status_reject </textarea
+          >
+          <button type="button" class="btn-save" v-on:click="modalOpen" style="float: right">
+            승인요청
+          </button>
+        </div>
+        <ApplicationModal v-if="checked">
+          <template v-slot:header><h2></h2></template>
+          <template v-slot:body
+            ><h2 style="text-align: center">
+              대기단계를
+              <span :value="result.status" style="color: orange">{{ result.status }}</span
+              >으로 <br />재승인요청하시겠습니까?
+            </h2></template
+          >
+          <template v-slot:footer>
+            <button class="btn-save" v-on:click="realResult">승인요청</button>
+            <button class="btn-cancel" v-on:click="notChecked">취소</button>
+          </template>
+        </ApplicationModal>
+      </div>
+    </div>
     <!-- 담당자로 접속시 -->
     <div v-if="memAuthority == 'a2' && application.dependantInfo.manager_id == id">
       <div
@@ -95,7 +212,7 @@
             </div>
           </div>
           <textarea class="reason-input" v-model="application.dependantInfo.status_reject" disabled>
- application.dependantInfo.status_reject </textarea
+           application.dependantInfo.status_reject </textarea
           >
           <button type="button" class="btn-save" v-on:click="modalOpen" style="float: right">
             승인요청
@@ -304,6 +421,14 @@ onBeforeMount(async () => {
     application.dependantInfo.status !== 'e1' &&
     application.dependantInfo.status_status == 'i3'
   ) {
+    status.forEach((statu) => {
+      if (statu.status == application.dependantInfo.status) {
+        statu.complete = true
+        result.status = application.dependantInfo.status
+        console.log(result.status)
+      }
+    })
+  } else {
     status.forEach((statu) => {
       if (statu.status == application.dependantInfo.status) {
         statu.complete = true

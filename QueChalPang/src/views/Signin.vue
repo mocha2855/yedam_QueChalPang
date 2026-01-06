@@ -43,6 +43,10 @@ onBeforeUnmount(() => {
 })
 
 const logIn = async () => {
+  if (member.id == '' || member.pass == '') {
+    alert('아이디 또는 비밀번호가 입력되지 않았습니다. 입력해주세요.')
+    return
+  }
   let result = await axios.post(`/api/member/login`, member)
   result = result.data
   console.log(result)
@@ -50,6 +54,9 @@ const logIn = async () => {
     isLogIn.value.isLogIn = true
     isLogIn.value.info = result.member[0]
     goToBoardInfo()
+  } else {
+    alert(result.msg)
+    return
   }
   console.log(isLogIn.value)
 }

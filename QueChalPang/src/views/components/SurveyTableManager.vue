@@ -10,6 +10,7 @@ const applicationList = ref([])
 const member = useCounterStore().isLogIn.info
 
 const getApplicationList = async () => {
+  console.log(member)
   const result = await axios.get(
     `/api/searchApplicationById/${member.member_id}/${member.member_authority}`,
   )
@@ -88,7 +89,6 @@ const goToResult = (applicationNo) => {
 const goToMeetingLog = (applicationNo) => {
   router.push({ name: 'meetingLog', params: { id: applicationNo } })
 }
-
 </script>
 
 <template>

@@ -93,12 +93,12 @@ const findAppById = async (id, search, value, authority) => {
   let result;
   if (authority == "a1") {
     if (search == undefined) {
-      search = "a.member_id";
+      search = "t.member_name";
     }
     if (value == undefined) {
       value = "";
     }
-    result = await mysql.bquery("selectApplicationsById", [search, value, id]);
+    result = await mysql.bquery("selectApplicationsById", [id, search, value]);
   } else if (authority == "a2") {
     if (search == undefined) {
       search = "dependant_name";
@@ -107,16 +107,11 @@ const findAppById = async (id, search, value, authority) => {
       value = "";
     }
     console.log(search, value, id);
-    result = await mysql.bquery("selectApplicationsById2", [search, value, id]);
-    result = await mysql.bquery("selectApplicationsByTeacher", [
-      id,
-      id,
-      id,
-      id,
-    ]);
+    result = await mysql.bquery("selectApplicationsByTeacher", [id, id]);
   } else if (authority == "a3") {
     return null;
   }
+  console.log(result);
   return result;
 };
 // 지원신청서 등록
