@@ -7,7 +7,6 @@ import ArgonButton from '@/components/ArgonButton.vue'
 import ArgonInput from '@/components/ArgonInput.vue'
 import ArgonAlert from '@/components/ArgonAlert.vue'
 import axios from 'axios'
-
 const router = useRouter()
 const route = useRoute()
 const store = useApprovalStore()
@@ -32,6 +31,7 @@ const memberInfo = reactive({
   phone: '',
   address: '',
   center: '',
+  centerName: '',
   authority: '',
 })
 
@@ -57,8 +57,6 @@ onBeforeMount(async () => {
   const id = getMemberId()
   const memberData = await store.getMemberById(id)
 
-  console.log('memberData:', memberData)
-
   const member = memberData[0] // 배열에서 첫 번째 객체 꺼내기
 
   if (member) {
@@ -68,6 +66,7 @@ onBeforeMount(async () => {
     memberInfo.phone = member.member_phone
     memberInfo.address = member.member_address
     memberInfo.center = member.center_no
+    memberInfo.centerName = member.center_name
     memberInfo.authority = member.member_authority
   }
 })
@@ -84,6 +83,10 @@ const updateMemberInfo = async () => {
 
   if (memberInfo.name === '') {
     showAlert('이름을 입력해주세요.')
+    return
+  }
+  if (memberInfo.center === '') {
+    showAlert('기관명을 입력해주세요.')
     return
   }
   if (memberInfo.email === '') {
@@ -106,11 +109,12 @@ const updateMemberInfo = async () => {
       password: password.new, // 빈 문자열이면 백엔드에서 제외됨
     }
 
+    console.log(data.center)
     await axios.put(`/api/member/${memberInfo.id}`, data)
     showAlert('수정되었습니다.')
 
     setTimeout(() => {
-      router.push({ name: 'ApprovalUserList' })
+      router.push({ name: 'ApprovalManagerList' })
     }, 1500)
   } catch (error) {
     console.error('수정 실패:', error)
@@ -120,9 +124,7 @@ const updateMemberInfo = async () => {
 
 // 목록으로
 const goBack = () => {
-  console.log('이동할 라우트:', 'ApprovalUserList')
-
-  router.push({ name: 'ApprovalUserList' })
+  router.push({ name: 'ApprovalManagerList' })
 }
 </script>
 
@@ -146,7 +148,7 @@ const goBack = () => {
       <div class="col-12">
         <div class="card">
           <div class="card-header pb-0">
-            <h6>일반회원 정보수정</h6>
+            <h6>담당자 정보수정</h6>
           </div>
 
           <div class="card-body px-0 pt-0 pb-2">
@@ -180,10 +182,24 @@ const goBack = () => {
                   <div class="row mb-3">
                     <div class="col-2"></div>
                     <div class="col-2">
-                      <h6>회원 이름</h6>
+                      <h6>담당자명</h6>
                     </div>
                     <div class="col-6">
                       <ArgonInput type="text" v-model="memberInfo.name" placeholder="이름" />
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-2"></div>
+                    <div class="col-2">
+                      <h6>기관명</h6>
+                    </div>
+                    <div class="col-6">
+                      <ArgonInput
+                        type="text"
+                        v-model="memberInfo.centerName"
+                        disabled
+                        placeholder="기관명"
+                      />
                     </div>
                   </div>
 

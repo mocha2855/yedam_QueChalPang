@@ -149,6 +149,7 @@ const getPendingCount = async () => {
 };
 
 // 지원자 관련
+
 // 지원자 조회
 const findDependants = async (id, authority) => {
   let result;

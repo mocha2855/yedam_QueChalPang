@@ -4,7 +4,7 @@ import { computed } from 'vue'
 import { useStore } from 'vuex'
 import SidenavList from './SidenavList.vue'
 import ApprovalSidenavList from './AprrovalSidenav' //승인관리 사이드바 추가
-import MypageSidenav from './MypageSidenav.vue'
+import MypageSidenav from './MypageSidenav.vue' //마이페이지 사이드바관리
 import logo from '@/assets/img/logo-ct-dark.png'
 import logoWhite from '@/assets/img/logo-ct.png'
 
@@ -15,9 +15,16 @@ const store = useStore()
 const layout = computed(() => store.state.layout)
 const sidebarType = computed(() => store.state.sidebarType)
 const darkMode = computed(() => store.state.darkMode)
+
+//승인관리
 const isApprovalPage = computed(() => {
-  return route.path.includes('Approval')
+  const path = route.path.toLowerCase() // 이거 추가!
+  return (
+    !path.includes('mypage') && // 소문자로 체크
+    (path.includes('approval') || path.includes('master01')) // 소문자로 체크
+  )
 })
+
 // 마이페이지(내정보보기)
 const isMyPage = computed(() => {
   return route.path.includes('myPage')
@@ -31,7 +38,7 @@ const isMyPage = computed(() => {
   />
 
   <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-radius-xl" id="sidenav-main">
-    <div class="sidenav-header" v-if="!isMyPage">
+    <div class="sidenav-header">
       <i
         class="top-0 p-3 cursor-pointer fas fa-times text-secondary opacity-5 position-absolute end-0 d-none d-xl-none"
         aria-hidden="true"
@@ -54,7 +61,8 @@ const isMyPage = computed(() => {
     <!-- 승인 관리면 ApprovalSidenavList -->
     <ApprovalSidenavList v-if="isApprovalPage" />
     <!-- 마이페이지면 MypageSidenav -->
-    <MypageSidenav v-if="isMyPage" />
+    <MypageSidenav v-else-if="isMyPage" />
+    <!-- v-if 대신 v-else-if -->
     <!-- 아니면 기본 SidenavList -->
     <SidenavList v-else />
   </aside>
