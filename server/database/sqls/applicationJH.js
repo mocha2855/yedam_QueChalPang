@@ -71,6 +71,11 @@ const selectApplicationsById = `select a.dependant_no,dependant_name,survey_no,a
 from application a 
 join dependant d on d.dependant_no = a.dependant_no 
 where ?? like concat('%',?,'%') and a.member_id = ?`;
+// 지원현황에서 목록 불러오기(담당자)
+const selectApplicationsById2 = `select a.dependant_no,dependant_name,survey_no,a.member_id,application_date,status,(select member_name from member where member_id=application_rejector) as application_rejector,status_reject,status_status 
+from application a 
+join dependant d on d.dependant_no = a.dependant_no 
+where ?? like concat('%',?,'%') and d.manager_main = ?`;
 
 //지원현황 목록 불러오기 (담당자) DJ - dependant 기준으로 (신청서 없어도 뜨게)
 const selectApplicationsByTeacher = `
@@ -93,7 +98,9 @@ FROM (
 
     COALESCE(r.r_i1, 0) AS r_i1,
     COALESCE(r.r_i2, 0) AS r_i2,
-    COALESCE(r.r_i3, 0) AS r_i3
+    COALESCE(r.r_i3, 0) AS r_i3,
+
+    COALESCE(m.meetingCount, 0) AS meetingCount
 
   FROM application a
   JOIN dependant d
@@ -125,6 +132,14 @@ FROM (
     GROUP BY pl.application_no
   ) r ON r.application_no = a.application_no
 
+   LEFT JOIN (
+    SELECT
+      application_no,
+      COUNT(*) AS meetingCount
+    FROM reservation
+    GROUP BY application_no
+  ) m ON m.application_no = a.application_no
+
   WHERE d.manager_main = ?
      OR d.manager_sub  = ?
 
@@ -142,7 +157,9 @@ FROM (
     'e1' AS status,           
 
     0 AS p_i1, 0 AS p_i2, 0 AS p_i3,
-    0 AS r_i1, 0 AS r_i2, 0 AS r_i3
+    0 AS r_i1, 0 AS r_i2, 0 AS r_i3,
+
+    0 AS meetingCount
 
   FROM dependant d
   JOIN member g
@@ -207,5 +224,6 @@ module.exports = {
   sucessResultUpdateInfo,
   rejectResultUpdateInfo,
   changingResultUpdateInfo,
+  selectApplicationsById2,
   selectApplicationsByTeacher,
 };

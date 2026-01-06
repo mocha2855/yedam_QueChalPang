@@ -127,7 +127,7 @@ const modifySurvey = async (no, data) => {
 // 지원신청서 등록용 전체 조사지 조회(활성화상태)
 const findAllSurveys = async () => {
   let result = await mysql.squery("selectAllSurveys");
-  console.log(result);
+  // console.log(result);
   return result;
 };
 

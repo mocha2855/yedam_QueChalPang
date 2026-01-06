@@ -59,7 +59,77 @@ ALTER TABLE qna MODIFY qna_title varchar(100) NOT NULL;
 ALTER TABLE qna MODIFY qna_content varchar(1000) NOT NULL;
 
 select * from member;
+select * from reservation;
+select * from application;
+select * from dependant;
+select * from meeting_log;
+select * from planning;
 
 UPDATE member
 SET member_authority = 'a1'
 WHERE member_authority = 'u1';
+
+SELECT
+ r.resv_id 			AS resv_id,
+ r.application_no 	AS application_no,
+ r.dependant_no 	AS dependant_no,
+ d.dependant_name 	AS dependant_name,
+ r.guardian_id		AS guardian_id, 
+ r.start_at			AS resv_day,
+ r.start_at 		AS start_at,
+ r.resv_status 		AS resv_status,
+ r.reject_reason 	AS reject_reason
+FROM reservation r
+JOIN dependant d ON r.dependant_no = d.dependant_no
+WHERE application_no=20
+ORDER BY start_at DESC;
+
+
+INSERT INTO meeting_log
+(
+  log_id,
+  resv_id,
+  member_id,
+  log_title,
+  log_content,
+  log_date,
+  attachment_no
+)
+VALUES
+-- resv_id = 37 (2025-12-29 상담)
+(
+  1,
+  37,
+  'teacher01',
+  '1회차 초기 상담',
+  '지원자 김이박에 대한 첫 상담을 진행함.
+가정 환경과 현재 발달 상태를 중심으로 면담을 진행했으며,
+센터 직접 방문 상담으로 보호자와 충분한 논의를 진행함.
+추후 지속적인 관찰과 지원계획 수립이 필요하다고 판단됨.',
+  '2025-12-29 14:30:00',
+  NULL
+),
+
+-- resv_id = 38 (2025-12-21 상담)
+(
+  2,
+  38,
+  'teacher01',
+  '사전 상담 및 기초 평가',
+  '본 상담은 초기 사전 상담 단계로,
+지원자의 기본 정보 확인 및 보호자 요청 사항을 청취함.
+향후 정기 상담 일정에 대한 안내를 완료하였으며,
+지원신청서 검토 후 다음 상담을 예약함.',
+  '2025-12-21 12:00:00',
+  NULL
+);
+
+UPDATE planning 
+SET planning_status = 'i2'
+WHERE planning_no = 67;
+
+select * from planning;
+select * from application;
+
+desc member;
+desc planning;

@@ -149,6 +149,7 @@ const getPendingCount = async () => {
 };
 
 // 지원자 관련
+
 // 지원자 조회
 const findDependants = async (id, authority) => {
   let result;
@@ -157,6 +158,7 @@ const findDependants = async (id, authority) => {
   } else if (authority == "a2") {
     result = await mysql.memberQuery("selectDependants2", id);
   }
+  console.log(result);
   return result;
 };
 // 4. 승인 거절 처리 (l2 -> l3)
@@ -169,6 +171,28 @@ const rejectMember = async (id) => {
 const getRejectedCount = async () => {
   let result = await mysql.memberQuery("countRejectedMembers");
   return result[0].count;
+};
+
+// 회원 정보 수정
+const modifyByMemberId = async (value, hasPassword) => {
+  let result;
+
+  if (hasPassword) {
+    // 비밀번호 포함
+    result = await mysql.memberQuery("updateMemberInfo", value);
+  } else {
+    // 비밀번호 제외
+    result = await mysql.memberQuery("updateMemberInfoPassword", value);
+  }
+
+  console.log("result : ", result);
+  return result[0];
+};
+//회원삭제
+const removeMemberById = async (id) => {
+  let result = await mysql.memberQuery("deleteMemberById", id);
+  console.log("result : ", result);
+  return result[0];
 };
 module.exports = {
   findAllMember,
@@ -186,4 +210,6 @@ module.exports = {
   findDependants,
   rejectMember,
   getRejectedCount,
+  removeMemberById,
+  modifyByMemberId,
 };
