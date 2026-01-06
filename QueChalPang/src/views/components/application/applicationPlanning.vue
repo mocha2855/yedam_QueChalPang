@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- ===================== a2: 신규 계획 입력 ===================== -->
+    <!-- ===================== 오른쪽: 신규 계획 입력 ===================== -->
     <applicationPlanningCreateForm
       v-if="memAuthority === 'a2'"
       :memAuthority="memAuthority"
@@ -16,7 +16,7 @@
       @cancel="notChecked"
     />
 
-    <!-- ===================== a2: 반려된 계획서 수정 ===================== -->
+    <!-- ===================== 왼쪽-> 오른쪽: 반려된 계획서 수정 ===================== -->
     <applicationPlanningEditRejectedForm
       v-if="memAuthority === 'a2' && application.planningChanging?.length > 0"
       :plan="application.planningChanging[0]"
@@ -27,12 +27,12 @@
       @cancelEdit="cancelPlanningInfo"
     />
 
-    <!-- ===================== a3: 승인대기(검토중) ===================== -->
+    <!-- ===================== 오른쪽: 승인대기(검토중) ===================== -->
     <div v-if="memAuthority === 'a3'" style="height: 100%">
       <h5>지원계획 승인대기</h5>
     </div>
 
-    <!-- ===================== a3: 반려 검토중 (planningChangingReview) ===================== -->
+    <!-- ===================== 반려 검토중 (planningChangingReview) ===================== -->
     <div
       class="card mb-3"
       v-for="plan in application.planningChangingReview"

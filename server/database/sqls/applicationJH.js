@@ -93,7 +93,9 @@ FROM (
 
     COALESCE(r.r_i1, 0) AS r_i1,
     COALESCE(r.r_i2, 0) AS r_i2,
-    COALESCE(r.r_i3, 0) AS r_i3
+    COALESCE(r.r_i3, 0) AS r_i3,
+
+    COALESCE(m.meetingCount, 0) AS meetingCount
 
   FROM application a
   JOIN dependant d
@@ -125,6 +127,14 @@ FROM (
     GROUP BY pl.application_no
   ) r ON r.application_no = a.application_no
 
+   LEFT JOIN (
+    SELECT
+      application_no,
+      COUNT(*) AS meetingCount
+    FROM reservation
+    GROUP BY application_no
+  ) m ON m.application_no = a.application_no
+
   WHERE d.manager_main = ?
      OR d.manager_sub  = ?
 
@@ -142,7 +152,9 @@ FROM (
     'e1' AS status,           
 
     0 AS p_i1, 0 AS p_i2, 0 AS p_i3,
-    0 AS r_i1, 0 AS r_i2, 0 AS r_i3
+    0 AS r_i1, 0 AS r_i2, 0 AS r_i3,
+
+    0 AS meetingCount
 
   FROM dependant d
   JOIN member g
