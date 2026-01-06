@@ -13,6 +13,7 @@ import approvalRoutes from './approval' //멤버 승인 페이지
 import addApplication from '../views/addApplication.vue'
 import myPage from '../views/myPage.vue' // 마이페이지(내 정보 보기)
 import myPageList from '@/views/myPageList.vue' // 마이페이지(지원자 등록)
+import myPageDetail from '@/views/myPageDetail.vue' // 마이페이지 상세보기
 
 import qnaRoutes from './qna' //질문하기
 import surveyRoutes from './survey' //시스템관리자 조사지
@@ -86,6 +87,11 @@ const routes = [
     path: '/myPageList/:id',
     name: 'myPageList',
     component: myPageList,
+  },
+  {
+    path: '/myPageDetail/:id',
+    name: 'myPageDetail',
+    component: myPageDetail,
   },
   ...surveyRoutes,
   ...reservationRoutes,
