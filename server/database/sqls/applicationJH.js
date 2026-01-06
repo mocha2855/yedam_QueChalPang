@@ -71,6 +71,11 @@ const selectApplicationsById = `select a.dependant_no,dependant_name,survey_no,a
 from application a 
 join dependant d on d.dependant_no = a.dependant_no 
 where ?? like concat('%',?,'%') and a.member_id = ?`;
+// 지원현황에서 목록 불러오기(담당자)
+const selectApplicationsById2 = `select a.dependant_no,dependant_name,survey_no,a.member_id,application_date,status,(select member_name from member where member_id=application_rejector) as application_rejector,status_reject,status_status 
+from application a 
+join dependant d on d.dependant_no = a.dependant_no 
+where ?? like concat('%',?,'%') and d.manager_main = ?`;
 
 //지원현황 목록 불러오기 (담당자) DJ - dependant 기준으로 (신청서 없어도 뜨게)
 const selectApplicationsByTeacher = `
@@ -219,5 +224,6 @@ module.exports = {
   sucessResultUpdateInfo,
   rejectResultUpdateInfo,
   changingResultUpdateInfo,
+  selectApplicationsById2,
   selectApplicationsByTeacher,
 };
