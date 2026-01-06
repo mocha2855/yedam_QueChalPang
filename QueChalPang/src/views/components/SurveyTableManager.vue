@@ -17,10 +17,12 @@ const getApplicationList = async () => {
   const rows = Array.isArray(result.data) ? result.data : []
 
   applicationList.value = rows.map((row) => {
+    //계획서 개수
     const p1 = Number(row.p_i1 ?? 0)
     const p2 = Number(row.p_i2 ?? 0)
     const p3 = Number(row.p_i3 ?? 0)
 
+    //결과서 개수
     const r1 = Number(row.r_i1 ?? 0)
     const r2 = Number(row.r_i2 ?? 0)
     const r3 = Number(row.r_i3 ?? 0)
@@ -67,15 +69,17 @@ const addApp = () => {
   router.push({ name: 'AddApplication' })
 }
 
-//지원신청서 보기 버튼 누르면 해당 지원자의 지원신청서 페이지로 이동
+//해당 지원자의 지원신청서 페이지로 이동
 const goToApplication = (appNo) => {
   router.push({ name: 'applicationWait', params: { id: appNo } })
 }
 
+//지원계획서
 const goToPlanning = (applicationNo) => {
   router.push({ name: 'applicationPlanning', params: { id: applicationNo } })
 }
 
+//지원결과서
 const goToResult = (applicationNo) => {
   router.push({ name: 'applicationResult', params: { id: applicationNo } })
 }
