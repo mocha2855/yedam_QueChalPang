@@ -9,6 +9,10 @@ const getApplicationList = async () => {
   let result = await axios.get(`/api/allsurveys`)
   surveyList.value = result.data
 }
+const qitemNo = ref([])
+const collectQitemNo = (no) => {
+  qitemNo.value.push(no)
+}
 const structuredSurvey = computed(() => {
   const surveyMap = {}
 
@@ -34,7 +38,7 @@ const structuredSurvey = computed(() => {
         questions: [],
       }
     }
-
+    collectQitemNo(row.survey_qitem_no)
     survey._subtitlesMap[row.survey_subtitle_no].questions.push({
       survey_qitem_no: row.survey_qitem_no,
       survey_qitem_question: row.survey_qitem_question,
@@ -101,7 +105,86 @@ const returnGender = (input) => {
     return '여'
   }
 }
+const checkAllYes = () => {
+  // structuredSurvey는 computed 속성이므로 .value로 접근
+  if (!structuredSurvey.value) return
+
+  structuredSurvey.value.forEach((survey) => {
+    survey.subtitles.forEach((sub) => {
+      sub.questions.forEach((q) => {
+        // [수정 핵심] 템플릿의 v-if 조건과 동일한 문자열('예/아니요')로 비교해야 합니다.
+        // 혹시 모를 공백 제거를 위해 trim()을 사용합니다.
+        if (q.survey_qitem_type && q.survey_qitem_type.trim() === '예/아니요') {
+          answers.value[q.survey_qitem_no] = 'Y'
+        }
+      })
+    })
+  })
+}
 const answers = ref({})
+const addApplication = async () => {
+  if (Object.keys(answers.value).length != qitemNo.value.length) {
+    alert('신청서 작성이 완료되지 않았습니다. 모든 질문지에 대해 답변을 모두 입력해주세요.')
+    return
+  }
+  let answerList = []
+
+  if (structuredSurvey.value) {
+    structuredSurvey.value.forEach((survey) => {
+      survey.subtitles.forEach((sub) => {
+        sub.questions.forEach((q) => {
+          const mainVal = answers.value[q.survey_qitem_no]
+
+          const dateVal = answers.value[q.survey_qitem_no + '_date']
+
+          if (mainVal || dateVal) {
+            let finalAppDate = null
+            let finalAppReason = null
+            const qType = q.survey_qitem_type ? q.survey_qitem_type.trim() : ''
+
+            if (qType === 'input_date') {
+              // 실제 DB 타입명으로 수정!
+              finalAppDate = dateVal || null // '_date' 키에서 가져온 값
+              finalAppReason = mainVal || null // 그냥 키에서 가져온 값
+            } else if (qType === 'date') {
+              finalAppDate = mainVal // 날짜 input이 mainVal에 바인딩됨
+              finalAppReason = null
+            } else {
+              finalAppDate = null
+              finalAppReason = mainVal
+            }
+
+            answerList.push({
+              survey_qitem_no: q.survey_qitem_no,
+              question_type: qType,
+
+              app_date: finalAppDate,
+              app_reason: finalAppReason,
+            })
+          }
+        })
+      })
+    })
+  }
+
+  let input = {
+    answerList: answerList,
+    dependant_no: selectedOption.value,
+    survey_no: structuredSurvey.value[0].survey_no,
+  }
+
+  try {
+    let result = await axios.post(
+      `/api/addApplicationById/${member.member_id}/${member.member_authority}`,
+      input,
+    )
+    console.log(result)
+    alert('신청서가 등록되었습니다.')
+  } catch (error) {
+    console.error(error)
+    alert('등록 중 오류가 발생했습니다.')
+  }
+}
 </script>
 
 <template>
@@ -202,6 +285,7 @@ const answers = ref({})
     <div class="card-header pb-0">
       <div class="d-flex justify-content-between align-items-center">
         <h6 class="mb-0">지원 신청서</h6>
+        <button class="btn btn-primary p-1" @click="checkAllYes()">전체 예 체크</button>
       </div>
     </div>
     <div class="card-body px-0 pt-0 pb-2">
@@ -269,7 +353,7 @@ const answers = ref({})
         </div>
         <div class="col-5"></div>
         <div class="col-2">
-          <button class="btn bg-gradient-primary">등록</button>
+          <button class="btn bg-gradient-primary" @click="addApplication()">등록</button>
         </div>
       </div>
     </div>

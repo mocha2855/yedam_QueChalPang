@@ -37,7 +37,7 @@ const bquery = async (selected, values) => {
     conn = await pool.getConnection();
     let executeSql = applicationSql[selected];
 
-    console.log(selected, values);
+    console.log(executeSql, values);
 
     let result = (await conn.query(executeSql, values))[0];
     return result;

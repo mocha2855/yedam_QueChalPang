@@ -23,7 +23,7 @@ manager_main,
 manager_sub,
 (select member_name from member where member_id=d.member_id) as member_name,
 (select min(status) from application where dependant_no=d.dependant_no) as status
-from dependant d where member_id=?`;
+from dependant d where d.member_id=?`;
 const selectDependants2 = `select dependant_address,
 dependant_birth,
 dependant_date,

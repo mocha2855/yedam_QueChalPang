@@ -88,7 +88,7 @@ const updateChangingPlanningInfo = async (planning_no, data) => {
   ]);
   return post;
 };
-// 지원신청현황 가져오기(일반사용자)
+// 지원신청현황 가져오기(일반사용자 및 담당자)
 const findAppById = async (id, search, value, authority) => {
   let result;
   if (authority == "a1") {
@@ -113,7 +113,29 @@ const findAppById = async (id, search, value, authority) => {
   }
   return result;
 };
-
+// 지원신청서 등록
+const insertAppById = async (input, id, authority) => {
+  console.log(input);
+  const { answerList, dependant_no, survey_no } = input;
+  let appResult = await mysql.bquery("insertApplication", [
+    dependant_no,
+    survey_no,
+    id,
+  ]);
+  let appNo = appResult.insertId;
+  const bulkData = answerList.map((item) => {
+    return [
+      item.survey_qitem_no,
+      appNo,
+      item.question_type,
+      item.app_date,
+      item.app_reason,
+    ];
+  });
+  console.log(bulkData);
+  let result = await mysql.bquery("insertAppAnswer", [bulkData]);
+  return result;
+};
 // 검토 중, 반려, 승인 지원계획서 불러오기
 const findResultReviewById = async (no) => {
   let post = await mysql.bquery("selectResultReviewById", no);
@@ -164,4 +186,5 @@ module.exports = {
   updateResultInfo,
   updateRejectResultInfo,
   updateChangingResultInfo,
+  insertAppById,
 };

@@ -61,6 +61,10 @@ const selectApplicationsById2 = `select a.dependant_no,dependant_name,survey_no,
 from application a 
 join dependant d on d.dependant_no = a.dependant_no 
 where ?? like concat('%',?,'%') and d.manager_main = ?`;
+// 지원신청서 등록
+const insertApplication = `insert into application(dependant_no,survey_no,member_id,application_date,status) values (?,?,?,now(),'e1')`;
+// 지원신청서 조사지 답변 등록
+const insertAppAnswer = `insert into app_answer(survey_qitem_no,application_no,app_answer_type,app_date,app_reason) values ? `;
 // 검토 중, 반려, 승인 지원결과서 불러오기
 const selectResultReviewById = `select r.*, p.ranking, m.member_name manager_name, m2.member_name rejecter_name
 from (select *, rank() over (order by planning_date) ranking from planning where application_no = ?) p
@@ -107,4 +111,6 @@ module.exports = {
   rejectResultUpdateInfo,
   changingResultUpdateInfo,
   selectApplicationsById2,
+  insertApplication,
+  insertAppAnswer,
 };
