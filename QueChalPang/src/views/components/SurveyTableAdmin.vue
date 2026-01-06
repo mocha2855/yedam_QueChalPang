@@ -177,13 +177,13 @@ const goToMeetingLog = (applicationNo) => {
               </td>
               <td class="align-middle text-center text-sm">
                 <p class="text-xs font-weight-bold mb-0">
-                  {{ row.application_no ?? 'N/A' }}
+                  {{ row.application_no }}
                 </p>
               </td>
 
               <td class="align-middle text-center text-sm">
                 <span class="text-secondary text-xs font-weight-bold">
-                  {{ row.application_date ? changeDateFormat(row.application_date) : 'N/A' }}
+                  {{ changeDateFormat(row.application_date) }}
                 </span>
               </td>
               <td class="align-middle text-center">
