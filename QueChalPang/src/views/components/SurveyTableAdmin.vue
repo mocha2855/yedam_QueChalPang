@@ -1,4 +1,4 @@
-<!-- 관리자 지원서관리 메인페이지. -->
+<!-- 관리자 지원서관리 메인페이지. 담당자꺼 그대로 사용-->
 <!-- views/components/SurveyTableAdmin.vue -->
 <script setup>
 import { onBeforeMount, ref } from 'vue'
@@ -88,7 +88,6 @@ const goToResult = (applicationNo) => {
 const goToMeetingLog = (applicationNo) => {
   router.push({ name: 'meetingLog', params: { id: applicationNo } })
 }
-
 </script>
 
 <template>
