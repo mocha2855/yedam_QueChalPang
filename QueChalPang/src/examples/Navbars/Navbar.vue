@@ -104,7 +104,7 @@ const supportRoute = computed(() => {
               class="nav-link text-black"
               :class="getRoute() === 'reservTeacher' ? 'font-weight-bold opacity-10' : 'opacity-6'"
             >
-              <i class="ni ni-world-2 me-2"></i>예약관리
+              <i class="ni ni-world-2 me-2"></i>상담예약관리
             </router-link>
           </li>
 
@@ -137,6 +137,7 @@ const supportRoute = computed(() => {
               <i class="ni ni-world-2 me-2"></i>지원서관리
             </router-link>
           </li>
+
           <li v-if="isLogIn.info.member_authority == ('a4' || 'a3')" class="nav-item">
             <router-link
               to="/centerList"

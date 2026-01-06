@@ -23,7 +23,10 @@ const reservationRouter = require("./routers/reservationRouter.js");
 const qnaRouter = require("./routers/qnaRouter.js");
 const surveyRouter = require("./routers/surveyRouter.js");
 const mypageRouter = require("./routers/mypageRouter.js");
+const meetingLogRouter = require("./routers/meetingLogRouter.js");
 
+
+app.use("/api", meetingLogRouter);
 app.use("/api", reservationRouter);
 app.use("/api", qnaRouter);
 app.use("/api", applicationRouter); // http://localhost:3000/api/application

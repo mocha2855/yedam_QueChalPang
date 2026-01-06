@@ -1,3 +1,4 @@
+<!-- 담당자가 반려된 지원계획서를 수정 후 재승인요청 -->
 <!-- 반려된 계획서 수정 -->
 <template>
   <div class="card mb-3" v-if="plan && plan.planning_approvedDate != ''">

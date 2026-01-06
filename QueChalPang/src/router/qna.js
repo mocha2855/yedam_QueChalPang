@@ -1,5 +1,5 @@
 // router / qna.js
-import QnaGuardian from '@/views/QnaGuardian.vue'
+import QnaGuardian from '@/views/qna/QnaGuardian.vue'
 
 
 const qnaRoutes = [

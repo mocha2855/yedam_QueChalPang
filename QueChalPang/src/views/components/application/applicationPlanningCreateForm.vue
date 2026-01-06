@@ -1,4 +1,5 @@
-<!-- 신규 계획 입력 폼 & 승인요청 모달 -->
+<!-- 담당자가 지원계획서 새로 작성하는 컴포넌트 -->
+<!-- 오른쪽 : 신규 계획 입력 폼 & 승인요청 모달 -->
 <template>
   <div v-if="memAuthority === 'a2'">
     <div>
@@ -6,6 +7,7 @@
       <button type="button" class="btn btn-primary btn-sm" @click="$emit('add')">계획추가</button>
     </div>
 
+    <!-- 새로운 지원계획 작성 폼 열림 -->
     <div class="card mb-3">
       <div class="card-body" v-if="addCount === 1">
         <div v-if="!checked">
@@ -16,7 +18,7 @@
             <div style="float: right">
               <button type="button" class="btn btn-primary btn-sm">임시저장</button>
               <button type="button" class="btn btn-danger btn-sm" @click="$emit('delete')">
-                삭제
+                취소
               </button>
             </div>
           </div>
@@ -66,11 +68,12 @@
             </button>
           </div>
         </div>
+        <!-- 지원계획 입력 폼 끝 -->
 
         <ApplicationModal v-if="checked">
           <template #header><h2></h2></template>
           <template #body>
-            <h4 style="text-align: center">지원계획서를<br />정말 승인요청하시겠습니까?</h4>
+            <h4 style="text-align: center">지원계획서를<br/>정말 승인요청하시겠습니까?</h4>
           </template>
           <template #footer>
             <button class="btn-save" @click="$emit('confirm')">확인</button>

@@ -17,7 +17,7 @@
 
       <p class="section-title mt-2">지원자 정보</p>
 
-      <!-- 지원자 정보: 카드 1개만 깔끔하게 -->
+      <!-- 지원자 정보-->
       <div class="panel info-panel mb-3">
         <div class="row g-3">
           <div class="col-md-4 info-item">
@@ -81,12 +81,19 @@
             지원결과서
           </RouterLink>
         </li>
+
         <li class="nav-item">
-          <span class="nav-link disabled">상담내역</span>
+          <RouterLink
+            :to="{ name: 'meetingLog', params: { id: route.params.id } }"
+            class="nav-link"
+            active-class="active"
+          >
+            상담내역
+          </RouterLink>
         </li>
+
       </ul>
 
-      <!-- LEFT CONTENT: 기존 card 제거 → panel -->
       <div class="panel content-panel">
         <router-view name="right" />
       </div>
@@ -191,7 +198,7 @@ watch(
 
 /* 좌측 여백 */
 .content-wrapper {
-  padding: 2rem 4rem;
+  padding: 2rem 5rem;
 }
 
 /* 오른쪽 컬럼: 위쪽 기준 맞추기 + sticky */
