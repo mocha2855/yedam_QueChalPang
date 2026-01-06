@@ -1,6 +1,6 @@
 <!-- views/ReservationGuardianHistory.vue -->
 <script setup>
-import ReservationHistory from '../components/reservation/ReservationHistory.vue'
+import ReservationHistory from './sections/ReservationHistory.vue'
 </script>
 
 <template>

@@ -166,17 +166,17 @@ FROM survey s JOIN survey_title t on s.survey_no = t.survey_no
               JOIN survey_subtitle ss ON t.survey_title_no = ss.survey_title_no 
               JOIN survey_qitem q ON ss.survey_subtitle_no = q.survey_subtitle_no 
               JOIN app_answer a ON a.survey_qitem_no = q.survey_qitem_no
-              WHERE a.application_no=?`;
+              WHERE a.application_no=?
+`;
+
 //지원현황 목록 불러오기 (담당자) DJ - dependant 기준으로 (신청서 없어도 뜨게)
 const selectApplicationsByTeacher = `
-SELECT *
-FROM (
   SELECT
     a.application_no,
     d.dependant_no,
     d.dependant_name,
 
-    g.member_name AS guardian_name,      
+    g.member_name AS guardian_name,
     t.member_name AS manager_name,
 
     a.application_date,
@@ -186,9 +186,9 @@ FROM (
     COALESCE(p.p_i2, 0) AS p_i2,
     COALESCE(p.p_i3, 0) AS p_i3,
 
-    COALESCE(r.r_i1, 0) AS r_i1,
-    COALESCE(r.r_i2, 0) AS r_i2,
-    COALESCE(r.r_i3, 0) AS r_i3,
+    COALESCE(r2.r_i1, 0) AS r_i1,
+    COALESCE(r2.r_i2, 0) AS r_i2,
+    COALESCE(r2.r_i3, 0) AS r_i3,
 
     COALESCE(m.meetingCount, 0) AS meetingCount
 
@@ -216,13 +216,13 @@ FROM (
       SUM(r.result_status = 'i1') AS r_i1,
       SUM(r.result_status = 'i2') AS r_i2,
       SUM(r.result_status = 'i3') AS r_i3
-    FROM result r
+    FROM \`result\` r
     JOIN planning pl
       ON pl.planning_no = r.planning_no
     GROUP BY pl.application_no
-  ) r ON r.application_no = a.application_no
+  ) r2 ON r2.application_no = a.application_no
 
-   LEFT JOIN (
+  LEFT JOIN (
     SELECT
       application_no,
       COUNT(*) AS meetingCount
@@ -232,10 +232,7 @@ FROM (
 
   WHERE d.manager_main = ?
      OR d.manager_sub  = ?
-) X
-ORDER BY
-  X.application_date DESC,
-  X.dependant_no DESC
+  ORDER BY a.application_date DESC
 `;
 
 // 검토 중, 반려, 승인 지원결과서 불러오기
