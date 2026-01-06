@@ -28,6 +28,7 @@
             승인요청
           </button>
         </div>
+
         <ApplicationModal v-if="checked">
           <template v-slot:header><h2></h2></template>
           <template v-slot:body
@@ -43,6 +44,7 @@
           </template>
         </ApplicationModal>
       </div>
+
       <div
         v-else-if="
           application.dependantInfo.resv_status != 'f3' && application.dependantInfo.status == 'e1'
@@ -50,6 +52,7 @@
       >
         <h4>상담 전입니다.<br />상담을 먼저 진행해주세요.</h4>
       </div>
+
       <div
         v-else-if="
           application.dependantInfo.resv_status == 'f3' &&
@@ -117,6 +120,7 @@
         </ApplicationModal>
       </div>
     </div>
+    
     <!-- 관리자로 접속시 -->
     <div v-else-if="memAuthority == 'a3' && application.dependantInfo.application_rejector == id">
       <div
