@@ -8,8 +8,8 @@ import { useCounterStore } from '@/stores/member'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
-import ReservationTable from '../components/reservation/ReservationTable.vue'
-import ReservationCright from '../components/reservation/ReservationCright.vue'
+import ReservationTable from './sections/ReservationTable.vue'
+import ReservationCright from './sections/ReservationCright.vue'
 
 const counterStore = useCounterStore()
 const { isLogIn } = storeToRefs(counterStore)

@@ -1,14 +1,16 @@
-import Application from '../views/Application.vue'
-import applicationWait from '../views/components/application/applicationWait.vue' // 지원대기
-import applicationPlanning from '../views/components/application/applicationPlanning.vue' //지원계획서(작성 및 검토중)
-import applicationPlanningSuccess from '../views/components/application/applicationPlanningSuccess.vue' //지원계획서(승인, 반려)
-import applicationResult from '../views/components/application/applicationResult.vue' //지원결과서(작성 및 검토중)
-import applicationResultSuccess from '../views/components/application/applicationResultSuccess.vue' //지원결과서(승인, 반려)
-import addApplication from '../views/addApplication.vue'
-import ApplicationInfo from '../views/components/application/ApplicationInfo.vue'
+import Application from '../views/application/Application.vue'
 
-import meetingLogList from '../views/components/meetingLog/meetingLogList.vue'
-import meetingLogDetail from '../views/components/meetingLog/meetingLogDetail.vue'
+import applicationWait from '../views/application/waits/ApplicationWaitContainer.vue'
+import applicationPlanning from '../views/application/ApplicationPlanning.vue'
+import applicationPlanningSuccess from '../views/application/applicationPlanningSuccess.vue'
+import applicationResult from '../views/application/applicationResult.vue'
+import applicationResultSuccess from '../views/application/applicationResultSuccess.vue'
+
+import addApplication from '../views/addApplication.vue'
+import ApplicationInfo from '../views/application/ApplicationInfo.vue'
+
+import meetingLogList from '../views/meetingLog/meetingLogList.vue'
+import meetingLogDetail from '../views/meetingLog/meetingLogDetail.vue'
 
 const applicationRoutes = [
   {
@@ -16,21 +18,27 @@ const applicationRoutes = [
     name: 'Application',
     component: Application,
     children: [
+      // 기본 진입 → 지원신청서
+      { path: '', redirect: { name: 'applicationWait' } },
+
       {
-        path: '/applicationWait/:id',
+        path: 'wait',
         name: 'applicationWait',
-        components: { default: applicationWait, right: ApplicationInfo },
+        components: {
+          default: applicationWait,
+          right: ApplicationInfo,
+        },
       },
       {
-        path: '/applicationPlanning/:id',
+        path: 'planning',
         name: 'applicationPlanning',
         components: {
-          default: applicationPlanning,
+          default: applicationPlanning, // ← 여기서 ApplicationPlanning.vue
           right: applicationPlanningSuccess,
         },
       },
       {
-        path: '/applicationResult/:id',
+        path: 'result',
         name: 'applicationResult',
         components: {
           default: applicationResult,
@@ -53,4 +61,5 @@ const applicationRoutes = [
     component: addApplication,
   },
 ]
+
 export default applicationRoutes
