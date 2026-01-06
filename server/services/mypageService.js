@@ -6,8 +6,9 @@ const findManagerById = async (id) => {
   return post;
 };
 
-// 결재자 선택화면 목록
+// 지원자 정보
 const findDependantById = async (id) => {
+  console.log("2======", id);
   let post = await mysql.myPageQuery("selectDependantById", id);
   return post;
 };
@@ -15,6 +16,7 @@ const findDependantById = async (id) => {
 // 정보 변경
 const updateManagerInfo = async (member_id, data) => {
   let post = await mysql.myPageQuery("updateManagerInfo", [data, member_id]);
+  return post;
 };
 
 module.exports = {

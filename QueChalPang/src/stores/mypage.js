@@ -9,7 +9,7 @@ export const useMyPageStore = defineStore('myPage', {
       dependantInfo: [], // 지원자 정보
     }
   },
-  actions: {
+  _actions: {
     // 담당자 정보
     async searchManagerInfo(id) {
       this.managerInfo = (await axios.get('/api/managerInfo/' + id)).data[0]
@@ -26,9 +26,54 @@ export const useMyPageStore = defineStore('myPage', {
 
     // 지원자 정보
     async searchDependantInfo(id) {
-      this.dependantInfo = (await axios.get('/api/dependantInfo/' + id)).data[0]
+      console.log('id:', id)
+      this.dependantInfo = (await axios.get('/api/dependantInfoList/' + id)).data
+
+      // 날짜 형식 변경 함수
+      const changeDateType = (day) => {
+        let date = new Date(day)
+        let realDay = `${date.getFullYear(day)}-${date.getMonth(day) + 1}-${date.getDay(day)}`
+        return realDay
+      }
+
+      // 나이 함수
+      const getAge = (birthday) => {
+        let today = new Date()
+        let birthDay = new Date(birthday)
+        let age = today.getFullYear() - birthDay.getFullYear()
+
+        let todayMonth = today.getMonth() + 1
+        let birthMonth = birthDay.getMonth() + 1
+
+        if (
+          birthMonth > todayMonth ||
+          (birthMonth === todayMonth && birthDay.getDate() >= today.getDate())
+        ) {
+          age--
+        }
+        return age
+      }
+
+      // 날짜 형식 변경 및 나이계산, 성별 변경
+      this.dependantInfo.forEach((member) => {
+        member.age = getAge(member.dependant_birth)
+        member.dependant_birth = changeDateType(member.dependant_birth)
+        member.dependant_date = changeDateType(member.dependant_date)
+        if (member.dependant_gender == 'g1') {
+          member.dependant_gender = '남자'
+        } else {
+          member.dependant_gender = '여자'
+        }
+      })
+
       console.log('지원자: ', this.dependantInfo)
       return this.dependantInfo
     },
+  },
+  get actions() {
+    return this._actions
+  },
+  set actions(value) {
+    this._actions = value
   },
 })

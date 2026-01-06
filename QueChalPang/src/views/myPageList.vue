@@ -27,9 +27,14 @@
                     >
                       이름
                     </th>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder">이름</th>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder">성별</th>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder">
+                    <th
+                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder"
+                    >
+                      성별
+                    </th>
+                    <th
+                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder"
+                    >
                       보호자
                     </th>
                     <th
@@ -56,78 +61,34 @@
                 </thead>
                 <tbody>
                   <tr
-                    v-for="member in userList"
-                    :key="member.member_id"
-                    :class="{ 'row-rejected': member.member_confirm === 'l3' }"
+                    v-for="member in myPage.dependantInfo"
+                    :key="member.dependant_no"
+                    @click="goDetail(member.dependant_no)"
                   >
                     <!-- 개별 선택 체크박스 -->
                     <td class="align-middle text-center">
                       <input type="checkbox" :value="member.member_id" v-model="checkedIds" />
                     </td>
-
                     <td class="align-middle text-center">
                       <p class="text-sm font-weight-bold mb-0">
-                        {{ member.member_id }}
+                        {{ member.dependant_name }}
                       </p>
                     </td>
-                    <td
-                      class="text-sm"
-                      @click="member.member_confirm !== 'l3' ? memberInfo(member.member_id) : null"
-                      :style="{
-                        cursor: member.member_confirm !== 'l3' ? 'pointer' : 'not-allowed',
-                      }"
-                    >
-                      {{ member.member_name }}
+                    <td class="text-sm text-center">
+                      {{ member.dependant_gender }}
                     </td>
-                    <td class="text-sm">
-                      {{ member.member_email }}
+                    <td class="text-sm text-center">
+                      {{ member.guardian_name }}
                     </td>
-                    <td class="text-sm">
-                      {{ member.member_date.substring(0, 10) }}
+                    <td class="text-sm text-center">{{ member.guardian_name }}</td>
+                    <td class="align-middle text-center">
+                      {{ member.disability_name }}
                     </td>
                     <td class="align-middle text-center">
-                      <span
-                        :class="{
-                          badge: true,
-                          'badge-md': true,
-                          'bg-gradient-success': member.member_confirm == 'l1',
-                          'bg-gradient-warning': member.member_confirm == 'l2',
-                          'bg-gradient-danger': member.member_confirm == 'l3',
-                        }"
-                      >
-                        {{ getStatus(member.member_confirm) }}
-                      </span>
+                      {{ member.age }}
                     </td>
                     <td class="align-middle text-center">
-                      <div
-                        v-if="member.member_confirm == 'l2'"
-                        class="d-flex gap-1 justify-content-center"
-                      >
-                        <ArgonButton
-                          color="success"
-                          size="sm"
-                          @click="handleApprove(member.member_id)"
-                        >
-                          승인
-                        </ArgonButton>
-                        <ArgonButton
-                          color="danger"
-                          size="sm"
-                          @click="handleReject(member.member_id)"
-                        >
-                          거절
-                        </ArgonButton>
-                      </div>
-                      <span v-else class="text-xs text-secondary">-</span>
-                    </td>
-                    <td class="align-middle text-center">
-                      <button
-                        v-if="member.member_confirm === 'l1'"
-                        class="btn btn-sm btn-outline-secondary"
-                        @click="surveyUpdate(survey.survey_no)"
-                      >
-                        수정하기
-                      </button>
+                      {{ member.dependant_date }}
                     </td>
                   </tr>
                 </tbody>
@@ -140,26 +101,23 @@
   </div>
 </template>
 <script setup>
+import { onBeforeMount } from 'vue'
 import { useRouter } from 'vue-router'
-import { onBeforeMount, ref } from 'vue'
-import ArgonButton from '@/components/ArgonButton.vue'
+import { useMyPageStore } from '@/stores/mypage'
+import { useCounterStore } from '@/stores/member'
 
+const myPage = useMyPageStore()
+const counter = useCounterStore()
 const router = useRouter()
-const checkedIds = ref([]) // 선택 체크
 
-// 회원 상세 페이지로 이동
-const memberInfo = (id) => {
-  router.push({ path: `/member/${id}` })
+onBeforeMount(async () => {
+  await myPage.searchDependantInfo(counter.isLogIn.info.member_id)
+})
+
+const goDetail = (data) => {
+  console.log(data)
+  router.push({ name: 'myPageDetail', params: { id: data } })
 }
-
-// 승인 상태 텍스트
-const getStatus = (confirm) => {
-  if (confirm == 'l1') return '승인완료'
-  if (confirm == 'l2') return '승인대기'
-  if (confirm == 'l3') return '거절'
-}
-
-onBeforeMount(async () => {})
 </script>
 <style scoped>
 /* 거절 row  */
