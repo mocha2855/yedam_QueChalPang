@@ -108,6 +108,12 @@ const findAppById = async (id, search, value, authority) => {
     }
     console.log(search, value, id);
     result = await mysql.bquery("selectApplicationsById2", [search, value, id]);
+    result = await mysql.bquery("selectApplicationsByTeacher", [
+      id,
+      id,
+      id,
+      id,
+    ]);
   } else if (authority == "a3") {
     return null;
   }

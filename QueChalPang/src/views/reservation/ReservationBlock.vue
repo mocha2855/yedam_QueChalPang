@@ -26,6 +26,7 @@ today.setHours(0, 0, 0, 0)
 const maxDate = new Date(today)
 maxDate.setDate(maxDate.getDate() + 14)
 
+//선택불가 날짜설정
 const disabledDates = computed(() => [
   { start: null, end: new Date(today.getTime() - 1000 * 60 * 60 * 24) },
   { start: new Date(maxDate.getTime()), end: null },
@@ -47,7 +48,9 @@ const toYmdDash = computed(() => {
   return `${yyyy}-${mm}-${dd}`
 })
 
+//시간슬롯
 const baseSlots = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00']
+
 
 const slots = computed(() =>
   baseSlots.map((t) => {

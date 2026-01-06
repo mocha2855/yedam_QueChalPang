@@ -1,139 +1,18 @@
-<script setup>
-import { useApprovalStore } from '@/stores/approval'
-import { useRouter } from 'vue-router'
-import { onBeforeMount, ref, computed } from 'vue'
-import { storeToRefs } from 'pinia'
-import ArgonButton from '@/components/ArgonButton.vue'
-
-const store = useApprovalStore()
-const { managerList, managerPendingList } = storeToRefs(store)
-const router = useRouter()
-const checkedIds = ref([]) // 선택 체크
-
-// 회원 상세 페이지로 이동
-const memberInfo = (id) => {
-  router.push({ path: `/member/${id}` })
-}
-
-// 승인 상태 텍스트
-const getStatus = (confirm) => {
-  if (confirm == 'l1') return '승인완료'
-  if (confirm == 'l2') return '승인대기'
-  if (confirm == 'l3') return '거절'
-}
-
-const isAllChecked = computed({
-  //개별선택 -> 전체 체크 반영
-  get() {
-    return checkedIds.value.length === managerList.value.length && managerList.length > 0
-  },
-  //전체선택 -> 개별 반영
-  set(val) {
-    if (val) {
-      checkedIds.value = managerList.value.map((m) => m.member_id)
-    } else {
-      checkedIds.value = []
-    }
-  },
-})
-
-// 승인 처리
-const handleApprove = async (id) => {
-  if (confirm('승인하시겠습니까?')) {
-    await store.approveMember(id)
-    alert('승인되었습니다.')
-  }
-}
-// 승인 거절 처리
-const handleReject = async (id) => {
-  if (confirm('거절하시겠습니까?')) {
-    await store.rejectMember(id)
-    alert('거절되었습니다.')
-  }
-}
-
-//선택 승인 처리
-const approveSelected = async () => {
-  if (checkedIds.value.length === 0) return
-
-  //승인대기만 필터링
-  const pendingIds = checkedIds.value.filter((id) => {
-    const member = managerList.value.find((m) => m.member_id === id)
-    return member && member.member_confirm === 'l2'
-  })
-
-  //승인 대기가 없으면
-  if (pendingIds.length === 0) {
-    alert('승인 대기 중인 회원을 선택해주세요.')
-    checkedIds.value = [] //체크 해제
-    return
-  }
-
-  if (pendingIds.length < checkedIds.value.length) {
-    const diff = checkedIds.value.length - pendingIds.length
-    const ok = confirm(
-      `${diff}명은 이미 처리되었습니다.\n${pendingIds.length}명만 승인하시겠습니까?`,
-    )
-    if (!ok) {
-      checkedIds.value = [] // 체크 해제
-      return
-    }
-  } else {
-    // 전부 l2면 일반 확인창
-    const ok = confirm(`${pendingIds.length}명을 승인하시겠습니까?`)
-    if (!ok) return
-  }
-
-  // 승인 처리
-  for (const id of pendingIds) {
-    await store.approveMember(id)
-  }
-
-  alert(`${pendingIds.length}명이 승인되었습니다.`)
-  checkedIds.value = []
-}
-
-onBeforeMount(async () => {
-  await store.getApprovalList()
-})
-</script>
-
 <template>
   <div class="py-4 container-fluid">
     <div class="row">
       <div class="col-12">
         <div class="card">
           <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-            <h6>담당자 승인 관리</h6>
-            <p class="text-sm mb-0" style="color: #000">
-              승인 대기: {{ managerPendingList.length }}건
-            </p>
-          </div>
-          <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-            <!-- 왼쪽: 회원추가 -->
-            <button class="btn btn-sm btn-primary" @click="goToUserAdd">
-              <i class="fas fa-plus"></i> 담당자추가
-            </button>
+            <h6>담당지원자 목록</h6>
 
-            <!-- 오른쪽: 선택 버튼들 -->
-            <div class="d-flex gap-2">
-              <button
-                class="btn btn-success btn-sm"
-                :disabled="checkedIds.length === 0"
-                @click="approveSelected"
-              >
-                선택 승인
-              </button>
+            <div class="card-header pb-0 d-flex justify-content-end align-items-center gap-2 pt-0z">
+              <button class="btn btn-dark btn-sm">지원자 등록</button>
 
-              <button
-                class="btn btn-outline-danger btn-sm"
-                :disabled="checkedIds.length === 0"
-                @click="deleteSelected"
-              >
-                선택 삭제
-              </button>
+              <button class="btn btn-outline-danger btn-sm">선택 삭제</button>
             </div>
           </div>
+
           <div class="card-body px-0 pt-0 pb-2">
             <div class="table-responsive p-0">
               <table class="table align-items-center">
@@ -146,38 +25,46 @@ onBeforeMount(async () => {
                     <th
                       class="text-center text-uppercase text-secondary text-xxs font-weight-bolder"
                     >
-                      아이디
+                      이름
                     </th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder">이름</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder">성별</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder">
-                      이메일
-                    </th>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder">
-                      가입일
+                      보호자
                     </th>
                     <th
                       class="text-center text-uppercase text-secondary text-xxs font-weight-bolder"
                     >
-                      상태
+                      대기단계
                     </th>
                     <th
                       class="text-center text-uppercase text-secondary text-xxs font-weight-bolder"
                     >
-                      관리
+                      장애유형
                     </th>
                     <th
                       class="text-center text-uppercase text-secondary text-xxs font-weight-bolder"
                     >
-                      수정
+                      나이
+                    </th>
+                    <th
+                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder"
+                    >
+                      등록일
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="member in managerList" :key="member.member_id">
+                  <tr
+                    v-for="member in userList"
+                    :key="member.member_id"
+                    :class="{ 'row-rejected': member.member_confirm === 'l3' }"
+                  >
                     <!-- 개별 선택 체크박스 -->
                     <td class="align-middle text-center">
                       <input type="checkbox" :value="member.member_id" v-model="checkedIds" />
                     </td>
+
                     <td class="align-middle text-center">
                       <p class="text-sm font-weight-bold mb-0">
                         {{ member.member_id }}
@@ -185,8 +72,10 @@ onBeforeMount(async () => {
                     </td>
                     <td
                       class="text-sm"
-                      @click="memberInfo(member.member_id)"
-                      style="cursor: pointer"
+                      @click="member.member_confirm !== 'l3' ? memberInfo(member.member_id) : null"
+                      :style="{
+                        cursor: member.member_confirm !== 'l3' ? 'pointer' : 'not-allowed',
+                      }"
                     >
                       {{ member.member_name }}
                     </td>
@@ -200,7 +89,7 @@ onBeforeMount(async () => {
                       <span
                         :class="{
                           badge: true,
-                          'badge-sm': true,
+                          'badge-md': true,
                           'bg-gradient-success': member.member_confirm == 'l1',
                           'bg-gradient-warning': member.member_confirm == 'l2',
                           'bg-gradient-danger': member.member_confirm == 'l3',
@@ -250,3 +139,40 @@ onBeforeMount(async () => {
     </div>
   </div>
 </template>
+<script setup>
+import { useRouter } from 'vue-router'
+import { onBeforeMount, ref } from 'vue'
+import ArgonButton from '@/components/ArgonButton.vue'
+
+const router = useRouter()
+const checkedIds = ref([]) // 선택 체크
+
+// 회원 상세 페이지로 이동
+const memberInfo = (id) => {
+  router.push({ path: `/member/${id}` })
+}
+
+// 승인 상태 텍스트
+const getStatus = (confirm) => {
+  if (confirm == 'l1') return '승인완료'
+  if (confirm == 'l2') return '승인대기'
+  if (confirm == 'l3') return '거절'
+}
+
+onBeforeMount(async () => {})
+</script>
+<style scoped>
+/* 거절 row  */
+.row-rejected {
+  background-color: #f8f9fa;
+  opacity: 0.6;
+}
+
+.row-rejected td {
+  color: #adb5bd;
+}
+
+.row-rejected:hover {
+  background-color: #f8f9fa;
+}
+</style>
