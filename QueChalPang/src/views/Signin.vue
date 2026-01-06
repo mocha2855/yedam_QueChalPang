@@ -71,7 +71,7 @@ const toResetPassword = () => {
     <section>
       <div
         class="page-header min-vh-100"
-        style="background: linear-gradient(to bottom, #dfe9f3 0%, #c1d3e3 100%)"
+        style="background: linear-gradient(to bottom, #d8e8f0 0%, #e5f0f5 50%, #f5f5e8 100%)"
       >
         <div class="container-fluid px-0">
           <div class="row justify-content-start">

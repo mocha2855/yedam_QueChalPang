@@ -16,6 +16,14 @@ const layout = computed(() => store.state.layout)
 const sidebarType = computed(() => store.state.sidebarType)
 const darkMode = computed(() => store.state.darkMode)
 
+// 이 부분 추가
+const hiddenRoutes = ['dashboard-default', 'signin', 'signup', 'find-id', 'resetPassword']
+
+const shouldHideSidenav = computed(() => {
+  const currentRoute = route.path.split('/')[1]
+  return hiddenRoutes.includes(currentRoute)
+})
+
 //승인관리
 const isApprovalPage = computed(() => {
   const path = route.path.toLowerCase() // 이거 추가!
@@ -37,7 +45,11 @@ const isMyPage = computed(() => {
     :class="`${darkMode ? 'bg-transparent' : 'bg-transparent'}`"
   />
 
-  <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-radius-xl" id="sidenav-main">
+  <aside
+    v-if="!shouldHideSidenav"
+    class="sidenav navbar navbar-vertical navbar-expand-xs border-radius-xl"
+    id="sidenav-main"
+  >
     <div class="sidenav-header">
       <i
         class="top-0 p-3 cursor-pointer fas fa-times text-secondary opacity-5 position-absolute end-0 d-none d-xl-none"
