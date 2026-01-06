@@ -1,7 +1,5 @@
 <!-- 검토, 반려검토중 카드 -->
 <template>
-  <!-- plan.checked / plan.rejectChecked 토글은 "부모에서" 처리되고,
-       여기서는 UI와 emit만 담당 -->
   <div>
     <div v-if="!plan.checked && !plan.rejectChecked">
       <div class="d-flex justify-content-between">

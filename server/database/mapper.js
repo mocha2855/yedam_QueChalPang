@@ -91,7 +91,7 @@ const myPageQuery = async (selected, values) => {
     conn = await pool.getConnection();
     let executeSql = mypagesql[selected];
 
-    console.log(selected, values);
+    console.log("3=========", selected, values);
 
     let result = (await conn.query(executeSql, values))[0];
     return result;

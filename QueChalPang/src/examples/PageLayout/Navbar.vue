@@ -18,71 +18,23 @@ defineProps({
 <template>
   <!-- Navbar -->
   <nav
-    class="navbar navbar-expand-lg top-0 z-index-3 position-absolute mt-4"
-    :class="isBlur ? isBlur : 'shadow-none my-2 navbar-transparent w-100'"
+    class="navbar navbar-expand-lg position-absolute"
+    style="
+      background: transparent;
+      box-shadow: none !important;
+      top: 24px;
+      left: 32px;
+      z-index: 1000;
+      padding: 0;
+    "
   >
-    <div class="container ps-2 pe-0">
-      <router-link
-        class="navbar-brand font-weight-bolder ms-lg-0 ms-3"
-        :class="darkMode ? 'text-black' : 'text-white'"
-        to="/"
-        >발달장애인 지원프로그램</router-link
-      >
-      <button
-        class="shadow-none navbar-toggler ms-2"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navigation"
-        aria-controls="navigation"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span class="mt-2 navbar-toggler-icon">
-          <span class="navbar-toggler-bar bar1"></span>
-          <span class="navbar-toggler-bar bar2"></span>
-          <span class="navbar-toggler-bar bar3"></span>
-        </span>
-      </button>
-      <div class="collapse navbar-collapse" id="navigation">
-        <ul class="navbar-nav mx-auto">
-          <li class="nav-item">
-            <router-link
-              class="nav-link d-flex align-items-center me-2 active"
-              aria-current="page"
-              to="/dashboard-default"
-            >
-              <i
-                class="fa fa-chart-pie opacity-6 me-1"
-                aria-hidden="true"
-                :class="isBlur ? 'text-dark' : 'text-white'"
-              ></i>
-              Home
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link class="nav-link me-2" to="/signup">
-              <i
-                class="fas fa-user-circle opacity-6 me-1"
-                aria-hidden="true"
-                :class="isBlur ? 'text-dark' : 'text-white'"
-              ></i>
-              회원가입
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link class="nav-link me-2" to="/signin">
-              <i
-                class="fas fa-key opacity-6 me-1"
-                aria-hidden="true"
-                :class="isBlur ? 'text-dark' : 'text-white'"
-              ></i>
-              로그인
-            </router-link>
-          </li>
-        </ul>
-        <ul class="navbar-nav d-lg-block d-none"></ul>
-      </div>
-    </div>
+    <router-link
+      class="nav-link"
+      to="/dashboard-default"
+      style="font-size: 24px; color: #344767; padding: 0"
+    >
+      <i class="fas fa-arrow-left"></i>
+    </router-link>
   </nav>
   <!-- End Navbar -->
 </template>

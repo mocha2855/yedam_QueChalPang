@@ -57,6 +57,23 @@ const getRoute = () => {
           </template>
         </sidenav-item>
       </li>
+
+      <li class="nav-item">
+        <sidenav-item
+          to="/ApprovalAdminList"
+          :class="getRoute() === 'ApprovalAdminList' ? 'active' : ''"
+          navText="관리자"
+        >
+          <template v-slot:icon>
+            <i class="ni ni-single-02 text-primary text-sm opacity-10"></i>
+          </template>
+          <template v-slot:badge v-if="adminPendingList?.length > 0">
+            <span class="badge bg-warning text-dark ms-auto">
+              {{ adminPendingList.length }}
+            </span>
+          </template>
+        </sidenav-item>
+      </li>
     </ul>
   </div>
 </template>

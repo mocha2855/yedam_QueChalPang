@@ -1,5 +1,5 @@
-<!-- 담당자의 지원서관리 메인페이지. -->
-<!-- views/components/SurveyTableManager.vue -->
+<!-- 관리자 지원서관리 메인페이지. -->
+<!-- views/components/SurveyTableAdmin.vue -->
 <script setup>
 import { onBeforeMount, ref } from 'vue'
 import { useCounterStore } from '@/stores/member'

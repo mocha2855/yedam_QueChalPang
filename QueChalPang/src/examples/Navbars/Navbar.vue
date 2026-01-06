@@ -64,10 +64,11 @@ const supportRoute = computed(() => {
 
 <template>
   <nav
-    class="navbar navbar-expand-lg sticky-top bg-dark navbar-dark"
+    class="navbar navbar-expand-lg sticky-top bg-success navbar-dark"
     v-bind="$attrs"
     id="navbarBlur"
     data-scroll="true"
+    style="background-color: #2f4230 !important"
   >
     <div class="container-fluid">
       <div class="mt-2 collapse navbar-collapse mt-sm-0 me-md-0 me-sm-4" id="navbar">
@@ -84,7 +85,10 @@ const supportRoute = computed(() => {
             </router-link>
           </li>
 
-          <li v-if="isLogIn.isLogIn" class="nav-item">
+          <li
+            v-if="['a1', 'a2', 'a3', 'a4'].includes(isLogIn.info.member_authority)"
+            class="nav-item"
+          >
             <router-link
               :to="supportRoute"
               class="nav-link text-black"
@@ -100,7 +104,7 @@ const supportRoute = computed(() => {
               class="nav-link text-black"
               :class="getRoute() === 'reservTeacher' ? 'font-weight-bold opacity-10' : 'opacity-6'"
             >
-              <i class="ni ni-world-2 me-2"></i>예약관리
+              <i class="ni ni-world-2 me-2"></i>상담예약관리
             </router-link>
           </li>
 
@@ -133,6 +137,7 @@ const supportRoute = computed(() => {
               <i class="ni ni-world-2 me-2"></i>지원서관리
             </router-link>
           </li>
+
           <li v-if="isLogIn.info.member_authority == ('a4' || 'a3')" class="nav-item">
             <router-link
               to="/centerList"
@@ -175,19 +180,19 @@ const supportRoute = computed(() => {
                 </span>
               </router-link>
 
-              <div class="btn-group" role="group" aria-label="Basic example">
-                <button type="button" class="btn btn-primary mb-0" @click="goMyPage">
+              <span class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-olive-light mb-0" @click="goMyPage">
                   마이페이지
                 </button>
                 <button
                   type="button"
-                  class="btn btn-primary mb-0"
+                  class="btn btn-olive-light mb-0"
                   @click.prevent="clearInfo()"
                   @click="logOut"
                 >
                   로그아웃
                 </button>
-              </div>
+              </span>
             </span>
           </li>
 
@@ -237,5 +242,30 @@ const supportRoute = computed(() => {
 }
 .nav-link:hover {
   opacity: 1 !important;
+}
+.nav-link {
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+  padding: 0.5rem 1rem !important;
+  color: #344767;
+}
+
+.nav-link:hover {
+  color: #6b8e6f !important;
+}
+
+.btn-olive-light {
+  background-color: #6b8e6f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+}
+
+.gap-2 {
+  gap: 0.5rem;
 }
 </style>

@@ -1,4 +1,4 @@
-<!-- src/examples/Sidenav/ApprovalSidenavList.vue -->
+<!-- src/examples/Sidenav/MypageSidenav.vue -->
 <script setup>
 import { useApprovalStore } from '@/stores/approval'
 import { storeToRefs } from 'pinia'

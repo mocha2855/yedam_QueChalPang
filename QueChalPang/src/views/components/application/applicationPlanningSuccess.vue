@@ -14,6 +14,7 @@
       >
         <h5>현재 지원계획서가<br />존재하지 않습니다.</h5>
       </div>
+      
       <div class="card-body p-0" v-else>
         <div>
           <div v-if="application.planningRejected.length > 0">

@@ -26,14 +26,6 @@ const timeText = (start_at) => {
   })
 }
 
-//예약상태 변환하기 !!!
-// const statusMap = {
-//   f1: '확인중',
-//   f2: '예약확정',
-//   f3: '상담완료',
-//   f4: '취소',
-// }
-
 //예약상태 변환하고 클래스주기
 const statusMap = {
   f1: { label: '확인중', class: 'status-wait' },
@@ -41,10 +33,6 @@ const statusMap = {
   f3: { label: '상담완료', class: 'status-done' },
   f4: { label: '상담취소', class: 'status-cancel' },
 }
-
-// const statusText = (status) => {
-//   return statusMap[status] ?? status
-// }
 
 const statusInfo = (s) => {
   return statusMap[s] ?? { label: s ?? '', class: 'status-default' }
@@ -91,16 +79,13 @@ const statusInfo = (s) => {
               </td>
 
               <td class="align-middle text-center">
-                <!-- <span class="text-secondary text-xs font-weight-bold text-dark">
-                  {{ statusText(r.status) }}
-                </span> -->
                 <span class="status-badge" :class="statusInfo(r.status).class">
                   {{ statusInfo(r.status).label }}
                 </span>
               </td>
 
               <td class="align-middle text-center">
-                <button>작성</button>
+                <button class = "btn btn-primary text-xs">작성하기</button>
               </td>
             </tr>
           </tbody>

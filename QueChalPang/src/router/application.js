@@ -6,6 +6,10 @@ import applicationResult from '../views/components/application/applicationResult
 import applicationResultSuccess from '../views/components/application/applicationResultSuccess.vue' //지원결과서(승인, 반려)
 import addApplication from '../views/addApplication.vue'
 import ApplicationInfo from '../views/components/application/ApplicationInfo.vue'
+
+import meetingLogList from '../views/components/meetingLog/meetingLogList.vue'
+import meetingLogDetail from '../views/components/meetingLog/meetingLogDetail.vue'
+
 const applicationRoutes = [
   {
     path: '/application/:id',
@@ -31,6 +35,14 @@ const applicationRoutes = [
         components: {
           default: applicationResult,
           right: applicationResultSuccess,
+        },
+      },
+      {
+        path: 'meetingLog',
+        name: 'meetingLog',
+        components: {
+          default: meetingLogDetail,
+          right: meetingLogList,
         },
       },
     ],
