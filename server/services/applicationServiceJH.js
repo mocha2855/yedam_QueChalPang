@@ -128,6 +128,13 @@ const findAppById = async (id, search, value, badge, authority) => {
       value,
       badge.replaceAll("'", "").split(","),
     ]);
+  } else if (authority == "a4") {
+    result = await mysql.bquery("selectApplicationsByAdmin", [
+      id,
+      search,
+      value,
+      badge.replaceAll("'", "").split(","),
+    ]);
   }
   console.log(result);
   return result;
