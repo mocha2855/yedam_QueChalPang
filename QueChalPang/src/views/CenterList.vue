@@ -1,13 +1,14 @@
 <script setup>
-import { useCenterStore } from '@/stores/center'
 import { useRouter } from 'vue-router'
 import { onBeforeMount, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import ArgonButton from '@/components/ArgonButton.vue'
 import { Modal } from 'bootstrap'
 import CenterAdd from './CenterAdd.vue'
-const store = useCenterStore()
-const { centerList } = storeToRefs(store)
+import { useSearchStore } from '@/stores/search'
+
+const search = useSearchStore()
+const { centerSearchList } = storeToRefs(search)
 const router = useRouter()
 const centerInfo = (no) => {
   router.push({ path: `/center/${no}` })
@@ -16,7 +17,7 @@ const centerInfo = (no) => {
 const modalRef = ref(false)
 let modalControl = null
 onBeforeMount(async () => {
-  store.getCenterList()
+  search.getCenterList()
 })
 onMounted(() => {
   modalControl = new Modal(modalRef.value)
@@ -107,7 +108,7 @@ const handleSuccess = (no) => {
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder">
                       센터명
                     </th>
-
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder">주소</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder">
                       연락처
                     </th>
@@ -119,7 +120,7 @@ const handleSuccess = (no) => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="center in centerList" :key="center.center_no">
+                  <tr v-for="center in centerSearchList" :key="center.center_no">
                     <!-- <td><ArgonCheckbox :id="center.center_no" :checked="checked" /></td> -->
                     <td class="align-middle text-center">
                       <p class="text-sm font-weight-bold mb-0">
@@ -128,6 +129,9 @@ const handleSuccess = (no) => {
                     </td>
                     <td class="text-sm" @click="centerInfo(center.center_no)">
                       {{ center.center_name }}
+                    </td>
+                    <td class="text-sm" @click="centerInfo(center.center_no)">
+                      {{ center.center_address }}
                     </td>
                     <td class="text-sm" @click="centerInfo(center.center_no)">
                       {{ center.center_tel }}

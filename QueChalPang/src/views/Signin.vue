@@ -1,5 +1,5 @@
 <script setup>
-import { onBeforeUnmount, onBeforeMount, reactive } from 'vue'
+import { onBeforeUnmount, onBeforeMount, reactive, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { useCounterStore } from '@/stores/member'
 import { useRouter, useRoute } from 'vue-router'
@@ -15,12 +15,17 @@ const store = useStore()
 const counterStore = useCounterStore()
 const router = useRouter()
 const route = useRoute()
-const { isLogIn } = storeToRefs(counterStore)
+const { isLogIn, isRemembered } = storeToRefs(counterStore)
 const member = reactive({
   id: '',
   pass: '',
 })
-
+const handleSwitch = (event) => {
+  // 컴포넌트에 따라 event 자체가 boolean일 수도 있고, event.target.checked일 수도 있습니다.
+  const value = typeof event === 'boolean' ? event : event.target.checked
+  isRemembered.value = value
+  console.log('아이디 기억하기 상태:', isRemembered.value)
+}
 onBeforeMount(() => {
   store.state.hideConfigButton = true
   store.state.showConfig = false
@@ -41,12 +46,25 @@ onBeforeUnmount(() => {
   store.state.showFooter = true
   body.classList.add('bg-gray-100')
 })
-
+onMounted(() => {
+  if (counterStore.isRemembered && counterStore.rememberedId) {
+    member.id = counterStore.rememberedId
+  }
+})
 const logIn = async () => {
+  if (member.id == '' || member.pass == '') {
+    alert('아이디 또는 비밀번호가 입력되지 않았습니다. 입력해주세요.')
+    return
+  }
   let result = await axios.post(`/api/member/login`, member)
   result = result.data
   console.log(result)
   if (result.isCorrect) {
+    if (isRemembered) {
+      counterStore.rememberedId = member.id
+    } else {
+      counterStore.rememberedId = ''
+    }
     isLogIn.value.isLogIn = true
     isLogIn.value.info = result.member[0]
     // 권한별 리다이렉트
@@ -118,7 +136,12 @@ const toResetPassword = () => {
                     </div>
                     <div class="row d-flex justify-content-between align-items-center mb-3">
                       <div class="col-6">
-                        <argon-switch id="rememberMe" name="remember-me">
+                        <argon-switch
+                          id="rememberMe"
+                          name="remember-me"
+                          :checked="isRemembered"
+                          @change="handleSwitch"
+                        >
                           <span style="color: #4a5568; font-size: 0.9rem">아이디 기억하기</span>
                         </argon-switch>
                       </div>

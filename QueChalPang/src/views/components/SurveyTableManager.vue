@@ -1,48 +1,18 @@
 <!-- 담당자의 지원서관리 메인페이지. -->
 <!-- views/components/SurveyTableManager.vue -->
 <script setup>
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount } from 'vue'
 import { useCounterStore } from '@/stores/member'
-import axios from 'axios'
+import { useSearchStore } from '@/stores/search'
 import router from '@/router'
+import { storeToRefs } from 'pinia'
 
-const applicationList = ref([])
+const search = useSearchStore()
+const { applicationList } = storeToRefs(search)
 const member = useCounterStore().isLogIn.info
-
-const getApplicationList = async () => {
-  const result = await axios.get(
-    `/api/searchApplicationById/${member.member_id}/${member.member_authority}`,
-  )
-
-  const rows = Array.isArray(result.data) ? result.data : []
-
-  applicationList.value = rows.map((row) => {
-    //계획서 개수
-    const p1 = Number(row.p_i1 ?? 0)
-    const p2 = Number(row.p_i2 ?? 0)
-    const p3 = Number(row.p_i3 ?? 0)
-
-    //결과서 개수
-    const r1 = Number(row.r_i1 ?? 0)
-    const r2 = Number(row.r_i2 ?? 0)
-    const r3 = Number(row.r_i3 ?? 0)
-    console.log('ROW CHECK', row.dependant_no, row.dependant_name, row.application_no)
-
-    return {
-      ...row,
-      planningCount: p1 + p2 + p3, //계획서 총개수
-      resultCount: r1 + r2 + r3, //결과서 총개수
-      counts: {
-        i1: p1 + r1,
-        i2: p2 + r2,
-        i3: p3 + r3,
-      },
-    }
-  })
-}
-
+search.member = member
 onBeforeMount(() => {
-  getApplicationList()
+  search.getApplicationList(member)
 })
 
 const returnStatus = (stat, statStatus) => {
@@ -92,6 +62,7 @@ const goToResult = (applicationNo) => {
 const goToMeetingLog = (applicationNo) => {
   router.push({ name: 'meetingLog', params: { id: applicationNo } })
 }
+// 검색
 </script>
 
 <template>

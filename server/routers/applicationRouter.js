@@ -91,11 +91,12 @@ router.put("/submitChangingPlanningInfo/:no", async (req, res) => {
 // 지원서 전체 가져오기(일반사용자 및 담당자)
 router.get("/searchApplicationById/:id/:authority", async (req, res) => {
   let { id, authority } = req.params;
-  let { search, value } = req.query;
+  let { search, value, badge } = req.query;
   let result = await applicationService.findAppById(
     id,
     search,
     value,
+    badge,
     authority
   );
   res.send(result);

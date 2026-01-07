@@ -86,16 +86,72 @@ set ?
 where planning_no = ?`;
 
 // 지원현황에서 목록 불러오기(일반사용자)
-const selectApplicationsById = `select a.dependant_no,dependant_name,survey_no,a.member_id,application_date,status,(select member_name from member where member_id=application_rejector) as application_rejector,status_reject,status_status 
-from application a 
-join dependant d on d.dependant_no = a.dependant_no 
-where ?? like concat('%',?,'%') and a.member_id = ?`;
+const selectApplicationsById = `SELECT *
+FROM (
+  SELECT
+    a.application_no,
+    d.dependant_no,
+    d.dependant_name,
 
-// 지원현황에서 목록 불러오기(담당자)
-const selectApplicationsById2 = `select a.dependant_no,dependant_name,survey_no,a.member_id,application_date,status,(select member_name from member where member_id=application_rejector) as application_rejector,status_reject,status_status 
-from application a 
-join dependant d on d.dependant_no = a.dependant_no 
-where ?? like concat('%',?,'%') and d.manager_main = ?`;
+    g.member_name AS guardian_name,      
+    t.member_name AS manager_name,
+
+    a.application_date,
+    a.status,
+
+    COALESCE(p.p_i1, 0) AS p_i1,
+    COALESCE(p.p_i2, 0) AS p_i2,
+    COALESCE(p.p_i3, 0) AS p_i3,
+
+    COALESCE(r.r_i1, 0) AS r_i1,
+    COALESCE(r.r_i2, 0) AS r_i2,
+    COALESCE(r.r_i3, 0) AS r_i3,
+
+    COALESCE(m.meetingCount, 0) AS meetingCount
+
+  FROM application a
+  JOIN dependant d
+    ON d.dependant_no = a.dependant_no
+  JOIN member g
+    ON g.member_id = d.member_id
+  LEFT JOIN member t
+    ON t.member_id = d.manager_main
+
+  LEFT JOIN (
+    SELECT
+      application_no,
+      SUM(planning_status = 'i1') AS p_i1,
+      SUM(planning_status = 'i2') AS p_i2,
+      SUM(planning_status = 'i3') AS p_i3
+    FROM planning
+    GROUP BY application_no
+  ) p ON p.application_no = a.application_no
+
+  LEFT JOIN (
+    SELECT
+      pl.application_no,
+      SUM(r.result_status = 'i1') AS r_i1,
+      SUM(r.result_status = 'i2') AS r_i2,
+      SUM(r.result_status = 'i3') AS r_i3
+    FROM result r
+    JOIN planning pl
+      ON pl.planning_no = r.planning_no
+    GROUP BY pl.application_no
+  ) r ON r.application_no = a.application_no
+
+   LEFT JOIN (
+    SELECT
+      application_no,
+      COUNT(*) AS meetingCount
+    FROM reservation
+    GROUP BY application_no
+  ) m ON m.application_no = a.application_no
+
+  WHERE d.member_id = ? AND ?? like concat('%',?,'%')  AND a.status in (?)
+) X
+ORDER BY
+  X.application_date DESC,
+  X.dependant_no DESC`;
 
 // 지원신청서 등록
 const insertApplication = `insert into application(dependant_no,survey_no,member_id,application_date,status) values (?,?,?,now(),'e1')`;
@@ -194,8 +250,9 @@ const selectApplicationsByTeacher = `
     GROUP BY application_no
   ) m ON m.application_no = a.application_no
 
-  WHERE d.manager_main = ?
-     OR d.manager_sub  = ?
+  WHERE (d.manager_main = ?
+     OR d.manager_sub  = ?)
+      AND ?? like concat('%',?,'%')  AND a.status in (?)
   ORDER BY a.application_date DESC
 `;
 
@@ -257,7 +314,7 @@ JOIN member t    ON d.manager_main = t.member_id
 JOIN member admin
   ON admin.center_no = t.center_no
  AND admin.member_id = ?
-
+ WHERE ?? like concat('%',?,'%')  AND a.status in (?)
 ORDER BY a.application_date DESC
 `;
 
@@ -370,7 +427,6 @@ module.exports = {
   sucessResultUpdateInfo,
   rejectResultUpdateInfo,
   changingResultUpdateInfo,
-  selectApplicationsById2,
   insertApplication,
   insertAppAnswer,
   selectApplicationsByTeacher,

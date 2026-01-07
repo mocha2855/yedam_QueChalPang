@@ -1,66 +1,72 @@
 <!-- 관리자 지원서관리 메인페이지. 담당자꺼 그대로 사용-->
 <!-- views/components/SurveyTableAdmin.vue -->
 <script setup>
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount } from 'vue'
 import { useCounterStore } from '@/stores/member'
-import axios from 'axios'
+import { useSearchStore } from '@/stores/search'
 import router from '@/router'
-
-const applicationList = ref([])
+import { storeToRefs } from 'pinia'
+const search = useSearchStore()
 const member = useCounterStore().isLogIn.info
+search.member = member
+const { applicationList } = storeToRefs(search)
 
-//시스템 관리자용
-const centerList = ref([])
-const selectedCenter = ref(null)
+onBeforeMount(() => {
+  search.getApplicationList(member)
+})
 
-const getApplicationList = async () => {
-  //시스템 관리자면 센터 번호 사용
-  const memberId = member.member_authority === 'a4' ? selectedCenter.value : member.member_id
+// //시스템 관리자용
+// const centerList = ref([])
+// const selectedCenter = ref(null)
 
-  const result = await axios.get(
-    `/api/searchApplicationById/${memberId}/${member.member_authority}`,
-  )
+// const getApplicationList = async () => {
+//   //시스템 관리자면 센터 번호 사용
+//   const memberId = member.member_authority === 'a4' ? selectedCenter.value : member.member_id
 
-  const rows = Array.isArray(result.data) ? result.data : []
+//   const result = await axios.get(
+//     `/api/searchApplicationById/${memberId}/${member.member_authority}`,
+//   )
 
-  applicationList.value = rows.map((row) => {
-    //계획서 개수
-    const p1 = Number(row.p_i1 ?? 0)
-    const p2 = Number(row.p_i2 ?? 0)
-    const p3 = Number(row.p_i3 ?? 0)
+//   const rows = Array.isArray(result.data) ? result.data : []
 
-    //결과서 개수
-    const r1 = Number(row.r_i1 ?? 0)
-    const r2 = Number(row.r_i2 ?? 0)
-    const r3 = Number(row.r_i3 ?? 0)
-    console.log('ROW CHECK', row.dependant_no, row.dependant_name, row.application_no)
+//   applicationList.value = rows.map((row) => {
+//     //계획서 개수
+//     const p1 = Number(row.p_i1 ?? 0)
+//     const p2 = Number(row.p_i2 ?? 0)
+//     const p3 = Number(row.p_i3 ?? 0)
 
-    return {
-      ...row,
-      planningCount: p1 + p2 + p3, //계획서 총개수
-      resultCount: r1 + r2 + r3, //결과서 총개수
-      counts: {
-        i1: p1 + r1,
-        i2: p2 + r2,
-        i3: p3 + r3,
-      },
-    }
-  })
-}
-//센터 전체 목록 가져오기
-const getCenterList = async () => {
-  if (member.member_authority === 'a4') {
-    const result = await axios.get(`/api/centers`)
-    centerList.value = result.data
+//     //결과서 개수
+//     const r1 = Number(row.r_i1 ?? 0)
+//     const r2 = Number(row.r_i2 ?? 0)
+//     const r3 = Number(row.r_i3 ?? 0)
+//     console.log('ROW CHECK', row.dependant_no, row.dependant_name, row.application_no)
 
-    if (centerList.value.length > 0) {
-      selectedCenter.value = centerList.value[0].center_no
-      await getApplicationList()
-    }
-  }
-}
+//     return {
+//       ...row,
+//       planningCount: p1 + p2 + p3, //계획서 총개수
+//       resultCount: r1 + r2 + r3, //결과서 총개수
+//       counts: {
+//         i1: p1 + r1,
+//         i2: p2 + r2,
+//         i3: p3 + r3,
+//       },
+//     }
+//   })
+// }
+// //센터 전체 목록 가져오기
+// const getCenterList = async () => {
+//   if (member.member_authority === 'a4') {
+//     const result = await axios.get(`/api/centers`)
+//     centerList.value = result.data
+
+//     if (centerList.value.length > 0) {
+//       selectedCenter.value = centerList.value[0].center_no
+//       await getApplicationList()
+//     }
+//   }
+// }
 const onCenterChange = () => {
-  getApplicationList()
+  search.getApplicationList(member)
 }
 
 const returnStatus = (stat, statStatus) => {
@@ -112,9 +118,9 @@ const goToMeetingLog = (applicationNo) => {
 }
 onBeforeMount(() => {
   if (member.member_authority === 'a4') {
-    getCenterList()
+    search.getApplicationList(member)
   } else {
-    getApplicationList()
+    search.getApplicationList(member)
   }
 })
 </script>

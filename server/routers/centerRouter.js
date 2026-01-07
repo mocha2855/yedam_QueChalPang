@@ -3,8 +3,9 @@ const router = express.Router();
 const centerService = require("../services/centerService.js");
 // 전체 센터 목록
 router.get(`/centers`, async (req, res) => {
-  const { key, value } = req.query;
-  let list = await centerService.findAllCenter(key, value);
+  const { key, value, badge } = req.query;
+  console.log(key, value, badge);
+  let list = await centerService.findAllCenter(key, value, badge);
   res.send(list);
 });
 router.post(`/center`, async (req, res) => {
