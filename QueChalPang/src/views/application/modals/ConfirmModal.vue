@@ -1,3 +1,4 @@
+<!-- application/modals/ConformModal.vue -->
 <template>
   <ApplicationModal v-if="show">
     <template #header><h2></h2></template>

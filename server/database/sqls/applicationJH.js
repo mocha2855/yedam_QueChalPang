@@ -6,6 +6,7 @@ join member m on d1.member_id = m.member_id
 join member m2 on d1.manager_main = m2.member_id
 where d1.dependant_no=?`;
 
+//대기단계 선택시 상태확인
 const selectById = `
   SELECT
     a.*,
@@ -22,42 +23,41 @@ const selectById = `
   LIMIT 1
 `;
 
-// 결재자 선택
-const rejectorSelectById = `select member_name 
-from member
-where member_authority = 'a3'`;
+//결재자 선택
+const rejectorSelectById = `
+SELECT member_name 
+FROM member
+WHERE member_authority = 'a3'`;
 
-// 대기단계 승인요청
+//담당자 대기단계 승인요청
 const applicationUpdateInfo = `
 UPDATE application
-SET status_status = 'i1'
+SET 
+  status = ?, 
+  status_status = 'i1'
 WHERE application_no = ?
 `;
 
-// 대기단계 반려사유
-//const statusRejectUpdateInfo = `update application set status_reject =?, status_status='i3' where application_no=?`;
-
-// 대기단계 승인하기 (관리자가)
+//(관리자가) 대기단계 승인하기 
 const approveStatus = ` 
-UPDATE application
-SET status = ?,          
-    status_status = 'i2',
-    status_reject = NULL
-WHERE application_no = ?
+  UPDATE application
+  SET           
+      status_status = 'i2',
+      status_reject = NULL,
+      application_rejector=?
+  WHERE application_no = ?
 `;
 
-//대기단계 반려하기 (관리자가)
+//(관리자가) 대기단계 반려하기 
 const rejectStatus = `
   UPDATE application
-  SET status_reject = ?,
-      status_status = 'i3'
+  SET 
+      status = 'e1', 
+      status_reject = ?,
+      status_status = 'i3',
+      application_rejector=?
   WHERE application_no = ?;
 `;
-
-// 대기단계 승인 및 재승인
-// const applicationSuccessUpdateInfo = `update application
-// set status_status = ?, status_reject = ?
-// where application_no = ?`;
 
 // 지원계획서 갯수 파악
 const selectPlanningById = `select count(*) counts from planning where application_no=?`;
@@ -102,7 +102,8 @@ const insertApplication = `insert into application(dependant_no,survey_no,member
 const insertAppAnswer = `insert into app_answer(survey_qitem_no,application_no,app_answer_type,app_date,app_reason) values ? `;
 
 // 등록된 지원신청서 정보 가져오기
-const selectAppByNo = `SELECT s.survey_no,
+const selectAppByNo = `
+SELECT s.survey_no,
         s.survey_version,
         s.survey_start,
         s.survey_end,
@@ -121,11 +122,12 @@ const selectAppByNo = `SELECT s.survey_no,
         (select dependant_no from application aa where application_no = a.application_no)as dependant_no,
         (select status from application aa where application_no = a.application_no) as status
 
-FROM survey s JOIN survey_title t on s.survey_no = t.survey_no 
-              JOIN survey_subtitle ss ON t.survey_title_no = ss.survey_title_no 
-              JOIN survey_qitem q ON ss.survey_subtitle_no = q.survey_subtitle_no 
-              JOIN app_answer a ON a.survey_qitem_no = q.survey_qitem_no
-              WHERE a.application_no=?
+FROM survey s 
+  JOIN survey_title t on s.survey_no = t.survey_no 
+  JOIN survey_subtitle ss ON t.survey_title_no = ss.survey_title_no 
+  JOIN survey_qitem q ON ss.survey_subtitle_no = q.survey_subtitle_no 
+  JOIN app_answer a ON a.survey_qitem_no = q.survey_qitem_no
+WHERE a.application_no=?
 `;
 
 //지원현황 목록 불러오기 (담당자) DJ - dependant 기준으로
@@ -140,6 +142,7 @@ const selectApplicationsByTeacher = `
 
     a.application_date,
     a.status,
+    a.status_status,
 
     COALESCE(p.p_i1, 0) AS p_i1,
     COALESCE(p.p_i2, 0) AS p_i2,
@@ -204,6 +207,7 @@ SELECT
     t.member_name AS manager_name,
     a.application_date,
     a.status,
+    a.status_status,
 
     (SELECT COUNT(*)
        FROM planning
@@ -304,4 +308,6 @@ module.exports = {
   selectApplicationsByTeacher,
   selectAppByNo,
   selectApplicationsByAdmin,
+  approveStatus,
+  rejectStatus,
 };

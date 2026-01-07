@@ -1,3 +1,4 @@
+<!-- application/modals/RejectConformModal.vue -->
 <!-- 반려 확인만 담당 -->
 <template>
   <ApplicationModal v-if="show">
