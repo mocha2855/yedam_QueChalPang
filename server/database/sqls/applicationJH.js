@@ -1,5 +1,6 @@
 // 지원자 정보
-const dependantSelectById = `select d1.*,d2.*, m.*, m2.member_name "manager_name" 
+const dependantSelectById = `
+select d1.*,d2.*, m.*, m2.member_name "manager_name" 
 from dependant d1
 join disability d2 on d1.disability_no = d2.disability_no
 join member m on d1.member_id = m.member_id
@@ -12,7 +13,8 @@ const selectById = `
     a.*,
     COALESCE(r.manager_id, d.manager_main) AS manager_id,
     r.resv_status,
-    r.created_at
+    r.created_at,
+    d.dependant_name
   FROM application a
   JOIN dependant d
     ON d.dependant_no = a.dependant_no
