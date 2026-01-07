@@ -93,17 +93,16 @@
                     <div class="col-5 mb-2">
                       <argon-input v-model="detailAddress" placeholder="주소" disabled />
                     </div>
-                  </div>
-
-                  <div class="col-2">
-                    <button
-                      type="button"
-                      class="p-2 btn btn-primary w-100"
-                      @click="openPostcode"
-                      v-bind:disabled="changeMangerInfo"
-                    >
-                      주소 찾기
-                    </button>
+                    <div class="col-1">
+                      <button
+                        type="button"
+                        class="p-2 btn btn-primary w-100"
+                        @click="openPostcode"
+                        v-bind:disabled="changeMangerInfo"
+                      >
+                        주소 찾기
+                      </button>
+                    </div>
                   </div>
 
                   <div class="row">
@@ -165,7 +164,7 @@
                         id="day"
                         type="text"
                         aria-label="text"
-                        v-model="dependantDetail.dependant_date"
+                        v-model="today"
                         disabled
                       />
                     </div>
@@ -202,8 +201,9 @@ const counter = useCounterStore()
 
 // 등록날짜 출력
 let date = new Date()
-let today = ref(`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDay()}`)
-console.log(today.value)
+console.log(date)
+let today = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+console.log(today)
 
 // 주소 api에서 사용하는 함수들
 const postcode = ref('')
@@ -329,20 +329,40 @@ const completeChangeInfo = async () => {
     dependantDetail.value.disability_no = 16
   }
 
-  await axios //
-    .post('/api/addDependantInfo', {
-      dependant_name: dependantDetail.value.dependant_name,
-      dependant_birth: dependantDetail.value.dependant_birth,
-      dependant_gender: dependantDetail.value.dependant_gender,
-      dependant_address: `${detailAddress.value} ${writingAddress.value}`,
-      disability_no: dependantDetail.value.disability_no,
-      dependant_date: dependantDetail.value.dependant_date,
-      manager_main: counter.isLogIn.info.member_id,
-    })
-    .then((res) => {
-      console.log(res)
-      alert('등록완료')
-      changeMangerInfo.value = true
-    })
+  if (counter.isLogIn.info.member_authority == 'a2') {
+    await axios //
+      .post('/api/addDependantInfo', {
+        dependant_name: dependantDetail.value.dependant_name,
+        dependant_birth: dependantDetail.value.dependant_birth,
+        dependant_gender: dependantDetail.value.dependant_gender,
+        dependant_address: `${detailAddress.value} ${writingAddress.value}`,
+        disability_no: dependantDetail.value.disability_no,
+        dependant_date: dependantDetail.value.dependant_date,
+        manager_main: counter.isLogIn.info.member_id,
+      })
+      .then((res) => {
+        console.log(res)
+        alert('등록완료')
+        changeMangerInfo.value = true
+        return
+      })
+  } else if (counter.isLogIn.info.member_authority == 'a1') {
+    await axios //
+      .post('/api/addDependantInfo', {
+        dependant_name: dependantDetail.value.dependant_name,
+        dependant_birth: dependantDetail.value.dependant_birth,
+        dependant_gender: dependantDetail.value.dependant_gender,
+        dependant_address: `${detailAddress.value} ${writingAddress.value}`,
+        disability_no: dependantDetail.value.disability_no,
+        dependant_date: today,
+        member_id: counter.isLogIn.info.member_id,
+      })
+      .then((res) => {
+        console.log(res)
+        alert('등록완료')
+        changeMangerInfo.value = true
+        return
+      })
+  }
 }
 </script>

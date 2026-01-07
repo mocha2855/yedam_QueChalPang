@@ -80,11 +80,10 @@ const router = useRouter()
 
 onBeforeMount(async () => {
   await myPage.searchGuardianInfo(counter.isLogIn.info.member_id)
-  console.log(myPage.guardianInfo)
 })
 
-const goDetail = (e) => {
-  router.push({ name: 'myPageDetail', params: { id: e } })
+const goDetail = (data) => {
+  router.push({ name: 'myPageDetail', params: { id: data } })
 }
 
 const goAddDependant = () => {

@@ -14,7 +14,7 @@ import approvalRoutes from './approval' //멤버 승인 페이지
 import myPage from '../views/myPage.vue' // 마이페이지(담당자 본인 정보 보기)
 import myPageList from '@/views/myPageList.vue' // 마이페이지(담당자 지원자 목록)
 import myPageDetail from '@/views/myPageDetail.vue' // 담당 지원자 마이페이지 상세보기(담당자)
-import myPageAddDependant from '@/views/myPageAddDependant.vue' // 마이페이지 지원자 등록(담당자)
+import myPageAddDependant from '@/views/myPageAddDependant.vue' // 마이페이지 지원자 등록(담당자/보호자)
 import myPageGuardian from '@/views/myPageGuardian.vue' // 마이페이지(보호자)
 import myPageGuardianList from '../views/myPageGuardianList.vue' // 마이페이지 지원자 목록(보호자)
 

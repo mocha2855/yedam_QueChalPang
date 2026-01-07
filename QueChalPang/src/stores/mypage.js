@@ -79,7 +79,7 @@ export const useMyPageStore = defineStore('myPage', {
       // 날짜 형식 변경 함수
       const changeDateType = (day) => {
         let date = new Date(day)
-        let realDay = `${date.getFullYear(day)}-${date.getMonth(day) + 1}-${date.getDay(day)}`
+        let realDay = `${date.getFullYear(day)}-${date.getMonth(day) + 1}-${date.getDate(day)}`
         return realDay
       }
 
@@ -103,7 +103,8 @@ export const useMyPageStore = defineStore('myPage', {
       this.guardianInfo.forEach((member) => {
         member.member_date = changeDateType(member.member_date)
         member.dependant_date = changeDateType(member.dependant_date)
-        member.dependant_birth = getAge(member.dependant_birth)
+        member.dependant_birth = changeDateType(member.dependant_birth)
+        member.dependant_age = getAge(member.dependant_birth)
         if (member.dependant_gender == 'g1') {
           member.dependant_gender = '남자'
         } else {
