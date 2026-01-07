@@ -108,14 +108,11 @@ const findAppById = async (id, search, value, authority) => {
       id,
     ]);
   } else if (authority == "a3") {
-    return null;
+    result = await mysql.bquery("selectApplicationsByAdmin", [id]);
   } else if (authority == "a4") {
     // 시스템 관리자 - 센터별 조회
     result = await mysql.bquery("selectApplicationsByCenter", [id]);
-  } else if (authority === "a3") {
-    result = await mysql.bquery("selectApplicationsByAdmin", [id]);
   }
-
   return result;
 };
 
