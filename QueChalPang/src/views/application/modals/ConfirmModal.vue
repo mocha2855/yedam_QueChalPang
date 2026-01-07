@@ -1,8 +1,9 @@
+<!-- application/modals/ConformModal.vue -->
 <template>
   <ApplicationModal v-if="show">
     <template #header><h2></h2></template>
     <template #body>
-      <h4 style="text-align: center" v-html="message"></h4>
+      <p class="modal-text" style="text-align: center" v-html="message"></p>
     </template>
     <template #footer>
       <button class="btn-save" @click="$emit('confirm')">확인</button>
@@ -52,5 +53,12 @@ defineEmits(['confirm', 'cancel'])
   background: #d32f2f;
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+}
+
+.modal-text {
+  font-size: 24px;
+  line-height: 1.6;
+  text-align: center;
+  margin: 0;
 }
 </style>

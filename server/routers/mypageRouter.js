@@ -46,4 +46,22 @@ router.post("/addDependantInfo", async (req, res) => {
   res.send(post);
 });
 
+// 담당자 지원자 정보 삭제
+router.delete("/deleteDependantInfo/:id", async (req, res) => {
+  let id = req.params.id;
+  console.log(id);
+  let post = await mypageService.removeDependantInfo(id);
+  res.send(post);
+  console.log("1111111111111", post);
+});
+
+// 보호자
+// 보호자 정보
+router.get("/guardianInfo/:id", async (req, res) => {
+  let id = req.params.id;
+  console.log(id);
+  let post = await mypageService.findGuardianById(id);
+  res.send(post);
+});
+
 module.exports = router;

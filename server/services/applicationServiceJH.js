@@ -6,64 +6,41 @@ const dependantFindById = async (no) => {
   return post;
 };
 
-// 대기단계 승인요청 (담당자)
-// status 받지 말고(받아도 무시), applicationUpdateInfo는 [no]만 넘김
-const applicationModifyInfo = async (no, data) => {
-  const post = await mysql.bquery("applicationUpdateInfo", [no]);
-  return post;
-};
-
-// 대기단계 반려 (관리자)
-const rejectModifyInfo = async (no, data) => {
-  const { status_reject } = data;
-  const post = await mysql.bquery("rejectStatus", [status_reject, no]);
-  return post;
-};
-
-// 대기단계 승인 (관리자)
-// 승인할 때만 status(f3/f4/f5) 변경 + status_reject는 NULL로
-const applicationApproveInfo = async (no, data) => {
-  const { status } = data; // f3/f4/f5
-  const post = await mysql.bquery("approveStatus", [status, no]);
-  return post;
-};
-
-// // 대기단계 선택시 상태확인
+// 대기단계 선택시 상태확인
 const findById = async (no) => {
   let post = await mysql.bquery("selectById", no);
   return post;
 };
 
-// // 결재자 선택화면 목록
-// const rejectorFindById = async () => {
-//   let post = await mysql.bquery("rejectorSelectById");
-//   return post;
-// };
+// 대기단계 승인요청 (담당자)
+// status 받지 말고(받아도 무시), applicationUpdateInfo는 [no]만 넘김
+//담당자가 승인요청 넣으면 status_status가 null에서 i1(검토중)으로 바뀜
+const applicationModifyInfo = async (no, data) => {
+  const { status } = data;
+  const post = await mysql.bquery("applicationUpdateInfo", [status, no]);
+  return post;
+};
 
-// // 대기단계 승인요청
-// const applicationModifyInfo = async (no, data) => {
-//   let { status } = data;
-//   let post = await mysql.bquery("applicationUpdateInfo", [status, no]);
-//   return post;
-// };
+// 대기단계 승인 (관리자)
+const applicationApproveInfo = async (no, data) => {
+  const { approverId } = data; // 결재자 member_id
+  const post = await mysql.bquery("approveStatus", [approverId, no]);
+  return post;
+};
+//---------------------------------------------------------------------
 
-// // 대기단계 반려사유
-// const rejectModifyInfo = async (no, data) => {
-//   let { status_reject } = data;
-//   let post = await mysql.bquery("statusRejectUpdateInfo", [status_reject, no]);
-//   return post;
-// };
+// 대기단계 반려 (관리자)
+const applicationRejectInfo = async (no, data) => {
+  const { status_reject, approverId } = data;
 
-// // 대기단계 승인 , 재승인
-// const applicationSuccessModifyInfo = async (no, data) => {
-//   let { status_status, status_reject } = data;
-//   let post = await mysql.bquery("applicationSuccessUpdateInfo", [
-//     status_status,
-//     status_reject,
-//     no,
-//   ]);
-//   return post;
-// };
+  const post = await mysql.bquery("rejectStatus", [
+    status_reject,
+    approverId,
+    no,
+  ]);
+
+  return post;
+};
 
 // 지원계획서 갯수 조회(계획서 추가시 숫자 파악 위해)
 const findPlanningById = async (no) => {
@@ -220,7 +197,7 @@ module.exports = {
   dependantFindById,
   findById,
   applicationModifyInfo,
-  rejectModifyInfo,
+  applicationRejectInfo,
   findPlanningById,
   findplanningReviewById,
   addPlanningInfo,

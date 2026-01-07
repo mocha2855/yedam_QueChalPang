@@ -7,6 +7,7 @@ export const useMyPageStore = defineStore('myPage', {
     return {
       managerInfo: [], // 담당자 정보
       dependantInfo: [], // 지원자 정보
+      guardianInfo: [], // 보호자 정보
     }
   },
   _actions: {
@@ -68,6 +69,20 @@ export const useMyPageStore = defineStore('myPage', {
 
       console.log('지원자: ', this.dependantInfo)
       return this.dependantInfo
+    },
+
+    // 보호자
+    // 보호자 정보
+    async searchGuardianInfo(id) {
+      this.guardianInfo = (await axios.get('/api/guardianInfo/' + id)).data[0]
+      // 날짜 형식 변경 함수
+      const changeDateType = (day) => {
+        let date = new Date(day)
+        let realDay = `${date.getFullYear(day)}-${date.getMonth(day) + 1}-${date.getDay(day)}`
+        return realDay
+      }
+
+      this.guardianInfo.member_date = changeDateType(this.guardianInfo.member_date)
     },
   },
   get actions() {

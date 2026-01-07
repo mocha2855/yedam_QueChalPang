@@ -15,18 +15,22 @@ onBeforeMount(() => {
   search.getApplicationList(member)
 })
 
-const returnStatus = (stat) => {
-  if (stat == 'e1') {
+const returnStatus = (stat, statStatus) => {
+  //i2가 아닌 상태엔 e 코드값과 관련없이 항당 대기로 표시
+  if (statStatus !== 'i2') {
     return '대기'
-  } else if (stat == 'e2') {
-    return '검토중'
-  } else if (stat == 'e3') {
-    return '계획'
-  } else if (stat == 'e4') {
-    return '중점'
-  } else if (stat == 'e5') {
-    return '긴급'
   }
+ 
+  //status_status = i2 일때만 텍스트 표시
+  if (stat === 'e3') return '계획'
+  if (stat === 'e4') return '중점'
+  if (stat === 'e5') return '긴급'
+
+  //텍스트 표시 안전장치
+  if (stat === 'e1') return '대기'
+  if (stat === 'e2') return '검토중'
+
+  return stat ?? ''
 }
 
 const changeDateFormat = (input) => {
@@ -174,9 +178,9 @@ const goToMeetingLog = (applicationNo) => {
                 <span class="text-secondary text-xs font-weight-bold">{{ row.manager_name }}</span>
               </td>
               <td class="align-middle text-center text-sm">
-                <span class="text-secondary text-xs font-weight-bold">{{
-                  returnStatus(row.status)
-                }}</span>
+                <span class="text-secondary text-xs font-weight-bold">
+                  {{ returnStatus(row.status, row.status_status) }}
+                </span>
               </td>
               <td class="align-middle text-center text-sm pt-1 pb-1">
                 <p class="text-secondary text-xs mt-1 mb-1 font-weight-bold">

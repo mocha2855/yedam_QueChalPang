@@ -15,18 +15,76 @@ onBeforeMount(() => {
   search.getApplicationList(member)
 })
 
-const returnStatus = (stat) => {
-  if (stat == 'e1') {
+// //시스템 관리자용
+// const centerList = ref([])
+// const selectedCenter = ref(null)
+
+// const getApplicationList = async () => {
+//   //시스템 관리자면 센터 번호 사용
+//   const memberId = member.member_authority === 'a4' ? selectedCenter.value : member.member_id
+
+//   const result = await axios.get(
+//     `/api/searchApplicationById/${memberId}/${member.member_authority}`,
+//   )
+
+//   const rows = Array.isArray(result.data) ? result.data : []
+
+//   applicationList.value = rows.map((row) => {
+//     //계획서 개수
+//     const p1 = Number(row.p_i1 ?? 0)
+//     const p2 = Number(row.p_i2 ?? 0)
+//     const p3 = Number(row.p_i3 ?? 0)
+
+//     //결과서 개수
+//     const r1 = Number(row.r_i1 ?? 0)
+//     const r2 = Number(row.r_i2 ?? 0)
+//     const r3 = Number(row.r_i3 ?? 0)
+//     console.log('ROW CHECK', row.dependant_no, row.dependant_name, row.application_no)
+
+//     return {
+//       ...row,
+//       planningCount: p1 + p2 + p3, //계획서 총개수
+//       resultCount: r1 + r2 + r3, //결과서 총개수
+//       counts: {
+//         i1: p1 + r1,
+//         i2: p2 + r2,
+//         i3: p3 + r3,
+//       },
+//     }
+//   })
+// }
+// //센터 전체 목록 가져오기
+// const getCenterList = async () => {
+//   if (member.member_authority === 'a4') {
+//     const result = await axios.get(`/api/centers`)
+//     centerList.value = result.data
+
+//     if (centerList.value.length > 0) {
+//       selectedCenter.value = centerList.value[0].center_no
+//       await getApplicationList()
+//     }
+//   }
+// }
+const onCenterChange = () => {
+  search.getApplicationList(member)
+}
+
+const returnStatus = (stat, statStatus) => {
+  //i2가 아닌 상태엔 e 코드값과 관련없이 항당 대기로 표시
+  if (statStatus !== 'i2') {
     return '대기'
-  } else if (stat == 'e2') {
-    return '검토중'
-  } else if (stat == 'e3') {
-    return '계획'
-  } else if (stat == 'e4') {
-    return '중점'
-  } else if (stat == 'e5') {
-    return '긴급'
   }
+
+  //status_status = i2 일때만 텍스트 표시
+  if (stat === 'e3') return '계획'
+  if (stat === 'e4') return '중점'
+  if (stat === 'e5') return '긴급'
+
+  //텍스트 표시 안전장치
+  if (stat === 'e1') return '대기'
+  if (stat === 'e2') return '검토중'
+
+  return stat ?? ''
 }
 
 const changeDateFormat = (input) => {
@@ -58,6 +116,13 @@ const goToResult = (applicationNo) => {
 const goToMeetingLog = (applicationNo) => {
   router.push({ name: 'meetingLog', params: { id: applicationNo } })
 }
+onBeforeMount(() => {
+  if (member.member_authority === 'a4') {
+    search.getApplicationList(member)
+  } else {
+    search.getApplicationList(member)
+  }
+})
 </script>
 
 <template>
@@ -65,8 +130,25 @@ const goToMeetingLog = (applicationNo) => {
     <div class="card-header pb-0">
       <div class="d-flex justify-content-between align-items-center">
         <h6 class="mb-0">지원신청 현황</h6>
-
-        <button class="btn btn-primary btn-sm text-xxs p-1 mb-0" type="button" @click="addApp()">
+        <!--시스템 관리자 센터 선택-->
+        <div v-if="member.member_authority === 'a4'">
+          <select
+            v-model="selectedCenter"
+            @change="onCenterChange"
+            class="form-select form-select-sm"
+            style="width: 200px"
+          >
+            <option v-for="center in centerList" :key="center.center_no" :value="center.center_no">
+              {{ center.center_name }}
+            </option>
+          </select>
+        </div>
+        <button
+          v-else
+          class="btn btn-primary btn-sm text-xxs p-1 mb-0"
+          type="button"
+          @click="addApp()"
+        >
           지원신청서 등록
         </button>
       </div>
@@ -173,9 +255,9 @@ const goToMeetingLog = (applicationNo) => {
                 <span class="text-secondary text-xs font-weight-bold">{{ row.manager_name }}</span>
               </td>
               <td class="align-middle text-center text-sm">
-                <span class="text-secondary text-xs font-weight-bold">{{
-                  returnStatus(row.status)
-                }}</span>
+                <span class="text-secondary text-xs font-weight-bold">
+                  {{ returnStatus(row.status, row.status_status) }}
+                </span>
               </td>
               <td class="align-middle text-center text-sm pt-1 pb-1">
                 <p class="text-secondary text-xs mt-1 mb-1 font-weight-bold">
