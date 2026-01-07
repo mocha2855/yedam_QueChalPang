@@ -1,5 +1,10 @@
 <template>
-  <div class="py-4 container-fluid" v-if="dependantDetail.value != ''">
+  <div
+    class="py-4 container-fluid"
+    v-if="
+      counter.isLogIn.info.member_authority == 'a1' || counter.isLogIn.info.member_authority == 'a2'
+    "
+  >
     <div class="row">
       <div class="col-12">
         <div class="card">
@@ -46,7 +51,7 @@
                     </div>
                     <div class="col-5 mb-2">
                       <select
-                        class="btn btn px-0 col-6 mx-0"
+                        class="btn btn px-0 col-12 mx-0"
                         v-model="dependantDetail.dependant_gender"
                         v-bind:disabled="changeMangerInfo"
                         style="text-align: left"
@@ -85,37 +90,35 @@
                       <h6 class="mt-2">주소</h6>
                     </div>
 
-                    <div class="col-8 mb-2">
-                      <div class="row gx-1">
-                        <div class="col-7 px-0">
-                          <argon-input v-model="detailAddress" placeholder="주소" disabled />
-                        </div>
-                        <div class="col-2">
-                          <button
-                            type="button"
-                            class="p-2 btn btn-primary w-100"
-                            @click="openPostcode"
-                            v-bind:disabled="changeMangerInfo"
-                          >
-                            주소 찾기
-                          </button>
-                        </div>
-                      </div>
+                    <div class="col-5 mb-2">
+                      <argon-input v-model="detailAddress" placeholder="주소" disabled />
                     </div>
-
-                    <div class="row">
-                      <div class="col-1 px-0"><h6 class="mt-2"></h6></div>
-                      <div class="col-5 mb-2">
-                        <argon-input
-                          id="detail_input"
-                          placeholder="상세주소"
-                          v-model="writingAddress"
-                          v-bind:disabled="changeMangerInfo"
-                        />
-                      </div>
-                    </div>
-                    <hr class="mb-4" style="height: 1px; background-color: black" />
                   </div>
+
+                  <div class="col-2">
+                    <button
+                      type="button"
+                      class="p-2 btn btn-primary w-100"
+                      @click="openPostcode"
+                      v-bind:disabled="changeMangerInfo"
+                    >
+                      주소 찾기
+                    </button>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-1 px-0"><h6 class="mt-2"></h6></div>
+                    <div class="col-5 mb-2">
+                      <argon-input
+                        id="detail_input"
+                        placeholder="상세주소"
+                        v-model="writingAddress"
+                        v-bind:disabled="changeMangerInfo"
+                      />
+                    </div>
+                  </div>
+                  <hr class="mb-4" style="height: 1px; background-color: black" />
+
                   <div class="row px-0">
                     <div class="col-1 px-0">
                       <h6 class="mt-2">장애유형</h6>

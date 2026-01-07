@@ -74,7 +74,8 @@ export const useMyPageStore = defineStore('myPage', {
     // 보호자
     // 보호자 정보
     async searchGuardianInfo(id) {
-      this.guardianInfo = (await axios.get('/api/guardianInfo/' + id)).data[0]
+      this.guardianInfo = (await axios.get('/api/guardianInfo/' + id)).data
+
       // 날짜 형식 변경 함수
       const changeDateType = (day) => {
         let date = new Date(day)
@@ -82,7 +83,33 @@ export const useMyPageStore = defineStore('myPage', {
         return realDay
       }
 
-      this.guardianInfo.member_date = changeDateType(this.guardianInfo.member_date)
+      // 나이 함수
+      const getAge = (birthday) => {
+        let today = new Date()
+        let birthDay = new Date(birthday)
+        let age = today.getFullYear() - birthDay.getFullYear()
+
+        let todayMonth = today.getMonth() + 1
+        let birthMonth = birthDay.getMonth() + 1
+
+        if (
+          birthMonth > todayMonth ||
+          (birthMonth === todayMonth && birthDay.getDate() >= today.getDate())
+        ) {
+          age--
+        }
+        return age
+      }
+      this.guardianInfo.forEach((member) => {
+        member.member_date = changeDateType(member.member_date)
+        member.dependant_date = changeDateType(member.dependant_date)
+        member.dependant_birth = getAge(member.dependant_birth)
+        if (member.dependant_gender == 'g1') {
+          member.dependant_gender = '남자'
+        } else {
+          member.dependant_gender = '여자'
+        }
+      })
     },
   },
   get actions() {
