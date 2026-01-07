@@ -91,10 +91,10 @@ const myPageQuery = async (selected, values) => {
     conn = await pool.getConnection();
     let executeSql = mypagesql[selected];
 
-    console.log("3=========", selected, values);
-
     let result = (await conn.query(executeSql, values))[0];
     return result;
+  } catch (error) {
+    console.log("error: ", error);
   } finally {
     if (conn) conn.release(); // pool로 반환.
   }

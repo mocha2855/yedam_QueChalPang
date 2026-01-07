@@ -12,6 +12,7 @@
               <button
                 class="btn btn-outline-danger btn-sm"
                 :disabled="!isAllChecked && !checkedIds"
+                @click="delList"
               >
                 선택 삭제
               </button>
@@ -42,11 +43,7 @@
                     >
                       보호자
                     </th>
-                    <th
-                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder"
-                    >
-                      대기단계
-                    </th>
+
                     <th
                       class="text-center text-uppercase text-secondary text-xxs font-weight-bolder"
                     >
@@ -88,9 +85,7 @@
                     <td class="text-sm text-center" @click="goDetail(member.dependant_no)">
                       {{ member.guardian_name }}
                     </td>
-                    <td class="text-sm text-center" @click="goDetail(member.dependant_no)">
-                      {{ member.guardian_name }}
-                    </td>
+
                     <td class="align-middle text-center" @click="goDetail(member.dependant_no)">
                       {{ member.disability_name }}
                     </td>
@@ -115,13 +110,17 @@ import { onBeforeMount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMyPageStore } from '@/stores/mypage'
 import { useCounterStore } from '@/stores/member'
+import { useApplicationStore } from '@/stores/application'
+import axios from 'axios'
 
+const application = useApplicationStore()
 const myPage = useMyPageStore()
 const counter = useCounterStore()
 const router = useRouter()
 
 onBeforeMount(async () => {
   await myPage.searchDependantInfo(counter.isLogIn.info.member_id)
+  await application.checkdependantInfo()
 })
 
 const goDetail = (e) => {
@@ -137,20 +136,80 @@ const isAllChecked = ref(false)
 
 // 개별 체크
 const checkedIds = ref(false)
+let length = ref(0)
 
 const checking = (data) => {
   console.log(data)
   console.log('checkedIds: ', checkedIds.value)
   myPage.dependantInfo.forEach((info) => {
     if (info.dependant_no == data.dependant_no) {
-      data.checked = true
-      checkedIds.value = !checkedIds.value
+      data.checked = !data.checked
+      if (data.checked == true) {
+        length.value++
+        checkedIds.value = true
+      } else {
+        length.value--
+        checkedIds.value = false
+      }
       return
     }
   })
 }
+// 지원자 대기 단계
 
 // 지원자 삭제
+const delList = async () => {
+  // 전체 삭제
+  let count = 0
+  if (isAllChecked.value == true) {
+    myPage.dependantInfo.forEach((data) => {
+      data.checked = true
+      if (data.checked == true) {
+        axios //
+          .delete('/api/deleteDependantInfo/' + data.dependant_no)
+          .then((res) => {
+            count++
+            if (res.data == '' || res.data == null) {
+              console.log('count: ', count)
+              checkedIds.value = false
+
+              data.checked = false
+              alert(`${data.dependant_name}님의 지원서가 존재하여 삭제가 불가합니다.`)
+            }
+            if (count == myPage.dependantInfo.length) {
+              myPage.searchDependantInfo(counter.isLogIn.info.member_id)
+              alert('삭제완료')
+              return
+            }
+          })
+      }
+    })
+    isAllChecked.value = false
+    return
+  }
+  // 단건삭제
+
+  myPage.dependantInfo.forEach((data) => {
+    length
+    if (data.checked == true) {
+      axios //
+        .delete('/api/deleteDependantInfo/' + data.dependant_no)
+        .then((res) => {
+          if (res.data == '' || res.data == null) {
+            alert(`${data.dependant_name}님의 지원서가 존재하여 삭제가 불가합니다.`)
+          }
+          count++
+          console.log(count, length)
+          if (count == length.value) {
+            alert('삭제완료')
+            myPage.searchDependantInfo(counter.isLogIn.info.member_id)
+            checkedIds.value = false
+            data.checked = false
+          }
+        })
+    }
+  })
+}
 </script>
 <style scoped>
 /* 거절 row  */

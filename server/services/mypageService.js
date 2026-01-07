@@ -31,10 +31,25 @@ const addDependantInfo = async (data) => {
   return post;
 };
 
+// 담당 지원자 삭제
+const removeDependantInfo = async (id) => {
+  let post = await mysql.myPageQuery("deleteDependantInfo", id);
+  return post;
+};
+
+// 보호자
+// 보호자 정보
+const findGuardianById = async (id) => {
+  let post = await mysql.myPageQuery("selectguardianById", id);
+  return post;
+};
+
 module.exports = {
   findManagerById,
   findDependantById,
   updateManagerInfo,
   updateDependantInfo,
   addDependantInfo,
+  removeDependantInfo,
+  findGuardianById,
 };

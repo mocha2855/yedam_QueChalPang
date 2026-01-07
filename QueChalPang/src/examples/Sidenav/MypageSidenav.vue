@@ -20,7 +20,22 @@ const { userPendingList, managerPendingList } = storeToRefs(store)
 
       <li class="nav-item">
         <sidenav-item
+          v-if="counter.isLogIn.info.member_authority == 'a2'"
           :to="{ name: 'myPage', params: { id: counter.isLogIn.info.member_id } }"
+          navText="내 정보 보기"
+        >
+          <template v-slot:icon>
+            <i class="ni ni-single-02 text-primary text-sm opacity-10"></i>
+          </template>
+          <template v-slot:badge v-if="userPendingList?.length > 0">
+            <span class="badge bg-warning text-dark ms-auto">
+              {{ userPendingList.length }}
+            </span>
+          </template>
+        </sidenav-item>
+        <sidenav-item
+          v-else-if="counter.isLogIn.info.member_authority == 'a1'"
+          :to="{ name: 'myPageGuardian', params: { id: counter.isLogIn.info.member_id } }"
           navText="내 정보 보기"
         >
           <template v-slot:icon>
