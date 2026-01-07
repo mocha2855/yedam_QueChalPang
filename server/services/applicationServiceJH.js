@@ -112,8 +112,10 @@ const updateChangingPlanningInfo = async (planning_no, data) => {
 };
 
 // 지원신청현황 가져오기(일반사용자 / 담당자 / 관리자)
-const findAppById = async (id, search, value, authority) => {
+const findAppById = async (id, search, value, badge, authority) => {
   let result;
+  console.log(badge.replaceAll("'", "").split(","));
+  console.log(id, search, value, authority);
   if (authority == "a1") {
     if (search == undefined) {
       search = "t.member_name";
@@ -121,7 +123,12 @@ const findAppById = async (id, search, value, authority) => {
     if (value === undefined) {
       value = "";
     }
-    result = await mysql.bquery("selectApplicationsById", [id, search, value]);
+    result = await mysql.bquery("selectApplicationsById", [
+      id,
+      search,
+      value,
+      badge.replaceAll("'", "").split(","),
+    ]);
   } else if (authority == "a2") {
     if (search == undefined) {
       search = "dependant_name";
@@ -130,9 +137,20 @@ const findAppById = async (id, search, value, authority) => {
       value = "";
     }
     console.log(search, value, id);
-    result = await mysql.bquery("selectApplicationsByTeacher", [id, id]);
+    result = await mysql.bquery("selectApplicationsByTeacher", [
+      id,
+      id,
+      search,
+      value,
+      badge.replaceAll("'", "").split(","),
+    ]);
   } else if (authority == "a3") {
-    result = await mysql.bquery("selectApplicationsByAdmin", [id]);
+    result = await mysql.bquery("selectApplicationsByAdmin", [
+      id,
+      search,
+      value,
+      badge.replaceAll("'", "").split(","),
+    ]);
   }
   console.log(result);
   return result;

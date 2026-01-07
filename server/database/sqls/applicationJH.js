@@ -145,16 +145,11 @@ FROM (
     GROUP BY application_no
   ) m ON m.application_no = a.application_no
 
-  WHERE d.member_id = ? AND ?? like concat('%',?,'%') 
+  WHERE d.member_id = ? AND ?? like concat('%',?,'%')  AND a.status in (?)
 ) X
 ORDER BY
   X.application_date DESC,
   X.dependant_no DESC`;
-// 지원현황에서 목록 불러오기(담당자)
-const selectApplicationsById2 = `select a.dependant_no,dependant_name,survey_no,a.member_id,application_date,status,(select member_name from member where member_id=application_rejector) as application_rejector,status_reject,status_status 
-from application a 
-join dependant d on d.dependant_no = a.dependant_no 
-where ?? like concat('%',?,'%') and d.manager_main = ?`;
 
 // 지원신청서 등록
 const insertApplication = `insert into application(dependant_no,survey_no,member_id,application_date,status) values (?,?,?,now(),'e1')`;
@@ -250,8 +245,9 @@ const selectApplicationsByTeacher = `
     GROUP BY application_no
   ) m ON m.application_no = a.application_no
 
-  WHERE d.manager_main = ?
-     OR d.manager_sub  = ?
+  WHERE (d.manager_main = ?
+     OR d.manager_sub  = ?)
+      AND ?? like concat('%',?,'%')  AND a.status in (?)
   ORDER BY a.application_date DESC
 `;
 
@@ -312,7 +308,7 @@ JOIN member t    ON d.manager_main = t.member_id
 JOIN member admin
   ON admin.center_no = t.center_no
  AND admin.member_id = ?
-
+ WHERE ?? like concat('%',?,'%')  AND a.status in (?)
 ORDER BY a.application_date DESC
 `;
 
@@ -359,7 +355,6 @@ module.exports = {
   sucessResultUpdateInfo,
   rejectResultUpdateInfo,
   changingResultUpdateInfo,
-  selectApplicationsById2,
   insertApplication,
   insertAppAnswer,
   selectApplicationsByTeacher,

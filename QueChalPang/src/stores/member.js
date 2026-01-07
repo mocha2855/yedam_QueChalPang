@@ -1,26 +1,21 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
-export const useCounterStore = defineStore('counter', {
-  state: () => {
-    return {
-      count: ref(0),
-      isLogIn: ref({
-        isLogIn: false,
-        info: {},
-      }),
+export const useCounterStore = defineStore(
+  'counter',
+  () => {
+    const isLogIn = ref({
+      isLogIn: false,
+      info: {},
+    })
+    const isRemembered = ref(false)
+    const rememberedId = ref('')
+    const clearRememberedId = () => {
+      rememberedId.value = ''
+      isRemembered.value = false
     }
-  },
-  actions: {
-    increment() {
-      this.count++
-    },
-  },
-  getters: {
-    doubleCount: (state) => {
-      return state.count * 2
-    },
-  },
 
-  persist: true,
-})
+    return { isLogIn, isRemembered, rememberedId, clearRememberedId }
+  },
+  { persist: true },
+)
