@@ -9,9 +9,16 @@ import router from '@/router'
 const applicationList = ref([])
 const member = useCounterStore().isLogIn.info
 
+//시스템 관리자용
+const centerList = ref([])
+const selectedCenter = ref(null)
+
 const getApplicationList = async () => {
+  //시스템 관리자면 센터 번호 사용
+  const memberId = member.member_authority === 'a4' ? selectedCenter.value : member.member_id
+
   const result = await axios.get(
-    `/api/searchApplicationById/${member.member_id}/${member.member_authority}`,
+    `/api/searchApplicationById/${memberId}/${member.member_authority}`,
   )
 
   const rows = Array.isArray(result.data) ? result.data : []
@@ -40,17 +47,28 @@ const getApplicationList = async () => {
     }
   })
 }
+//센터 전체 목록 가져오기
+const getCenterList = async () => {
+  if (member.member_authority === 'a4') {
+    const result = await axios.get(`/api/centers`)
+    centerList.value = result.data
 
-onBeforeMount(() => {
+    if (centerList.value.length > 0) {
+      selectedCenter.value = centerList.value[0].center_no
+      await getApplicationList()
+    }
+  }
+}
+const onCenterChange = () => {
   getApplicationList()
-})
+}
 
 const returnStatus = (stat, statStatus) => {
   //i2가 아닌 상태엔 e 코드값과 관련없이 항당 대기로 표시
   if (statStatus !== 'i2') {
     return '대기'
   }
- 
+
   //status_status = i2 일때만 텍스트 표시
   if (stat === 'e3') return '계획'
   if (stat === 'e4') return '중점'
@@ -92,6 +110,13 @@ const goToResult = (applicationNo) => {
 const goToMeetingLog = (applicationNo) => {
   router.push({ name: 'meetingLog', params: { id: applicationNo } })
 }
+onBeforeMount(() => {
+  if (member.member_authority === 'a4') {
+    getCenterList()
+  } else {
+    getApplicationList()
+  }
+})
 </script>
 
 <template>
@@ -99,8 +124,25 @@ const goToMeetingLog = (applicationNo) => {
     <div class="card-header pb-0">
       <div class="d-flex justify-content-between align-items-center">
         <h6 class="mb-0">지원신청 현황</h6>
-
-        <button class="btn btn-primary btn-sm text-xxs p-1 mb-0" type="button" @click="addApp()">
+        <!--시스템 관리자 센터 선택-->
+        <div v-if="member.member_authority === 'a4'">
+          <select
+            v-model="selectedCenter"
+            @change="onCenterChange"
+            class="form-select form-select-sm"
+            style="width: 200px"
+          >
+            <option v-for="center in centerList" :key="center.center_no" :value="center.center_no">
+              {{ center.center_name }}
+            </option>
+          </select>
+        </div>
+        <button
+          v-else
+          class="btn btn-primary btn-sm text-xxs p-1 mb-0"
+          type="button"
+          @click="addApp()"
+        >
           지원신청서 등록
         </button>
       </div>
