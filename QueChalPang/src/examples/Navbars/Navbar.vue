@@ -4,6 +4,7 @@ import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import { useCounterStore } from '@/stores/member'
+
 import { storeToRefs } from 'pinia'
 
 const counterStore = useCounterStore()
@@ -56,9 +57,20 @@ console.log(isLogIn.value.info.member_id)
 
 const supportRoute = computed(() => {
   const auth = isLogIn.value?.info?.member_authority
-
+  if (auth === 'a4') return '/tables'
   if (auth === 'a1') return '/tables'
   return '/tablesManager'
+})
+
+// 일반회원만 베이지, 나머지는 파랑
+const navbarColor = computed(() => {
+  const authority = counterStore.isLogIn?.info?.member_authority
+
+  // 로그인 안 했거나 일반회원이면 베이지
+  if (!authority || authority === 'a1') {
+    return '#C9B8A8' // 베이지
+  }
+  return '#7a9fba' // 담당자/관리자/시스템는 파랑
 })
 </script>
 
@@ -68,7 +80,7 @@ const supportRoute = computed(() => {
     v-bind="$attrs"
     id="navbarBlur"
     data-scroll="true"
-    style="background: linear-gradient(to right, #a8c5d8 0%, #8fb0c8 50%, #7a9fba 100%) !important"
+    :style="{ background: navbarColor + ' !important' }"
   >
     <div class="container-fluid">
       <div class="mt-2 collapse navbar-collapse mt-sm-0 me-md-0 me-sm-4" id="navbar">
@@ -92,7 +104,7 @@ const supportRoute = computed(() => {
             <router-link
               :to="supportRoute"
               class="nav-link text-black"
-              :class="getRoute().includes('tables') ? 'font-weight-bold opacity-10' : 'opacity-6'"
+              :class="getRoute().includes('tables') ? 'font-weight-bold opacity-10' : 'opacity-9'"
             >
               <i class="ni ni-single-copy-04 me-2"></i>지원현황
             </router-link>
@@ -102,7 +114,7 @@ const supportRoute = computed(() => {
             <router-link
               to="/resrvTeacher"
               class="nav-link text-black"
-              :class="getRoute() === 'reservTeacher' ? 'font-weight-bold opacity-10' : 'opacity-6'"
+              :class="getRoute() === 'reservTeacher' ? 'font-weight-bold opacity-10' : 'opacity-9'"
             >
               <i class="ni ni-calendar-grid-58 me-2"></i>상담예약관리
             </router-link>
@@ -112,7 +124,7 @@ const supportRoute = computed(() => {
             <router-link
               to="/resrvGuardian"
               class="nav-link text-black"
-              :class="getRoute() === 'resrvGuardian' ? 'font-weight-bold opacity-10' : 'opacity-6'"
+              :class="getRoute() === 'resrvGuardian' ? 'font-weight-bold opacity-10' : 'opacity-9'"
             >
               <i class="ni ni-ui-04 me-2"></i>상담예약신청
             </router-link>
@@ -122,7 +134,7 @@ const supportRoute = computed(() => {
             <router-link
               to="/qnaGuardian"
               class="nav-link text-black"
-              :class="getRoute() === 'qnaGuardian' ? 'font-weight-bold opacity-10' : 'opacity-6'"
+              :class="getRoute() === 'qnaGuardian' ? 'font-weight-bold opacity-10' : 'opacity-9'"
             >
               <i class="ni ni-support-16 me-2"></i>문의하기
             </router-link>
@@ -132,7 +144,7 @@ const supportRoute = computed(() => {
             <router-link
               to="/surveys"
               class="nav-link text-black"
-              :class="getRoute() === 'surveys' ? 'font-weight-bold opacity-10' : 'opacity-6'"
+              :class="getRoute() === 'surveys' ? 'font-weight-bold opacity-10' : 'opacity-9'"
             >
               <i class="ni ni-single-copy-04 me-2"></i>지원서관리
             </router-link>
@@ -143,7 +155,7 @@ const supportRoute = computed(() => {
               to="/centerList"
               class="nav-link text-black"
               :class="
-                getRoute().indexOf('center') >= 0 ? 'font-weight-bold opacity-10' : 'opacity-6'
+                getRoute().indexOf('center') >= 0 ? 'font-weight-bold opacity-10' : 'opacity-9'
               "
             >
               <i class="ni ni-building me-2"></i>센터관리
@@ -153,7 +165,7 @@ const supportRoute = computed(() => {
             <router-link
               to="/ApprovalUserList"
               class="nav-link text-black"
-              :class="getRoute() === 'surveys' ? 'font-weight-bold opacity-10' : 'opacity-6'"
+              :class="getRoute() === 'surveys' ? 'font-weight-bold opacity-10' : 'opacity-9'"
             >
               <i class="ni ni-circle-08 me-2"></i>회원관리
             </router-link>
@@ -181,7 +193,12 @@ const supportRoute = computed(() => {
               </router-link>
 
               <span class="d-flex align-items-center gap-2">
-                <button type="button" class="btn btn-blue-light mb-0" @click="goMyPage">
+                <button
+                  v-if="isLogIn?.info?.member_authority !== 'a4'"
+                  type="button"
+                  class="btn btn-blue-light mb-0"
+                  @click="goMyPage"
+                >
                   마이페이지
                 </button>
                 <button
@@ -262,7 +279,7 @@ const supportRoute = computed(() => {
 }
 
 .btn-blue-light {
-  background-color: #4a90c8;
+  background-color: #5b9bcf;
   color: white;
   border: none;
   border-radius: 8px;
