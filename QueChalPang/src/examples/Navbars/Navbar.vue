@@ -74,24 +74,21 @@ const supportRoute = computed(() => {
 })
 
 // 일반회원만 베이지, 나머지는 파랑
-const navbarColor = computed(() => {
-  const authority = counterStore.isLogIn?.info?.member_authority
+// const navbarColor = computed(() => {
+//   const authority = counterStore.isLogIn?.info?.member_authority
 
-  // 로그인 안 했거나 일반회원이면 베이지
-  if (!authority || authority === 'a1') {
-    return '#C9B8A8' // 베이지
-  }
-  return '#7a9fba' // 담당자/관리자/시스템는 파랑
-})
+//   // 로그인 안 했거나 일반회원이면 베이지
+//   if (!authority || authority === 'a1') {
+//     return '#C9B8A8' // 베이지
+//   }
+//   return '#7a9fba' // 담당자/관리자/시스템는 파랑
+// })
 </script>
 
 <template>
   <nav
-    class="navbar navbar-expand-lg sticky-top bg-success navbar-dark"
-    v-bind="$attrs"
-    id="navbarBlur"
-    data-scroll="true"
-    :style="{ background: navbarColor + ' !important' }"
+    class="navbar navbar-expand-lg sticky-top custom-navbar"
+    v-bind="$attrs">
   >
     <div class="container-fluid">
       <div class="mt-2 collapse navbar-collapse mt-sm-0 me-md-0 me-sm-4" id="navbar">
@@ -308,5 +305,55 @@ const navbarColor = computed(() => {
 
 .gap-2 {
   gap: 8px;
+}
+
+/* 네비바 전체 */
+.custom-navbar {
+  background-color: #f6f2eb; /* 스샷 느낌 베이지 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 0 0 12px 12px;
+  padding: 10px 24px;
+}
+/* 좌측 메뉴 */
+.navbar-nav.me-auto .nav-link {
+  color: #3a3a3a !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+  padding: 6px 14px !important;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+}
+
+/* 활성/호버 */
+.navbar-nav.me-auto .nav-link:hover {
+  background-color: #e6ddd3;
+  color: #000 !important;
+}
+
+.navbar-nav.me-auto .nav-link.font-weight-bold {
+  background-color: #d9cfc3;
+  color: #000 !important;
+}
+.navbar-nav.justify-content-end span {
+  color: #3a3a3a;
+  font-weight: 500;
+}
+.btn-blue-light {
+  background-color: #3f6b4f; /* 스샷 초록 */
+  color: #fff;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 14px;
+}
+
+.btn-logout {
+  background-color: #3f6b4f; /* 동일 컬러 */
+  color: #fff;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 14px;
+}
+.navbar i {
+  color: #4a4a4a;
 }
 </style>

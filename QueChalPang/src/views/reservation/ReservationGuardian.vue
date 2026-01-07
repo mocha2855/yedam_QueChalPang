@@ -21,7 +21,7 @@ const router = useRouter() //★괄호 빼먹지말기.
 //다음 버튼 누르면서 정보 같이 넘겨야함
 const goNext = () => {
   router.push({
-    name: 'reservationGuardianConfirm',
+    name: 'ReservationGuardianConfirm',
     query: {
       date: toYmd.value, //캘린더에서 선택한 날짜
       time: selectedTime.value, //타임슬롯에서 선택한 시간
