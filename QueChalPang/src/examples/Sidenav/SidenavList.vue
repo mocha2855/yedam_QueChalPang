@@ -2,13 +2,15 @@
 <script setup>
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
-import SidenavItem from './SidenavItem.vue'
-
+// import SidenavItem from './SidenavItem.vue'
+import SearchAppSideNavCard from '../Cards/SearchAppSideNavCard.vue'
+import SearchCenterSideNavCardCopy from '../Cards/SearchCenterSideNavCard.vue'
 const getRoute = () => {
   const route = useRoute()
   const routeArr = route.path.split('/')
   return routeArr[1]
 }
+
 // 사이드바를 숨길 경로 목록
 const hiddenRoutes = ['dashboard-default'] // 메인 대시보드 경로 추가
 
@@ -20,11 +22,7 @@ const shouldShowSidenav = computed(() => {
 <template>
   <div v-if="shouldShowSidenav" class="w-auto h-auto h-100" id="sidenav-collapse-main">
     <ul class="navbar-nav">
-      <li class="mt-3 nav-item">
-        <h6 class="text-xs ps-4 text-uppercase font-weight-bolder opacity-6 ms-2">계정 관리</h6>
-      </li>
-
-      <li class="nav-item">
+      <!-- <li class="nav-item">
         <sidenav-item
           to="/signin"
           :class="getRoute() === 'signin' ? 'active' : ''"
@@ -45,8 +43,10 @@ const shouldShowSidenav = computed(() => {
           <template v-slot:icon>
             <i class="ni ni-collection text-info text-sm opacity-10"></i>
           </template>
-        </sidenav-item>
-      </li>
+        </sidenav-item> 
+      </li>-->
+      <SearchAppSideNavCard v-if="getRoute().includes('tables')"></SearchAppSideNavCard>
+      <SearchCenterSideNavCardCopy v-if="getRoute() === 'centerList'"></SearchCenterSideNavCardCopy>
     </ul>
   </div>
 </template>

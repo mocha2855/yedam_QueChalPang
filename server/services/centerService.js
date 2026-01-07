@@ -1,13 +1,14 @@
 const mysql = require("../database/mapper.js");
 
 // 전체 센터 목록
-const findAllCenter = async (key, value) => {
+const findAllCenter = async (key, value, badge) => {
   let result;
-  if (key && value) {
-    result = await mysql.centerQuery("searchAllCenter", [key, value]);
-  } else {
-    result = await mysql.centerQuery("selectAllCenter");
-  }
+  result = await mysql.centerQuery("searchAllCenter", [
+    key,
+    value,
+    badge.replaceAll("'", "").split(","),
+  ]);
+
   return result;
 };
 

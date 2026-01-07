@@ -89,33 +89,54 @@ const updateChangingPlanningInfo = async (planning_no, data) => {
 };
 
 // 지원신청현황 가져오기(일반사용자 / 담당자 / 관리자)
-const findAppById = async (id, search, value, authority) => {
+const findAppById = async (id, search, value, badge, authority) => {
   let result;
-
-  if (authority === "a1") {
-    if (search === undefined) {
-      search = "a.member_id";
+  console.log(badge.replaceAll("'", "").split(","));
+  console.log(id, search, value, authority);
+  if (authority == "a1") {
+    if (search == undefined) {
+      search = "t.member_name";
     }
     if (value === undefined) {
       value = "";
     }
-    result = await mysql.bquery("selectApplicationsById", [search, value, id]);
-  } else if (authority === "a2") {
+    result = await mysql.bquery("selectApplicationsById", [
+      id,
+      search,
+      value,
+      badge.replaceAll("'", "").split(","),
+    ]);
+  } else if (authority == "a2") {
+    if (search == undefined) {
+      search = "dependant_name";
+    }
+    if (value == undefined) {
+      value = "";
+    }
+    console.log(search, value, id);
     result = await mysql.bquery("selectApplicationsByTeacher", [
       id,
       id,
-      id,
-      id,
+      search,
+      value,
+      badge.replaceAll("'", "").split(","),
     ]);
   } else if (authority == "a3") {
-    return null;
+    result = await mysql.bquery("selectApplicationsByAdmin", [
+      id,
+      search,
+      value,
+      badge.replaceAll("'", "").split(","),
+    ]);
   } else if (authority == "a4") {
-    // 시스템 관리자 - 센터별 조회
-    result = await mysql.bquery("selectApplicationsByCenter", [id]);
-  } else if (authority === "a3") {
-    result = await mysql.bquery("selectApplicationsByAdmin", [id]);
+    result = await mysql.bquery("selectApplicationsByAdmin", [
+      id,
+      search,
+      value,
+      badge.replaceAll("'", "").split(","),
+    ]);
   }
-
+  console.log(result);
   return result;
 };
 
