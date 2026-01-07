@@ -132,13 +132,25 @@ const body = document.getElementsByTagName('body')[0]
 let dependantInfo = ref({}) // 지원자 실명
 
 const returnStatus = (stat) => {
-  if (stat == 'e1') return '대기'
-  if (stat == 'e2') return '검토중'
-  if (stat == 'e3') return '계획'
-  if (stat == 'e4') return '중점'
-  if (stat == 'e5') return '긴급'
+  const statStatus = application.dependantInfo?.status_status
+
+  //i2가 아닌 상태엔 e 코드값과 관련없이 항당 대기로 표시
+  if (statStatus !== 'i2') {
+    return '대기'
+  }
+ 
+  //status_status = i2 일때만 텍스트 표시
+  if (stat === 'e3') return '계획'
+  if (stat === 'e4') return '중점'
+  if (stat === 'e5') return '긴급'
+
+  //텍스트 표시 안전장치
+  if (stat === 'e1') return '대기'
+  if (stat === 'e2') return '검토중'
+
   return stat ?? ''
 }
+
 
 onBeforeMount(async () => {
   store.state.showSidenav = false

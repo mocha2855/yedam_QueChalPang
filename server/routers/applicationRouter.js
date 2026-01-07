@@ -10,45 +10,12 @@ router.get(`/dependantInfo/:no`, async (req, res) => {
   res.send(post);
 });
 
-// // 대기단계 선택시 상태확인
+// 대기단계 선택시 상태확인
 router.get(`/application/:no`, async (req, res) => {
   let no = req.params.no;
   let post = await applicationService.findById(no);
   res.send(post);
 });
-
-// // 결재자 선택화면 목록
-// router.get(`/rejectApplication`, async (req, res) => {
-//   let post = await applicationService.rejectorFindById();
-//   res.send(post);
-// });
-
-// // 대기단계 승인요청
-// router.put("/compApplication/:id", async (req, res) => {
-//   let data = req.body;
-//   let no = Number(req.params.id);
-//   console.log(no, data);
-//   let post = await applicationService.applicationModifyInfo(no, data);
-//   res.send(post);
-// });
-
-// // 대기단계 반려사유 입력
-// router.put("/rejectstatus/:no", async (req, res) => {
-//   let data = req.body;
-//   let no = req.params.no;
-//   console.log(no);
-//   let post = await applicationService.rejectModifyInfo(no, data);
-//   res.send(post);
-// });
-
-// // 대기단계 승인 / 재승인
-// router.put("/compSuccessApplication/:no", async (req, res) => {
-//   let data = req.body;
-//   console.log(data);
-//   let no = req.params.no;
-//   let post = await applicationService.applicationSuccessModifyInfo(no, data);
-//   res.send(post);
-// });
 
 // 대기단계 승인요청 (담당자)
 router.put("/compApplication/:id", async (req, res) => {
@@ -57,17 +24,18 @@ router.put("/compApplication/:id", async (req, res) => {
   res.send(post);
 });
 
-// 대기단계 반려 (관리자)
-router.put("/rejectstatus/:no", async (req, res) => {
-  const no = Number(req.params.no);
-  const post = await applicationService.rejectModifyInfo(no, req.body);
-  res.send(post);
-});
-
 // 대기단계 승인 (관리자)
 router.put("/approveStatus/:no", async (req, res) => {
   const no = Number(req.params.no);
   const post = await applicationService.applicationApproveInfo(no, req.body);
+  res.send(post);
+});
+//---------------------------------------------------------------------
+
+// 대기단계 반려 (관리자)
+router.put("/rejectstatus/:no", async (req, res) => {
+  const no = Number(req.params.no);
+  const post = await applicationService.applicationRejectInfo(no, req.body);
   res.send(post);
 });
 
