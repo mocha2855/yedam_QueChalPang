@@ -1,15 +1,16 @@
 //리스트 테이블
-import ApprovalUserList from '@/views/ApprovalUserList.vue'
-import ApprovalManager from '@/views/ApprovalManager.vue'
-import ApprovalAdminList from '@/views/ApprovalAdminList.vue'
+import ApprovalUserList from '@/views/Sadmin/ApprovalUserList.vue'
+import ApprovalManager from '@/views/Sadmin/ApprovalManager.vue'
+import ApprovalAdminList from '@/views/Sadmin/ApprovalAdminList.vue'
 
 //회원정보 수정
-import ApprovalUserUpdate from '@/views/ApprovalUserUpdate.vue'
-import ApprovalManagerUpdate from '@/views/ApprovalManagerUpdate.vue'
-import ApprovalAdminUpdate from '@/views/ApprovalAdminUpdate.vue'
+import ApprovalUserUpdate from '@/views/Sadmin/ApprovalUserUpdate.vue'
+import ApprovalManagerUpdate from '@/views/Sadmin/ApprovalManagerUpdate.vue'
+import ApprovalAdminUpdate from '@/views/Sadmin/ApprovalAdminUpdate.vue'
 
 //담당자&관리자 등록
-import ApprovalManagerAdd from '@/views/ApprovalManagerAdd.vue'
+import ApprovalManagerAdd from '@/views/Sadmin/ApprovalManagerAdd.vue'
+import ApprovalAdminAdd from '@/views/Sadmin/ApprovalAdminAdd.vue'
 
 const approvalRoutes = [
   {
@@ -46,6 +47,11 @@ const approvalRoutes = [
     path: '/approvalmanageradd',
     name: 'ApprovalManagerAdd',
     component: ApprovalManagerAdd,
+  },
+  {
+    path: '/approvaladminadd',
+    name: 'ApprovalAdminAdd',
+    component: ApprovalAdminAdd,
   },
 ]
 export default approvalRoutes

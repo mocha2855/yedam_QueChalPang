@@ -81,8 +81,8 @@ const addManager = async (input) => {
     input.member_authority,
     input.member_confirm,
   ];
-  console.log(value);
-  let result = await mysql.memberQuery("insertManagerInfo", value);
+
+  let result = await mysql.memberQuery("insertMemberInfo", value);
   return result;
 };
 
