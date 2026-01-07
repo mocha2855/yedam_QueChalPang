@@ -346,7 +346,7 @@ const closeModal = () => {
                 width="24"
                 height="24"
                 viewBox="0 0 24 24"
-                fill="#2F4230"
+                fill="#4a90c8"
               >
                 <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"></path></svg
               >알림
@@ -369,7 +369,7 @@ const closeModal = () => {
             <button
               type="button"
               class="btn"
-              style="background-color: #2f4230; color: white"
+              style="background-color: #4a90c8; color: white"
               @click="closeModal"
             >
               확인
@@ -401,9 +401,10 @@ const closeModal = () => {
   <main class="main-content mt-0">
     <div
       class="page-header align-items-start min-vh-50 pt-5 pb-11 m-3 border-radius-lg"
-      style="background-image: url('/로그인일러스트2.jpg'); background-position: top"
+      style="background-image: url('/로그인찐막.jpg'); background-position: top"
     >
-      <span class="mask bg-gradient-dark opacity-6"></span>
+      <!--뒷 색깔 배경-->
+      <span class="mask bg-gradient-dark opacity-3"></span>
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-lg-5 text-center mx-auto">
@@ -459,7 +460,7 @@ const closeModal = () => {
                       :class="{
                         'p-2': true,
                         btn: true,
-                        'btn-olive': idBtn,
+                        'btn-blue': idBtn,
                         'btn-secondary': idBtnChecked,
                         disabled: idBtnChecked,
                         'w-100': true,
@@ -512,7 +513,7 @@ const closeModal = () => {
                       :class="{
                         'p-2': true,
                         btn: true,
-                        'btn-olive': emailBtn,
+                        'btn-blue': emailBtn,
                         'btn-secondary': emailBtnChecked,
                         disabled: emailBtnChecked,
                         'w-100': true,
@@ -545,7 +546,7 @@ const closeModal = () => {
                       :class="{
                         'p-2': true,
                         btn: true,
-                        'btn-olive': phoneBtn.phoneBtn,
+                        'btn-blue': phoneBtn.phoneBtn,
                         'btn-secondary': phoneBtn.phoneBtnChecked,
                         disabled: phoneBtn.phoneBtnChecked,
                         'mb-0': phoneBtn.phoneBtnChecked,
@@ -586,7 +587,7 @@ const closeModal = () => {
                       :class="{
                         'p-2': true,
                         btn: true,
-                        'btn-olive': phoneBtn.phoneAuth,
+                        'btn-blue': phoneBtn.phoneAuth,
                         'btn-secondary': phoneBtn.phoneAuthChecked,
                         disabled: phoneBtn.phoneAuthChecked,
                         'w-100': true,
@@ -602,7 +603,7 @@ const closeModal = () => {
                     <argon-input v-model="postcode" placeholder="우편번호" disabled />
                   </div>
                   <div class="col-4">
-                    <button type="button" class="p-2 btn btn-olive w-100" @click="openPostcode">
+                    <button type="button" class="p-2 btn btn-blue w-100" @click="openPostcode">
                       주소 찾기
                     </button>
                   </div>
@@ -628,20 +629,20 @@ const closeModal = () => {
                     />
                   </div>
                   <div class="col-4">
-                    <button type="button" class="p-2 btn btn-olive w-100" @click="openCenterCode">
+                    <button type="button" class="p-2 btn btn-blue w-100" @click="openCenterCode">
                       센터 찾기
                     </button>
                   </div>
                 </div>
                 <div class="text-center">
-                  <argon-button fullWidth class="my-4 mb-2 btn-olive-main">회원가입</argon-button>
+                  <argon-button fullWidth class="my-4 mb-2 btn-blue-main">회원가입</argon-button>
                 </div>
                 <p class="text-sm mt-3 mb-0">
                   이미 가입하셨습니까?
                   <router-link
                     :to="{ name: 'Signin' }"
                     class="font-weight-bold"
-                    style="color: #2f4230"
+                    style="color: #1e4d6b"
                     >로그인</router-link
                   >
                 </p>
@@ -656,35 +657,35 @@ const closeModal = () => {
 </template>
 
 <style scoped>
-.btn-olive {
-  background-color: #2f4230;
+.btn-blue {
+  background-color: #4a90c8;
   color: white;
   border: none;
 }
 
-.btn-olive:hover {
-  background-color: #3d5640;
+.btn-blue:hover {
+  background-color: #3a80b8;
 }
 
-.btn-olive-main {
-  background-color: #2f4230 !important;
+.btn-blue-main {
+  background-color: #1e4d6b !important;
   color: white !important;
   border: none !important;
 }
 
-.btn-olive-main:hover {
-  background-color: #3d5640 !important;
+.btn-blue-main:hover {
+  background-color: #2a6080 !important;
 }
 
-/* 탭 버튼 색상 - 진한 초록/올리브 톤 */
+/* 탭 버튼 색상 - 푸른 톤 */
 #buttons .btn-primary {
-  background-color: #3d5640 !important;
-  border-color: #3d5640 !important;
+  background-color: #4a90c8 !important;
+  border-color: #4a90c8 !important;
   color: white !important;
 }
 
 #buttons .btn-primary:hover {
-  background-color: #4a6a4e !important;
+  background-color: #3a80b8 !important;
 }
 
 #buttons .btn-secondary {

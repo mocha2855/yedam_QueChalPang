@@ -3,8 +3,12 @@
   <div
     class="row page"
     v-if="
+      // 담당자이거나
       application.dependantInfo?.manager_id == counter.isLogIn.info.member_id ||
-      application.dependantInfo?.application_rejector == counter.isLogIn.info.member_id
+      // 대기단계 반려자이거나
+      application.dependantInfo?.application_rejector == counter.isLogIn.info.member_id ||
+      // 관리자(a3) / 시스템관리자(a4)는 항상 허용
+      ['a3', 'a4'].includes(counter.isLogIn.info.member_authority)
     "
   >
     <!-- LEFT -->
@@ -91,7 +95,6 @@
             상담내역
           </RouterLink>
         </li>
-
       </ul>
 
       <div class="panel content-panel">

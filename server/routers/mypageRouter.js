@@ -20,12 +20,29 @@ router.get("/dependantInfoList/:id", async (req, res) => {
   res.send(post);
 });
 
-// 정보 변경
+// 본인 정보 변경
 router.put("/changeManagerInfo/:id", async (req, res) => {
   let id = req.params.id;
   let data = req.body;
   console.log(data);
   let post = await mypageService.updateManagerInfo(id, data);
+  res.send(post);
+});
+
+// 담당 지원자 정보 변경
+router.put("/changeDependantInfo/:id", async (req, res) => {
+  let id = req.params.id;
+  let data = req.body;
+  console.log(data);
+  let post = await mypageService.updateDependantInfo(id, data);
+  res.send(post);
+});
+
+// 담당자 지원자 정보 등록
+router.post("/addDependantInfo", async (req, res) => {
+  let data = req.body;
+  console.log(data);
+  let post = await mypageService.addDependantInfo(data);
   res.send(post);
 });
 

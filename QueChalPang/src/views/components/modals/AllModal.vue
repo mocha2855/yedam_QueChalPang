@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import { useModalStore } from '@/stores/modal'
+import { useModalStore } from '@/stores/Modal'
 import ReasonModal from './ReasonModal.vue'
 
 const modal = useModalStore()

@@ -54,7 +54,7 @@ export const useApplicationStore = defineStore('application', {
       return this.dependantInfo
     },
 
-    // ✅ 핵심: application_no로 들어오면 -> dependant_no 뽑아서 dependantInfo까지 같이 세팅
+    // application_no로 들어오면 -> dependant_no 뽑아서 dependantInfo까지 같이 세팅
     async loadApplicationContext(applicationNo) {
       const info = await this.checkdependantInfo(applicationNo)
 

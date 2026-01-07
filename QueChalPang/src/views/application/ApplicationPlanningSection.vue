@@ -57,7 +57,7 @@ import axios from 'axios'
 
 import { useCounterStore } from '@/stores/member'
 import { useApplicationStore } from '@/stores/application'
-import { useModalStore } from '@/stores/modal'
+import { useModalStore } from '@/stores/Modal'
 
 import PlanningCreateCard from './sections/PlanningCreateCard.vue'
 import PlanningRejectedEditCard from './sections/PlanningRejectedEditCard.vue'

@@ -7,9 +7,14 @@
             <h6>담당지원자 목록</h6>
 
             <div class="card-header pb-0 d-flex justify-content-end align-items-center gap-2 pt-0z">
-              <button class="btn btn-dark btn-sm">지원자 등록</button>
+              <button class="btn btn-dark btn-sm" @click="goAddDependant">지원자 등록</button>
 
-              <button class="btn btn-outline-danger btn-sm">선택 삭제</button>
+              <button
+                class="btn btn-outline-danger btn-sm"
+                :disabled="!isAllChecked && !checkedIds"
+              >
+                선택 삭제
+              </button>
             </div>
           </div>
 
@@ -60,34 +65,39 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="member in myPage.dependantInfo"
-                    :key="member.dependant_no"
-                    @click="goDetail(member.dependant_no)"
-                  >
+                  <tr v-for="member in myPage.dependantInfo" :key="member.dependant_no">
                     <!-- 개별 선택 체크박스 -->
                     <td class="align-middle text-center">
-                      <input type="checkbox" :value="member.member_id" v-model="checkedIds" />
+                      <input
+                        type="checkbox"
+                        name="checkedBox"
+                        :value="member.member_id"
+                        v-model="member.checked"
+                        :checked="isAllChecked"
+                        @click="checking(member)"
+                      />
                     </td>
-                    <td class="align-middle text-center">
+                    <td class="align-middle text-center" @click="goDetail(member.dependant_no)">
                       <p class="text-sm font-weight-bold mb-0">
                         {{ member.dependant_name }}
                       </p>
                     </td>
-                    <td class="text-sm text-center">
+                    <td class="text-sm text-center" @click="goDetail(member.dependant_no)">
                       {{ member.dependant_gender }}
                     </td>
-                    <td class="text-sm text-center">
+                    <td class="text-sm text-center" @click="goDetail(member.dependant_no)">
                       {{ member.guardian_name }}
                     </td>
-                    <td class="text-sm text-center">{{ member.guardian_name }}</td>
-                    <td class="align-middle text-center">
+                    <td class="text-sm text-center" @click="goDetail(member.dependant_no)">
+                      {{ member.guardian_name }}
+                    </td>
+                    <td class="align-middle text-center" @click="goDetail(member.dependant_no)">
                       {{ member.disability_name }}
                     </td>
-                    <td class="align-middle text-center">
+                    <td class="align-middle text-center" @click="goDetail(member.dependant_no)">
                       {{ member.age }}
                     </td>
-                    <td class="align-middle text-center">
+                    <td class="align-middle text-center" @click="goDetail(member.dependant_no)">
                       {{ member.dependant_date }}
                     </td>
                   </tr>
@@ -101,7 +111,7 @@
   </div>
 </template>
 <script setup>
-import { onBeforeMount } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMyPageStore } from '@/stores/mypage'
 import { useCounterStore } from '@/stores/member'
@@ -114,10 +124,33 @@ onBeforeMount(async () => {
   await myPage.searchDependantInfo(counter.isLogIn.info.member_id)
 })
 
-const goDetail = (data) => {
-  console.log(data)
-  router.push({ name: 'myPageDetail', params: { id: data } })
+const goDetail = (e) => {
+  router.push({ name: 'myPageDetail', params: { id: e } })
 }
+
+const goAddDependant = () => {
+  router.push({ name: 'myPageAddDependant' })
+}
+
+// 전체 체크
+const isAllChecked = ref(false)
+
+// 개별 체크
+const checkedIds = ref(false)
+
+const checking = (data) => {
+  console.log(data)
+  console.log('checkedIds: ', checkedIds.value)
+  myPage.dependantInfo.forEach((info) => {
+    if (info.dependant_no == data.dependant_no) {
+      data.checked = true
+      checkedIds.value = !checkedIds.value
+      return
+    }
+  })
+}
+
+// 지원자 삭제
 </script>
 <style scoped>
 /* 거절 row  */

@@ -117,7 +117,7 @@ const goToMeetingLog = (applicationNo) => {
                 보호자명
               </th>
               <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                신청서번호
+                지원신청서번호
               </th>
               <th
                 class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"

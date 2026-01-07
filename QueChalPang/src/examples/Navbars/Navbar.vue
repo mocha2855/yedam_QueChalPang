@@ -57,8 +57,18 @@ console.log(isLogIn.value.info.member_id)
 const supportRoute = computed(() => {
   const auth = isLogIn.value?.info?.member_authority
 
-  if (auth === 'a1') return '/tables'
-  return '/tablesManager'
+  switch (auth) {
+    case 'a1':
+      return '/tables'
+    case 'a2':
+      return '/tablesManager'
+    case 'a3':
+      return '/tablesAdmin'
+    case 'a4':
+      return '/tablesManager'
+    default:
+      return '/'
+  }
 })
 </script>
 
@@ -68,12 +78,12 @@ const supportRoute = computed(() => {
     v-bind="$attrs"
     id="navbarBlur"
     data-scroll="true"
-    style="background-color: #2f4230 !important"
+    style="background: linear-gradient(to right, #a8c5d8 0%, #8fb0c8 50%, #7a9fba 100%) !important"
   >
     <div class="container-fluid">
       <div class="mt-2 collapse navbar-collapse mt-sm-0 me-md-0 me-sm-4" id="navbar">
         <ul class="navbar-nav me-auto">
-          <li class="nav-item">
+          <li v-if="['a1', 'a2', 'a3'].includes(isLogIn.info.member_authority)" class="nav-item">
             <router-link
               to="/dashboard-default"
               class="nav-link text-black"
@@ -94,7 +104,7 @@ const supportRoute = computed(() => {
               class="nav-link text-black"
               :class="getRoute().includes('tables') ? 'font-weight-bold opacity-10' : 'opacity-6'"
             >
-              <i class="ni ni-calendar-grid-58 me-2"></i>지원현황
+              <i class="ni ni-single-copy-04 me-2"></i>지원현황
             </router-link>
           </li>
 
@@ -104,7 +114,7 @@ const supportRoute = computed(() => {
               class="nav-link text-black"
               :class="getRoute() === 'reservTeacher' ? 'font-weight-bold opacity-10' : 'opacity-6'"
             >
-              <i class="ni ni-world-2 me-2"></i>상담예약관리
+              <i class="ni ni-calendar-grid-58 me-2"></i>상담예약관리
             </router-link>
           </li>
 
@@ -112,9 +122,9 @@ const supportRoute = computed(() => {
             <router-link
               to="/resrvGuardian"
               class="nav-link text-black"
-              :class="getRoute() === 'reservGuardian' ? 'font-weight-bold opacity-10' : 'opacity-6'"
+              :class="getRoute() === 'resrvGuardian' ? 'font-weight-bold opacity-10' : 'opacity-6'"
             >
-              <i class="ni ni-world-2 me-2"></i>상담예약신청
+              <i class="ni ni-ui-04 me-2"></i>상담예약신청
             </router-link>
           </li>
 
@@ -124,7 +134,7 @@ const supportRoute = computed(() => {
               class="nav-link text-black"
               :class="getRoute() === 'qnaGuardian' ? 'font-weight-bold opacity-10' : 'opacity-6'"
             >
-              <i class="ni ni-world-2 me-2"></i>문의하기
+              <i class="ni ni-support-16 me-2"></i>문의하기
             </router-link>
           </li>
 
@@ -134,7 +144,7 @@ const supportRoute = computed(() => {
               class="nav-link text-black"
               :class="getRoute() === 'surveys' ? 'font-weight-bold opacity-10' : 'opacity-6'"
             >
-              <i class="ni ni-world-2 me-2"></i>지원서관리
+              <i class="ni ni-single-copy-04 me-2"></i>지원서관리
             </router-link>
           </li>
 
@@ -146,7 +156,7 @@ const supportRoute = computed(() => {
                 getRoute().indexOf('center') >= 0 ? 'font-weight-bold opacity-10' : 'opacity-6'
               "
             >
-              <i class="ni ni-world-2 me-2"></i>센터관리
+              <i class="ni ni-building me-2"></i>센터관리
             </router-link>
           </li>
           <li v-if="isLogIn.info.member_authority === ('a4' || 'a2')" class="nav-item">
@@ -155,7 +165,7 @@ const supportRoute = computed(() => {
               class="nav-link text-black"
               :class="getRoute() === 'surveys' ? 'font-weight-bold opacity-10' : 'opacity-6'"
             >
-              <i class="ni ni-world-2 me-2"></i>회원관리
+              <i class="ni ni-circle-08 me-2"></i>회원관리
             </router-link>
           </li>
         </ul>
@@ -181,12 +191,12 @@ const supportRoute = computed(() => {
               </router-link>
 
               <span class="d-flex align-items-center gap-2">
-                <button type="button" class="btn btn-olive-light mb-0" @click="goMyPage">
+                <button type="button" class="btn btn-blue-light mb-0" @click="goMyPage">
                   마이페이지
                 </button>
                 <button
                   type="button"
-                  class="btn btn-olive-light mb-0"
+                  class="btn btn-logout mb-0"
                   @click.prevent="clearInfo()"
                   @click="logOut"
                 >
@@ -232,40 +242,53 @@ const supportRoute = computed(() => {
 </template>
 
 <style scoped>
-.nav-link {
-  transition: opacity 0.2s ease;
-  display: flex;
-  align-items: center;
-  font-size: 1rem !important;
-  font-weight: 500 !important;
-  padding: 0.5rem 1rem !important;
-}
-.nav-link:hover {
-  opacity: 1 !important;
-}
-.nav-link {
+/* 메인 메뉴 - 하얀색에서 검정으로 호버 */
+.navbar-nav.me-auto .nav-link {
   transition: color 0.2s ease;
   display: flex;
   align-items: center;
-  font-size: 1rem !important;
+  font-size: 16px !important;
   font-weight: 500 !important;
-  padding: 0.5rem 1rem !important;
-  color: #344767;
+  padding: 8px 16px !important;
+  color: white;
 }
 
-.nav-link:hover {
-  color: #6b8e6f !important;
+.navbar-nav.me-auto .nav-link:hover {
+  color: #000000 !important;
 }
 
-.btn-olive-light {
-  background-color: #6b8e6f;
+/* 오른쪽 메뉴(사용자 이름, 톱니바퀴, 알림) - 화이트로 고정, 호버 없음 */
+.navbar-nav.justify-content-end .nav-link {
+  display: flex;
+  align-items: center;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  padding: 8px 16px !important;
+  color: white !important;
+}
+
+.navbar-nav.justify-content-end .nav-link:hover {
+  color: white !important;
+}
+
+.btn-blue-light {
+  background-color: #4a90c8;
   color: white;
   border: none;
   border-radius: 8px;
-  padding: 0.5rem 1rem;
+  padding: 8px 16px;
+}
+
+/* 로그아웃 버튼 */
+.btn-logout {
+  background-color: #d77064;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
 }
 
 .gap-2 {
-  gap: 0.5rem;
+  gap: 8px;
 }
 </style>
