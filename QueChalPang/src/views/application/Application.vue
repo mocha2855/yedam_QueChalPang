@@ -14,7 +14,14 @@
     <!-- LEFT -->
     <div class="col content-wrapper">
       <div class="topbar">
-        <RouterLink :to="{ name: 'TablesManager' }" class="back-link">
+        <RouterLink
+          :to="
+            counter.isLogIn?.info?.member_authority === 'a4'
+              ? { name: 'TablesAdmin' }
+              : { name: 'TablesManager' }
+          "
+          class="back-link"
+        >
           ← 목록으로 돌아가기
         </RouterLink>
       </div>
@@ -138,7 +145,7 @@ const returnStatus = (stat) => {
   if (statStatus !== 'i2') {
     return '대기'
   }
- 
+
   //status_status = i2 일때만 텍스트 표시
   if (stat === 'e3') return '계획'
   if (stat === 'e4') return '중점'
@@ -150,7 +157,6 @@ const returnStatus = (stat) => {
 
   return stat ?? ''
 }
-
 
 onBeforeMount(async () => {
   store.state.showSidenav = false

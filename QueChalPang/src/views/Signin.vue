@@ -51,7 +51,7 @@ const logIn = async () => {
     isLogIn.value.info = result.member[0]
     // 권한별 리다이렉트
     if (result.member[0].member_authority === 'a4') {
-      router.push('/tables') // 시스템관리자는 지원현황으로
+      router.push('/tablesAdmin') // 시스템관리자는 지원현황으로
     } else {
       router.push({ name: '/' }) // 나머지는 메인으로
     }
