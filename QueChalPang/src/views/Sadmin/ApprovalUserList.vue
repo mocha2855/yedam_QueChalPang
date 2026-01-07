@@ -39,10 +39,6 @@ const goToPage = (page) => {
     checkedIds.value = [] // 페이지 변경시 체크 초기화
   }
 }
-// 회원 상세 페이지로 이동
-const memberInfo = (id) => {
-  router.push({ path: `/member/${id}` })
-}
 
 // 승인 상태 텍스트
 const getStatus = (confirm) => {
@@ -267,13 +263,7 @@ const approvalUserUpdate = (id) => {
                         {{ member.member_id }}
                       </p>
                     </td>
-                    <td
-                      class="text-sm"
-                      @click="member.member_confirm !== 'l3' ? memberInfo(member.member_id) : null"
-                      :style="{
-                        cursor: member.member_confirm !== 'l3' ? 'pointer' : 'not-allowed',
-                      }"
-                    >
+                    <td class="text-sm">
                       {{ member.member_name }}
                     </td>
                     <td class="text-sm">

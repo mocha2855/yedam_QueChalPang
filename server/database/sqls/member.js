@@ -47,7 +47,7 @@ const selectMemberApproval = `
   SELECT * from member 
   WHERE member_authority in ('a1','a2','a3')
   AND member_confirm != 'l4'
-  order by member_date desc;
+  order by member_date desc
 `;
 
 // 회원 승인 처리 (l2 -> l1 or l3)

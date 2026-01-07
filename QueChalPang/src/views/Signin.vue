@@ -49,14 +49,17 @@ const logIn = async () => {
   if (result.isCorrect) {
     isLogIn.value.isLogIn = true
     isLogIn.value.info = result.member[0]
-    goToBoardInfo()
+    // 권한별 리다이렉트
+    if (result.member[0].member_authority === 'a4') {
+      router.push('/tables') // 시스템관리자는 지원현황으로
+    } else {
+      router.push({ name: '/' }) // 나머지는 메인으로
+    }
   }
+
   console.log(isLogIn.value)
 }
 
-const goToBoardInfo = () => {
-  router.push({ name: '/' })
-}
 const toFindId = () => {
   router.push({ name: 'FindId' })
 }
