@@ -30,7 +30,6 @@ router.put("/approveStatus/:no", async (req, res) => {
   const post = await applicationService.applicationApproveInfo(no, req.body);
   res.send(post);
 });
-//---------------------------------------------------------------------
 
 // 대기단계 반려 (관리자)
 router.put("/rejectstatus/:no", async (req, res) => {
@@ -88,6 +87,7 @@ router.put("/submitChangingPlanningInfo/:no", async (req, res) => {
   let post = await applicationService.updateChangingPlanningInfo(no, data);
   res.send(post);
 });
+
 // 지원서 전체 가져오기(일반사용자 및 담당자)
 router.get("/searchApplicationById/:id/:authority", async (req, res) => {
   let { id, authority } = req.params;
@@ -100,6 +100,7 @@ router.get("/searchApplicationById/:id/:authority", async (req, res) => {
   );
   res.send(result);
 });
+
 // 지원신청서 등록(일반사용자 및 담당자)
 router.post("/addApplicationById/:id/:authority", async (req, res) => {
   let input = req.body;
@@ -107,12 +108,14 @@ router.post("/addApplicationById/:id/:authority", async (req, res) => {
   let result = await applicationService.insertAppById(input, id, authority);
   res.send(result);
 });
+
 // 지원신청서 조회(일반사용자 및 담당자)
 router.get(`/applicationInfo/:no`, async (req, res) => {
   let { no } = req.params;
   let result = await applicationService.findAppByNo(no);
   res.send(result);
 });
+
 // 검토 중, 반려, 승인 지원결과서 불러오기
 router.get("/resultReview/:no", async (req, res) => {
   let no = req.params.no;
