@@ -2,16 +2,23 @@ const mysql = require("../database/mapper.js");
 
 // 전체 센터 목록
 const findAllCenter = async (key, value, badge) => {
-  let result;
-  result = await mysql.centerQuery("searchAllCenter", [
+  // badge가 빈 문자열이면 전체 조회
+  if (!badge || badge === "") {
+    let result = await mysql.centerQuery("selectAllCenterWithoutBadge", [
+      key || "center_name",
+      value || "",
+    ]);
+    return result;
+  }
+
+  const badgeArray = badge.replaceAll("'", "").split(",");
+  let result = await mysql.centerQuery("searchAllCenter", [
     key,
     value,
-    badge.replaceAll("'", "").split(","),
+    badgeArray,
   ]);
-
   return result;
 };
-
 const addCenterInfo = async (value) => {
   console.log("value : ", value);
   let result = await mysql.centerQuery("insertCenterInfo", value);

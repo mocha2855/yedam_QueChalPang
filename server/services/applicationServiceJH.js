@@ -129,7 +129,14 @@ const findAppById = async (id, search, value, badge, authority) => {
       badge.replaceAll("'", "").split(","),
     ]);
   } else if (authority == "a4") {
-    result = await mysql.bquery("selectApplicationsByAdmin", [
+    if (search == undefined) {
+      search = "d.dependant_name";
+    }
+    if (value === undefined) {
+      value = "";
+    }
+
+    result = await mysql.bquery("selectApplicationsByCenter", [
       id,
       search,
       value,
