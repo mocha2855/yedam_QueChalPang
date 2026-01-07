@@ -55,10 +55,5 @@ defineEmits(['confirm', 'cancel'])
   box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
 }
 
-.modal-text {
-  font-size: 24px;
-  line-height: 1.6;
-  text-align: center;
-  margin: 0;
-}
+
 </style>
