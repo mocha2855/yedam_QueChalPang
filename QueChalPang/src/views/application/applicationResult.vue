@@ -679,7 +679,7 @@ import { useRoute } from 'vue-router'
 import { useCounterStore } from '@/stores/member'
 import { useApplicationStore } from '@/stores/application'
 import axios from 'axios'
-import { useModalStore } from '@/stores/Modal'
+import { useModalStore } from '@/stores/modal'
 import ApplicationModal from './modals/ApplicationModal.vue'
 
 const route = useRoute()
