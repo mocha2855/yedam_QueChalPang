@@ -12,34 +12,33 @@ const findById = async (no) => {
   return post;
 };
 
-// 결재자 선택화면 목록
-const rejectorFindById = async () => {
-  let post = await mysql.bquery("rejectorSelectById");
-  return post;
-};
-
-// 대기단계 승인요청
+// 대기단계 승인요청 (담당자)
+// status 받지 말고(받아도 무시), applicationUpdateInfo는 [no]만 넘김
+//담당자가 승인요청 넣으면 status_status가 null에서 i1(검토중)으로 바뀜
 const applicationModifyInfo = async (no, data) => {
-  let { status } = data;
-  let post = await mysql.bquery("applicationUpdateInfo", [status, no]);
+  const { status } = data;
+  const post = await mysql.bquery("applicationUpdateInfo", [status, no]);
   return post;
 };
 
-// 대기단계 반려사유
-const rejectModifyInfo = async (no, data) => {
-  let { status_reject } = data;
-  let post = await mysql.bquery("statusRejectUpdateInfo", [status_reject, no]);
+// 대기단계 승인 (관리자)
+const applicationApproveInfo = async (no, data) => {
+  const { approverId } = data; // 결재자 member_id
+  const post = await mysql.bquery("approveStatus", [approverId, no]);
   return post;
 };
+//---------------------------------------------------------------------
 
-// 대기단계 승인 , 재승인
-const applicationSuccessModifyInfo = async (no, data) => {
-  let { status_status, status_reject } = data;
-  let post = await mysql.bquery("applicationSuccessUpdateInfo", [
-    status_status,
+// 대기단계 반려 (관리자)
+const applicationRejectInfo = async (no, data) => {
+  const { status_reject, approverId } = data;
+
+  const post = await mysql.bquery("rejectStatus", [
     status_reject,
+    approverId,
     no,
   ]);
+
   return post;
 };
 
@@ -88,26 +87,20 @@ const updateChangingPlanningInfo = async (planning_no, data) => {
   ]);
   return post;
 };
-// 지원신청현황 가져오기(일반사용자 및 담당자)
+
+// 지원신청현황 가져오기(일반사용자 / 담당자 / 관리자)
 const findAppById = async (id, search, value, authority) => {
   let result;
-  if (authority == "a1") {
-    if (search == undefined) {
+
+  if (authority === "a1") {
+    if (search === undefined) {
       search = "a.member_id";
     }
-    if (value == undefined) {
+    if (value === undefined) {
       value = "";
     }
     result = await mysql.bquery("selectApplicationsById", [search, value, id]);
-  } else if (authority == "a2") {
-    if (search == undefined) {
-      search = "dependant_name";
-    }
-    if (value == undefined) {
-      value = "";
-    }
-    console.log(search, value, id);
-    result = await mysql.bquery("selectApplicationsById2", [search, value, id]);
+  } else if (authority === "a2") {
     result = await mysql.bquery("selectApplicationsByTeacher", [
       id,
       id,
@@ -119,9 +112,13 @@ const findAppById = async (id, search, value, authority) => {
   } else if (authority == "a4") {
     // 시스템 관리자 - 센터별 조회
     result = await mysql.bquery("selectApplicationsByCenter", [id]);
+  } else if (authority === "a3") {
+    result = await mysql.bquery("selectApplicationsByAdmin", [id]);
   }
+
   return result;
 };
+
 // 지원신청서 등록
 const insertAppById = async (input, id, authority) => {
   console.log(input);
@@ -185,10 +182,8 @@ const updateChangingResultInfo = async (result_no, data) => {
 module.exports = {
   dependantFindById,
   findById,
-  rejectorFindById,
   applicationModifyInfo,
-  rejectModifyInfo,
-  applicationSuccessModifyInfo,
+  applicationRejectInfo,
   findPlanningById,
   findplanningReviewById,
   addPlanningInfo,
@@ -203,4 +198,5 @@ module.exports = {
   updateChangingResultInfo,
   insertAppById,
   findAppByNo,
+  applicationApproveInfo,
 };

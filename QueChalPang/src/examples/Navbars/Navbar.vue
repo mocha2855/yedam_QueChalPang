@@ -60,6 +60,19 @@ const supportRoute = computed(() => {
   if (auth === 'a4') return '/tables'
   if (auth === 'a1') return '/tables'
   return '/tablesManager'
+
+  switch (auth) {
+    case 'a1':
+      return '/tables'
+    case 'a2':
+      return '/tablesManager'
+    case 'a3':
+      return '/tablesAdmin'
+    case 'a4':
+      return '/tablesManager'
+    default:
+      return '/'
+  }
 })
 
 // 일반회원만 베이지, 나머지는 파랑
