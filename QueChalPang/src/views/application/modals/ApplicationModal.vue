@@ -1,146 +1,59 @@
+<!-- application/modals/ApplicationModal.vue -->
 <template>
-  <div class="reason-modal-wrapper">
-    <div class="modal-header">
-      <slot name="header">
-        <h2>수정이력등록</h2>
+  <div class="modal-backdrop">
+    <div class="modal-card">
+      <header class="modal-header">
+        <slot name="header" />
+      </header>
 
-        <button class="close-btn" @click="modal.close()">X</button>
-      </slot>
-    </div>
-    <slot name="body">
-      <div class="modal-body">
-        <h3>반려사유를 적어주세요</h3>
-        <textarea
-          class="reason-input"
-          v-model="modal.rejectReason"
-          placeholder="반려사유를 입력해주세요."
-        ></textarea>
-      </div>
-    </slot>
-    <div class="modal-footer">
-      <slot name="footer">
-        <button class="btn-save" @click="save">저장</button>
-        <button class="btn-cancel" @click="modal.close()">취소</button>
-      </slot>
+      <section class="modal-body">
+        <slot name="body" />
+      </section>
+
+      <footer class="modal-footer">
+        <slot name="footer" />
+      </footer>
     </div>
   </div>
 </template>
 
 <script setup>
-import { useModalStore } from '@/stores/Modal'
 
-const modal = useModalStore()
 </script>
+
 <style scoped>
-.reason-modal-wrapper {
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-card {
   background: white;
   border-radius: 10px;
   overflow: hidden;
   width: 100%;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  max-width: 520px;
 }
 
-/* 헤더 */
 .modal-header {
-  background: #2c3e50;
-  color: white;
-  padding: 20px 25px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
-.modal-header h2 {
-  color: white;
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 28px;
-  cursor: pointer;
-  padding: 0;
-  width: 35px;
-  height: 35px;
-  line-height: 1;
-  transition: opacity 0.2s;
-}
-
-.close-btn:hover {
-  opacity: 0.7;
-}
-
-/* 본문 */
 .modal-body {
-  padding: 30px 25px;
-  text-align: center;
+  padding: 24px 20px;
 }
 
-.reason-input {
-  width: 100%;
-  min-height: 150px;
-  padding: 15px;
-  border: 2px solid #e0e0e0;
-  border-radius: 6px;
-  font-size: 15px;
-  font-family: inherit;
-  resize: vertical;
-  transition: border-color 0.2s;
-  box-sizing: border-box;
-}
-
-.reason-input:focus {
-  outline: none;
-  border-color: #2196f3;
-}
-
-.reason-input::placeholder {
-  color: #999;
-}
-
-/* 하단 버튼 */
 .modal-footer {
-  padding: 20px 25px;
-  background: #f8f9fa;
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
   display: flex;
   gap: 12px;
   justify-content: center;
-}
-
-.btn-save,
-.btn-cancel {
-  padding: 12px 40px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: 600;
-  transition: all 0.2s;
-}
-
-.btn-save {
-  background: #2196f3;
-  color: white;
-}
-
-.btn-save:hover {
-  background: #1976d2;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
-}
-
-.btn-cancel {
-  background: #f44336;
-  color: white;
-}
-
-.btn-cancel:hover {
-  background: #d32f2f;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
 }
 </style>

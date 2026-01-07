@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Dashboard from '../views/Dashboard.vue'
 import Tables from '../views/Tables.vue'
 import TablesManager from '../views/TablesManager.vue'
+import TablesAdmin from '../views/TablesAdmin.vue'
 import Signup from '../views/Signup.vue' //회원가입
 import Signin from '../views/Signin.vue' //로그인
 import FindId from '../views/FindId.vue' //아이디찾기
@@ -42,6 +43,11 @@ const routes = [
     path: '/tablesManager',
     name: 'TablesManager',
     component: TablesManager,
+  },
+  {
+    path: '/tablesAdmin',
+    name: 'TablesAdmin',
+    component: TablesAdmin,
   },
   {
     path: '/signin',

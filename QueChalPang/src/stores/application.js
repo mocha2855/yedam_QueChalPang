@@ -1,6 +1,7 @@
-// application.js
+// stores / application.js
 import { defineStore } from 'pinia'
 import axios from 'axios'
+import { useCounterStore } from '@/stores/member'
 
 export const useApplicationStore = defineStore('application', {
   state: () => ({
@@ -26,6 +27,33 @@ export const useApplicationStore = defineStore('application', {
   }),
 
   actions: {
+    // 대기단계 승인 (관리자)
+    async approveWaitStatus(applicationNo) {
+      const counterStore = useCounterStore()
+      const approverId = counterStore.isLogIn.info.member_id
+
+      await axios.put(`/api/approveStatus/${applicationNo}`, {
+        approverId,
+      })
+
+      // 승인 후 상태 다시 불러오기
+      await this.loadApplicationContext(applicationNo)
+    },
+
+    // 대기단계 반려 (관리자)
+    async rejectWaitStatus(applicationNo, reason) {
+      const counterStore = useCounterStore()
+      const rejectorId = counterStore.isLogIn.info.member_id // 반려한 관리자
+
+      await axios.put(`/api/rejectstatus/${applicationNo}`, {
+        status_reject: reason,
+        rejectorId,
+      })
+
+      // 반려 후 상태 다시 불러오기
+      await this.loadApplicationContext(applicationNo)
+    },
+
     // 지원자, 담당자, 보호자 실명
     async searchdependantInfo(dependantNo) {
       const res = await axios.get(`/api/dependantInfo/${dependantNo}`)
@@ -54,7 +82,7 @@ export const useApplicationStore = defineStore('application', {
       return this.dependantInfo
     },
 
-    // ✅ 핵심: application_no로 들어오면 -> dependant_no 뽑아서 dependantInfo까지 같이 세팅
+    // application_no로 들어오면 -> dependant_no 뽑아서 dependantInfo까지 같이 세팅
     async loadApplicationContext(applicationNo) {
       const info = await this.checkdependantInfo(applicationNo)
 
@@ -67,6 +95,8 @@ export const useApplicationStore = defineStore('application', {
 
       return { dependantInfo: this.dependantInfo, dependantRealInfo: this.dependantRealInfo }
     },
+
+
 
     // 계획서 갯수 파악 (application_no 기준)
     async countPlanning(applicationNo) {

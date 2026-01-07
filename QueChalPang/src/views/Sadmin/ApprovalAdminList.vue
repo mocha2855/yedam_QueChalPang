@@ -12,7 +12,7 @@ import ArgonPaginationItem from '@/components/ArgonPaginationItem.vue'
 const store = useApprovalStore()
 const member = useCounterStore()
 
-const { managerList, managerPendingList } = storeToRefs(store)
+const { adminList, adminPendingList } = storeToRefs(store)
 const router = useRouter()
 const checkedIds = ref([]) // 선택 체크
 
@@ -22,14 +22,14 @@ const itemsPerPage = 10 // 한 페이지에 보여줄 개수
 
 // 총 페이지 수
 const totalPages = computed(() => {
-  return Math.ceil(managerList.value.length / itemsPerPage)
+  return Math.ceil(adminList.value.length / itemsPerPage)
 })
 
 // 현재 페이지에 표시할 데이터
 const paginatedList = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage // 시작 인덱스
   const end = start + itemsPerPage // 끝 인덱스
-  return managerList.value.slice(start, end) // 해당 범위만 잘라내기
+  return adminList.value.slice(start, end) // 해당 범위만 잘라내기
 })
 // 페이지 변경
 const goToPage = (page) => {
@@ -38,10 +38,6 @@ const goToPage = (page) => {
     currentPage.value = page // 페이지 변경
     checkedIds.value = [] // 페이지 변경시 체크 초기화
   }
-}
-// 회원 상세 페이지로 이동
-const memberInfo = (id) => {
-  router.push({ path: `/member/${id}` })
 }
 
 // 승인 상태 텍스트
@@ -54,12 +50,12 @@ const getStatus = (confirm) => {
 const isAllChecked = computed({
   //개별선택 -> 전체 체크 반영
   get() {
-    return checkedIds.value.length === managerList.value.length && managerList.length > 0
+    return checkedIds.value.length === adminList.value.length && adminList.length > 0
   },
   //전체선택 -> 개별 반영
   set(val) {
     if (val) {
-      checkedIds.value = managerList.value.map((m) => m.member_id)
+      checkedIds.value = adminList.value.map((m) => m.member_id)
     } else {
       checkedIds.value = []
     }
@@ -87,7 +83,7 @@ const approveSelected = async () => {
 
   //승인대기만 필터링
   const pendingIds = checkedIds.value.filter((id) => {
-    const member = managerList.value.find((m) => m.member_id === id)
+    const member = adminList.value.find((m) => m.member_id === id)
     return member && member.member_confirm === 'l2'
   })
 
@@ -126,7 +122,7 @@ const deleteSelected = async () => {
 
   // 삭제 가능한 것만 필터링 (l4가 아닌 것들)
   const deletableIds = checkedIds.value.filter((id) => {
-    const member = managerList.value.find((m) => m.member_id === id)
+    const member = adminList.value.find((m) => m.member_id === id)
     return member && member.member_confirm !== 'l4'
   })
 
@@ -169,12 +165,11 @@ onBeforeMount(async () => {
   }
   await store.getApprovalList()
 })
-const approvalManagerUpdate = (id) => {
-  router.push({ name: 'ApprovalManagerUpdate', params: { id: id } })
+const approvalAdminUpdate = (id) => {
+  router.push({ name: 'ApprovalAdminUpdate', params: { id: id } })
 }
-
 const goToUserAdd = () => {
-  router.push({ name: 'ApprovalManagerAdd' })
+  router.push({ name: 'ApprovalAdminAdd' })
 }
 </script>
 
@@ -184,15 +179,15 @@ const goToUserAdd = () => {
       <div class="col-12">
         <div class="card">
           <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-            <h6>담당자 승인 관리</h6>
+            <h6>관리자 승인 관리</h6>
             <p class="text-sm mb-0" style="color: #000">
-              승인 대기: {{ managerPendingList.length }}건
+              승인 대기: {{ adminPendingList.length }}건
             </p>
           </div>
           <div class="card-header pb-0 d-flex justify-content-between align-items-center">
             <!-- 왼쪽: 회원추가 -->
             <button class="btn btn-sm btn-primary" @click="goToUserAdd">
-              <i class="fas fa-plus"></i> 담당자추가
+              <i class="fas fa-plus"></i> 관리자추가
             </button>
 
             <!-- 오른쪽: 선택 버튼들 -->
@@ -263,11 +258,7 @@ const goToUserAdd = () => {
                         {{ member.member_id }}
                       </p>
                     </td>
-                    <td
-                      class="text-sm"
-                      @click="memberInfo(member.member_id)"
-                      style="cursor: pointer"
-                    >
+                    <td class="text-sm">
                       {{ member.member_name }}
                     </td>
                     <td class="text-sm">
@@ -296,14 +287,14 @@ const goToUserAdd = () => {
                       >
                         <ArgonButton
                           color="success"
-                          size="sm"
+                          size="xs"
                           @click="handleApprove(member.member_id)"
                         >
                           승인
                         </ArgonButton>
                         <ArgonButton
                           color="danger"
-                          size="sm"
+                          size="xs"
                           @click="handleReject(member.member_id)"
                         >
                           거절
@@ -315,7 +306,7 @@ const goToUserAdd = () => {
                       <button
                         v-if="member.member_confirm === 'l1'"
                         class="btn btn-sm btn-outline-secondary"
-                        @click="approvalManagerUpdate(member.member_id)"
+                        @click="approvalAdminUpdate(member.member_id)"
                       >
                         수정하기
                       </button>
