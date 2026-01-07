@@ -1,4 +1,4 @@
-<!-- a3인 관리자 컴포넌트 -->
+<!-- a3인 관리자 컴포넌트 , 대기단계 승인/반려 함-->
 <script setup>
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
@@ -13,9 +13,8 @@ const approveOpen = ref(false)
 const rejectOpen = ref(false)
 
 const approve = async () => {
-  await axios.put(`/api/compSuccessApplication/${route.params.id}`, {
-    status_status: 'i2',
-    status_reject: null,
+  await axios.put(`/api/approveStatus/${route.params.id}`, {
+    status: 'e3',
   })
   approveOpen.value = false
   await application.checkdependantInfo(route.params.id)

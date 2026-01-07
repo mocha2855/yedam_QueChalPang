@@ -57,8 +57,18 @@ console.log(isLogIn.value.info.member_id)
 const supportRoute = computed(() => {
   const auth = isLogIn.value?.info?.member_authority
 
-  if (auth === 'a1') return '/tables'
-  return '/tablesManager'
+  switch (auth) {
+    case 'a1':
+      return '/tables'
+    case 'a2':
+      return '/tablesManager'
+    case 'a3':
+      return '/tablesAdmin'
+    case 'a4':
+      return '/tablesManager'
+    default:
+      return '/'
+  }
 })
 </script>
 
