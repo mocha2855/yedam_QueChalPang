@@ -358,12 +358,11 @@ const selectApplicationsByCenter = `
     a.application_no,
     d.dependant_no,
     d.dependant_name,
-
     g.member_name AS guardian_name,
     t.member_name AS manager_name,
-
     a.application_date,
     a.status,
+    a.status_status,
 
     COALESCE(p.p_i1, 0) AS p_i1,
     COALESCE(p.p_i2, 0) AS p_i2,
@@ -376,16 +375,12 @@ const selectApplicationsByCenter = `
     COALESCE(m.meetingCount, 0) AS meetingCount
 
   FROM application a
-  JOIN dependant d
-    ON d.dependant_no = a.dependant_no
-  JOIN member g
-    ON g.member_id = d.member_id
-  LEFT JOIN member t
-    ON t.member_id = d.manager_main
+  JOIN dependant d ON d.dependant_no = a.dependant_no
+  JOIN member g ON g.member_id = d.member_id
+  LEFT JOIN member t ON t.member_id = d.manager_main
 
   LEFT JOIN (
-    SELECT
-      application_no,
+    SELECT application_no,
       SUM(planning_status = 'i1') AS p_i1,
       SUM(planning_status = 'i2') AS p_i2,
       SUM(planning_status = 'i3') AS p_i3
@@ -394,26 +389,24 @@ const selectApplicationsByCenter = `
   ) p ON p.application_no = a.application_no
 
   LEFT JOIN (
-    SELECT
-      pl.application_no,
+    SELECT pl.application_no,
       SUM(r.result_status = 'i1') AS r_i1,
       SUM(r.result_status = 'i2') AS r_i2,
       SUM(r.result_status = 'i3') AS r_i3
     FROM \`result\` r
-    JOIN planning pl
-      ON pl.planning_no = r.planning_no
+    JOIN planning pl ON pl.planning_no = r.planning_no
     GROUP BY pl.application_no
   ) r2 ON r2.application_no = a.application_no
 
   LEFT JOIN (
-    SELECT
-      application_no,
-      COUNT(*) AS meetingCount
+    SELECT application_no, COUNT(*) AS meetingCount
     FROM reservation
     GROUP BY application_no
   ) m ON m.application_no = a.application_no
 
   WHERE t.center_no = ?
+    AND ?? LIKE CONCAT('%', ?, '%')
+    AND a.status IN (?)
   ORDER BY a.application_date DESC
 `;
 module.exports = {

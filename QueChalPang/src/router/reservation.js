@@ -7,20 +7,20 @@ import ReservationGuardianHistory from '@/views/reservation/ReservationGuardianH
 import ReservationBlock from '@/views/reservation/ReservationBlock.vue'
 
 const reservationRoutes = [
-  { path: '/resrvTeacher', name: 'reservationTeacher', component: ReservationTeacher },
-  { path: '/resrvGuardian', name: 'reservationGuardian', component: ReservationGuardian },
+  { path: '/resrvTeacher', name: 'ReservationTeacher', component: ReservationTeacher },
+  { path: '/resrvGuardian', name: 'ReservationGuardian', component: ReservationGuardian },
   {
     path: '/resrvGuardianConfirm',
-    name: 'reservationGuardianConfirm',
+    name: 'ReservationGuardianConfirm',
     component: ReservationGuardianConfirm,
   },
-  { path: '/resrvGuardianMap', name: 'reservationGuardianMap', component: ReservationGuardianMap },
+  { path: '/resrvGuardianMap', name: 'ReservationGuardianMap', component: ReservationGuardianMap },
   {
     path: '/resrvGuardianHistory',
-    name: 'reservationGuardianHistory',
+    name: 'ReservationGuardianHistory',
     component: ReservationGuardianHistory,
   },
-  { path: '/resrvBlock', name: 'reservationBlock', component: ReservationBlock },
+  { path: '/resrvBlock', name: 'ReservationBlock', component: ReservationBlock },
 ]
 
 export default reservationRoutes
