@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-import { useModalStore } from '@/stores/modal'
+import { useModalStore } from '@/stores/Modal'
 import { ref } from 'vue'
 
 const modal = useModalStore()

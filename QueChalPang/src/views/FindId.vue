@@ -2,9 +2,9 @@
 import { onBeforeUnmount, onBeforeMount, reactive, computed, ref, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import axios from 'axios'
-import Navbar from '@/examples/PageLayout/Navbar.vue'
+// import Navbar from '@/examples/PageLayout/Navbar.vue'
 import ArgonInput from '@/components/ArgonInput.vue'
-import ArgonButton from '@/components/ArgonButton.vue'
+// import ArgonButton from '@/components/ArgonButton.vue'
 import { Modal } from 'bootstrap'
 import router from '@/router'
 
@@ -147,169 +147,341 @@ const showId = async () => {
   isFound = true
   openModal()
 }
+
+// 뒤로가기 함수 추가
+const goBack = () => {
+  router.push({ name: 'Signin' })
+}
 </script>
+
 <template>
   <!-- Modal -->
   <Teleport to="body">
     <div class="modal fade" id="exampleModal" ref="modalRef" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 12px; border: none">
+          <div class="modal-header" style="border-bottom: 1px solid #e9ecef; padding: 24px">
+            <h5 class="modal-title" style="color: #1e4d6b; font-weight: 600">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
+                width="20"
+                height="20"
                 viewBox="0 0 24 24"
-                fill="orange"
+                fill="#4a90c8"
+                style="margin-right: 8px; vertical-align: middle"
               >
-                <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"></path></svg
-              >알림
+                <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"></path>
+              </svg>
+              알림
             </h5>
-
             <span
               @click="closeModal"
-              style="cursor: pointer; font-size: 1.5rem; font-weight: bold; line-height: 1"
+              style="
+                cursor: pointer;
+                font-size: 24px;
+                font-weight: 300;
+                line-height: 1;
+                color: #666;
+              "
             >
               &times;
             </span>
           </div>
-          <div class="modal-body text-center">
-            <h6>
+          <div class="modal-body text-center" style="padding: 32px 24px">
+            <h6 style="color: #344767; font-weight: 400; margin: 0">
               {{ msg }}
             </h6>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="closeModal">취소</button>
-            <button type="button" class="btn btn-primary" @click="closeModal">확인</button>
+          <div class="modal-footer" style="border-top: 1px solid #e9ecef; padding: 16px 24px">
+            <button
+              type="button"
+              class="btn"
+              @click="closeModal"
+              style="
+                background-color: #e9ecef;
+                color: #344767;
+                border: none;
+                padding: 8px 24px;
+                border-radius: 8px;
+              "
+            >
+              취소
+            </button>
+            <button
+              type="button"
+              class="btn"
+              @click="closeModal"
+              style="
+                background-color: #4a90c8;
+                color: white;
+                border: none;
+                padding: 8px 24px;
+                border-radius: 8px;
+              "
+            >
+              확인
+            </button>
           </div>
         </div>
       </div>
     </div>
   </Teleport>
+
   <div class="container top-0 position-sticky z-index-sticky">
     <div class="row">
       <div class="col-12">
         <navbar
-          isBlur="blur  border-radius-lg my-3 py-2 start-0 end-0 mx-4 shadow"
+          isBlur="blur border-radius-lg my-3 py-2 start-0 end-0 mx-4 shadow"
           v-bind:darkMode="true"
           isBtn="bg-gradient-success"
         />
       </div>
     </div>
   </div>
+
   <main class="mt-0 main-content">
     <section>
-      <div class="page-header min-vh-100">
+      <div
+        class="page-header min-vh-100"
+        style="background: linear-gradient(to bottom, #d8e8f0 0%, #e5f0f5 50%, #f5f5e8 100%)"
+      >
         <div class="container">
-          <div class="mx-auto w-50">
-            <div class="card card-plain">
-              <div class="pb-0 card-header text-start">
-                <h4 class="font-weight-bolder">아이디 찾기</h4>
-                <p class="mb-0">아이디를 찾기 위해 이름과 휴대폰 번호를 입력해주세요.</p>
-              </div>
-              <div class="card-body">
-                <form v-on:submit.prevent="">
-                  <div class="mb-3">
-                    <argon-input
-                      id="name"
-                      type="text"
-                      placeholder="이름"
-                      name="name"
-                      size="lg"
-                      v-model="member.name"
-                    />
-                  </div>
-                  <div class="row mb-3">
-                    <argon-input
-                      class="col-3"
-                      id="phone1"
-                      type="text"
-                      placeholder="010"
-                      name="phone1"
-                      size="lg"
-                      v-model="phoneNumbers.phone1"
-                      disabled
-                    />
-                    <argon-input
-                      class="col-3"
-                      maxlength="4"
-                      id="phone2"
-                      type="text"
-                      placeholder="0000"
-                      name="phone2"
-                      size="lg"
-                      v-model="phoneNumbers.phone2"
-                    />
-                    <argon-input
-                      class="col-3"
-                      maxlength="4"
-                      id="phone3"
-                      type="text"
-                      placeholder="0000"
-                      name="phone3"
-                      size="lg"
-                      v-model="phoneNumbers.phone3"
-                    />
+          <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-7">
+              <div
+                class="card"
+                style="
+                  border-radius: 16px;
+                  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+                  border: none;
+                "
+              >
+                <div
+                  class="card-header text-center"
+                  style="background: transparent; border: none; padding: 40px 32px 16px"
+                >
+                  <!-- 뒤로가기 버튼 -->
+                  <div style="padding: 12px 0 0 8px">
                     <button
-                      :class="{
-                        'col-3': true,
-                        btn: true,
-                        'btn-primary': phoneBtn.phoneBtn,
-                        'btn-secondary': phoneBtn.phoneBtnChecked,
-                        disabled: phoneBtn.phoneBtnChecked,
-                      }"
-                      @click="matchName()"
+                      @click="goBack"
+                      class="btn"
+                      style="
+                        background: transparent;
+                        border: none;
+                        padding: 8px;
+                        color: #4a90c8;
+                        font-size: 24px;
+                        line-height: 1;
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        cursor: pointer;
+                      "
+                      onmouseover="this.style.background='transparent'"
+                      onmouseout="this.style.background='transparent'"
                     >
-                      본인인증
-                    </button>
-                  </div>
-                  <div class="row d-flex justify-content-between">
-                    <div class="col-9 position-relative">
-                      <argon-input
-                        id="certification"
-                        type="text"
-                        placeholder="인증번호"
-                        name="certification"
-                        size="lg"
-                        v-model="phoneBtn.auth"
-                      />
-                      <label
-                        for="certification"
-                        class="position-absolute end-0 top-50 translate-middle-y me-4 mb-0"
-                        style="z-index: 5; color: #666; font-size: 0.9rem; pointer-events: none"
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
                       >
-                        {{ timeFormat }}
-                      </label>
-                    </div>
-                    <button
-                      :class="{
-                        'col-3': true,
-                        btn: true,
-                        'btn-primary': phoneBtn.phoneAuth,
-                        'btn-secondary': phoneBtn.phoneAuthChecked,
-                        disabled: phoneBtn.phoneAuthChecked,
-                      }"
-                      @click="authCheck()"
-                    >
-                      확인
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                      </svg>
                     </button>
                   </div>
-
-                  <div class="row text-center">
-                    <div class="col-12">
-                      <argon-button
-                        class="mt-4"
-                        variant="gradient"
-                        color="success"
-                        fullWidth
+                  <h4 style="color: #1e4d6b; font-weight: 700; margin-bottom: 8px">아이디 찾기</h4>
+                  <p style="color: #67748e; font-size: 14px; margin: 0">
+                    이름과 휴대폰 번호를 입력해주세요
+                  </p>
+                </div>
+                <div class="card-body" style="padding: 24px 32px 40px">
+                  <form v-on:submit.prevent="">
+                    <!-- 이름 입력 -->
+                    <div class="mb-3">
+                      <label
+                        style="
+                          color: #344767;
+                          font-size: 14px;
+                          font-weight: 600;
+                          margin-bottom: 8px;
+                        "
+                      >
+                        이름
+                      </label>
+                      <argon-input
+                        id="name"
+                        type="text"
+                        placeholder="이름을 입력하세요"
+                        name="name"
                         size="lg"
-                        @click="showId()"
-                        >아이디 찾기
-                      </argon-button>
+                        v-model="member.name"
+                        style="border-radius: 10px"
+                      />
                     </div>
-                  </div>
-                </form>
+
+                    <!-- 휴대폰 번호 입력 -->
+                    <div class="mb-3">
+                      <label
+                        style="
+                          color: #344767;
+                          font-size: 14px;
+                          font-weight: 600;
+                          margin-bottom: 8px;
+                        "
+                      >
+                        휴대폰 번호
+                      </label>
+                      <div class="row g-2">
+                        <div class="col-3">
+                          <argon-input
+                            id="phone1"
+                            type="text"
+                            placeholder="010"
+                            name="phone1"
+                            size="lg"
+                            v-model="phoneNumbers.phone1"
+                            disabled
+                            style="border-radius: 10px"
+                          />
+                        </div>
+                        <div class="col-3">
+                          <argon-input
+                            maxlength="4"
+                            id="phone2"
+                            type="text"
+                            placeholder="0000"
+                            name="phone2"
+                            size="lg"
+                            v-model="phoneNumbers.phone2"
+                            style="border-radius: 10px"
+                          />
+                        </div>
+                        <div class="col-3">
+                          <argon-input
+                            maxlength="4"
+                            id="phone3"
+                            type="text"
+                            placeholder="0000"
+                            name="phone3"
+                            size="lg"
+                            v-model="phoneNumbers.phone3"
+                            style="border-radius: 10px"
+                          />
+                        </div>
+                        <div class="col-3">
+                          <button
+                            :class="{
+                              btn: true,
+                              'w-100': true,
+                              disabled: phoneBtn.phoneBtnChecked,
+                            }"
+                            :style="{
+                              backgroundColor: phoneBtn.phoneBtnChecked ? '#e9ecef' : '#4a90c8',
+                              color: phoneBtn.phoneBtnChecked ? '#adb5bd' : 'white',
+                              border: 'none',
+                              borderRadius: '10px',
+                              fontSize: '14px',
+                              fontWeight: '600',
+                              padding: '10px 8px',
+                            }"
+                            @click="matchName()"
+                          >
+                            본인인증
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- 인증번호 입력 -->
+                    <div class="mb-4">
+                      <label
+                        style="
+                          color: #344767;
+                          font-size: 14px;
+                          font-weight: 600;
+                          margin-bottom: 8px;
+                        "
+                      >
+                        인증번호
+                      </label>
+                      <div class="row g-2">
+                        <div class="col-9">
+                          <div class="position-relative">
+                            <argon-input
+                              id="certification"
+                              type="text"
+                              placeholder="인증번호를 입력하세요"
+                              name="certification"
+                              size="lg"
+                              v-model="phoneBtn.auth"
+                              style="border-radius: 10px"
+                            />
+                            <label
+                              for="certification"
+                              class="position-absolute top-50 translate-middle-y"
+                              style="
+                                right: 15px;
+                                z-index: 5;
+                                color: #4a90c8;
+                                font-size: 14px;
+                                font-weight: 600;
+                                pointer-events: none;
+                                margin: 0;
+                              "
+                            >
+                              {{ timeFormat }}
+                            </label>
+                          </div>
+                        </div>
+                        <div class="col-3">
+                          <button
+                            :class="{
+                              btn: true,
+                              'w-100': true,
+                              disabled: phoneBtn.phoneAuthChecked,
+                            }"
+                            :style="{
+                              backgroundColor: phoneBtn.phoneAuthChecked ? '#e9ecef' : '#4a90c8',
+                              color: phoneBtn.phoneAuthChecked ? '#adb5bd' : 'white',
+                              border: 'none',
+                              borderRadius: '10px',
+                              fontSize: '14px',
+                              fontWeight: '600',
+                              padding: '10px 8px',
+                            }"
+                            @click="authCheck()"
+                          >
+                            확인
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- 아이디 찾기 버튼 -->
+                    <button
+                      type="button"
+                      class="btn w-100"
+                      @click="showId()"
+                      style="
+                        background-color: #1e4d6b;
+                        color: white;
+                        border: none;
+                        padding: 12px;
+                        border-radius: 10px;
+                        font-size: 16px;
+                        font-weight: 600;
+                      "
+                    >
+                      아이디 찾기
+                    </button>
+                  </form>
+                </div>
               </div>
             </div>
           </div>

@@ -4,7 +4,7 @@
       <div class="col-12">
         <div class="card">
           <div class="card-header pb-0 px-5 mx-5">
-            <h5>지원자 상세정보</h5>
+            <h5>지원자 등록</h5>
             <hr class="mb-4" style="height: 5px; background-color: black" />
           </div>
           <div class="card-body px-0 pt-0 pb-2">
@@ -21,7 +21,7 @@
                         type="text"
                         aria-label="Name"
                         v-model="dependantDetail.dependant_name"
-                        disabled
+                        v-bind:disabled="changeMangerInfo"
                       />
                     </div>
                     <hr class="mb-4" style="height: 1px; background-color: black" />
@@ -31,7 +31,11 @@
                       <h6 class="mt-2">생년월일</h6>
                     </div>
                     <div class="col-5 mb-2">
-                      <argon-input v-model="dependantDetail.dependant_birth" disabled />
+                      <argon-input
+                        type="date"
+                        v-model="dependantDetail.dependant_birth"
+                        v-bind:disabled="changeMangerInfo"
+                      />
                     </div>
                     <hr class="mb-4" style="height: 1px; background-color: black" />
                   </div>
@@ -41,18 +45,20 @@
                       <h6 class="mt-2">성별</h6>
                     </div>
                     <div class="col-5 mb-2">
-                      <argon-input
-                        id="tel"
-                        v-if="changeMangerInfo"
-                        v-model="dependantDetail.dependant_gender"
-                        v-bind:disabled="changeMangerInfo"
-                      />
                       <select
                         class="btn btn px-0 col-6 mx-0"
-                        v-model="selectGender"
+                        v-model="dependantDetail.dependant_gender"
+                        v-bind:disabled="changeMangerInfo"
                         style="text-align: left"
-                        v-else
                       >
+                        <option
+                          class="dropdown-item"
+                          value="g0"
+                          v-bind:key="index"
+                          style="color: #000; text-align: left"
+                        >
+                          선택
+                        </option>
                         <option
                           class="dropdown-item"
                           value="g1"
@@ -78,17 +84,8 @@
                     <div class="col-1 px-0">
                       <h6 class="mt-2">주소</h6>
                     </div>
-                    <div class="col-5 mb-2" v-if="changeMangerInfo">
-                      <argon-input
-                        id="email"
-                        type="email"
-                        aria-label="email"
-                        disabled
-                        v-model="dependantDetail.dependant_address"
-                      />
-                    </div>
 
-                    <div class="col-8 mb-2" v-else>
+                    <div class="col-8 mb-2">
                       <div class="row gx-1">
                         <div class="col-7 px-0">
                           <argon-input v-model="detailAddress" placeholder="주소" disabled />
@@ -98,6 +95,7 @@
                             type="button"
                             class="p-2 btn btn-primary w-100"
                             @click="openPostcode"
+                            v-bind:disabled="changeMangerInfo"
                           >
                             주소 찾기
                           </button>
@@ -105,13 +103,14 @@
                       </div>
                     </div>
 
-                    <div class="row" v-if="!changeMangerInfo">
+                    <div class="row">
                       <div class="col-1 px-0"><h6 class="mt-2"></h6></div>
-                      <div class="col-5 mb-2" v-if="!changeMangerInfo">
+                      <div class="col-5 mb-2">
                         <argon-input
                           id="detail_input"
                           placeholder="상세주소"
                           v-model="writingAddress"
+                          v-bind:disabled="changeMangerInfo"
                         />
                       </div>
                     </div>
@@ -121,21 +120,14 @@
                     <div class="col-1 px-0">
                       <h6 class="mt-2">장애유형</h6>
                     </div>
-                    <div class="col-5 mb-2" v-if="changeMangerInfo">
-                      <argon-input
-                        id="detail_input"
-                        v-model="dependantDetail.disability_name"
-                        disabled
-                      />
-                    </div>
-                    <div class="col-5 mb-2" v-if="!changeMangerInfo">
+
+                    <div class="col-5 mb-2">
                       <div class="row">
                         <select
                           class="btn btn px-0 col-6 mx-2"
                           v-model="dependantDetail.disability_no"
-                          style="text-align: left"
-                          v-bind:disabled="changeMangerInfo"
                           @change="changeValue(dependantDetail.disability_no)"
+                          v-bind:disabled="changeMangerInfo"
                         >
                           <option
                             class="dropdown-item"
@@ -152,6 +144,7 @@
                             id="disability_input"
                             placeholder="장애유형을 입력해주세요."
                             v-model="realDisability"
+                            v-bind:disabled="changeMangerInfo"
                           />
                         </div>
                       </div>
@@ -166,9 +159,9 @@
                     </div>
                     <div class="col-5 mb-2">
                       <argon-input
-                        id="email"
-                        type="email"
-                        aria-label="email"
+                        id="day"
+                        type="text"
+                        aria-label="text"
                         v-model="dependantDetail.dependant_date"
                         disabled
                       />
@@ -180,27 +173,10 @@
                     <button
                       type="button"
                       class="btn btn-primary"
-                      @click="changeInfo"
-                      v-if="changeMangerInfo"
-                    >
-                      수정
-                    </button>
-                    <button
-                      type="button"
-                      class="btn btn-primary"
-                      v-if="!changeMangerInfo"
                       @click="completeChangeInfo"
-                    >
-                      저장
-                    </button>
-
-                    <button
-                      type="button"
-                      class="btn btn-dark"
                       v-if="!changeMangerInfo"
-                      @click="returnInfo"
                     >
-                      취소
+                      등록
                     </button>
                   </div>
                 </form>
@@ -214,114 +190,19 @@
 </template>
 
 <script setup>
-import { onBeforeMount, ref } from 'vue'
-import { useRoute } from 'vue-router'
-import { useMyPageStore } from '@/stores/mypage'
-import { useCounterStore } from '@/stores/member'
+import { ref } from 'vue'
 import ArgonInput from '@/components/ArgonInput.vue'
+import { useCounterStore } from '@/stores/member'
 import axios from 'axios'
 
 const counter = useCounterStore()
-const mypage = useMyPageStore()
-const route = useRoute()
 
-let dependantDetail = ref({
-  age: '',
-  dependant_address: '',
-  dependant_birth: '',
-  dependant_date: '',
-  dependant_gender: '',
-  dependant_name: '',
-  dependant_no: '',
-  disability_name: '',
-  disability_no: '',
-  guardian_name: '',
-  manager_main: '',
-  manager_name: '',
-  manager_sub: '',
-  member_id: '',
-}) // 해당 지원자
-
-onBeforeMount(async () => {
-  await mypage.searchDependantInfo(counter.isLogIn.info.member_id)
-  mypage.dependantInfo.forEach((member) => {
-    if (member.dependant_no == route.params.id) {
-      dependantDetail.value = member
-      console.log('dependantDetail = member', dependantDetail.value)
-      detailAddress.value = dependantDetail.value.dependant_address
-      selectDisability.value = dependantDetail.value.disability_no
-
-      return
-    }
-  })
-})
-// 드롭다운 성별
-let selectGender = ref()
-
-// 드롭다운 장애유형
-let selectDisability = ref()
-
-// 장애유형
-let disabilityName = ref([
-  { name: '선택', index: 0 },
-  { name: '지체 장애', index: 1 },
-  { name: '뇌병변 장애', index: 2 },
-  { name: '시각 장애', index: 3 },
-  { name: '청각 장애', index: 4 },
-  { name: '언어 장애', index: 5 },
-  { name: '안면 장애', index: 6 },
-  { name: '신장 장애', index: 7 },
-  { name: '심장 장애', index: 8 },
-  { name: '간 장애', index: 9 },
-  { name: '호흡기 장애', index: 10 },
-  { name: '장루 요루 장애', index: 11 },
-  { name: '뇌전증 장애', index: 12 },
-  { name: '지적 장애', index: 13 },
-  { name: '자폐성 장애', index: 14 },
-  { name: '정신 장애', index: 15 },
-  { name: '직접입력', index: 16 },
-])
-
-// 수정시 d}isabled 해제
-let changeMangerInfo = ref(true)
-
-const changeInfo = () => {
-  changeMangerInfo.value = false
-  detailAddress.value = dependantDetail.value.dependant_address
-  selectGender.value = dependantDetail.value.dependant_gender
-  if (selectGender.value == '남자') {
-    selectGender.value = 'g1'
-  } else {
-    selectGender.value = 'g2'
-  }
-
-  disabilityName.value.forEach((data) => {
-    console.log(data)
-    if (data.index == dependantDetail.value.disability_no) {
-      selectDisability.value = dependantDetail.value.disability_no
-      if (selectDisability.value == 16) {
-        writingDisability.value = true
-      }
-      return
-    }
-  })
-}
-
-// 취소버튼
-const returnInfo = () => {
-  changeMangerInfo.value = true
-  postcode.value = ''
-  extraAddress.value = ''
-  detailAddress.value = dependantDetail.value.dependant_address
-  selectGender.value = dependantDetail.value.dependant_gender
-  selectDisability.value = dependantDetail.value.disability_name
-  realDisability.value = ''
-  writingDisability.value = false
-  count.value = 0
-}
+// 등록날짜 출력
+let date = new Date()
+let today = ref(`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDay()}`)
+console.log(today.value)
 
 // 주소 api에서 사용하는 함수들
-let count = ref(0)
 const postcode = ref('')
 const extraAddress = ref('')
 const detailAddress = ref('')
@@ -358,11 +239,41 @@ const openPostcode = () => {
       detailAddress.value = addr // 기본 주소
 
       // 상세주소로 포커스 이동은 ref를 사용하거나 직접 접근
-      count.value = 1
       document.getElementById('detail_input').focus()
     },
   }).open()
 }
+
+// 입력정보
+let dependantDetail = ref({
+  dependant_birth: '',
+  dependant_date: today.value,
+  dependant_gender: 'g0',
+  dependant_name: '',
+  disability_no: 0,
+  manager_main: '',
+}) // 해당 지원자
+
+// 장애유형
+let disabilityName = ref([
+  { name: '선택', index: 0 },
+  { name: '지체 장애', index: 1 },
+  { name: '뇌병변 장애', index: 2 },
+  { name: '시각 장애', index: 3 },
+  { name: '청각 장애', index: 4 },
+  { name: '언어 장애', index: 5 },
+  { name: '안면 장애', index: 6 },
+  { name: '신장 장애', index: 7 },
+  { name: '심장 장애', index: 8 },
+  { name: '간 장애', index: 9 },
+  { name: '호흡기 장애', index: 10 },
+  { name: '장루 요루 장애', index: 11 },
+  { name: '뇌전증 장애', index: 12 },
+  { name: '지적 장애', index: 13 },
+  { name: '자폐성 장애', index: 14 },
+  { name: '정신 장애', index: 15 },
+  { name: '직접입력', index: 16 },
+])
 
 // 장애유형 선택 직접입력 선택시
 let writingDisability = ref(false)
@@ -377,62 +288,58 @@ const changeValue = (data) => {
 }
 
 // 저장버튼
-// 주소 합체
-
+let changeMangerInfo = ref(false)
 const completeChangeInfo = async () => {
-  if (count.value == 1 && (writingAddress.value == '' || writingAddress.value == null)) {
-    document.getElementById('detail_input').focus()
-    alert('상세주소를 입력해주세요')
+  if (dependantDetail.value.dependant_name == '' || dependantDetail.value.dependant_name == null) {
+    alert('이름을 입력해주세요')
     return
-  }
-  if (
+  } else if (
+    dependantDetail.value.dependant_birth == '' ||
+    dependantDetail.value.dependant_birth == null
+  ) {
+    alert('생일을 입력해주세요')
+    return
+  } else if (dependantDetail.value.dependant_gender == 'g0') {
+    alert('성별을 선택해주세요')
+    return
+  } else if (detailAddress.value == '' || detailAddress.value == null) {
+    alert('주소를 입력해주세요')
+    return
+  } else if (writingAddress.value == '' || writingAddress.value == null) {
+    document.getElementById('detail_input').focus()
+    alert('주소를 입력해주세요')
+    return
+  } else if (dependantDetail.value.disability_no == 0) {
+    alert('장애유형을 선택해주세요.')
+    return
+  } else if (
     dependantDetail.value.disability_no == 16 &&
     (realDisability.value == '' || realDisability.value == null)
   ) {
     document.getElementById('disability_input').focus()
     alert('장애유형을 입력해주세요')
     return
-  }
-  if (dependantDetail.value.disability_no == 0) {
-    alert('장애유형을 선택해주세요.')
-    return
+  } else if (
+    dependantDetail.value.disability_no == 16 &&
+    (realDisability.value != '' || realDisability.value != null)
+  ) {
+    dependantDetail.value.disability_no = 16
   }
 
   await axios //
-    .put('/api/changeDependantInfo/' + dependantDetail.value.dependant_no, {
-      dependant_gender: selectGender.value,
+    .post('/api/addDependantInfo', {
+      dependant_name: dependantDetail.value.dependant_name,
+      dependant_birth: dependantDetail.value.dependant_birth,
+      dependant_gender: dependantDetail.value.dependant_gender,
       dependant_address: `${detailAddress.value} ${writingAddress.value}`,
       disability_no: dependantDetail.value.disability_no,
+      dependant_date: dependantDetail.value.dependant_date,
+      manager_main: counter.isLogIn.info.member_id,
     })
     .then((res) => {
       console.log(res)
-      dependantDetail.value.dependant_address = `${detailAddress.value} ${writingAddress.value}`
-      if (selectGender.value == 'g1') {
-        dependantDetail.value.dependant_gender = '남자'
-      } else {
-        dependantDetail.value.dependant_gender = '여자'
-      }
-      disabilityName.value.forEach((data) => {
-        if (data.index == dependantDetail.value.disability_no) {
-          if (data.name == '직접입력') {
-            dependantDetail.value.disability_name = '기타'
-            return
-          }
-          dependantDetail.value.disability_name = data.name
-          return
-        }
-      })
-
-      realDisability.value = ''
-      writingDisability.value = ''
-      postcode.value = ''
-      extraAddress.value = ''
-      detailAddress.value = ''
-      writingAddress.value = ''
-      count.value = 0
-
+      alert('등록완료')
       changeMangerInfo.value = true
-      alert('수정완료')
     })
 }
 </script>

@@ -1,7 +1,7 @@
 <!-- Sidenav/SidenavList.vue -->
 <script setup>
 import { useRoute } from 'vue-router'
-
+import { computed } from 'vue'
 import SidenavItem from './SidenavItem.vue'
 
 const getRoute = () => {
@@ -9,10 +9,16 @@ const getRoute = () => {
   const routeArr = route.path.split('/')
   return routeArr[1]
 }
+// 사이드바를 숨길 경로 목록
+const hiddenRoutes = ['dashboard-default'] // 메인 대시보드 경로 추가
+
+const shouldShowSidenav = computed(() => {
+  return !hiddenRoutes.includes(getRoute())
+})
 </script>
 
 <template>
-  <div class="w-auto h-auto h-100" id="sidenav-collapse-main">
+  <div v-if="shouldShowSidenav" class="w-auto h-auto h-100" id="sidenav-collapse-main">
     <ul class="navbar-nav">
       <li class="mt-3 nav-item">
         <h6 class="text-xs ps-4 text-uppercase font-weight-bolder opacity-6 ms-2">계정 관리</h6>

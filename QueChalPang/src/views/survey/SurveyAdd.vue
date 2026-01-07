@@ -1,131 +1,209 @@
 <template>
-  <!--조사지등록-->
   <div class="container">
-    <div class="d-flex justify-content-between">
-      <h6>조사지 등록</h6>
-      <button class="btn btn-sm btn-secondary" @click="goBack">목록으로</button>
+    <!-- 헤더 -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="mb-0">조사지 등록</h4>
+      <button class="btn btn-sm btn-secondary" @click="goBack">
+        <i class="fas fa-list"></i> 목록으로
+      </button>
     </div>
 
-    <table class="table">
-      <tbody>
-        <tr>
-          <th class="text-right">No</th>
-          <td class="text-center">
-            <input class="form-control" type="text" v-model="surveyInfo.no" readonly="" />
-          </td>
-        </tr>
-        <tr>
-          <th class="text-right">항목</th>
-          <td class="text-center">
+    <!-- 기본 정보 카드 -->
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-2">
+            <label class="form-label fw-bold">No</label>
+            <input class="form-control" type="text" v-model="surveyInfo.no" readonly />
+          </div>
+          <div class="col-md-10">
+            <label class="form-label fw-bold">항목</label>
             <input class="form-control" type="text" v-model="surveyInfo.title" />
-          </td>
-        </tr>
+          </div>
+        </div>
+      </div>
+    </div>
 
-        <tr>
-          <th class="text-right">세부항목</th>
-          <td class="text-center">
-            <!-- 세부항목들 반복 -->
-            <div v-for="(subtitle, sIndex) in surveyInfo.subtitles" :key="subtitle.id">
-              <!-- 세부항목 헤더 -->
-              <div>
-                <h4>세부항목 {{ sIndex + 1 }}</h4>
-                <button
-                  v-if="surveyInfo.subtitles.length > 1"
-                  @click="deleteSubtitle(subtitle.id)"
-                  class="btn btn-sm btn-danger"
-                  type="button"
-                >
-                  세부항목 삭제
-                </button>
-              </div>
+    <!-- 세부항목 탭 -->
+    <div class="card">
+      <div class="card-header pb-0">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="mb-0">세부항목</h6>
+          <button @click="addSubtitle" class="btn btn-sm btn-primary" type="button">
+            <i class="fas fa-plus"></i> 세부항목 추가
+          </button>
+        </div>
+        <!-- Nav Tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+          <li
+            class="nav-item"
+            v-for="(subtitle, sIndex) in surveyInfo.subtitles"
+            :key="subtitle.id"
+          >
+            <a
+              class="nav-link"
+              :class="{ active: activeTab === sIndex }"
+              @click="activeTab = sIndex"
+              href="javascript:void(0)"
+              role="tab"
+            >
+              세부항목 {{ sIndex + 1 }}
+            </a>
+          </li>
+        </ul>
+      </div>
 
-              <!-- 세부항목 입력 -->
-              <label>세부항목</label>
+      <div class="card-body">
+        <!-- Tab Content -->
+        <div class="tab-content">
+          <div
+            v-for="(subtitle, sIndex) in surveyInfo.subtitles"
+            :key="subtitle.id"
+            class="tab-pane"
+            :class="{ active: activeTab === sIndex, show: activeTab === sIndex }"
+          >
+            <!-- 세부항목 삭제 버튼 -->
+            <div class="text-end mb-3" v-if="surveyInfo.subtitles.length > 1">
+              <button
+                @click="deleteSubtitle(subtitle.id)"
+                class="btn btn-sm btn-danger"
+                type="button"
+              >
+                <i class="fas fa-trash"></i> 세부항목 삭제
+              </button>
+            </div>
+
+            <!-- 세부항목 내용 -->
+            <div class="mb-4">
+              <label class="form-label fw-bold">세부항목 내용</label>
               <textarea
                 class="form-control"
                 v-model="subtitle.subtitle"
+                rows="3"
                 placeholder="세부항목 입력"
               ></textarea>
+            </div>
 
-              <!-- 세부항목 설명 -->
-              <label>세부항목 설명</label>
+            <!-- 세부항목 설명 -->
+            <div class="mb-4">
+              <label class="form-label fw-bold">세부항목 설명</label>
               <input
                 class="form-control"
                 v-model="subtitle.subtitleDetail"
                 placeholder="세부항목 설명 입력"
               />
+            </div>
 
-              <hr />
+            <hr />
 
-              <!-- 세부항목의 질문들 -->
-              <!--세부항목 2개 이상일 때 삭제 나오게-->
-              <h5>질문 목록</h5>
-              <div v-for="(question, qIndex) in subtitle.questions" :key="question.id">
-                <div>
-                  <strong>질문 {{ qIndex + 1 }}</strong>
+            <!-- 질문 목록 -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="mb-0">질문 목록</h6>
+              <button
+                @click="addQuestion(subtitle.id)"
+                class="btn btn-sm btn-secondary"
+                type="button"
+              >
+                <i class="fas fa-plus"></i> 질문 추가
+              </button>
+            </div>
+
+            <!-- 질문 카드 -->
+            <div
+              v-for="(question, qIndex) in subtitle.questions"
+              :key="question.id"
+              class="card mb-3"
+            >
+              <div class="card-body">
+                <!-- 질문 헤더 -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <span class="badge bg-primary">질문 {{ qIndex + 1 }}</span>
                   <button
                     v-if="subtitle.questions.length > 1"
                     @click="deleteQuestion(subtitle.id, question.id)"
                     class="btn btn-sm btn-warning"
                     type="button"
                   >
-                    질문 삭제
+                    <i class="fas fa-trash"></i> 질문 삭제
                   </button>
                 </div>
 
-                <input
-                  class="form-control"
-                  v-model="question.text"
-                  placeholder="질문 내용"
-                  style="margin-top: 5px"
-                />
+                <!-- 질문 내용 -->
+                <div class="mb-3">
+                  <label class="form-label">질문 내용</label>
+                  <input class="form-control" v-model="question.text" placeholder="질문 내용" />
+                </div>
 
-                <select class="form-control" v-model="question.type" style="margin-top: 5px">
-                  <option>예/아니오</option>
-                  <option>객관식</option>
-                  <option>주관식</option>
-                </select>
+                <!-- 질문 타입 -->
+                <div class="mb-3">
+                  <label class="form-label">질문 타입</label>
+                  <select class="form-control" v-model="question.type">
+                    <option>예/아니오</option>
+                    <option>객관식</option>
+                    <option>주관식</option>
+                  </select>
+                </div>
 
                 <!-- 예/아니오일 때만 보임 -->
                 <div v-if="question.type === '예/아니오'" class="detail-option">
-                  <label class="checkbox-label">
-                    <input type="checkbox" v-model="question.needDetail" />
-                    "예" 선택 시 추가 입력 받기
-                  </label>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      v-model="question.needDetail"
+                      :id="'detail-' + question.id"
+                    />
+                    <label class="form-check-label" :for="'detail-' + question.id">
+                      "예" 선택 시 추가 입력 받기
+                    </label>
+                  </div>
 
                   <!-- 체크박스 선택하면 안내 메시지 -->
-                  <div v-if="question.needDetail" class="detail-info">
-                    <p style="margin: 10px 0; color: #666; font-size: 14px">
-                      사용자가 "예"를 선택하면 사유와 날짜를 모두 입력받습니다.
-                    </p>
+                  <div v-if="question.needDetail" class="alert alert-info mt-2" role="alert">
+                    <small>사용자가 "예"를 선택하면 사유와 날짜를 모두 입력받습니다.</small>
                   </div>
                 </div>
               </div>
-
-              <button @click="addQuestion(subtitle.id)" class="btn btn-secondary" type="button">
-                + 질문 추가
-              </button>
             </div>
 
-            <!-- 세부항목 추가 버튼 -->
-            <button @click="addSubtitle" class="btn btn-primary" type="button">
-              + 세부항목 추가
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div>
-      <button class="btn btn-info" @click="addSurvey">저장</button>
+            <!-- 질문이 없을 때 -->
+            <div
+              v-if="!subtitle.questions || subtitle.questions.length === 0"
+              class="text-center text-muted py-4"
+            >
+              등록된 질문이 없습니다. "질문 추가" 버튼을 눌러 질문을 추가하세요.
+            </div>
+          </div>
+        </div>
+
+        <!-- 세부항목이 없을 때 -->
+        <div
+          v-if="!surveyInfo.subtitles || surveyInfo.subtitles.length === 0"
+          class="text-center text-muted py-5"
+        >
+          등록된 세부항목이 없습니다. "세부항목 추가" 버튼을 눌러 세부항목을 추가하세요.
+        </div>
+      </div>
+    </div>
+
+    <!-- 하단 버튼 -->
+    <div class="mt-4 d-flex justify-content-end gap-2">
+      <button class="btn btn-secondary" @click="goBack">취소</button>
+      <button class="btn btn-primary" @click="addSurvey"><i class="fas fa-save"></i> 저장</button>
     </div>
   </div>
 </template>
+
 <script setup>
 import axios from 'axios'
-import { reactive, onMounted } from 'vue'
+import { reactive, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+
+// 활성화된 탭 인덱스
+const activeTab = ref(0)
+
 const surveyInfo = reactive({
   no: '',
   survey_version: '',
@@ -143,11 +221,21 @@ const addSubtitle = () => {
     subtitleDetail: '',
     questions: [],
   })
+
+  // 새로 추가된 탭으로 이동
+  activeTab.value = surveyInfo.subtitles.length - 1
+
   addQuestion(newSubtitleId)
 }
+
 // 세부항목 삭제
 const deleteSubtitle = (subtitleId) => {
   surveyInfo.subtitles = surveyInfo.subtitles.filter((s) => s.id !== subtitleId)
+
+  // 삭제 후 첫 번째 탭으로 이동
+  if (activeTab.value >= surveyInfo.subtitles.length) {
+    activeTab.value = Math.max(0, surveyInfo.subtitles.length - 1)
+  }
 }
 
 // 질문 추가
@@ -181,6 +269,7 @@ const addSurvey = async () => {
     alert('실패했습니다')
   }
 }
+
 const goBack = () => {
   router.push({ name: 'SurveyList' })
 }
@@ -189,3 +278,21 @@ onMounted(() => {
   addSubtitle() // 세부항목 1개 추가
 })
 </script>
+
+<style scoped>
+.nav-tabs .nav-link {
+  cursor: pointer;
+}
+
+.nav-tabs .nav-link.active {
+  font-weight: 600;
+}
+
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+</style>

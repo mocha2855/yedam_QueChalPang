@@ -172,6 +172,10 @@ onBeforeMount(async () => {
 const approvalManagerUpdate = (id) => {
   router.push({ name: 'ApprovalManagerUpdate', params: { id: id } })
 }
+
+const goToUserAdd = () => {
+  router.push({ name: 'ApprovalManagerAdd' })
+}
 </script>
 
 <template>
