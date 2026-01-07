@@ -390,18 +390,16 @@ const completeChangeInfo = async () => {
   }
 
   await axios //
-    .put('/api/changeDependantInfo/' + mypage.guardianInfo.member_id, {
+    .put('/api/changeManagerInfo/' + mypage.guardianInfo.member_id, {
       member_address: `${detailAddress.value} ${writingAddress.value}`,
       member_phone: mypage.guardianInfo.member_phone,
       center_no: selectedCenter.value.center_no,
+      member_email: mypage.guardianInfo.member_email,
     })
     .then((res) => {
       console.log(res)
-      mypage.guardianInfo.member_address = `${detailAddress.value} ${writingAddress.value}`
+      detailAddress.value = `${detailAddress.value} ${writingAddress.value}`
 
-      postcode.value = ''
-      extraAddress.value = ''
-      detailAddress.value = ''
       writingAddress.value = ''
       count.value = 0
 
