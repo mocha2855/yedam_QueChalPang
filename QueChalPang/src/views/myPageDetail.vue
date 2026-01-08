@@ -243,17 +243,35 @@ let dependantDetail = ref({
 }) // 해당 지원자
 
 onBeforeMount(async () => {
-  await mypage.searchDependantInfo(counter.isLogIn.info.member_id)
-  mypage.dependantInfo.forEach((member) => {
-    if (member.dependant_no == route.params.id) {
-      dependantDetail.value = member
-      console.log('dependantDetail = member', dependantDetail.value)
-      detailAddress.value = dependantDetail.value.dependant_address
-      selectDisability.value = dependantDetail.value.disability_no
+  // 접속자가 담당자일때
+  if (counter.isLogIn.info.member_authority == 'a2') {
+    await mypage.searchDependantInfo(counter.isLogIn.info.member_id)
+    mypage.dependantInfo.forEach((member) => {
+      if (member.dependant_no == route.params.id) {
+        dependantDetail.value = member
+        console.log('dependantDetail = member', dependantDetail.value)
+        detailAddress.value = dependantDetail.value.dependant_address
+        selectDisability.value = dependantDetail.value.disability_no
 
-      return
-    }
-  })
+        return
+      }
+    })
+  }
+
+  // 접속자가 보호자일때
+  if (counter.isLogIn.info.member_authority == 'a1') {
+    await mypage.searchGuardianInfo(counter.isLogIn.info.member_id)
+    mypage.guardianInfo.forEach((member) => {
+      if (member.dependant_no == route.params.id) {
+        dependantDetail.value = member
+        console.log('dependantDetail = member', dependantDetail.value)
+        detailAddress.value = dependantDetail.value.dependant_address
+        selectDisability.value = dependantDetail.value.disability_no
+
+        return
+      }
+    })
+  }
 })
 // 드롭다운 성별
 let selectGender = ref()
