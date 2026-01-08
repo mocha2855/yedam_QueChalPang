@@ -14,7 +14,7 @@ onBeforeMount(() => {
   store.state.showSidenav = false
   store.state.showFooter = false
   body.classList.remove('bg-gray-100')
-  //getCenterList()  //이거 키면 팝업창 열떄 센터리스트 보이고 시작
+  getCenterList() //이거 키면 팝업창 열떄 센터리스트 보이고 시작
 })
 onBeforeUnmount(() => {
   store.state.hideConfigButton = false

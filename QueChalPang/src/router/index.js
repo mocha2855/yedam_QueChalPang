@@ -17,6 +17,7 @@ import qnaRoutes from './qna' //질문하기
 import surveyRoutes from './survey' //시스템관리자 조사지
 import reservationRoutes from './reservation' //상담예약
 import applicationRoutes from './application' //지원서, 계획서, 결과서 띄우기
+import userRoutes from './user' //관리자에 회원관리
 
 const routes = [
   {
@@ -83,6 +84,7 @@ const routes = [
   ...qnaRoutes,
   ...applicationRoutes,
   ...mypageRoutes,
+  ...userRoutes,
 ]
 
 const router = createRouter({

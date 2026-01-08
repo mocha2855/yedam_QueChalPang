@@ -35,7 +35,8 @@ const selectQitem = `
   ss.survey_subtitle_no, 
   sq.survey_qitem_no,
   sq.survey_qitem_question,
-  sq.survey_qitem_type
+  sq.survey_qitem_type,
+  sq.need_detail
  
   FROM survey s
   LEFT JOIN survey_title st ON s.survey_no = st.survey_no
@@ -97,8 +98,9 @@ const insertSurveyQitem = `
 INSERT INTO survey_qitem (
  survey_subtitle_no, 
   survey_qitem_question, 
-  survey_qitem_type)
-VALUES (?,?,?)`;
+  survey_qitem_type,
+  need_detail)
+VALUES (?,?,?,?)`;
 
 //조사지  active 한 구버전은 inactive로 업데이트 =>수정 ?
 const updateSurvey = `
@@ -124,7 +126,8 @@ WHERE survey_subtitle_no = ?
 const updateQitem = `
 UPDATE survey_qitem 
 SET survey_qitem_question = ?,
-    survey_qitem_type = ?
+    survey_qitem_type = ?,
+    need_detail = ?
 WHERE survey_qitem_no = ?
 `;
 
@@ -149,7 +152,8 @@ const selectAllSurveys = `SELECT s.survey_no,
         ss.survey_subtitle_detail,
         q.survey_qitem_no,
         q.survey_qitem_question,
-        q.survey_qitem_type 
+        q.survey_qitem_type, 
+        q.need_detail
 FROM survey s JOIN survey_title t on s.survey_no = t.survey_no 
               JOIN survey_subtitle ss ON t.survey_title_no = ss.survey_title_no 
               JOIN survey_qitem q ON ss.survey_subtitle_no = q.survey_subtitle_no 
