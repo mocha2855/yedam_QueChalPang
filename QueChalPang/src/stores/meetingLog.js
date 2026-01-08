@@ -57,7 +57,7 @@ export const useMeetingLogStore = defineStore('meetingLog', {
       }
     },
 
-    // 작성하기 버튼 눌렀을 때 
+    // 작성하기 버튼 눌렀을 때
     openWriteForm(row) {
       this.mode = 'write'
       this.selectedResvId = row.resv_id
@@ -121,6 +121,11 @@ export const useMeetingLogStore = defineStore('meetingLog', {
       }
 
       const res = await axios.post('/api/meetingLog', payload)
+
+      // 성공하면 상담상태 f3변환
+      // if(res.data){
+      // const changeReulst = await axios.post('')
+      // }
 
       // 성공하면: detail 채우고 view로 전환
       this.detail = res.data || null

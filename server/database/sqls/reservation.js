@@ -181,6 +181,9 @@ const deleteScheduleBlock = `
     AND block_time = ?;
 `;
 
+// 상담일지 작성시 상담확정으로 변경(260108_JH)
+// const updatereserveStatus = ``
+
 module.exports = {
   selectTResvByDate,
   selectTResvbyManager,
@@ -199,4 +202,5 @@ module.exports = {
   selectCenterLunchByManager,
   updateScheduleBlock,
   deleteScheduleBlock,
+  updatereserveStatus,
 };

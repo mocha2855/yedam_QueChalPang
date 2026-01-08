@@ -36,29 +36,40 @@ router.post("/meetingLog", async (req, res) => {
 });
 
 //[2] 해당 지원자의 지원신청서 앞으로 작성된 미팅로그 조회
-router.get('/logByAppNo/:appNo', async (req, res) => {
+router.get("/logByAppNo/:appNo", async (req, res) => {
   try {
-    console.log('[logByAppNo] params:', req.params)
-    const { appNo } = req.params
+    console.log("[logByAppNo] params:", req.params);
+    const { appNo } = req.params;
 
-    const rows = await meetingLogService.findLogbyAppNo(appNo)
-    res.json(rows)
+    const rows = await meetingLogService.findLogbyAppNo(appNo);
+    res.json(rows);
   } catch (err) {
-    console.error('[logByAppNo] ERROR:', err)
-    res.status(500).json({ message: 'Server error', error: String(err) })
+    console.error("[logByAppNo] ERROR:", err);
+    res.status(500).json({ message: "Server error", error: String(err) });
   }
-})
+});
 
 //[3] 상담일지 상세 조회 (resv_id 기준)
-router.get('/meetingLogDetail/:resvId', async (req, res) => {
+router.get("/meetingLogDetail/:resvId", async (req, res) => {
   try {
-    const { resvId } = req.params
-    const row = await meetingLogService.findLogDetailByResvId(resvId)
-    res.json(row)
+    const { resvId } = req.params;
+    const row = await meetingLogService.findLogDetailByResvId(resvId);
+    res.json(row);
   } catch (err) {
-    console.error('[meetingLogDetail] ERROR:', err)
-    res.status(500).json({ message: 'Server error' })
+    console.error("[meetingLogDetail] ERROR:", err);
+    res.status(500).json({ message: "Server error" });
   }
-})
+});
 
+// 상담일지 작성시 상담확정으로 변경(260108_JH)
+router.post("/reserveStatusChange/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const row = await meetingLogService.modifyreserveStatus(id);
+    res.send(row);
+  } catch (err) {
+    console.log(error("[modifyreserveStatus] ERROR:", err));
+    res.status(500).json({ message: "Server error" });
+  }
+});
 module.exports = router;

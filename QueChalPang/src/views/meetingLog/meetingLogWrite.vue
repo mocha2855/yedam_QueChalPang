@@ -17,11 +17,7 @@ const cancel = () => store.cancelWriteForm()
 
     <div class="mb-3">
       <label class="form-label">제목</label>
-      <input
-        class="form-control"
-        v-model="writeForm.log_title"
-        placeholder="상담일지 제목"
-      />
+      <input class="form-control" v-model="writeForm.log_title" placeholder="상담일지 제목" />
     </div>
 
     <div class="mb-3">
@@ -35,12 +31,8 @@ const cancel = () => store.cancelWriteForm()
     </div>
 
     <div class="d-flex justify-content-end gap-2">
-      <button class="btn btn-outline-secondary btn-sm" @click="cancel">
-        취소
-      </button>
-      <button class="btn btn-primary btn-sm" @click="submit">
-        저장
-      </button>
+      <button class="btn btn-outline-secondary btn-sm" @click="cancel">취소</button>
+      <button class="btn btn-primary btn-sm" @click="submit">저장</button>
     </div>
   </div>
 </template>
