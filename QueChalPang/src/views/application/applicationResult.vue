@@ -327,7 +327,7 @@
           <template v-slot:header><h2></h2></template>
           <template v-slot:body
             ><h4 style="text-align: center">
-              지원결과서를<br />정말 승인요청하시겠습니까?
+              지원결과서를<br /> 승인요청하시겠습니까?
             </h4></template
           >
           <template v-slot:footer>
@@ -503,11 +503,12 @@
           </div>
         </div>
 
+        <!-- 관리자가 결과서 승인 -->
         <ApplicationModal v-if="plan.checked">
-          <template v-slot:header><h2></h2></template>
+          <template v-slot:header><h2>지원결과서 승인</h2></template>
           <template v-slot:body
             ><h4 style="text-align: center" :value="plan.ranking">
-              지원결과서{{ plan.ranking }}를<br />정말 승인하시겠습니까?
+              지원결과서{{ plan.ranking }}를<br /> 승인하시겠습니까?
             </h4></template
           >
           <template v-slot:footer>
@@ -517,7 +518,19 @@
         </ApplicationModal>
 
         <ApplicationModal v-if="plan.rejectChecked">
-          <template v-slot:header><h2></h2></template>
+          <template v-slot:header><h2>지원결과서 반려</h2></template>
+          <template #body>
+            <p class="modal-text" style="text-align: center">
+              지원결과서 {{ plan.ranking }}를<br />
+              반려하시겠습니까?
+            </p>
+
+            <textarea
+              v-model="modal.rejectReason"
+              class="reason-input"
+              placeholder="반려 사유를 입력해주세요."
+            />
+          </template>
           <template v-slot:footer>
             <button class="btn-save" v-on:click="rejectResult(plan.result_no)">반려</button>
             <button class="btn-cancel" v-on:click="notChecked(plan.result_no)">취소</button>
@@ -543,7 +556,8 @@
                   <p>지원계획서{{ plan.ranking }}에 대한 지원결과서</p>
                 </div>
               </div>
-
+            
+              <!-- 관리자가 보는. 검토중인 결과서 => 여기서 승인반려 -->
               <div v-if="memAuthority == 'a3'" class="row row-cols-1">
                 <div class="col">
                   <h5 class="mb-0">지원결과{{ plan.ranking }}</h5>
@@ -649,11 +663,13 @@
               </button>
             </div>
           </div>
+
+          <!-- 관리자가 지원계획서 승인하기 -->
           <ApplicationModal v-if="plan.checked">
-            <template v-slot:header><h2></h2></template>
+            <template v-slot:header><h2>지원결과서 승인</h2></template>
             <template v-slot:body
               ><h4 style="text-align: center" :value="plan.ranking">
-                지원결과서{{ plan.ranking }}를<br />정말 승인하시겠습니까?
+                지원결과서{{ plan.ranking }}를<br /> 승인하시겠습니까?
               </h4></template
             >
             <template v-slot:footer>
@@ -661,8 +677,22 @@
               <button class="btn-cancel" v-on:click="notChecked(plan.result_no)">취소</button>
             </template>
           </ApplicationModal>
+         
+          <!-- 관리자가 지원계획서 반려하기 -->
           <ApplicationModal v-if="plan.rejectChecked">
-            <template v-slot:header><h2></h2></template>
+            <template v-slot:header><h2>지원결과서 반려</h2></template>
+            <template #body>
+              <p class="modal-text" style="text-align: center">
+                지원결과서 {{ plan.ranking }}를<br />
+                반려하시겠습니까?
+              </p>
+
+              <textarea
+                v-model="modal.rejectReason"
+                class="reason-input"
+                placeholder="반려 사유를 입력해주세요."
+              />
+            </template>
             <template v-slot:footer>
               <button class="btn-save" v-on:click="rejectResult(plan.result_no)">반려</button>
               <button class="btn-cancel" v-on:click="notChecked(plan.result_no)">취소</button>

@@ -57,6 +57,7 @@ manager_sub,
 (select member_name from member where member_id=d.member_id) as member_name,
 (select min(status) from application where dependant_no=d.dependant_no) as status
 from dependant d where d.member_id=?`;
+
 const selectDependants2 = `select dependant_address,
 dependant_birth,
 dependant_date,
@@ -70,6 +71,7 @@ manager_sub,
 (select min(status) from application where dependant_no=d.dependant_no) as status
 from dependant d where d.manager_main=?
 `;
+
 //회원가입 시 승인/대기
 // 승인 관리 목록 조회
 const selectMemberApproval = `
@@ -95,6 +97,7 @@ const countPendingMembers = `
   AND member_authority in ('a1','a2','a3')
   AND member_confirm != 'l4'
 `;
+
 //승인 거절 건수
 const countRejectedMembers = `
   SELECT count(*) as count from member 
