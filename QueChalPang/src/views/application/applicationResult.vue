@@ -327,7 +327,8 @@
           <template v-slot:header><h2></h2></template>
           <template v-slot:body
             ><h4 style="text-align: center">
-              지원결과서를<br /> 승인요청하시겠습니까?
+              지원결과서를<br />
+              승인요청하시겠습니까?
             </h4></template
           >
           <template v-slot:footer>
@@ -508,7 +509,8 @@
           <template v-slot:header><h2>지원결과서 승인</h2></template>
           <template v-slot:body
             ><h4 style="text-align: center" :value="plan.ranking">
-              지원결과서{{ plan.ranking }}를<br /> 승인하시겠습니까?
+              지원결과서{{ plan.ranking }}를<br />
+              승인하시겠습니까?
             </h4></template
           >
           <template v-slot:footer>
@@ -556,7 +558,7 @@
                   <p>지원계획서{{ plan.ranking }}에 대한 지원결과서</p>
                 </div>
               </div>
-            
+
               <!-- 관리자가 보는. 검토중인 결과서 => 여기서 승인반려 -->
               <div v-if="memAuthority == 'a3'" class="row row-cols-1">
                 <div class="col">
@@ -669,7 +671,8 @@
             <template v-slot:header><h2>지원결과서 승인</h2></template>
             <template v-slot:body
               ><h4 style="text-align: center" :value="plan.ranking">
-                지원결과서{{ plan.ranking }}를<br /> 승인하시겠습니까?
+                지원결과서{{ plan.ranking }}를<br />
+                승인하시겠습니까?
               </h4></template
             >
             <template v-slot:footer>
@@ -677,7 +680,7 @@
               <button class="btn-cancel" v-on:click="notChecked(plan.result_no)">취소</button>
             </template>
           </ApplicationModal>
-         
+
           <!-- 관리자가 지원계획서 반려하기 -->
           <ApplicationModal v-if="plan.rejectChecked">
             <template v-slot:header><h2>지원결과서 반려</h2></template>
@@ -873,16 +876,21 @@ const modalOpen = async (data) => {
 // 승인모달창-확인버튼
 const sucessResult = async (data) => {
   console.log(data)
+
   // 담당자
   if (memAuthority == 'a2') {
+    const finalForm = new FormData()
+    finalForm.append('planning_id', application.dependantInfo.manager_id)
+    finalForm.append('planning_rejecter', application.dependantInfo.application_rejector)
+    finalForm.append('planning_start', resultList.value.planning_start)
+    finalForm.append('planning_end', resultList.value.planning_end)
+    finalForm.append('result_title', formData.value.title)
+    finalForm.append('result_content', formData.value.content)
     await axios //
-      .post('/api/submitResultInfo/' + resultList.value.planning_no, {
-        planning_id: application.dependantInfo.manager_id,
-        planning_rejecter: application.dependantInfo.application_rejector,
-        planning_start: resultList.value.planning_start,
-        planning_end: resultList.value.planning_end,
-        result_title: formData.value.title,
-        result_content: formData.value.content,
+      .post('/api/submitResultInfo/' + resultList.value.planning_no, finalForm, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       })
       .then((res) => {
         console.log(res)
@@ -894,6 +902,7 @@ const sucessResult = async (data) => {
 
         addCount.value = 0
         formData.value = {}
+        attachmentFiles.value = []
         resultList.value = {}
         count.value = 1
       })
