@@ -213,6 +213,7 @@
 
 <script setup>
 import { onBeforeMount, ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useMyPageStore } from '@/stores/mypage'
 import { useCounterStore } from '@/stores/member'
 import ArgonInput from '@/components/ArgonInput.vue'
@@ -222,6 +223,12 @@ import CryptoJS from 'crypto-js'
 const counter = useCounterStore()
 const mypage = useMyPageStore()
 
+const router = useRouter()
+
+if (counter.isLogIn.info.member_authority != 'a1') {
+  router.push({ name: 'Dashboard' })
+  alert('보호자만 접근가능합니다.')
+}
 onBeforeMount(async () => {
   await mypage.searchGuardianInfo(counter.isLogIn.info.member_id)
   detailAddress.value = mypage.guardianInfo[0].member_address
