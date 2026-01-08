@@ -358,9 +358,10 @@ JOIN member g    ON d.member_id    = g.member_id
 LEFT JOIN member t    ON d.manager_main = t.member_id    
 
 JOIN member admin
-ON admin.center_no = t.center_no
-AND admin.member_id = ?
-WHERE ?? like concat('%', ?, '%')
+ON admin.member_id = ?
+ON admin.center_no = COALESCE(t.center_no, g.center_no)
+
+WHERE ?? like concat('%', ?, '%') AND a.status in (?)
 
 ORDER BY a.application_date DESC
 `;
