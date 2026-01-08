@@ -132,7 +132,7 @@
                     <label for="attachmentFile" class="col-form-label">첨부파일</label>
                   </div>
                   <div class="col-10">
-                    <input type="file" class="form-control" />
+                    <input type="file" class="form-control" multiple @change="getFile" />
                   </div>
                 </div>
               </form>
@@ -257,7 +257,7 @@
                   <label for="attachmentFile" class="col-form-label">첨부파일</label>
                 </div>
                 <div class="col-10">
-                  <input type="file" class="form-control" />
+                  <input type="file" class="form-control" multiple @change="getFile" />
                 </div>
               </div>
               <div class="d-flex justify-content-between">
@@ -717,7 +717,6 @@ const modal = useModalStore()
 
 const counters = useCounterStore()
 const application = useApplicationStore()
-
 // 권한 및 담당 지원자 일치 확인
 let memAuthority = counters.isLogIn.info.member_authority // 권한
 let memName = counters.isLogIn.info.member_name // 작성자
@@ -1022,6 +1021,12 @@ const submitChaingResultInfo = async (data) => {
       changingChecked.value = false
       alert('승인요청 완료')
     })
+}
+
+const attachmentFiles = ref([])
+const getFile = (e) => {
+  attachmentFiles.value = Array.from(e.target.files)
+  console.log('선택된 파일들:', attachmentFiles.value)
 }
 </script>
 <style scoped>
