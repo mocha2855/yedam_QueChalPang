@@ -44,9 +44,22 @@ const findGuardianById = async (id) => {
   return post;
 };
 
-// 보호자 정보
+// 보호자 지원자 정보
 const findGuardianDependantById = async (id) => {
   let post = await mysql.myPageQuery("selectGuardianDependantById", id);
+  return post;
+};
+
+// 관리자
+// 센터정보
+const findCenterInfoById = async () => {
+  let post = await mysql.myPageQuery("selectCenterInfoById");
+  return post;
+};
+
+// 센터 정보 변경
+const updateCenterInfo = async (id, data) => {
+  let post = await mysql.myPageQuery("updateCenterInfo", [data, id]);
   return post;
 };
 
@@ -59,4 +72,6 @@ module.exports = {
   removeDependantInfo,
   findGuardianById,
   findGuardianDependantById,
+  findCenterInfoById,
+  updateCenterInfo,
 };

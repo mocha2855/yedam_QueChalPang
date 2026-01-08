@@ -14,7 +14,7 @@
           <div
             class="card-body px-0 pt-0 pb-2"
             v-if="
-              myPage.guardianDependantInfo != '' && counter.isLogIn.info.member_authority == 'a1'
+              myPage.guardianDependantInfo != null && counter.isLogIn.info.member_authority == 'a1'
             "
           >
             <div class="table-responsive p-0">
@@ -81,10 +81,16 @@ import { useCounterStore } from '@/stores/member'
 
 const myPage = useMyPageStore()
 const counter = useCounterStore()
+
 const router = useRouter()
 
 onBeforeMount(async () => {
-  await myPage.searchGuardianDependantInfo(counter.isLogIn.info.member_id)
+  if (counter.isLogIn.info.member_authority != 'a1') {
+    alert('보호자만 접근가능합니다.')
+    router.push({ name: 'Dashboard' })
+  } else {
+    await myPage.searchGuardianDependantInfo(counter.isLogIn.info.member_id)
+  }
 })
 
 const goDetail = (data) => {

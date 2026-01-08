@@ -11,14 +11,8 @@ import centerPopup from '../views/centerPopup.vue' //센터검색팝업
 import notConfirmed from '../views/notConfirmed.vue' //지원대기상태인 경우 이동하는 페이지
 import centerRoutes from './center' //센터관리페이지
 import approvalRoutes from './approval' //멤버 승인 페이지
-import myPage from '../views/myPage.vue' // 마이페이지(담당자 본인 정보 보기)
-import myPageList from '@/views/myPageList.vue' // 마이페이지(담당자 지원자 목록)
-import myPageDetail from '@/views/myPageDetail.vue' // 담당 지원자 마이페이지 상세보기(담당자)
-import myPageAddDependant from '@/views/myPageAddDependant.vue' // 마이페이지 지원자 등록(담당자/보호자)
-import myPageGuardian from '@/views/myPageGuardian.vue' // 마이페이지(보호자)
-import myPageGuardianList from '../views/myPageGuardianList.vue' // 마이페이지 지원자 목록(보호자)
-import myPageCenterInfo from '../views/myPageCenterInfo.vue'
 
+import mypageRoutes from './mypage' //mypage
 import qnaRoutes from './qna' //질문하기
 import surveyRoutes from './survey' //시스템관리자 조사지
 import reservationRoutes from './reservation' //상담예약
@@ -82,49 +76,13 @@ const routes = [
     component: notConfirmed,
   },
 
-  {
-    path: '/myPage/:id',
-    name: 'myPage',
-    component: myPage,
-  },
-  {
-    path: '/myPageList/:id',
-    name: 'myPageList',
-    component: myPageList,
-  },
-  {
-    path: '/myPageDetail/:id',
-    name: 'myPageDetail',
-    component: myPageDetail,
-  },
-  {
-    path: '/myPageAddDependant',
-    name: 'myPageAddDependant',
-    component: myPageAddDependant,
-  },
-  {
-    path: '/myPageGuardian',
-    name: 'myPageGuardian',
-    component: myPageGuardian,
-  },
-  {
-    path: '/myPageGuardianList',
-    name: 'myPageGuardianList',
-    component: myPageGuardianList,
-  },
-
-  {
-    path: '/myPageCenterInfo',
-    name: 'myPageCenterInfo',
-    component: myPageCenterInfo,
-  },
-
   ...surveyRoutes,
   ...reservationRoutes,
   ...centerRoutes,
   ...approvalRoutes,
   ...qnaRoutes,
   ...applicationRoutes,
+  ...mypageRoutes,
 ]
 
 const router = createRouter({

@@ -9,6 +9,7 @@ export const useMyPageStore = defineStore('myPage', {
       dependantInfo: [], // 지원자 정보
       guardianInfo: [], // 보호자 정보
       guardianDependantInfo: [], // 보호자 지원자 정보
+      centerInfo: [], // 센터정보(관리자)
     }
   },
   _actions: {
@@ -156,7 +157,10 @@ export const useMyPageStore = defineStore('myPage', {
     },
 
     // 관리자
-    // 관리자 정보
+    // 기관 정보
+    async searchAdminCenterInfo() {
+      this.centerInfo = (await axios.get('/api/findCenterInfoById')).data
+    },
   },
   get actions() {
     return this._actions
