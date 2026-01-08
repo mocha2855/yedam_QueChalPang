@@ -215,7 +215,7 @@
 
 <script setup>
 import { onBeforeMount, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useMyPageStore } from '@/stores/mypage'
 import { useCounterStore } from '@/stores/member'
 import ArgonInput from '@/components/ArgonInput.vue'
@@ -224,6 +224,7 @@ import axios from 'axios'
 const counter = useCounterStore()
 const mypage = useMyPageStore()
 const route = useRoute()
+const router = useRouter()
 
 let dependantDetail = ref({
   age: '',
@@ -243,8 +244,16 @@ let dependantDetail = ref({
 }) // 해당 지원자
 
 onBeforeMount(async () => {
+  if (
+    counter.isLogIn.info.member_authority == 'a3' ||
+    counter.isLogIn.info.member_authority == 'a4'
+  ) {
+    alert('기관담당자, 보호자만 접근가능합니다.')
+    router.push({ name: 'Dashboard' })
+    return
+  }
   // 접속자가 담당자일때
-  if (counter.isLogIn.info.member_authority == 'a2') {
+  else if (counter.isLogIn.info.member_authority == 'a2') {
     await mypage.searchDependantInfo(counter.isLogIn.info.member_id)
     mypage.dependantInfo.forEach((member) => {
       if (member.dependant_no == route.params.id) {
@@ -259,9 +268,10 @@ onBeforeMount(async () => {
   }
 
   // 접속자가 보호자일때
-  if (counter.isLogIn.info.member_authority == 'a1') {
-    await mypage.searchGuardianInfo(counter.isLogIn.info.member_id)
-    mypage.guardianInfo.forEach((member) => {
+  else if (counter.isLogIn.info.member_authority == 'a1') {
+    console.log('ture')
+    await mypage.searchGuardianDependantInfo(counter.isLogIn.info.member_id)
+    mypage.guardianDependantInfo.forEach((member) => {
       if (member.dependant_no == route.params.id) {
         dependantDetail.value = member
         console.log('dependantDetail = member', dependantDetail.value)

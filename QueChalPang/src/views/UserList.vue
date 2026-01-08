@@ -156,16 +156,16 @@ const deleteSelected = async () => {
 onBeforeMount(async () => {
   const authority = member.isLogIn.info.member_authority
 
-  if (authority !== 'a4') {
-    // a4아니면 막음
-    alert('시스템 관리자만 접근할 수 있습니다.')
+  if (authority !== 'a3') {
+    // a3 아니면 막음
+    alert('관리자 또는 시스템 관리자만 접근할 수 있습니다.')
     router.push({ name: 'Dashboard' })
     return
   }
   await store.getApprovalList()
 })
 const approvalUserUpdate = (id) => {
-  router.push({ name: 'ApprovalUserUpdate', params: { id: id } })
+  router.push({ name: 'UserListUpdate', params: { id: id } })
 }
 </script>
 

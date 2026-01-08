@@ -37,6 +37,11 @@ const statusMap = {
 const statusInfo = (s) => {
   return statusMap[s] ?? { label: s ?? '', class: 'status-default' }
 }
+
+// 상담내역 작성하러가기
+// const writingMeeting = () => {
+//   router.push
+// }
 </script>
 
 <template>
@@ -83,9 +88,9 @@ const statusInfo = (s) => {
                   {{ statusInfo(r.status).label }}
                 </span>
               </td>
-
+              <!-- 0108 상담내역 작성하기 추가 -->
               <td class="align-middle text-center">
-                <button class = "btn btn-primary text-xs">작성하기</button>
+                <button class="btn btn-primary text-xs">작성하기</button>
               </td>
             </tr>
           </tbody>

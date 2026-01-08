@@ -161,7 +161,7 @@ const insertAppById = async (input, id, authority) => {
     return [
       item.survey_qitem_no,
       appNo,
-      item.question_type,
+      item.app_answer_type || null,
       item.app_date,
       item.app_reason,
     ];

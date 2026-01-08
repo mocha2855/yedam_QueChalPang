@@ -115,6 +115,7 @@ const modifySurvey = async (no, data) => {
           await mysql.squery("updateQitem", [
             question.survey_qitem_question,
             question.survey_qitem_type,
+            question.need_detail || false,
             question.survey_qitem_no,
           ]);
         }

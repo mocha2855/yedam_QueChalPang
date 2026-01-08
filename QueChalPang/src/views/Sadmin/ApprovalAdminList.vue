@@ -225,7 +225,7 @@ const goToUserAdd = () => {
                     </th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder">이름</th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder">
-                      이메일
+                      기관명
                     </th>
                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder">
                       가입일
@@ -262,7 +262,7 @@ const goToUserAdd = () => {
                       {{ member.member_name }}
                     </td>
                     <td class="text-sm">
-                      {{ member.member_email }}
+                      {{ member.center_name }}
                     </td>
                     <td class="text-sm">
                       {{ member.member_date.substring(0, 10) }}

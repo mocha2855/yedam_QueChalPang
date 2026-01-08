@@ -10,6 +10,7 @@ const getApplicationList = async () => {
   let result = await axios.get(`/api/allsurveys`)
   surveyList.value = result.data
 }
+
 const qitemNo = ref([])
 const collectQitemNo = (no) => {
   qitemNo.value.push(no)
@@ -44,6 +45,7 @@ const structuredSurvey = computed(() => {
       survey_qitem_no: row.survey_qitem_no,
       survey_qitem_question: row.survey_qitem_question,
       survey_qitem_type: row.survey_qitem_type,
+      needDetail: row.need_detail || false,
     })
   })
 
@@ -116,13 +118,28 @@ const checkAllYes = () => {
         // [수정 핵심] 템플릿의 v-if 조건과 동일한 문자열('예/아니요')로 비교해야 합니다.
         // 혹시 모를 공백 제거를 위해 trim()을 사용합니다.
         if (q.survey_qitem_type && q.survey_qitem_type.trim() === '예/아니요') {
-          answers.value[q.survey_qitem_no] = 'Y'
+          answers.value[q.survey_qitem_no] = {
+            type: 'Y',
+            reason: q.needDetail ? '' : 'Y',
+            date: '',
+          }
         }
       })
     })
   })
 }
 const answers = ref({})
+const getAnswer = (qitemNo, qType) => {
+  if (!answers.value[qitemNo]) {
+    // 예/아니요 타입만 객체로 초기화
+    if (qType === '예/아니요') {
+      answers.value[qitemNo] = { type: '', reason: '', date: '' }
+    } else {
+      answers.value[qitemNo] = ''
+    }
+  }
+  return answers.value[qitemNo]
+}
 const addApplication = async () => {
   if (Object.keys(answers.value).length != qitemNo.value.length) {
     alert('신청서 작성이 완료되지 않았습니다. 모든 질문지에 대해 답변을 모두 입력해주세요.')
@@ -141,9 +158,23 @@ const addApplication = async () => {
           if (mainVal || dateVal) {
             let finalAppDate = null
             let finalAppReason = null
+            let finalAppAnswerType = null
             const qType = q.survey_qitem_type ? q.survey_qitem_type.trim() : ''
 
-            if (qType === 'input_date') {
+            if (qType === '예/아니요') {
+              // mainVal이 객체인지 확인
+              if (typeof mainVal === 'object') {
+                // 객체 구조
+                finalAppAnswerType = mainVal.type // 'Y' 또는 'N' 추출
+                // reason이 있으면 그대로, 없으면 'Y'선택 시 'Y', 'N'선택 시 null
+                finalAppReason = mainVal.reason || (mainVal.type === 'Y' ? 'Y' : null)
+                finalAppDate = mainVal.date || null
+              } else {
+                finalAppAnswerType = mainVal // 'Y' 또는 'N' 그대로
+                // 'Y'면 'Y' 저장, 'N'이면 null
+                finalAppReason = mainVal === 'Y' ? 'Y' : null
+              }
+            } else if (qType === 'input_date') {
               // 실제 DB 타입명으로 수정!
               finalAppDate = dateVal || null // '_date' 키에서 가져온 값
               finalAppReason = mainVal || null // 그냥 키에서 가져온 값
@@ -158,7 +189,7 @@ const addApplication = async () => {
             answerList.push({
               survey_qitem_no: q.survey_qitem_no,
               question_type: qType,
-
+              app_answer_type: finalAppAnswerType,
               app_date: finalAppDate,
               app_reason: finalAppReason,
             })
@@ -337,7 +368,7 @@ const supportRoute = computed(() => {
                     :name="'question_' + q.survey_qitem_no"
                     :id="'radio_yes_' + q.survey_qitem_no"
                     value="Y"
-                    v-model="answers[q.survey_qitem_no]"
+                    v-model="getAnswer(q.survey_qitem_no, q.survey_qitem_type).type"
                   />
                   <label class="form-check-label" :for="'radio_yes_' + q.survey_qitem_no">예</label>
                 </div>
@@ -349,11 +380,38 @@ const supportRoute = computed(() => {
                     :name="'question_' + q.survey_qitem_no"
                     :id="'radio_no_' + q.survey_qitem_no"
                     value="N"
-                    v-model="answers[q.survey_qitem_no]"
+                    v-model="getAnswer(q.survey_qitem_no, q.survey_qitem_type).type"
                   />
                   <label class="form-check-label" :for="'radio_no_' + q.survey_qitem_no"
                     >아니오</label
                   >
+                </div>
+
+                <div
+                  v-if="
+                    q.needDetail && getAnswer(q.survey_qitem_no, q.survey_qitem_type)?.type === 'Y'
+                  "
+                  class="mt-3"
+                >
+                  <div class="mb-3">
+                    <small class="text-muted d-block mt-1">구체적 사유</small>
+
+                    <input
+                      type="text"
+                      class="form-control"
+                      v-model="getAnswer(q.survey_qitem_no, q.survey_qitem_type).reason"
+                      placeholder="구체적인 사유를 입력해주세요"
+                      style="display: block !important; height: 40px !important"
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <input
+                      type="date"
+                      class="form-control"
+                      v-model="getAnswer(q.survey_qitem_no, q.survey_qitem_type).date"
+                      style="display: block !important; height: 40px !important"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -362,7 +420,7 @@ const supportRoute = computed(() => {
                   style="display: flex"
                   type="text"
                   class="form-control"
-                  v-model="answers[q.survey_qitem_no]"
+                  v-model="getAnswer[(q.survey_qitem_no, q.survey_qitem_type)]"
                 />
               </div>
             </li>

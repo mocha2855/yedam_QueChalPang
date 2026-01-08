@@ -3,7 +3,7 @@ import { onBeforeMount, ref, computed } from 'vue'
 import { useCounterStore } from '@/stores/member'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
-import ApplicationModal from './modals/ApplicationModal.vue'
+// import ApplicationModal from './modals/ApplicationModal.vue'
 
 import { useApplicationStore } from '@/stores/application'
 const application = useApplicationStore()
@@ -24,17 +24,29 @@ const getApplicationInfo = async () => {
   dependantNo.value = result.data[0].dependant_no
   status.value = result.data[0].status
   applicationDetail.value = result.data
+
   result.data.forEach((row) => {
-    if (row.app_reason) {
+    // 예/아니요는 app_answer_type 사용
+    if (row.app_answer_type) {
+      answers.value[row.survey_qitem_no] = row.app_answer_type // 'Y' 또는 'N'
+
+      // 구체적 사유가 있으면 별도 저장
+      if (row.app_reason && row.app_reason !== 'Y') {
+        answers.value[row.survey_qitem_no + '_reason'] = row.app_reason
+      }
+    } else if (row.app_reason) {
       answers.value[row.survey_qitem_no] = row.app_reason
     }
 
     if (row.app_date) {
-      answers.value[row.survey_qitem_no + '_date'] = row.app_date
+      const dateStr = row.app_date.split('T')[0]
+      answers.value[row.survey_qitem_no + '_date'] = dateStr
     }
   })
+
   console.log(answers.value)
   console.log(member)
+  console.log(JSON.stringify(answers.value, null, 2))
 }
 const applicationDetail = ref([]) // 서버에서 받은 원본 데이터 저장
 
@@ -67,6 +79,7 @@ const structuredDetail = computed(() => {
       survey_qitem_no: row.survey_qitem_no,
       survey_qitem_question: row.survey_qitem_question,
       survey_qitem_type: row.survey_qitem_type,
+      need_detail: row.need_detail,
       // DB에서 가져온 실제 답변들
       app_answer_no: row.app_answer_no,
       app_answer_type: row.app_answer_type,
@@ -260,15 +273,38 @@ const modCancel = () => {
                       >아니오</label
                     >
                   </div>
+
+                  <div v-if="q.need_detail && answers[q.survey_qitem_no] === 'Y'" class="mt-3">
+                    <div class="mb-3">
+                      <small class="text-muted fw-bold">구체적 사유</small>
+                      <input
+                        type="text"
+                        class="form-control"
+                        v-model="answers[q.survey_qitem_no + '_reason']"
+                        :disabled="modifiable"
+                        placeholder="구체적인 사유를 입력해주세요"
+                        style="display: block !important; height: 40px !important"
+                      />
+                    </div>
+                    <div class="mb-3">
+                      <small class="text-muted fw-bold">날짜</small>
+                      <input
+                        type="date"
+                        class="form-control"
+                        v-model="answers[q.survey_qitem_no + '_date']"
+                        :disabled="modifiable"
+                        style="display: block !important; height: 40px !important"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <div v-else>
                   <input
-                    style="display: flex"
                     type="text"
                     class="form-control"
                     v-model="answers[q.survey_qitem_no]"
-                    :disabled="modifiable"
+                    :disabled="true"
                   />
                 </div>
               </li>
