@@ -37,10 +37,8 @@ const getApplicationInfo = async () => {
       answers.value[row.survey_qitem_no + '_date'] = dateStr
     }
   })
-
   console.log(answers.value)
   console.log(member)
-  console.log(JSON.stringify(answers.value, null, 2))
 }
 const applicationDetail = ref([]) // 서버에서 받은 원본 데이터 저장
 
