@@ -1,3 +1,4 @@
+<!-- application/ApplicationPlanning.vue -->
 <template>
   <ApplicationPlanningSection />
 </template>

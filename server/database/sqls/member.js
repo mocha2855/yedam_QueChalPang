@@ -11,7 +11,7 @@ const countByMemberPass = `select count(*) as count from member where member_id=
 const countByMemberId = `select count(*) as count from member where member_id=?`;
 const countByMemberEmail = `select count(*) as count from member where member_email=?`;
 const countByMemberPhone = `select count(*) as count from member where member_phone=?`;
-const insertMemberInfo = `insert into member(member_id,member_pass,member_name,member_email,member_phone,member_address,center_no,member_authority,member_confirm) values(?,sha2(?,256),?,?,?,?,?,?,?)`;
+const insertMemberInfo = `insert into member(member_id,member_pass,member_name,member_email,member_phone,member_address,center_no,member_authority,member_confirm) values(?,sha2(?,256),?,?,?,?,?,?,'l2')`;
 const insertSmsInfo = `insert into sms(sms_no) values (?)`;
 const selectBySmsId = `select count(*) as count from sms where sms_id = ? and sms_no = ? and sms_created_at >= now() - interval 3 minute`;
 const deleteOver3m = `call delete_over_3m`;
@@ -28,6 +28,7 @@ manager_sub,
 (select member_name from member where member_id=d.member_id) as member_name,
 (select min(status) from application where dependant_no=d.dependant_no) as status
 from dependant d where d.member_id=?`;
+
 const selectDependants2 = `select dependant_address,
 dependant_birth,
 dependant_date,
@@ -41,6 +42,7 @@ manager_sub,
 (select min(status) from application where dependant_no=d.dependant_no) as status
 from dependant d where d.manager_main=?
 `;
+
 //회원가입 시 승인/대기
 // 승인 관리 목록 조회
 const selectMemberApproval = `
@@ -64,6 +66,7 @@ const countPendingMembers = `
   AND member_authority in ('a1','a2','a3')
   AND member_confirm != 'l4'
 `;
+
 //승인 거절 건수
 const countRejectedMembers = `
   SELECT count(*) as count from member 

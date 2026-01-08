@@ -1,3 +1,4 @@
+<!-- 지원결과서 -->
 <template>
   <div>
     <div
@@ -18,6 +19,7 @@
         <div>
           <div v-if="application.resultRejected.length > 0">
             <div class="card mb-3" v-for="plan in application.resultRejected" :key="plan">
+             
               <!-- 반려중 -->
               <div class="card-body">
                 <div class="row row-cols-auto">
@@ -281,7 +283,7 @@ const route = useRoute()
 let id = counters.isLogIn.info.member_id
 let memAuthority = counters.isLogIn.info.member_authority // 권한
 
-// 반려된 계획서 수정버튼
+// 반려된 결과서 수정버튼
 const changeResultStatus = async (data) => {
   if (application.planningState == 1) {
     alert('작성하던 계획서를 마무리해주세요!')

@@ -6,6 +6,19 @@ const dependantFindById = async (no) => {
   return post;
 };
 
+//해당 지원자와 똑같은 센터의 담당자 조회
+const findManagerByDependant = async (deptNo) => {
+  const result = await mysql.bquery("selectManagerByDependant", deptNo);
+  return result
+}
+
+//담당자 배정하기 (관리자) 
+const assignManagerInfo = async (applicationNo, data) => {
+  const { manager_id } = data;
+  const result = await mysql.bquery("assignManager", [manager_id, applicationNo]);
+  return result;
+};
+
 // 대기단계 선택시 상태확인
 const findById = async (no) => {
   let post = await mysql.bquery("selectById", no);
@@ -27,7 +40,6 @@ const applicationApproveInfo = async (no, data) => {
   const post = await mysql.bquery("approveStatus", [approverId, no]);
   return post;
 };
-//---------------------------------------------------------------------
 
 // 대기단계 반려 (관리자)
 const applicationRejectInfo = async (no, data) => {
@@ -71,15 +83,26 @@ const updatePlanningInfo = async (planning_no, data) => {
 };
 
 // 지원계획서 반려(관리자)
+// const updateRejectPlanningInfo = async (planning_no, data) => {
+//   let post = await mysql.bquery("rejectPlanningUpdateInfo", [
+//     data,
+//     planning_no,
+//   ]);
+//   return post;
+// };
 const updateRejectPlanningInfo = async (planning_no, data) => {
-  let post = await mysql.bquery("rejectPlanningUpdateInfo", [
-    data,
+  const { planning_status, planning_reject } = data
+
+  const post = await mysql.bquery("rejectPlanningUpdateInfo", [
+    planning_status,
+    planning_reject,
     planning_no,
-  ]);
+  ])
   return post;
-};
+}
 
 // 지원계획서 반려 후 승인요청(담당자)
+// 이거 반려(i3)로 status가 되어 있을 텐데 담당자가 승인요청을 다시 올리면서 i1으로 다시 바꿀 필요는 없을지 생각.
 const updateChangingPlanningInfo = async (planning_no, data) => {
   let post = await mysql.bquery("changingPlanningUpdateInfo", [
     data,
@@ -221,6 +244,8 @@ const updateChangingResultInfo = async (result_no, data) => {
 
 module.exports = {
   dependantFindById,
+  findManagerByDependant,
+  assignManagerInfo,
   findById,
   applicationModifyInfo,
   applicationRejectInfo,
