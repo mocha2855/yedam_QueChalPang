@@ -10,7 +10,8 @@ const selectTResvByDate = `
     r.start_at       AS start_at,
     r.resv_day,
     r.resv_status    AS status,
-    r.manager_id
+    r.manager_id,
+    r.application_no
   FROM reservation r
   JOIN member g ON g.member_id = r.guardian_id
   JOIN dependant d ON d.dependant_no = r.dependant_no

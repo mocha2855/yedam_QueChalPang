@@ -2,6 +2,9 @@
 <!-- 자식 -->
 <script setup>
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const props = defineProps({
   selectedDate: { type: Date, required: true }, //부모가 무조건 selectedDate를 내려줘야 함
@@ -39,9 +42,9 @@ const statusInfo = (s) => {
 }
 
 // 상담내역 작성하러가기
-// const writingMeeting = () => {
-//   router.push
-// }
+const writingMeeting = (data) => {
+  router.push({ name: 'meetingLog', params: { id: data } })
+}
 </script>
 
 <template>
@@ -90,7 +93,9 @@ const statusInfo = (s) => {
               </td>
               <!-- 0108 상담내역 작성하기 추가 -->
               <td class="align-middle text-center">
-                <button class="btn btn-primary text-xs">작성하기</button>
+                <button class="btn btn-primary text-xs" @click="writingMeeting(r.application_no)">
+                  작성하기
+                </button>
               </td>
             </tr>
           </tbody>
