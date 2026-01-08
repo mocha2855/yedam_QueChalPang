@@ -1,8 +1,9 @@
 <script setup>
 import { onBeforeMount, ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useCounterStore } from '@/stores/member'
 import axios from 'axios'
-
+const router = useRouter()
 const member = useCounterStore().isLogIn.info
 const surveyList = ref([])
 const getApplicationList = async () => {
@@ -180,11 +181,27 @@ const addApplication = async () => {
     )
     console.log(result)
     alert('신청서가 등록되었습니다.')
+    router.push({ path: supportRoute.value })
   } catch (error) {
     console.error(error)
     alert('등록 중 오류가 발생했습니다.')
   }
 }
+const supportRoute = computed(() => {
+  const auth = member.member_authority
+  switch (auth) {
+    case 'a1':
+      return '/tables'
+    case 'a2':
+      return '/tablesManager'
+    case 'a3':
+      return '/tablesAdmin'
+    case 'a4':
+      return '/tablesAdmin'
+    default:
+      return '/'
+  }
+})
 </script>
 
 <template>

@@ -12,7 +12,9 @@ const { applicationList } = storeToRefs(search)
 const member = useCounterStore().isLogIn.info
 search.member = member
 onBeforeMount(() => {
-  search.getApplicationList(member)
+  setTimeout(() => {
+    search.getApplicationList(member)
+  }, 10)
 })
 
 const returnStatus = (stat, statStatus) => {
@@ -20,7 +22,7 @@ const returnStatus = (stat, statStatus) => {
   if (statStatus !== 'i2') {
     return '대기'
   }
- 
+
   //status_status = i2 일때만 텍스트 표시
   if (stat === 'e3') return '계획'
   if (stat === 'e4') return '중점'

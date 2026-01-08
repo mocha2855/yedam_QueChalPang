@@ -1,6 +1,7 @@
 <template>
-  <div>
+  <div v-if="memAuthority != 'a1'">
     <!-- 담당자(a2) 신규 입력 -->
+
     <div v-if="memAuthority === 'a2'">
       <PlanningCreateCard
         :mem-authority="memAuthority"
