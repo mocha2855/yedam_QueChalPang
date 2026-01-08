@@ -14,21 +14,20 @@ router.get(`/dependantInfo/:no`, async (req, res) => {
 router.get("/dependants/:deptNo/managers", async (req, res, next) => {
   try {
     const { deptNo } = req.params;
-    console.log('[ROUTER] managers deptNo:', deptNo);
+    console.log("[ROUTER] managers deptNo:", deptNo);
 
     const rows = await applicationService.findManagerByDependant(deptNo);
-    console.log('[ROUTER] managers rows:', rows);
+    console.log("[ROUTER] managers rows:", rows);
 
     res.json(rows);
   } catch (err) {
-    console.error('[ROUTER] managers error:', err);
+    console.error("[ROUTER] managers error:", err);
     next(err);
   }
-})
-
+});
 
 // 담당자 배정하기
-router.put('/application/:applicationNo/manager', async (req, res, next) => {
+router.put("/application/:applicationNo/manager", async (req, res, next) => {
   try {
     const { applicationNo } = req.params;
     const data = req.body; // { manager_id: 'teacher01', updater_id: 'admin01' ... }
@@ -91,7 +90,7 @@ router.post("/submitPlanningInfo/:no", async (req, res) => {
   res.send(post);
 });
 
-// 지원계획서 승인(관리자)
+// 반려된 지원계획서 승인(관리자)
 router.put("/successPlanningInfo/:no", async (req, res) => {
   let no = req.params.no;
   let data = req.body;

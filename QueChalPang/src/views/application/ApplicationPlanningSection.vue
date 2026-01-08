@@ -1,8 +1,7 @@
 <!-- application/ApplicationPlanningSection.vue -->
 <template>
   <div>
-    <!-- 담당자(a2) 신규 입력 --> 
-     <!-- check -->
+    <!-- 담당자(a2)가 계획서 신규 입력 -->
     <div v-if="memAuthority === 'a2'">
       <PlanningCreateCard
         :mem-authority="memAuthority"
@@ -17,7 +16,7 @@
         @submitted="onSubmitCreate"
       />
 
-      <!-- 담당자 반려건 수정 -->
+      <!-- 담당자(a2) 반려된거 수정 -->
       <PlanningRejectedEditCard
         v-if="showRejectedEdit"
         :mem-authority="memAuthority"
@@ -41,7 +40,7 @@
       @reject="rejectPlan"
     />
 
-    <!-- 최초 검토중 계획서(관리자) -->
+    <!-- 검토중인 계획서 리스트 (관리자, 담당자 모두) -->
     <PlanningReviewList
       :show="showPlanningReview"
       :mem-authority="memAuthority"
@@ -121,7 +120,7 @@ const onSubmitCreate = async (payload) => {
   // 기존 동작 맞추기: 카운트/폼 상태 리셋
   realCount.value = application.planned + 2
   addCount.value = 0
-  application.planningState = 0 
+  application.planningState = 0
 }
 
 // 반려 수정 카드 노출 조건(기존 조건을 안전하게)
@@ -180,10 +179,9 @@ const rejectPlan = async (planningNo) => {
   // })
 
   await axios.put(`/api/rejectPlanningInfo/${planningNo}`, {
-  planning_status: 'i3',
-  planning_reject: modal.rejectReason,   // textarea에서 v-model로 받은 값
-})
-
+    planning_status: 'i3',
+    planning_reject: modal.rejectReason, // textarea에서 v-model로 받은 값
+  })
 
   alert('반려했습니다.')
   modal.rejectReason = undefined
@@ -191,9 +189,12 @@ const rejectPlan = async (planningNo) => {
 }
 
 // 검토중 계획서 노출 조건(기존 조건)
+// const showPlanningReview = computed(() => {
+//   return (
+//     application.planningReview?.length > 0 && application.planningReview.planning_reject == null
+//   )
+// })
 const showPlanningReview = computed(() => {
-  return (
-    application.planningReview?.length > 0 && application.planningReview.planning_reject == null
-  )
+  return application.planningReview && application.planningReview.length > 0
 })
 </script>
