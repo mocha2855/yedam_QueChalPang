@@ -3,7 +3,7 @@ import { onBeforeMount, ref, computed } from 'vue'
 import { useCounterStore } from '@/stores/member'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
-// import ApplicationModal from './modals/ApplicationModal.vue'
+import ApplicationModal from './modals/ApplicationModal.vue'
 
 import { useApplicationStore } from '@/stores/application'
 const application = useApplicationStore()
@@ -197,125 +197,129 @@ const modCancel = () => {
       </button>
     </template>
   </ApplicationModal>
-  <div v-if="isNull" class="card mb-3">
-    <div class="card-header pb-0">
-      <div class="d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">지원 신청서</h5>
-        <div v-if="!['e3', 'e4', 'e5'].includes(currentStatus)">
-          <button v-if="modifiable" class="btn btn-primary p-1" @click="changeModifiable">
-            수정하기
-          </button>
-          <button
-            v-if="!modifiable"
-            class="btn btn-success p-1"
-            @click="modal == false ? (modal = true) : (modal = false)"
-          >
-            수정완료
-          </button>
-          <button v-if="!modifiable" class="btn btn-secondary p-1 ms-1" @click="modCancel">
-            수정취소
-          </button>
-        </div>
-      </div>
-    </div>
-    <div class="card-body px-0 pt-0 pb-2">
-      <div class="row" v-for="survey in structuredDetail" :key="survey.survey_no">
-        <div v-for="sub in survey.subtitles" :key="sub.survey_subtitle_no" class="row mb-4">
-          <div class="col-1"></div>
-          <div class="col-11">
-            <hr class="m-0" />
-            <label style="padding-left: 1%" class="text-lg">{{ sub.survey_subtitle }}</label>
-            <span style="padding-left: 2%" class="text-xs text-gray">
-              {{ sub.survey_subtitle_detail }}
-            </span>
-            <hr class="m-0" />
-          </div>
-          <div class="col-12">
-            <ul>
-              <li
-                v-for="q in sub.questions"
-                :key="q.survey_qitem_no"
-                class="mb-3 list-unstyled"
-                style="padding-left: 1%"
-              >
-                <p class="mb-1 fw-bold">Q. {{ q.survey_qitem_question }}</p>
-                <hr class="m-0" />
-
-                <div v-if="q.survey_qitem_type === '예/아니요'">
-                  <div class="form-check form-check-inline">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      :name="'question_' + q.survey_qitem_no"
-                      :id="'radio_yes_' + q.survey_qitem_no"
-                      value="Y"
-                      v-model="answers[q.survey_qitem_no]"
-                      :disabled="modifiable"
-                    />
-                    <label class="form-check-label" :for="'radio_yes_' + q.survey_qitem_no"
-                      >예</label
-                    >
-                  </div>
-
-                  <div class="form-check form-check-inline">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      :name="'question_' + q.survey_qitem_no"
-                      :id="'radio_no_' + q.survey_qitem_no"
-                      value="N"
-                      v-model="answers[q.survey_qitem_no]"
-                      :disabled="modifiable"
-                    />
-                    <label class="form-check-label" :for="'radio_no_' + q.survey_qitem_no"
-                      >아니오</label
-                    >
-                  </div>
-
-                  <div v-if="q.need_detail && answers[q.survey_qitem_no] === 'Y'" class="mt-3">
-                    <div class="mb-3">
-                      <small class="text-muted fw-bold">구체적 사유</small>
-                      <input
-                        type="text"
-                        class="form-control"
-                        v-model="answers[q.survey_qitem_no + '_reason']"
-                        :disabled="modifiable"
-                        placeholder="구체적인 사유를 입력해주세요"
-                        style="display: block !important; height: 40px !important"
-                      />
-                    </div>
-                    <div class="mb-3">
-                      <small class="text-muted fw-bold">날짜</small>
-                      <input
-                        type="date"
-                        class="form-control"
-                        v-model="answers[q.survey_qitem_no + '_date']"
-                        :disabled="modifiable"
-                        style="display: block !important; height: 40px !important"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div v-else>
-                  <input
-                    type="text"
-                    class="form-control"
-                    v-model="answers[q.survey_qitem_no]"
-                    :disabled="true"
-                  />
-                </div>
-              </li>
-            </ul>
+  <div class="tab-content">
+    <div v-if="isNull" class="card mb-3">
+      <div class="card-header pb-0">
+        <div class="d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">지원 신청서</h5>
+          <div v-if="!['e3', 'e4', 'e5'].includes(currentStatus)">
+            <button v-if="modifiable" class="btn btn-primary p-1" @click="changeModifiable">
+              수정하기
+            </button>
+            <button
+              v-if="!modifiable"
+              class="btn btn-success p-1"
+              @click="modal == false ? (modal = true) : (modal = false)"
+            >
+              수정완료
+            </button>
+            <button v-if="!modifiable" class="btn btn-secondary p-1 ms-1" @click="modCancel">
+              수정취소
+            </button>
           </div>
         </div>
       </div>
+
+      <div class="card-body px-0 pt-0 pb-2">
+        <div class="row" v-for="survey in structuredDetail" :key="survey.survey_no">
+          <div v-for="sub in survey.subtitles" :key="sub.survey_subtitle_no" class="row mb-4">
+            <div class="col-1"></div>
+            <div class="col-11">
+              <hr class="m-0" />
+              <label style="padding-left: 1%" class="text-lg">{{ sub.survey_subtitle }}</label>
+              <span style="padding-left: 2%" class="text-xs text-gray">
+                {{ sub.survey_subtitle_detail }}
+              </span>
+              <hr class="m-0" />
+            </div>
+            <div class="col-12">
+              <ul>
+                <li
+                  v-for="q in sub.questions"
+                  :key="q.survey_qitem_no"
+                  class="mb-3 list-unstyled"
+                  style="padding-left: 1%"
+                >
+                  <p class="mb-1 fw-bold">Q. {{ q.survey_qitem_question }}</p>
+                  <hr class="m-0" />
+
+                  <div v-if="q.survey_qitem_type === '예/아니요'">
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        :name="'question_' + q.survey_qitem_no"
+                        :id="'radio_yes_' + q.survey_qitem_no"
+                        value="Y"
+                        v-model="answers[q.survey_qitem_no]"
+                        :disabled="modifiable"
+                      />
+                      <label class="form-check-label" :for="'radio_yes_' + q.survey_qitem_no"
+                        >예</label
+                      >
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        :name="'question_' + q.survey_qitem_no"
+                        :id="'radio_no_' + q.survey_qitem_no"
+                        value="N"
+                        v-model="answers[q.survey_qitem_no]"
+                        :disabled="modifiable"
+                      />
+                      <label class="form-check-label" :for="'radio_no_' + q.survey_qitem_no"
+                        >아니오</label
+                      >
+                    </div>
+
+                    <div v-if="q.need_detail && answers[q.survey_qitem_no] === 'Y'" class="mt-3">
+                      <div class="mb-3">
+                        <small class="text-muted fw-bold">구체적 사유</small>
+                        <input
+                          type="text"
+                          class="form-control"
+                          v-model="answers[q.survey_qitem_no + '_reason']"
+                          :disabled="modifiable"
+                          placeholder="구체적인 사유를 입력해주세요"
+                          style="display: block !important; height: 40px !important"
+                        />
+                      </div>
+                      <div class="mb-3">
+                        <small class="text-muted fw-bold">날짜</small>
+                        <input
+                          type="date"
+                          class="form-control"
+                          v-model="answers[q.survey_qitem_no + '_date']"
+                          :disabled="modifiable"
+                          style="display: block !important; height: 40px !important"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div v-else>
+                    <input
+                      type="text"
+                      class="form-control"
+                      v-model="answers[q.survey_qitem_no]"
+                      :disabled="true"
+                    />
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-  <div v-else-if="!isNull" class="card mb-3">
-    <h5 class="mb-0">지원 신청서</h5>
-    <div class="text-center">
-      <h5 class="p-5 mt-5 mb-5">지원신청서의 답변이 <br />작성되지 않았습니다.</h5>
+
+    <div v-else-if="!isNull" class="card mb-3">
+      <h5 class="mb-0">지원 신청서</h5>
+      <div class="text-center">
+        <h5 class="p-5 mt-5 mb-5">지원신청서의 답변이 <br />작성되지 않았습니다.</h5>
+      </div>
     </div>
   </div>
 </template>
