@@ -64,4 +64,12 @@ router.get("/guardianInfo/:id", async (req, res) => {
   res.send(post);
 });
 
+// 보호자 지원자 정보
+router.get("/selectGuardianDependantById/:id", async (req, res) => {
+  let id = req.params.id;
+  console.log(id);
+  let post = await mypageService.findGuardianDependantById(id);
+  res.send(post);
+});
+
 module.exports = router;

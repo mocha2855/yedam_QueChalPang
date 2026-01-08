@@ -51,10 +51,9 @@ isConfirm()
 
 // 마이페이지 이동
 const goMyPage = () => {
-  if (isLogIn.value.info.member_authority == 'a2')
+  if (isLogIn.value.info.member_authority == 'a2' || isLogIn.value.info.member_authority == 'a3')
     router.push({ name: 'myPage', params: { id: isLogIn.value.info.member_id } })
-  if (isLogIn.value.info.member_authority == 'a1')
-    router.push({ name: 'myPageGuardian', params: { id: isLogIn.value.info.member_id } })
+  if (isLogIn.value.info.member_authority == 'a1') router.push({ name: 'myPageGuardian' })
 }
 
 const supportRoute = computed(() => {

@@ -24,12 +24,17 @@ const insertDependantInfo = `insert into dependant  set ?`;
 const deleteDependantInfo = `delete from dependant where dependant_no = ?`;
 
 // 보호자
-// 보호자 및 지원자 정보
+// 보호자
 const selectguardianById = `select * from member m
 join center c on m.center_no = c.center_no
-join dependant d on m.member_id = d.member_id
-join disability d2 on d.disability_no = d2.disability_no
 where m.member_id = ?`;
+
+// 보호자 지원자 정보
+const selectGuardianDependantById = `select * from member m
+join dependant d on m.member_id = d.member_id
+where m.member_id = ?`;
+
+// 관리자
 
 module.exports = {
   selectMnagerById,
@@ -39,4 +44,5 @@ module.exports = {
   insertDependantInfo,
   deleteDependantInfo,
   selectguardianById,
+  selectGuardianDependantById,
 };

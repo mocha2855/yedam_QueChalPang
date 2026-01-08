@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="py-4 container-fluid"
-    v-if="myPage.guardianInfo != '' && counter.isLogIn.info.member_authority == 'a1'"
-  >
+  <div class="py-4 container-fluid">
     <div class="row">
       <div class="col-12">
         <div class="card">
@@ -14,7 +11,12 @@
             </div>
           </div>
 
-          <div class="card-body px-0 pt-0 pb-2">
+          <div
+            class="card-body px-0 pt-0 pb-2"
+            v-if="
+              myPage.guardianDependantInfo != '' && counter.isLogIn.info.member_authority == 'a1'
+            "
+          >
             <div class="table-responsive p-0">
               <table class="table align-items-center">
                 <thead>
@@ -42,7 +44,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="member in myPage.guardianInfo" :key="member">
+                  <tr v-for="member in myPage.guardianDependantInfo" :key="member">
                     <td class="align-middle text-center" @click="goDetail(member.dependant_no)">
                       <p class="text-sm font-weight-bold mb-0">
                         {{ member.dependant_name }}
@@ -63,6 +65,9 @@
               </table>
             </div>
           </div>
+          <div v-else>
+            <h5 class="align-self-center">지원자가 없습니다. 등록해주세요</h5>
+          </div>
         </div>
       </div>
     </div>
@@ -79,7 +84,7 @@ const counter = useCounterStore()
 const router = useRouter()
 
 onBeforeMount(async () => {
-  await myPage.searchGuardianInfo(counter.isLogIn.info.member_id)
+  await myPage.searchGuardianDependantInfo(counter.isLogIn.info.member_id)
 })
 
 const goDetail = (data) => {

@@ -17,6 +17,7 @@ import myPageDetail from '@/views/myPageDetail.vue' // 담당 지원자 마이�
 import myPageAddDependant from '@/views/myPageAddDependant.vue' // 마이페이지 지원자 등록(담당자/보호자)
 import myPageGuardian from '@/views/myPageGuardian.vue' // 마이페이지(보호자)
 import myPageGuardianList from '../views/myPageGuardianList.vue' // 마이페이지 지원자 목록(보호자)
+import myPageCenterInfo from '../views/myPageCenterInfo.vue'
 
 import qnaRoutes from './qna' //질문하기
 import surveyRoutes from './survey' //시스템관리자 조사지
@@ -110,6 +111,12 @@ const routes = [
     path: '/myPageGuardianList',
     name: 'myPageGuardianList',
     component: myPageGuardianList,
+  },
+
+  {
+    path: '/myPageCenterInfo',
+    name: 'myPageCenterInfo',
+    component: myPageCenterInfo,
   },
 
   ...surveyRoutes,

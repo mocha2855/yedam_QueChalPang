@@ -44,6 +44,12 @@ const findGuardianById = async (id) => {
   return post;
 };
 
+// 보호자 정보
+const findGuardianDependantById = async (id) => {
+  let post = await mysql.myPageQuery("selectGuardianDependantById", id);
+  return post;
+};
+
 module.exports = {
   findManagerById,
   findDependantById,
@@ -52,4 +58,5 @@ module.exports = {
   addDependantInfo,
   removeDependantInfo,
   findGuardianById,
+  findGuardianDependantById,
 };

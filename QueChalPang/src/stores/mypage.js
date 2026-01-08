@@ -8,6 +8,7 @@ export const useMyPageStore = defineStore('myPage', {
       managerInfo: [], // 담당자 정보
       dependantInfo: [], // 지원자 정보
       guardianInfo: [], // 보호자 정보
+      guardianDependantInfo: [], // 보호자 지원자 정보
     }
   },
   _actions: {
@@ -16,7 +17,7 @@ export const useMyPageStore = defineStore('myPage', {
       this.managerInfo = (await axios.get('/api/managerInfo/' + id)).data[0]
       const changeDateType = (day) => {
         let date = new Date(day)
-        day = `${date.getFullYear(day)}-${date.getMonth(day) + 1}-${date.getDay(day)}`
+        day = `${date.getFullYear(day)}-${date.getMonth(day) + 1}-${date.getDate(day)}`
         return day
       }
       this.managerInfo.center_start = changeDateType(this.managerInfo.center_start)
@@ -33,7 +34,7 @@ export const useMyPageStore = defineStore('myPage', {
       // 날짜 형식 변경 함수
       const changeDateType = (day) => {
         let date = new Date(day)
-        let realDay = `${date.getFullYear(day)}-${date.getMonth(day) + 1}-${date.getDay(day)}`
+        let realDay = `${date.getFullYear(day)}-${date.getMonth(day) + 1}-${date.getDate(day)}`
         return realDay
       }
 
@@ -112,6 +113,50 @@ export const useMyPageStore = defineStore('myPage', {
         }
       })
     },
+
+    // 보호자 지원자 목록
+    async searchGuardianDependantInfo(id) {
+      this.guardianDependantInfo = (await axios.get('/api/selectGuardianDependantById/' + id)).data
+
+      // 날짜 형식 변경 함수
+      const changeDateType = (day) => {
+        let date = new Date(day)
+        let realDay = `${date.getFullYear(day)}-${date.getMonth(day) + 1}-${date.getDate(day)}`
+        return realDay
+      }
+
+      // 나이 함수
+      const getAge = (birthday) => {
+        let today = new Date()
+        let birthDay = new Date(birthday)
+        let age = today.getFullYear() - birthDay.getFullYear()
+
+        let todayMonth = today.getMonth() + 1
+        let birthMonth = birthDay.getMonth() + 1
+
+        if (
+          birthMonth > todayMonth ||
+          (birthMonth === todayMonth && birthDay.getDate() >= today.getDate())
+        ) {
+          age--
+        }
+        return age
+      }
+
+      this.guardianDependantInfo.forEach((member) => {
+        member.dependant_date = changeDateType(member.dependant_date)
+        member.dependant_birth = changeDateType(member.dependant_birth)
+        member.dependant_age = getAge(member.dependant_birth)
+        if (member.dependant_gender == 'g1') {
+          member.dependant_gender = '남자'
+        } else {
+          member.dependant_gender = '여자'
+        }
+      })
+    },
+
+    // 관리자
+    // 관리자 정보
   },
   get actions() {
     return this._actions
