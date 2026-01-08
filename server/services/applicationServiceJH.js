@@ -129,7 +129,14 @@ const findAppById = async (id, search, value, badge, authority) => {
       badge.replaceAll("'", "").split(","),
     ]);
   } else if (authority == "a4") {
-    result = await mysql.bquery("selectApplicationsByAdmin", [
+    if (search == undefined) {
+      search = "d.dependant_name";
+    }
+    if (value === undefined) {
+      value = "";
+    }
+
+    result = await mysql.bquery("selectApplicationsByCenter", [
       id,
       search,
       value,
@@ -167,6 +174,18 @@ const insertAppById = async (input, id, authority) => {
 // 지원신청서 조회
 const findAppByNo = async (no) => {
   let result = await mysql.bquery("selectAppByNo", no);
+  return result;
+};
+// 지원신청서 수정
+const updateApp = async (updateList) => {
+  const bulkData = updateList.map((item) => [
+    item.app_answer_no, // 1
+    item.survey_qitem_no, // 2 (필수값)
+    item.application_no, // 3 (필수값)
+    item.app_reason, // 4
+    item.app_date, // 5
+  ]);
+  let result = await mysql.bquery("modifyApp", [bulkData]);
   return result;
 };
 // 검토 중, 반려, 승인 지원계획서 불러오기
@@ -220,4 +239,5 @@ module.exports = {
   insertAppById,
   findAppByNo,
   applicationApproveInfo,
+  updateApp,
 };

@@ -3,6 +3,7 @@ import { onBeforeMount, ref, computed } from 'vue'
 import { useCounterStore } from '@/stores/member'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
+import ApplicationModal from './modals/ApplicationModal.vue'
 
 const route = useRoute()
 const appNo = route.params.id
@@ -10,6 +11,7 @@ const dependantNo = ref(0)
 const status = ref('')
 const member = useCounterStore().isLogIn.info
 const answers = ref({})
+const modifiable = ref(true)
 const getApplicationInfo = async () => {
   let result = await axios.get('/api/applicationInfo/' + appNo)
   console.log(result.data)
@@ -60,6 +62,7 @@ const structuredDetail = computed(() => {
       survey_qitem_question: row.survey_qitem_question,
       survey_qitem_type: row.survey_qitem_type,
       // DB에서 가져온 실제 답변들
+      app_answer_no: row.app_answer_no,
       app_answer_type: row.app_answer_type,
       app_date: row.app_date,
       app_reason: row.app_reason,
@@ -84,162 +87,186 @@ onBeforeMount(async () => {
   await getApplicationInfo()
   await getDependantInfo()
 })
-// const returnStatus = (stat) => {
-//   if (stat == 'e1') {
-//     return '대기'
-//   } else if (stat == 'e2') {
-//     return '검토중'
-//   } else if (stat == 'e3') {
-//     return '계획'
-//   } else if (stat == 'e4') {
-//     return '중점'
-//   } else if (stat == 'e5') {
-//     return '긴급'
-//   }
-// }
-// const changeDateFormat = (input) => {
-//   let date = new Date(input)
-//   let result = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`
-//   return result
-// }
-// const returnGender = (input) => {
-//   console.log(input)
-//   if (input == 'g1') {
-//     return '남'
-//   } else {
-//     return '여'
-//   }
-// }
+
+const changeModifiable = () => {
+  modifiable.value = false
+}
+const modifyApp = async () => {
+  // 1. 서버로 보낼 수정 데이터 리스트 생성
+  const updateList = []
+
+  // 구조화된 데이터를 순회하며 현재 입력된 값(answers)을 수집
+  structuredDetail.value.forEach((survey) => {
+    survey.subtitles.forEach((sub) => {
+      sub.questions.forEach((q) => {
+        const currentReason = answers.value[q.survey_qitem_no]
+        const currentDate = answers.value[q.survey_qitem_no + '_date']
+
+        let reasonVal = currentReason // (간소화)
+        let dateVal = null
+
+        // 날짜/복합 타입 처리 로직 (이전과 동일하게 유지하거나 아래처럼 간소화 가능)
+        if (q.survey_qitem_type && q.survey_qitem_type.includes('date')) {
+          dateVal = currentDate || null
+          reasonVal = currentReason || null
+        } else {
+          dateVal = null
+          reasonVal = currentReason
+        }
+
+        updateList.push({
+          app_answer_no: q.app_answer_no, // PK
+          app_reason: reasonVal,
+          app_date: dateVal,
+
+          // [추가] INSERT 구문 오류 방지를 위한 필수 데이터 포함
+          survey_qitem_no: q.survey_qitem_no,
+          application_no: appNo, // 현재 페이지의 신청서 번호
+        })
+      })
+    })
+  })
+
+  // 2. 서버 전송
+  try {
+    const result = await axios.put('/api/application/update', {
+      updateList: updateList,
+      application_no: appNo, // 현재 신청서 번호
+    })
+
+    if (result.status === 200) {
+      alert('수정이 완료되었습니다.')
+      // 3. 수정 모드 종료 (다시 읽기 전용으로 변경)
+      modifiable.value = true
+
+      // 최신 데이터로 다시 새로고침 (선택사항)
+      await getApplicationInfo()
+    }
+  } catch (error) {
+    console.error(error)
+    alert('수정 중 오류가 발생했습니다.')
+  }
+}
+const modal = ref(false)
 </script>
 
 <template>
-  <!-- <div class="card mb-1">
-          <div class="card-header pb-0">
-            <div class="d-flex justify-content-between align-items-center">
-              <h6 class="mb-0">지원자 정보</h6>
-            </div>
-          </div>
-          <div class="card-body px-0 pt-0 pb-2">
-            <div class="table-responsive p-0">
-              <table class="table align-items-center mb-0">
-                <tr>
-                  <th class="text-uppercase text-primary text-sm font-weight-bolder opacity-7 ps-2">
-                    지원자
-                  </th>
-                  <td class="align-middle text-center text-sm">
-                    {{ dependant.dependant_name }}
-                  </td>
-                  <th class="text-uppercase text-primary text-sm font-weight-bolder opacity-7 ps-2">
-                    보호자
-                  </th>
-                  <td class="align-middle text-center text-sm">
-                    {{ dependant.member_name }}
-                  </td>
-                  <th class="text-uppercase text-primary text-sm font-weight-bolder opacity-7 ps-2">
-                    대기단계
-                  </th>
-                  <td class="align-middle text-center text-sm">
-                    {{ returnStatus(dependant.status) }}
-                  </td>
-                </tr>
-                <tr>
-                  <th class="text-uppercase text-primary text-sm font-weight-bolder opacity-7 ps-2">
-                    성별
-                  </th>
-                  <td class="align-middle text-center text-sm">
-                    {{ returnGender(dependant.dependant_gender) }}
-                  </td>
-                  <th class="text-uppercase text-primary text-sm font-weight-bolder opacity-7 ps-2">
-                    생일
-                  </th>
-                  <td class="align-middle text-center text-sm">
-                    {{ changeDateFormat(dependant.dependant_birth) }}
-                  </td>
-                  <th class="text-uppercase text-primary text-sm font-weight-bolder opacity-7 ps-2">
-                    장애유형
-                  </th>
-                  <td class="align-middle text-center text-sm">{{ dependant.disability_name }}</td>
-                </tr>
-              </table>
-            </div>
-          </div>
-        </div> -->
   <div class="card mb-3">
     <div class="card-header pb-0">
       <div class="d-flex justify-content-between align-items-center">
         <h6 class="mb-0">지원 신청서</h6>
-        <button class="btn btn-primary p-1">상담신청</button>
+        <button @click="modal == false ? (modal = true) : (modal = false)">모달</button>
+        <button v-if="modifiable" class="btn btn-primary p-1" @click="changeModifiable">
+          수정하기
+        </button>
+        <button v-if="!modifiable" class="btn btn-primary p-1" @click="modifyApp">수정완료</button>
       </div>
     </div>
     <div class="card-body px-0 pt-0 pb-2">
-      <div class="row" v-for="survey in structuredDetail" :key="survey.survey_no">
-        <div v-for="sub in survey.subtitles" :key="sub.survey_subtitle_no" class="row mb-4">
-          <div class="col-1"></div>
-          <div class="col-11">
-            <hr class="m-0" />
-            <label style="padding-left: 1%" class="text-lg">{{ sub.survey_subtitle }}</label>
-            <span style="padding-left: 2%" class="text-xs text-gray">
-              {{ sub.survey_subtitle_detail }}
-            </span>
-            <hr class="m-0" />
-          </div>
-          <div class="col-12">
-            <ul>
-              <li
-                v-for="q in sub.questions"
-                :key="q.survey_qitem_no"
-                class="mb-3 list-unstyled"
-                style="padding-left: 1%"
+      <div class="row" v-for="(survey, surveyIdx) in structuredDetail" :key="survey.survey_no">
+        <div class="col-12 px-4">
+          <h6 class="mb-3">{{ survey.survey_title }} (v{{ survey.survey_version }})</h6>
+
+          <!-- 탭 헤더 -->
+          <ul class="nav nav-tabs nav-tabs-compact" :id="'surveyTab-' + surveyIdx" role="tablist">
+            <li
+              class="nav-item"
+              v-for="(sub, subIdx) in survey.subtitles"
+              :key="sub.survey_subtitle_no"
+              role="presentation"
+            >
+              <button
+                class="nav-link"
+                :class="{ active: subIdx === 0 }"
+                :id="'tab-' + surveyIdx + '-' + subIdx"
+                data-bs-toggle="tab"
+                :data-bs-target="'#content-' + surveyIdx + '-' + subIdx"
+                type="button"
+                role="tab"
               >
-                <p class="mb-1 fw-bold">Q. {{ q.survey_qitem_question }}</p>
-                <hr class="m-0" />
+                {{ sub.survey_subtitle }}
+              </button>
+            </li>
+          </ul>
 
-                <div v-if="q.survey_qitem_type === '예/아니요'">
-                  <div class="form-check form-check-inline">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      :name="'question_' + q.survey_qitem_no"
-                      :id="'radio_yes_' + q.survey_qitem_no"
-                      value="Y"
-                      v-model="answers[q.survey_qitem_no]"
-                      :disabled="true"
-                    />
-                    <label class="form-check-label" :for="'radio_yes_' + q.survey_qitem_no"
-                      >예</label
-                    >
-                  </div>
+          <!-- 탭 내용 -->
+          <div class="tab-content" :id="'surveyTabContent-' + surveyIdx">
+            <div
+              class="tab-pane fade"
+              :class="{ 'show active': subIdx === 0 }"
+              :id="'content-' + surveyIdx + '-' + subIdx"
+              v-for="(sub, subIdx) in survey.subtitles"
+              :key="sub.survey_subtitle_no"
+              role="tabpanel"
+            >
+              <div class="p-4">
+                <!-- 소제목 설명 -->
+                <p class="text-sm text-muted mb-4">{{ sub.survey_subtitle_detail }}</p>
 
-                  <div class="form-check form-check-inline">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      :name="'question_' + q.survey_qitem_no"
-                      :id="'radio_no_' + q.survey_qitem_no"
-                      value="N"
-                      v-model="answers[q.survey_qitem_no]"
-                      :disabled="true"
-                    />
-                    <label class="form-check-label" :for="'radio_no_' + q.survey_qitem_no"
-                      >아니오</label
-                    >
-                  </div>
-                </div>
+                <!-- 질문 목록 -->
+                <ul class="list-unstyled">
+                  <li v-for="q in sub.questions" :key="q.survey_qitem_no" class="mb-4">
+                    <p class="mb-2 fw-bold">Q. {{ q.survey_qitem_question }}</p>
 
-                <div v-else>
-                  <input
-                    style="display: flex"
-                    type="text"
-                    class="form-control"
-                    v-model="answers[q.survey_qitem_no]"
-                    :disabled="true"
-                  />
-                </div>
-              </li>
-            </ul>
+                    <div v-if="q.survey_qitem_type === '예/아니요'">
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          :name="'question_' + q.survey_qitem_no"
+                          :id="'radio_yes_' + q.survey_qitem_no"
+                          value="Y"
+                          v-model="answers[q.survey_qitem_no]"
+                          :disabled="true"
+                        />
+                        <label class="form-check-label" :for="'radio_yes_' + q.survey_qitem_no"
+                          >예</label
+                        >
+                      </div>
+
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          :name="'question_' + q.survey_qitem_no"
+                          :id="'radio_no_' + q.survey_qitem_no"
+                          value="N"
+                          v-model="answers[q.survey_qitem_no]"
+                          :disabled="true"
+                        />
+                        <label class="form-check-label" :for="'radio_no_' + q.survey_qitem_no"
+                          >아니오</label
+                        >
+                      </div>
+                    </div>
+
+                    <div v-else>
+                      <input
+                        type="text"
+                        class="form-control"
+                        v-model="answers[q.survey_qitem_no]"
+                        :disabled="true"
+                      />
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.nav-tabs-compact {
+  flex-wrap: nowrap;
+}
+
+.nav-tabs-compact .nav-link {
+  padding: 6px 10px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+</style>
