@@ -192,12 +192,25 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onBeforeMount } from 'vue'
+import { useRouter } from 'vue-router'
 import ArgonInput from '@/components/ArgonInput.vue'
 import { useCounterStore } from '@/stores/member'
 import axios from 'axios'
 
 const counter = useCounterStore()
+
+const router = useRouter()
+
+onBeforeMount(() => {
+  if (
+    counter.isLogIn.info.member_authority == 'a3' ||
+    counter.isLogIn.info.member_authority == 'a4'
+  ) {
+    alert('기관담당자, 보호자만 접근가능합니다.')
+    router.push({ name: 'Dashboard' })
+  }
+})
 
 // 등록날짜 출력
 let date = new Date()
@@ -250,7 +263,7 @@ const openPostcode = () => {
 // 입력정보
 let dependantDetail = ref({
   dependant_birth: '',
-  dependant_date: today.value,
+  dependant_date: today,
   dependant_gender: 'g0',
   dependant_name: '',
   disability_no: 0,

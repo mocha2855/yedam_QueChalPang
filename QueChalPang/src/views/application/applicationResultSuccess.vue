@@ -4,7 +4,8 @@
     <div
       v-if="
         id == application.dependantInfo.manager_id ||
-        id == application.dependantInfo.application_rejector
+        id == application.dependantInfo.application_rejector ||
+        memAuthority == 'a1'
       "
     >
       <h5>지원결과서</h5>

@@ -184,7 +184,7 @@ const insertAppById = async (input, id, authority) => {
     return [
       item.survey_qitem_no,
       appNo,
-      item.question_type,
+      item.app_answer_type || null,
       item.app_date,
       item.app_reason,
     ];
@@ -242,6 +242,12 @@ const updateChangingResultInfo = async (result_no, data) => {
   return post;
 };
 
+// 수정사유 등록
+const addAppHistory = async (input) => {
+  let { appNo, id, reason } = input;
+  let result = await mysql.bquery("insertAppHistory", [appNo, id, reason]);
+};
+
 module.exports = {
   dependantFindById,
   findManagerByDependant,
@@ -265,4 +271,5 @@ module.exports = {
   findAppByNo,
   applicationApproveInfo,
   updateApp,
+  addAppHistory,
 };

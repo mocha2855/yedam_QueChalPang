@@ -196,4 +196,10 @@ router.put("/submitChangingResultInfo/:no", async (req, res) => {
   res.send(post);
 });
 
+// 수정사유 등록
+router.post(`/applicationHistory`, async (req, res) => {
+  let input = req.body;
+  console.log(input);
+  let result = await applicationService.addAppHistory(input);
+});
 module.exports = router;

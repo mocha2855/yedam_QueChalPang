@@ -4,19 +4,48 @@ SELECT m.member_id, m.member_email, m.member_phone,m.member_address,m.member_nam
 FROM member m 
 LEFT JOIN center c ON m.center_no = c.center_no
 WHERE member_id = ?`;
-const selectByMemberNameAndPhone = `select member_id from member where member_name=? and member_phone=?`;
-const countByMemberIdAndPhone = `select count(*) as count from member where member_id=? and member_phone=?`;
-const countByMemberNameAndPhone = `select count(*) as count from member where member_name=? and member_phone=?`;
-const countByMemberPass = `select count(*) as count from member where member_id=? and member_pass=sha2(?,256)`;
-const countByMemberId = `select count(*) as count from member where member_id=?`;
-const countByMemberEmail = `select count(*) as count from member where member_email=?`;
-const countByMemberPhone = `select count(*) as count from member where member_phone=?`;
-const insertMemberInfo = `insert into member(member_id,member_pass,member_name,member_email,member_phone,member_address,center_no,member_authority,member_confirm) values(?,sha2(?,256),?,?,?,?,?,?,'l2')`;
+const selectByMemberNameAndPhone = `
+select member_id 
+from member 
+where member_name=? 
+and member_phone=?`;
+const countByMemberIdAndPhone = `
+select count(*) as count 
+from member 
+where member_id=? 
+and member_phone=?`;
+const countByMemberNameAndPhone = `
+select count(*) as count 
+from member 
+where member_name=? 
+and member_phone=?`;
+const countByMemberPass = `
+select count(*) as count 
+from member 
+where member_id=? 
+and member_pass=sha2(?,256)`;
+const countByMemberId = `
+select count(*) as count 
+from member 
+where member_id=?`;
+const countByMemberEmail = `
+select count(*) as count 
+from member 
+where member_email=?`;
+const countByMemberPhone = `
+select count(*) as count 
+from member 
+where member_phone=?`;
+const insertMemberInfo = `
+insert into 
+member(member_id,member_pass,member_name,member_email,member_phone,member_address,center_no,member_authority,member_confirm) 
+values(?,sha2(?,256),?,?,?,?,?,?,'l2')`;
 const insertSmsInfo = `insert into sms(sms_no) values (?)`;
 const selectBySmsId = `select count(*) as count from sms where sms_id = ? and sms_no = ? and sms_created_at >= now() - interval 3 minute`;
 const deleteOver3m = `call delete_over_3m`;
 const updatePassword = `update member set member_pass=sha2(?,256) where member_id=?`;
-const selectDependants = `select dependant_address,
+const selectDependants = `
+select dependant_address,
 dependant_birth,
 dependant_date,
 dependant_name,
@@ -46,10 +75,12 @@ from dependant d where d.manager_main=?
 //회원가입 시 승인/대기
 // 승인 관리 목록 조회
 const selectMemberApproval = `
-  SELECT * from member 
-  WHERE member_authority in ('a1','a2','a3')
-  AND member_confirm != 'l4'
-  order by member_date desc
+  SELECT m.*, c.center_name
+  FROM member m 
+  LEFT JOIN center c on m.center_no = c.center_no
+  WHERE m.member_authority in ('a1','a2','a3')
+  AND m.member_confirm != 'l4'
+  ORDER BY m.member_date DESC
 `;
 
 // 회원 승인 처리 (l2 -> l1 or l3)

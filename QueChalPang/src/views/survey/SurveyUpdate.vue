@@ -140,16 +140,15 @@
                     <input
                       class="form-check-input"
                       type="checkbox"
-                      v-model="question.needDetail"
+                      v-model="question.need_detail"
                       :id="'detail-' + question.survey_qitem_no"
                     />
                     <label class="form-check-label" :for="'detail-' + question.survey_qitem_no">
                       "예" 선택 시 추가 입력 받기
                     </label>
                   </div>
-
                   <!-- 체크박스 선택하면 안내 메시지 -->
-                  <div v-if="question.needDetail" class="alert alert-info mt-2" role="alert">
+                  <div v-if="question.need_detail" class="alert alert-info mt-2" role="alert">
                     <small>사용자가 "예"를 선택하면 사유와 날짜를 모두 입력받습니다.</small>
                   </div>
                 </div>
@@ -245,8 +244,8 @@ const addQuestion = (subtitleNo) => {
   subtitle.questionList.push({
     survey_qitem_no: Date.now(), //임시 id만들기(없으면 err발생)
     survey_qitem_question: '',
-    survey_qitem_type: '예/아니오',
-    needDetail: false,
+    survey_qitem_type: '예/아니요',
+    need_detail: false,
   })
 }
 
@@ -271,7 +270,15 @@ onMounted(async () => {
     surveyInfo.no = data.survey_no || ''
     surveyInfo.title = data.survey_title || ''
     surveyInfo.title_no = data.survey_title_no || ''
-    surveyInfo.subtitles = data.subtitles || []
+
+    // need_detail을 boolean으로 변환
+    surveyInfo.subtitles = (data.subtitles || []).map((subtitle) => ({
+      ...subtitle,
+      questionList: (subtitle.questionList || []).map((question) => ({
+        ...question,
+        need_detail: Boolean(question.need_detail), // 0→false, 1→true 변환
+      })),
+    }))
     surveyInfo.qitemType = data.qitems || ''
   }
   console.log(data.survey_no)

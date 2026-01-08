@@ -1,5 +1,6 @@
 <script setup>
 import { useCounterStore } from '@/stores/member'
+import ApplicationWaitA1 from './ApplicationWaitA1.vue'
 import ApplicationWaitA2 from './ApplicationWaitA2.vue'
 import ApplicationWaitA3 from './ApplicationWaitA3.vue'
 
@@ -18,6 +19,7 @@ watchEffect(() => {
 </script>
 
 <template>
+  <ApplicationWaitA1 v-if="memAuthority === 'a1'" />
   <ApplicationWaitA2 v-if="memAuthority === 'a2'" />
   <ApplicationWaitA3 v-else-if="memAuthority === 'a3'" />
 </template>

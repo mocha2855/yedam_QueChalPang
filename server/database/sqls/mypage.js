@@ -24,12 +24,25 @@ const insertDependantInfo = `insert into dependant  set ?`;
 const deleteDependantInfo = `delete from dependant where dependant_no = ?`;
 
 // 보호자
-// 보호자 및 지원자 정보
+// 보호자
 const selectguardianById = `select * from member m
 join center c on m.center_no = c.center_no
+where m.member_id = ?`;
+
+// 보호자 지원자 정보
+const selectGuardianDependantById = `select * from member m
 join dependant d on m.member_id = d.member_id
 join disability d2 on d.disability_no = d2.disability_no
 where m.member_id = ?`;
+
+// 관리자
+// 기관 목록
+const selectCenterInfoById = `select * ,count(m.member_authority) memberCount from center c
+left outer join (select * from member where member_authority ='a3') m on c.center_no = m.center_no
+group by c.center_no`;
+
+// 센터 정보 변경
+const updateCenterInfo = `update center set ? where center_no = ?`;
 
 module.exports = {
   selectMnagerById,
@@ -39,4 +52,7 @@ module.exports = {
   insertDependantInfo,
   deleteDependantInfo,
   selectguardianById,
+  selectGuardianDependantById,
+  selectCenterInfoById,
+  updateCenterInfo,
 };
