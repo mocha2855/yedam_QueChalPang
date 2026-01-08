@@ -11,7 +11,7 @@
         :add-count="addCount"
         :planned-status="application.dependantInfo?.status_status"
         :has-changing-work="application.planningChanging?.length > 0"
-        @update:addCount="(v) => (addCount.value = v)"
+        @update:addCount="(v) => (addCount = v)"
         @requestAdd="onRequestAdd"
         @deleted="onDeletedCreate"
         @submitted="onSubmitCreate"
@@ -32,7 +32,7 @@
       <h5>지원계획 승인대기</h5>
     </div>
 
-    <!-- 반려 검토중(관리자) -->
+    <!-- 반려 검토중(관리자 & 담당자 같이 줘야함) -->
     <PlanningRejectedReviewList
       v-if="memAuthority === 'a3' && application.planningChangingReview?.length > 0"
       :mem-authority="memAuthority"
