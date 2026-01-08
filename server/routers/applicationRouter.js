@@ -10,6 +10,36 @@ router.get(`/dependantInfo/:no`, async (req, res) => {
   res.send(post);
 });
 
+//해당 지원자와 똑같은 센터의 담당자 조회
+router.get("/dependants/:deptNo/managers", async (req, res, next) => {
+  try {
+    const { deptNo } = req.params;
+    console.log('[ROUTER] managers deptNo:', deptNo);
+
+    const rows = await applicationService.findManagerByDependant(deptNo);
+    console.log('[ROUTER] managers rows:', rows);
+
+    res.json(rows);
+  } catch (err) {
+    console.error('[ROUTER] managers error:', err);
+    next(err);
+  }
+})
+
+
+// 담당자 배정하기
+router.put('/application/:applicationNo/manager', async (req, res, next) => {
+  try {
+    const { applicationNo } = req.params;
+    const data = req.body; // { manager_id: 'teacher01', updater_id: 'admin01' ... }
+
+    await applicationService.assignManagerInfo(applicationNo, data);
+    res.json({ ok: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // 대기단계 선택시 상태확인
 router.get(`/application/:no`, async (req, res) => {
   let no = req.params.no;
@@ -166,4 +196,10 @@ router.put("/submitChangingResultInfo/:no", async (req, res) => {
   res.send(post);
 });
 
+// 수정사유 등록
+router.post(`/applicationHistory`, async (req, res) => {
+  let input = req.body;
+  console.log(input);
+  let result = await applicationService.addAppHistory(input);
+});
 module.exports = router;

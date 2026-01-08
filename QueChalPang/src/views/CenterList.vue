@@ -17,7 +17,9 @@ const centerInfo = (no) => {
 const modalRef = ref(false)
 let modalControl = null
 onBeforeMount(async () => {
-  search.getCenterList()
+  setTimeout(() => {
+    search.getCenterList()
+  }, 10)
 })
 onMounted(() => {
   modalControl = new Modal(modalRef.value)

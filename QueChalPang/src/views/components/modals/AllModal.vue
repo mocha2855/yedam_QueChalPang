@@ -4,6 +4,7 @@
       <!--@click.stop:내부클릭시 안닫힘-->
       <!--팀원들이 여기에 추가 -->
       <ReasonModal v-if="modal.type === 'reason'" />
+      <AssignManagerModal v-else-if="modal.type === 'assignManager'" />
     </div>
   </div>
 </template>
@@ -11,6 +12,7 @@
 <script setup>
 import { useModalStore } from '@/stores/modal'
 import ReasonModal from './ReasonModal.vue'
+import AssignManagerModal from './AssignManagerModal.vue';
 
 const modal = useModalStore()
 // console.log(modal)
