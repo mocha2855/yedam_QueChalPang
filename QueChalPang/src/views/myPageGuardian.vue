@@ -1,5 +1,5 @@
 <template>
-  <div class="py-4 container-fluid" v-if="mypage.guardianInfo != ''">
+  <div class="py-4 container-fluid" v-if="mypage.guardianInfo[0] != null">
     <div class="row">
       <div class="col-12">
         <div class="card">
@@ -20,7 +20,7 @@
                         id="name"
                         type="text"
                         aria-label="Name"
-                        v-model="mypage.guardianInfo.member_id"
+                        v-model="mypage.guardianInfo[0].member_id"
                         disabled
                       />
                     </div>
@@ -77,7 +77,7 @@
                       <h6 class="mt-2">이름</h6>
                     </div>
                     <div class="col-5 mb-2">
-                      <argon-input v-model="mypage.guardianInfo.member_name" disabled />
+                      <argon-input v-model="mypage.guardianInfo[0].member_name" disabled />
                     </div>
                     <hr class="mb-4" style="height: 1px; background-color: black" />
                   </div>
@@ -88,7 +88,7 @@
                     <div class="col-5 mb-2">
                       <argon-input
                         id="email_input"
-                        v-model="mypage.guardianInfo.member_email"
+                        v-model="mypage.guardianInfo[0].member_email"
                         v-bind:disabled="changeMangerInfo"
                       />
                     </div>
@@ -101,7 +101,7 @@
                     <div class="col-5 mb-2">
                       <argon-input
                         id="phone_input"
-                        v-model="mypage.guardianInfo.member_phone"
+                        v-model="mypage.guardianInfo[0].member_phone"
                         v-bind:disabled="changeMangerInfo"
                       />
                     </div>
@@ -167,7 +167,7 @@
                         id="email"
                         type="email"
                         aria-label="email"
-                        v-model="mypage.guardianInfo.member_date"
+                        v-model="mypage.guardianInfo[0].member_date"
                         disabled
                       />
                     </div>
@@ -224,9 +224,9 @@ const mypage = useMyPageStore()
 
 onBeforeMount(async () => {
   await mypage.searchGuardianInfo(counter.isLogIn.info.member_id)
-  detailAddress.value = mypage.guardianInfo.member_address
-  selectedCenter.value.center_name = mypage.guardianInfo.center_name
-  selectedCenter.value.center_no = mypage.guardianInfo.center_no
+  detailAddress.value = mypage.guardianInfo[0].member_address
+  selectedCenter.value.center_name = mypage.guardianInfo[0].center_name
+  selectedCenter.value.center_no = mypage.guardianInfo[0].center_no
 })
 
 // 수정시 d}isabled 해제
@@ -241,13 +241,13 @@ const returnInfo = () => {
   changeMangerInfo.value = true
   postcode.value = ''
   extraAddress.value = ''
-  detailAddress.value = mypage.guardianInfo.member_address
+  detailAddress.value = mypage.guardianInfo[0].member_address
   count.value = 0
 }
 
 // 비밀번호 체크 및 변경
 let originPassword = ref() // 원래 비밀번호 확인
-let password = ref() // 입력한 새비밀번호
+let password = ref() // 입력한  새비밀번호
 let passwordCheck = ref() // 입력한 새비밀번호 재확인
 
 // 비밀번호 확인
@@ -257,7 +257,9 @@ const checkOriginPassword = () => {
   if (originPassword.value == null || originPassword.value == '') {
     alert('비밀번호를 입력해주세요')
     return
-  } else if (CryptoJS.SHA256(originPassword.value).toString() == mypage.guardianInfo.member_pass) {
+  } else if (
+    CryptoJS.SHA256(originPassword.value).toString() == mypage.guardianInfo[0].member_pass
+  ) {
     alert('비밀번호가 일치합니다.')
     completeCheck.value = false
 
@@ -375,11 +377,17 @@ const completeChangeInfo = async () => {
   if (completeCheck.value == false && passwordChange.value == false) {
     alert('비밀번호 변경을 완료해주세요')
     return
-  } else if (mypage.guardianInfo.member_email == '' || mypage.guardianInfo.member_email == null) {
+  } else if (
+    mypage.guardianInfo[0].member_email == '' ||
+    mypage.guardianInfo[0].member_email == null
+  ) {
     document.getElementById('email_input').focus()
     alert('이메일을 입력해주세요')
     return
-  } else if (mypage.guardianInfo.member_phone == '' || mypage.guardianInfo.member_phone == null) {
+  } else if (
+    mypage.guardianInfo[0].member_phone == '' ||
+    mypage.guardianInfo[0].member_phone == null
+  ) {
     document.getElementById('phone_input').focus()
     alert('전화번호를 입력해주세요')
     return
@@ -390,18 +398,16 @@ const completeChangeInfo = async () => {
   }
 
   await axios //
-    .put('/api/changeDependantInfo/' + mypage.guardianInfo.member_id, {
+    .put('/api/changeManagerInfo/' + mypage.guardianInfo[0].member_id, {
       member_address: `${detailAddress.value} ${writingAddress.value}`,
-      member_phone: mypage.guardianInfo.member_phone,
+      member_phone: mypage.guardianInfo[0].member_phone,
       center_no: selectedCenter.value.center_no,
+      member_email: mypage.guardianInfo[0].member_email,
     })
     .then((res) => {
       console.log(res)
-      mypage.guardianInfo.member_address = `${detailAddress.value} ${writingAddress.value}`
+      detailAddress.value = `${detailAddress.value} ${writingAddress.value}`
 
-      postcode.value = ''
-      extraAddress.value = ''
-      detailAddress.value = ''
       writingAddress.value = ''
       count.value = 0
 

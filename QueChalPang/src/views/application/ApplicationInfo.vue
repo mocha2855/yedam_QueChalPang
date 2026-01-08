@@ -151,24 +151,6 @@ const modal = ref(false)
 </script>
 
 <template>
-  <ApplicationModal v-if="modal">
-    <template v-slot:header><h2></h2></template>
-    <template v-slot:body>
-      <h4 style="text-align: center">지원신청서를 수정하시겠습니까?</h4>
-      <div class="form-floating">
-        <textarea class="form-control" placeholder="Leave a comment here" id="reason"></textarea>
-        <label for="reason">수정사유</label>
-      </div>
-    </template>
-    <template v-slot:footer>
-      <button class="btn btn-success" @click="modal == false ? (modal = true) : (modal = false)">
-        확인
-      </button>
-      <button class="btn btn-light" @click="modal == false ? (modal = true) : (modal = false)">
-        취소
-      </button>
-    </template>
-  </ApplicationModal>
   <div class="card mb-3">
     <div class="card-header pb-0">
       <div class="d-flex justify-content-between align-items-center">
@@ -181,74 +163,110 @@ const modal = ref(false)
       </div>
     </div>
     <div class="card-body px-0 pt-0 pb-2">
-      <div class="row" v-for="survey in structuredDetail" :key="survey.survey_no">
-        <div v-for="sub in survey.subtitles" :key="sub.survey_subtitle_no" class="row mb-4">
-          <div class="col-1"></div>
-          <div class="col-11">
-            <hr class="m-0" />
-            <label style="padding-left: 1%" class="text-lg">{{ sub.survey_subtitle }}</label>
-            <span style="padding-left: 2%" class="text-xs text-gray">
-              {{ sub.survey_subtitle_detail }}
-            </span>
-            <hr class="m-0" />
-          </div>
-          <div class="col-12">
-            <ul>
-              <li
-                v-for="q in sub.questions"
-                :key="q.survey_qitem_no"
-                class="mb-3 list-unstyled"
-                style="padding-left: 1%"
+      <div class="row" v-for="(survey, surveyIdx) in structuredDetail" :key="survey.survey_no">
+        <div class="col-12 px-4">
+          <h6 class="mb-3">{{ survey.survey_title }} (v{{ survey.survey_version }})</h6>
+
+          <!-- 탭 헤더 -->
+          <ul class="nav nav-tabs nav-tabs-compact" :id="'surveyTab-' + surveyIdx" role="tablist">
+            <li
+              class="nav-item"
+              v-for="(sub, subIdx) in survey.subtitles"
+              :key="sub.survey_subtitle_no"
+              role="presentation"
+            >
+              <button
+                class="nav-link"
+                :class="{ active: subIdx === 0 }"
+                :id="'tab-' + surveyIdx + '-' + subIdx"
+                data-bs-toggle="tab"
+                :data-bs-target="'#content-' + surveyIdx + '-' + subIdx"
+                type="button"
+                role="tab"
               >
-                <p class="mb-1 fw-bold">Q. {{ q.survey_qitem_question }}</p>
-                <hr class="m-0" />
+                {{ sub.survey_subtitle }}
+              </button>
+            </li>
+          </ul>
 
-                <div v-if="q.survey_qitem_type === '예/아니요'">
-                  <div class="form-check form-check-inline">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      :name="'question_' + q.survey_qitem_no"
-                      :id="'radio_yes_' + q.survey_qitem_no"
-                      value="Y"
-                      v-model="answers[q.survey_qitem_no]"
-                      :disabled="modifiable"
-                    />
-                    <label class="form-check-label" :for="'radio_yes_' + q.survey_qitem_no"
-                      >예</label
-                    >
-                  </div>
+          <!-- 탭 내용 -->
+          <div class="tab-content" :id="'surveyTabContent-' + surveyIdx">
+            <div
+              class="tab-pane fade"
+              :class="{ 'show active': subIdx === 0 }"
+              :id="'content-' + surveyIdx + '-' + subIdx"
+              v-for="(sub, subIdx) in survey.subtitles"
+              :key="sub.survey_subtitle_no"
+              role="tabpanel"
+            >
+              <div class="p-4">
+                <!-- 소제목 설명 -->
+                <p class="text-sm text-muted mb-4">{{ sub.survey_subtitle_detail }}</p>
 
-                  <div class="form-check form-check-inline">
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      :name="'question_' + q.survey_qitem_no"
-                      :id="'radio_no_' + q.survey_qitem_no"
-                      value="N"
-                      v-model="answers[q.survey_qitem_no]"
-                      :disabled="modifiable"
-                    />
-                    <label class="form-check-label" :for="'radio_no_' + q.survey_qitem_no"
-                      >아니오</label
-                    >
-                  </div>
-                </div>
+                <!-- 질문 목록 -->
+                <ul class="list-unstyled">
+                  <li v-for="q in sub.questions" :key="q.survey_qitem_no" class="mb-4">
+                    <p class="mb-2 fw-bold">Q. {{ q.survey_qitem_question }}</p>
 
-                <div v-else>
-                  <input
-                    style="display: flex"
-                    type="text"
-                    class="form-control"
-                    v-model="answers[q.survey_qitem_no]"
-                    :disabled="modifiable"
-                  />
-                </div>
-              </li>
-            </ul>
+                    <div v-if="q.survey_qitem_type === '예/아니요'">
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          :name="'question_' + q.survey_qitem_no"
+                          :id="'radio_yes_' + q.survey_qitem_no"
+                          value="Y"
+                          v-model="answers[q.survey_qitem_no]"
+                          :disabled="true"
+                        />
+                        <label class="form-check-label" :for="'radio_yes_' + q.survey_qitem_no"
+                          >예</label
+                        >
+                      </div>
+
+                      <div class="form-check form-check-inline">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          :name="'question_' + q.survey_qitem_no"
+                          :id="'radio_no_' + q.survey_qitem_no"
+                          value="N"
+                          v-model="answers[q.survey_qitem_no]"
+                          :disabled="true"
+                        />
+                        <label class="form-check-label" :for="'radio_no_' + q.survey_qitem_no"
+                          >아니오</label
+                        >
+                      </div>
+                    </div>
+
+                    <div v-else>
+                      <input
+                        type="text"
+                        class="form-control"
+                        v-model="answers[q.survey_qitem_no]"
+                        :disabled="true"
+                      />
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.nav-tabs-compact {
+  flex-wrap: nowrap;
+}
+
+.nav-tabs-compact .nav-link {
+  padding: 6px 10px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+</style>
