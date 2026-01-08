@@ -7,12 +7,14 @@ import { useSearchStore } from '@/stores/search'
 import { storeToRefs } from 'pinia'
 import axios from 'axios'
 import router from '@/router'
+import { useModalStore } from '@/stores/modal'
 
 const search = useSearchStore()
 const member = useCounterStore().isLogIn.info
 search.member = member
 
 const { applicationList } = storeToRefs(search)
+const modal = useModalStore()
 
 // 시스템 관리자용
 const centerList = ref([])
@@ -73,6 +75,17 @@ const addApp = () => {
 //해당 지원자의 지원신청서 페이지로 이동
 const goToApplication = (appNo) => {
   router.push({ name: 'applicationWait', params: { id: appNo } })
+}
+
+//담당자 배정
+const openAssignManagerModal = (row) => {
+  modal.open('assignManager', {
+    applicationNo: row.application_no,
+    dependantNo: row.dependant_no,
+    dependantName: row.dependant_name,
+    guardianName: row.guardian_name,
+  })
+  console.log('해당데이터값',row)
 }
 
 //지원계획서
@@ -209,12 +222,13 @@ onBeforeMount(() => {
                   {{ row.application_no }}
                 </p>
               </td>
-
+              <!-- 지원신청서 제출날짜 -->
               <td class="align-middle text-center text-sm">
                 <span class="text-secondary text-xs font-weight-bold">
                   {{ changeDateFormat(row.application_date) }}
                 </span>
               </td>
+              <!-- 지원신청서 번호 -->
               <td class="align-middle text-center">
                 <template v-if="row.application_no">
                   <button
@@ -229,9 +243,22 @@ onBeforeMount(() => {
                   <span class="badge badge-sm bg-secondary">없음</span>
                 </template>
               </td>
+              <!-- 담당자이름 -->
               <td class="align-middle text-center text-sm">
-                <span class="text-secondary text-xs font-weight-bold">{{ row.manager_name }}</span>
+                <template v-if="row.manager_name">
+                  <span class="text-secondary text-xs font-weight-bold">{{ row.manager_name }}</span>
+                </template>
+                <template v-else>
+                  <button
+                    class="btn btn-success btn-sm mb-0"
+                    type="button"
+                    @click="openAssignManagerModal(row)"
+                  >
+                    담당자배정
+                  </button>
+                </template>
               </td>
+              <!-- 대기단계 -->
               <td class="align-middle text-center text-sm">
                 <span class="text-secondary text-xs font-weight-bold">
                   {{ returnStatus(row.status, row.status_status) }}

@@ -1,4 +1,5 @@
-<!-- 반려 수정 -->
+<!-- 담당자가 하는 반려건에 대한 수정 -->
+<!-- application/sections/PlanningRejectedEditCard.vue -->
 <template>
   <div class="card mb-3" v-if="show">
     <div v-if="!changingChecked">
@@ -6,9 +7,8 @@
         <div class="d-flex justify-content-between">
           <div>
             <h5>
-              <span class="badge badge-sm bg-gradient-secondary">반려</span>지원계획{{
-                localPlan.ranking
-              }}
+              <span class="badge badge-sm bg-gradient-secondary">반려</span>
+              지원계획{{ localPlan.ranking }}
             </h5>
           </div>
           <div>
@@ -114,17 +114,21 @@
 </template>
 
 <script setup>
-import { reactive, watch } from 'vue'
+import { reactive, watch, ref, computed } from 'vue'
+import ConfirmModal from '../modals/ConfirmModal.vue'
 
 const props = defineProps({
   plan: { type: Object, required: true },
+  show: { type: Boolean, default: true },
 })
 
-const emit = defineEmits(['update:plan', 'submit', 'cancel'])
+const emit = defineEmits(['update:plan', 'submitChanging', 'cancel'])
 
 const localPlan = reactive({})
+const changingChecked = ref(false)
+const writerName = computed(() => '최강희') // 필요하면 store에서 가져와도 됨
 
-// props 변경 시 로컬로 복사
+// props.plan 이 바뀔 때마다 localPlan으로 복사
 watch(
   () => props.plan,
   (p) => {
@@ -133,8 +137,12 @@ watch(
   { immediate: true, deep: true },
 )
 
-// 필요하면 "임시저장/승인요청" 같은 버튼에서 부모로 올림
-// const syncToParent = () => {
-//   emit('update:plan', { ...localPlan })
-// }
+const openConfirm = () => {
+  // 유효성 체크 필요하면 여기서
+  if (!localPlan.planning_title || !localPlan.planning_content) {
+    alert('제목과 내용을 입력해주세요.')
+    return
+  }
+  changingChecked.value = true
+}
 </script>

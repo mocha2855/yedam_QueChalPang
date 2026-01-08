@@ -7,6 +7,32 @@ join member m on d1.member_id = m.member_id
 join member m2 on d1.manager_main = m2.member_id
 where d1.dependant_no=?`;
 
+//해당 지원자와 똑같은 센터의 담당자 조회
+const selectManagerByDependant = `
+  SELECT
+    m.member_id,
+    m.member_name,
+    m.member_phone,
+    m.member_email
+  FROM dependant d
+  JOIN member g               
+    ON d.member_id = g.member_id
+  JOIN member m
+    ON m.center_no = g.center_no
+   AND m.member_authority = 'a2'
+  WHERE d.dependant_no = ?
+  ORDER BY m.member_name;
+`;
+
+//담당자 배정하기 (관리자)
+const assignManager = `
+  UPDATE dependant d
+  JOIN application a
+    ON a.dependant_no = d.dependant_no
+  SET d.manager_main = ?
+  WHERE a.application_no = ?;
+`;
+
 //대기단계 선택시 상태확인
 const selectById = `
   SELECT
@@ -76,12 +102,23 @@ set ?
 where planning_no = ?`;
 
 // 지원계획서 반려
-const rejectPlanningUpdateInfo = `update planning 
-set planning_reject_date = current_timestamp(), planning_approvedDate = current_timestamp(), ?
-where planning_no = ?`;
+// const rejectPlanningUpdateInfo = `
+// update planning 
+// set planning_reject_date = current_timestamp(), planning_approvedDate = current_timestamp(), ?
+// where planning_no = ?`;
+const rejectPlanningUpdateInfo = `
+  UPDATE planning 
+  SET 
+    planning_status       = ?,       
+    planning_reject       = ?,       
+    planning_reject_date  = CURRENT_TIMESTAMP(),
+    planning_approvedDate = CURRENT_TIMESTAMP()
+  WHERE planning_no = ?;
+`;
 
 // 지원계획서 반려 후 승인요청(담당자)
-const changingPlanningUpdateInfo = `update planning 
+const changingPlanningUpdateInfo = `
+update planning 
 set ?
 where planning_no = ?`;
 
@@ -158,6 +195,7 @@ const insertApplication = `insert into application(dependant_no,survey_no,member
 
 // 지원신청서 조사지 답변 등록
 const insertAppAnswer = `insert into app_answer(survey_qitem_no,application_no,app_answer_type,app_date,app_reason) values ? `;
+
 // 지원신청서 조사지 답변 수정
 const modifyApp = `INSERT INTO app_answer 
         (app_answer_no, survey_qitem_no, application_no, app_reason, app_date)
@@ -165,6 +203,7 @@ const modifyApp = `INSERT INTO app_answer
       ON DUPLICATE KEY UPDATE
         app_reason = VALUES(app_reason),
         app_date = VALUES(app_date)`;
+
 // 등록된 지원신청서 정보 가져오기
 const selectAppByNo = `
 SELECT s.survey_no,
@@ -186,7 +225,6 @@ SELECT s.survey_no,
         a.app_reason,
         (select dependant_no from application aa where application_no = a.application_no)as dependant_no,
         (select status from application aa where application_no = a.application_no) as status
-
 FROM survey s 
   JOIN survey_title t on s.survey_no = t.survey_no 
   JOIN survey_subtitle ss ON t.survey_title_no = ss.survey_title_no 
@@ -316,12 +354,14 @@ FROM application a
 
 JOIN dependant d ON a.dependant_no = d.dependant_no
 JOIN member g    ON d.member_id    = g.member_id     
-JOIN member t    ON d.manager_main = t.member_id     
+
+LEFT JOIN member t    ON d.manager_main = t.member_id    
 
 JOIN member admin
-  ON admin.center_no = t.center_no
- AND admin.member_id = ?
- WHERE ?? like concat('%',?,'%')  
+  ON admin.member_id = ?
+ AND admin.center_no = COALESCE(t.center_no, g.center_no)
+
+ WHERE ?? like concat('%',?,'%')  AND a.status in (?)
 ORDER BY a.application_date DESC
 `;
 
@@ -414,6 +454,8 @@ const insertAppHistory = `
 insert into app_history(application_no,app_history_id,app_history_date,app_history_reason) values (?,?,now(),?)`;
 module.exports = {
   dependantSelectById,
+  selectManagerByDependant,
+  assignManager,
   selectById,
   rejectorSelectById,
   applicationUpdateInfo,

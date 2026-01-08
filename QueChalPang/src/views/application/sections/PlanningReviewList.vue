@@ -1,4 +1,5 @@
-<!-- 검토중 리스트 -->
+<!-- 계획서 검토중 리스트 -->
+ <!-- application/sections/PlanningReviewList.vue -->
 <template>
   <div v-if="show">
     <div class="card mb-3" v-for="plan in plans" :key="plan.planning_no">
@@ -68,13 +69,14 @@
 
         <ConfirmModal
           :show="isApproveOpen(plan.planning_no)"
-          :message="`지원계획서${plan.ranking}를<br/>정말 승인하시겠습니까?`"
+          :message="`지원계획서${plan.ranking}를<br/> 승인하시겠습니까?`"
           @confirm="emit('approve', plan.planning_no)"
           @cancel="closeAll(plan.planning_no)"
         />
 
         <RejectConfirmModal
           :show="isRejectOpen(plan.planning_no)"
+          :message="`지원계획서${plan.ranking}를<br/> 반려 하시겠습니까?`"
           @reject="emit('reject', plan.planning_no)"
           @cancel="closeAll(plan.planning_no)"
         />
@@ -87,6 +89,9 @@
 import { computed, ref } from 'vue'
 import ConfirmModal from '../modals/ConfirmModal.vue'
 import RejectConfirmModal from '../modals/RejectConfirmModal.vue'
+//import { useModalStore } from '@/stores/modal'
+
+//const modal = useModalStore()
 
 defineProps({
   memAuthority: { type: String, required: true },
@@ -112,10 +117,12 @@ const openApprove = (id) => {
 const openReject = (id) => {
   rejectOpenSet.value.add(id)
   approveOpenSet.value.delete(id)
+  //modal.rejectReason = ''
 }
 
 const closeAll = (id) => {
   approveOpenSet.value.delete(id)
   rejectOpenSet.value.delete(id)
+  //modal.rejectReason = ''
 }
 </script>

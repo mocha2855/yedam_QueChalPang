@@ -27,6 +27,21 @@ export const useApplicationStore = defineStore('application', {
   }),
 
   actions: {
+    //관리자가 일반회원 담당자 배정하기
+    async assignManager(applicationNo, managerId) {
+      const counterStore = useCounterStore()
+      const adminId = counterStore.isLogIn.info.member_id // 배정한 관리자
+
+      await axios.put(`/api/application/${applicationNo}/manager`, {
+        manager_id: managerId,
+        updater_id: adminId,
+      })
+
+      // 배정 후 해당 신청서 컨텍스트 다시 로딩
+      await this.loadApplicationContext(applicationNo)
+      return this.dependantInfo
+    },
+
     // 대기단계 승인 (관리자)
     async approveWaitStatus(applicationNo) {
       const counterStore = useCounterStore()
@@ -95,8 +110,6 @@ export const useApplicationStore = defineStore('application', {
 
       return { dependantInfo: this.dependantInfo, dependantRealInfo: this.dependantRealInfo }
     },
-
-
 
     // 계획서 갯수 파악 (application_no 기준)
     async countPlanning(applicationNo) {
