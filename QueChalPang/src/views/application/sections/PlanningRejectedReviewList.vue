@@ -1,5 +1,5 @@
 <!-- 계획서 반려 검토중 리스트(관리자) -->
-  <!-- application/sections/PlanningRejectedReviewList.vue -->
+<!-- application/sections/PlanningRejectedReviewList.vue -->
 
 <template>
   <div class="card mb-3" v-for="plan in plans" :key="plan.planning_no">

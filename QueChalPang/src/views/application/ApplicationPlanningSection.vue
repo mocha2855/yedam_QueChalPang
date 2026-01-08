@@ -1,8 +1,8 @@
 <!-- application/ApplicationPlanningSection.vue -->
 <template>
   <div>
-    <!-- 담당자(a2) 신규 입력 --> 
-     <!-- check -->
+    <!-- 담당자(a2) 신규 입력 -->
+    <!-- check -->
     <div v-if="memAuthority === 'a2'">
       <PlanningCreateCard
         :mem-authority="memAuthority"
@@ -144,7 +144,7 @@ const onSubmitChanging = async (planningNo) => {
     planning_approvedDate: null,
   })
 
- alert('승인요청 완료')
+  alert('승인요청 완료')
   application.planningState = 0 // 수정 모드 종료
   await refresh()
 }
@@ -180,10 +180,9 @@ const rejectPlan = async (planningNo) => {
   // })
 
   await axios.put(`/api/rejectPlanningInfo/${planningNo}`, {
-  planning_status: 'i3',
-  planning_reject: modal.rejectReason,   // textarea에서 v-model로 받은 값
-})
-
+    planning_status: 'i3',
+    planning_reject: modal.rejectReason, // textarea에서 v-model로 받은 값
+  })
 
   alert('반려했습니다.')
   modal.rejectReason = undefined
