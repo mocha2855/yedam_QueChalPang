@@ -11,7 +11,7 @@
         :add-count="addCount"
         :planned-status="application.dependantInfo?.status_status"
         :has-changing-work="application.planningChanging?.length > 0"
-        @update:addCount="(v) => (addCount = v)"
+        @update:addCount="(v) => (addCount.value = v)"
         @requestAdd="onRequestAdd"
         @deleted="onDeletedCreate"
         @submitted="onSubmitCreate"
@@ -121,6 +121,7 @@ const onSubmitCreate = async (payload) => {
   // 기존 동작 맞추기: 카운트/폼 상태 리셋
   realCount.value = application.planned + 2
   addCount.value = 0
+  application.planningState = 0 
 }
 
 // 반려 수정 카드 노출 조건(기존 조건을 안전하게)
@@ -133,18 +134,17 @@ const showRejectedEdit = computed(() => {
 })
 
 // 반려 수정 -> 승인요청
-const onSubmitChanging = async (planningNo) => {
-  await axios.put('/api/submitChangingPlanningInfo/' + planningNo, {
+const onSubmitChanging = async (plan) => {
+  await axios.put('/api/submitChangingPlanningInfo/' + plan.planning_no, {
     planning_id: application.dependantInfo.manager_id,
     planning_rejecter: application.dependantInfo.application_rejector,
-    planning_start: application.planningChanging[0].planning_start,
-    planning_end: application.planningChanging[0].planning_end,
-    planning_title: application.planningChanging[0].planning_title,
-    planning_content: application.planningChanging[0].planning_content,
-    planning_approvedDate: null,
+    // 날짜는 기존 그대로 두고, 제목/내용만 수정
+    planning_title: plan.planning_title,
+    planning_content: plan.planning_content,
+    planning_approvedDate: null, // 이걸 null로 바꿔야 planningChangingReview로 분류됨
   })
 
- alert('승인요청 완료')
+  alert('승인요청 완료')
   application.planningState = 0 // 수정 모드 종료
   await refresh()
 }
