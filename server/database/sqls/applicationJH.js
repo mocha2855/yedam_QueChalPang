@@ -358,12 +358,15 @@ JOIN member g    ON d.member_id    = g.member_id
 LEFT JOIN member t    ON d.manager_main = t.member_id    
 
 JOIN member admin
-  ON admin.member_id = ?
- AND admin.center_no = COALESCE(t.center_no, g.center_no)
+ON admin.center_no = t.center_no
+AND admin.member_id = ?
+WHERE ?? like concat('%', ?, '%')
 
- WHERE ?? like concat('%',?,'%')  AND a.status in (?)
 ORDER BY a.application_date DESC
 `;
+
+//   ON admin.member_id = ?
+// AND admin.center_no = COALESCE(t.center_no, g.center_no)
 
 // 검토 중, 반려, 승인 지원결과서 불러오기
 const selectResultReviewById = `select r.*, p.ranking, m.member_name manager_name, m2.member_name rejecter_name
