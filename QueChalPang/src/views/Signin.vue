@@ -73,6 +73,8 @@ const logIn = async () => {
     } else {
       router.push({ name: '/' }) // 나머지는 메인으로
     }
+  } else {
+    alert(result.msg)
   }
 
   console.log(isLogIn.value)

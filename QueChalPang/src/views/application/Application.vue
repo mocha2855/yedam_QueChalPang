@@ -8,7 +8,7 @@
       // 대기단계 반려자이거나
       application.dependantInfo?.application_rejector == counter.isLogIn.info.member_id ||
       // 관리자(a3) / 시스템관리자(a4)는 항상 허용
-      ['a3', 'a4'].includes(counter.isLogIn.info.member_authority)
+      ['a1', 'a3', 'a4'].includes(counter.isLogIn.info.member_authority)
     "
   >
     <!-- LEFT -->
@@ -93,7 +93,7 @@
           </RouterLink>
         </li>
 
-        <li class="nav-item">
+        <li v-if="counter.isLogIn.info.member_authority != 'a1'" class="nav-item">
           <RouterLink
             :to="{ name: 'meetingLog', params: { id: route.params.id } }"
             class="nav-link"
@@ -110,7 +110,10 @@
     </div>
 
     <!-- RIGHT -->
-    <div class="col right-col">
+    <div
+      v-if="!(counter.isLogIn.info.member_authority == 'a1' && route.path.includes('planning'))"
+      class="col right-col"
+    >
       <div class="panel right-panel">
         <router-view v-slot="{ Component }">
           <component :is="Component" :dependantInfo="dependantInfo" />

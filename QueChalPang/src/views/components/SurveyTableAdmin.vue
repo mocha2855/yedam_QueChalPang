@@ -91,9 +91,14 @@ const goToMeetingLog = (applicationNo) => {
 }
 onBeforeMount(() => {
   if (member.member_authority === 'a4') {
-    getAdminCenterList() // 시스템 관리자는 센터 목록 먼저
+    setTimeout(() => {
+      getAdminCenterList() // 시스템 관리자는 센터 목록 먼저
+    }, 10)
   } else {
-    search.getApplicationList(member) // 나머지는 바로 조회
+    setTimeout(() => {
+      search.getApplicationList(member)
+    }, 10)
+    // 나머지는 바로 조회
   }
 })
 </script>

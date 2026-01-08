@@ -104,7 +104,6 @@ const phoneAuth = async (input) => {
     console.log(message);
     const response = await messageService.send(message);
     console.log("발송 성공 결과:", response);
-    await messageService.send(message).then(console.log).catch(console.error);
     let result = await mysql.memberQuery("insertSmsInfo", randval);
     return result;
   } catch (error) {
