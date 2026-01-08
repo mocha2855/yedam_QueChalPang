@@ -104,10 +104,16 @@
       </div>
     </div>
 
-    <ConfirmModal
+    <!-- <ConfirmModal
       :show="changingChecked"
       message="지원계획서를<br/>정말 승인요청하시겠습니까?"
       @confirm="emit('submitChanging', localPlan.planning_no)"
+      @cancel="changingChecked = false"
+    /> -->
+    <ConfirmModal
+      :show="changingChecked"
+      message="지원계획서를<br/>정말 승인요청하시겠습니까?"
+      @confirm="emit('submitChanging', { ...localPlan })"
       @cancel="changingChecked = false"
     />
   </div>
