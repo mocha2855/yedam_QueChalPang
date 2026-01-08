@@ -33,7 +33,9 @@ export const useSearchStore = defineStore('search', () => {
     // 3. API 호출
     const result = await axios.get(
       `/api/searchApplicationById/${member.member_id}/${member.member_authority}`,
-      { params: { search: selectedOption.value, value: searchText.value, badge: '' } },
+      {
+        params: { search: selectedOption.value, value: searchText.value, badge: 'e1,e2,e3,e4,e5' },
+      },
     )
 
     const rows = Array.isArray(result.data) ? result.data : []

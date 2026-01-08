@@ -103,7 +103,7 @@ where planning_no = ?`;
 
 // 지원계획서 반려
 // const rejectPlanningUpdateInfo = `
-// update planning 
+// update planning
 // set planning_reject_date = current_timestamp(), planning_approvedDate = current_timestamp(), ?
 // where planning_no = ?`;
 const rejectPlanningUpdateInfo = `
@@ -355,15 +355,19 @@ FROM application a
 JOIN dependant d ON a.dependant_no = d.dependant_no
 JOIN member g    ON d.member_id    = g.member_id     
 
-LEFT JOIN member t    ON d.manager_main = t.member_id    
+LEFT JOIN member t    ON d.manager_main = t.member_id     
 
 JOIN member admin
-  ON admin.member_id = ?
- AND admin.center_no = COALESCE(t.center_no, g.center_no)
+ON admin.member_id = ?
+AND admin.center_no = COALESCE(t.center_no, g.center_no)
 
- WHERE ?? like concat('%',?,'%')  AND a.status in (?)
+WHERE ?? like concat('%', ?, '%') AND a.status in (?)
+
 ORDER BY a.application_date DESC
 `;
+
+//   ON admin.member_id = ?
+// AND admin.center_no = COALESCE(t.center_no, g.center_no)
 
 // 검토 중, 반려, 승인 지원결과서 불러오기
 const selectResultReviewById = `select r.*, p.ranking, m.member_name manager_name, m2.member_name rejecter_name
