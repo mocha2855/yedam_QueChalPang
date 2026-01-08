@@ -169,11 +169,6 @@ const removeScheduleBlock = async (managerId, date, time) => {
   return await mysql.rquery(deleteScheduleBlock, [managerId, date, time]);
 };
 
-// 상담일지 작성시 상담확정으로 변경(260108_JH)
-const modifyreserveStatus = async (id) => {
-  return await mysql.rquery("updatereserveStatus", id);
-};
-
 module.exports = {
   findByDate,
   findTresvByManager,
@@ -191,5 +186,4 @@ module.exports = {
   findManagerAvailability,
   modifyScheduleBlock,
   removeScheduleBlock,
-  modifyreserveStatus,
 };

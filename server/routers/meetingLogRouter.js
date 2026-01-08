@@ -7,6 +7,7 @@ const meetingLogService = require("../services/meetingLogService");
 router.post("/meetingLog", async (req, res) => {
   try {
     const { resv_id, member_id, log_title, log_content } = req.body;
+    console.log(req.body);
 
     // 필수값 체크
     if (!resv_id || !member_id || !log_title || !log_content) {
@@ -62,13 +63,13 @@ router.get("/meetingLogDetail/:resvId", async (req, res) => {
 });
 
 // 상담일지 작성시 상담확정으로 변경(260108_JH)
-router.post("/reserveStatusChange/:id", async (req, res) => {
+router.put("/reserveStatusChange/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const row = await meetingLogService.modifyreserveStatus(id);
     res.send(row);
   } catch (err) {
-    console.log(error("[modifyreserveStatus] ERROR:", err));
+    console.error(("[modifyreserveStatus] ERROR:", err));
     res.status(500).json({ message: "Server error" });
   }
 });

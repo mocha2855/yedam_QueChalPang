@@ -112,6 +112,12 @@ export const useMeetingLogStore = defineStore('meetingLog', {
         return
       }
 
+      // 성공하면 상담상태 f3변환
+
+      const changeReulst = await axios.put('/api/reserveStatusChange/' + this.writeForm.resv_id, {
+        resv_status: 'f3',
+      })
+
       // POST
       const payload = {
         resv_id: this.writeForm.resv_id,
@@ -122,13 +128,8 @@ export const useMeetingLogStore = defineStore('meetingLog', {
 
       const res = await axios.post('/api/meetingLog', payload)
 
-      // 성공하면 상담상태 f3변환
-      // if(res.data){
-      // const changeReulst = await axios.post('')
-      // }
-
       // 성공하면: detail 채우고 view로 전환
-      this.detail = res.data || null
+      this.detail = (res.data && changeReulst.data) || null
       this.mode = 'view'
 
       // 목록 갱신 (has_meeting_log 1로 바뀌게)

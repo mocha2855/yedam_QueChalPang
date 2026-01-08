@@ -11,7 +11,8 @@ const selectTResvByDate = `
     r.resv_day,
     r.resv_status    AS status,
     r.manager_id,
-    r.application_no
+    r.application_no,
+    r.resv_id
   FROM reservation r
   JOIN member g ON g.member_id = r.guardian_id
   JOIN dependant d ON d.dependant_no = r.dependant_no
@@ -181,9 +182,6 @@ const deleteScheduleBlock = `
     AND block_time = ?;
 `;
 
-// 상담일지 작성시 상담확정으로 변경(260108_JH)
-// const updatereserveStatus = ``
-
 module.exports = {
   selectTResvByDate,
   selectTResvbyManager,
@@ -202,5 +200,4 @@ module.exports = {
   selectCenterLunchByManager,
   updateScheduleBlock,
   deleteScheduleBlock,
-  updatereserveStatus,
 };
