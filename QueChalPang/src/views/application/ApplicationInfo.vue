@@ -3,7 +3,7 @@ import { onBeforeMount, ref, computed } from 'vue'
 import { useCounterStore } from '@/stores/member'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
-// import ApplicationModal from './modals/ApplicationModal.vue'
+import ApplicationModal from './modals/ApplicationModal.vue'
 
 import { useApplicationStore } from '@/stores/application'
 const application = useApplicationStore()
