@@ -3,6 +3,7 @@ import { onBeforeMount, ref, computed } from 'vue'
 import { useCounterStore } from '@/stores/member'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
+import ApplicationModal from './modals/ApplicationModal.vue'
 
 const route = useRoute()
 const appNo = route.params.id
@@ -10,6 +11,7 @@ const dependantNo = ref(0)
 const status = ref('')
 const member = useCounterStore().isLogIn.info
 const answers = ref({})
+const modifiable = ref(true)
 const getApplicationInfo = async () => {
   let result = await axios.get('/api/applicationInfo/' + appNo)
   console.log(result.data)
@@ -60,6 +62,7 @@ const structuredDetail = computed(() => {
       survey_qitem_question: row.survey_qitem_question,
       survey_qitem_type: row.survey_qitem_type,
       // DB에서 가져온 실제 답변들
+      app_answer_no: row.app_answer_no,
       app_answer_type: row.app_answer_type,
       app_date: row.app_date,
       app_reason: row.app_reason,
@@ -84,32 +87,67 @@ onBeforeMount(async () => {
   await getApplicationInfo()
   await getDependantInfo()
 })
-// const returnStatus = (stat) => {
-//   if (stat == 'e1') {
-//     return '대기'
-//   } else if (stat == 'e2') {
-//     return '검토중'
-//   } else if (stat == 'e3') {
-//     return '계획'
-//   } else if (stat == 'e4') {
-//     return '중점'
-//   } else if (stat == 'e5') {
-//     return '긴급'
-//   }
-// }
-// const changeDateFormat = (input) => {
-//   let date = new Date(input)
-//   let result = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`
-//   return result
-// }
-// const returnGender = (input) => {
-//   console.log(input)
-//   if (input == 'g1') {
-//     return '남'
-//   } else {
-//     return '여'
-//   }
-// }
+
+const changeModifiable = () => {
+  modifiable.value = false
+}
+const modifyApp = async () => {
+  // 1. 서버로 보낼 수정 데이터 리스트 생성
+  const updateList = []
+
+  // 구조화된 데이터를 순회하며 현재 입력된 값(answers)을 수집
+  structuredDetail.value.forEach((survey) => {
+    survey.subtitles.forEach((sub) => {
+      sub.questions.forEach((q) => {
+        const currentReason = answers.value[q.survey_qitem_no]
+        const currentDate = answers.value[q.survey_qitem_no + '_date']
+
+        let reasonVal = currentReason // (간소화)
+        let dateVal = null
+
+        // 날짜/복합 타입 처리 로직 (이전과 동일하게 유지하거나 아래처럼 간소화 가능)
+        if (q.survey_qitem_type && q.survey_qitem_type.includes('date')) {
+          dateVal = currentDate || null
+          reasonVal = currentReason || null
+        } else {
+          dateVal = null
+          reasonVal = currentReason
+        }
+
+        updateList.push({
+          app_answer_no: q.app_answer_no, // PK
+          app_reason: reasonVal,
+          app_date: dateVal,
+
+          // [추가] INSERT 구문 오류 방지를 위한 필수 데이터 포함
+          survey_qitem_no: q.survey_qitem_no,
+          application_no: appNo, // 현재 페이지의 신청서 번호
+        })
+      })
+    })
+  })
+
+  // 2. 서버 전송
+  try {
+    const result = await axios.put('/api/application/update', {
+      updateList: updateList,
+      application_no: appNo, // 현재 신청서 번호
+    })
+
+    if (result.status === 200) {
+      alert('수정이 완료되었습니다.')
+      // 3. 수정 모드 종료 (다시 읽기 전용으로 변경)
+      modifiable.value = true
+
+      // 최신 데이터로 다시 새로고침 (선택사항)
+      await getApplicationInfo()
+    }
+  } catch (error) {
+    console.error(error)
+    alert('수정 중 오류가 발생했습니다.')
+  }
+}
+const modal = ref(false)
 </script>
 
 <template>
@@ -117,7 +155,11 @@ onBeforeMount(async () => {
     <div class="card-header pb-0">
       <div class="d-flex justify-content-between align-items-center">
         <h6 class="mb-0">지원 신청서</h6>
-        <button class="btn btn-primary p-1">상담신청</button>
+        <button @click="modal == false ? (modal = true) : (modal = false)">모달</button>
+        <button v-if="modifiable" class="btn btn-primary p-1" @click="changeModifiable">
+          수정하기
+        </button>
+        <button v-if="!modifiable" class="btn btn-primary p-1" @click="modifyApp">수정완료</button>
       </div>
     </div>
     <div class="card-body px-0 pt-0 pb-2">

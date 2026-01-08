@@ -116,6 +116,12 @@ router.get(`/applicationInfo/:no`, async (req, res) => {
   let result = await applicationService.findAppByNo(no);
   res.send(result);
 });
+// 지원신청서 수정(일반사용자 및 담당자)
+router.put(`/application/update`, async (req, res) => {
+  const { updateList } = req.body;
+  let result = await applicationService.updateApp(updateList);
+  res.send(result);
+});
 
 // 검토 중, 반려, 승인 지원결과서 불러오기
 router.get("/resultReview/:no", async (req, res) => {
