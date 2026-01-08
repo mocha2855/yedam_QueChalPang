@@ -1,4 +1,6 @@
-<!-- 반려 검토중 리스트(관리자) -->
+<!-- 계획서 반려 검토중 리스트(관리자) -->
+  <!-- application/sections/PlanningRejectedReviewList.vue -->
+
 <template>
   <div class="card mb-3" v-for="plan in plans" :key="plan.planning_no">
     <div class="card-body" v-if="plans.length > 0">
@@ -98,13 +100,14 @@
 
       <ConfirmModal
         :show="isApproveOpen(plan.planning_no)"
-        :message="`지원계획서${plan.ranking}를<br/>정말 승인하시겠습니까?`"
+        :message="`지원계획서${plan.ranking}를<br/> 승인하시겠습니까?`"
         @confirm="emit('approve', plan.planning_no)"
         @cancel="closeAll(plan.planning_no)"
       />
 
       <RejectConfirmModal
         :show="isRejectOpen(plan.planning_no)"
+        :message="`지원계획서${plan.ranking}를<br/> 반려하시겠습니까?`"
         @reject="emit('reject', plan.planning_no)"
         @cancel="closeAll(plan.planning_no)"
       />
@@ -118,6 +121,7 @@ import ConfirmModal from '../modals/ConfirmModal.vue'
 import RejectConfirmModal from '../modals/RejectConfirmModal.vue'
 
 defineProps({
+  memAuthority: { type: String, required: true },
   plans: { type: Array, default: () => [] },
 })
 

@@ -85,20 +85,20 @@ import { ref } from 'vue'
 import ConfirmModal from '../modals/ConfirmModal.vue'
 
 const props = defineProps({
-  memAuthority: { type: String, required: true }, // 'a2'
+  memAuthority: { type: String, required: true }, 
   memName: { type: String, required: true },
   realCount: { type: Number, required: true },
 
-  addCount: { type: Number, required: true }, // 부모에서 관리
-  plannedStatus: { type: String, default: '' }, // application.dependantInfo.status_status
-  hasChangingWork: { type: Boolean, default: false }, // application.planningChanging.length > 0
+  addCount: { type: Number, required: true }, 
+  plannedStatus: { type: String, default: '' }, 
+  hasChangingWork: { type: Boolean, default: false }, 
 })
 
 const emit = defineEmits([
-  'update:addCount', // addCount를 부모에서 바꾸게
-  'requestAdd', // 계획추가 눌렀을 때 상위에서 planningState 바꾸거나 체크
-  'submitted', // 승인요청 최종 confirm 이후 부모가 axios 처리
-  'deleted', // 삭제 처리
+  'update:addCount', 
+  'requestAdd', 
+  'submitted', 
+  'deleted', 
 ])
 
 const formData = ref({})
@@ -154,10 +154,7 @@ const closeConfirm = () => {
 }
 
 const confirmSubmit = () => {
-  // 실제 axios는 부모가 하게 emit으로 올림
   emit('submitted', { ...formData.value })
   checked.value = false
-  // 폼 초기화는 “성공 후” 부모에서 내려주는 게 정석이지만,
-  // 지금은 기존 동작 맞추려고 여기서도 초기화 가능.
 }
 </script>

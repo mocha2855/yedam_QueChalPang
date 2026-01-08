@@ -16,6 +16,7 @@
 import ApplicationModal from '../modals/ApplicationModal.vue'
 
 defineProps({
+  header: { type: String, default: '' },
   show: { type: Boolean, default: false },
   message: { type: String, default: '' },
 })

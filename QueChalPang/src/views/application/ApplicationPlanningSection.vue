@@ -1,7 +1,8 @@
+<!-- application/ApplicationPlanningSection.vue -->
 <template>
-  <div v-if="memAuthority != 'a1'">
-    <!-- 담당자(a2) 신규 입력 -->
-
+  <div>
+    <!-- 담당자(a2) 신규 입력 --> 
+     <!-- check -->
     <div v-if="memAuthority === 'a2'">
       <PlanningCreateCard
         :mem-authority="memAuthority"
@@ -16,7 +17,7 @@
         @submitted="onSubmitCreate"
       />
 
-      <!-- 반려 수정 -->
+      <!-- 담당자 반려건 수정 -->
       <PlanningRejectedEditCard
         v-if="showRejectedEdit"
         :mem-authority="memAuthority"
@@ -33,14 +34,14 @@
 
     <!-- 반려 검토중(관리자) -->
     <PlanningRejectedReviewList
-      v-if="application.planningChangingReview?.length > 0"
+      v-if="memAuthority === 'a3' && application.planningChangingReview?.length > 0"
       :mem-authority="memAuthority"
       :plans="application.planningChangingReview"
       @approve="approvePlan"
       @reject="rejectPlan"
     />
 
-    <!-- 검토중 계획서 -->
+    <!-- 최초 검토중 계획서(관리자) -->
     <PlanningReviewList
       :show="showPlanningReview"
       :mem-authority="memAuthority"
@@ -143,9 +144,9 @@ const onSubmitChanging = async (planningNo) => {
     planning_approvedDate: null,
   })
 
-  application.planningChanging = []
+ alert('승인요청 완료')
+  application.planningState = 0 // 수정 모드 종료
   await refresh()
-  alert('승인요청 완료')
 }
 
 // 반려 수정 취소(담당자)
@@ -153,7 +154,7 @@ const onCancelChanging = async (planningNo) => {
   await axios.put('/api/successPlanningInfo/' + planningNo, {
     planning_status: 'i3',
   })
-  application.planningChanging = []
+  application.planningState = 0
   await refresh()
 }
 
@@ -173,10 +174,16 @@ const rejectPlan = async (planningNo) => {
     return
   }
 
-  await axios.put('/api/rejectPlanningInfo/' + planningNo, {
-    planning_status: 'i3',
-    planning_reject: modal.rejectReason,
-  })
+  // await axios.put('/api/rejectPlanningInfo/' + planningNo, {
+  //   planning_status: 'i3',
+  //   planning_reject: modal.rejectReason,
+  // })
+
+  await axios.put(`/api/rejectPlanningInfo/${planningNo}`, {
+  planning_status: 'i3',
+  planning_reject: modal.rejectReason,   // textarea에서 v-model로 받은 값
+})
+
 
   alert('반려했습니다.')
   modal.rejectReason = undefined
