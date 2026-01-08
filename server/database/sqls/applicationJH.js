@@ -147,7 +147,7 @@ FROM (
     GROUP BY application_no
   ) m ON m.application_no = a.application_no
 
-  WHERE d.member_id = ? AND ?? like concat('%',?,'%')  AND a.status in (?)
+  WHERE d.member_id = ? AND ?? like concat('%',?,'%')  
 ) X
 ORDER BY
   X.application_date DESC,
@@ -259,7 +259,7 @@ const selectApplicationsByTeacher = `
 
   WHERE (d.manager_main = ?
      OR d.manager_sub  = ?)
-      AND ?? like concat('%',?,'%')  AND a.status in (?)
+      AND ?? like concat('%',?,'%')  
   ORDER BY a.application_date DESC
 `;
 
@@ -321,7 +321,7 @@ JOIN member t    ON d.manager_main = t.member_id
 JOIN member admin
   ON admin.center_no = t.center_no
  AND admin.member_id = ?
- WHERE ?? like concat('%',?,'%')  AND a.status in (?)
+ WHERE ?? like concat('%',?,'%')  
 ORDER BY a.application_date DESC
 `;
 
@@ -407,9 +407,11 @@ const selectApplicationsByCenter = `
 
   WHERE t.center_no = ?
     AND ?? LIKE CONCAT('%', ?, '%')
-    AND a.status IN (?)
+    
   ORDER BY a.application_date DESC
 `;
+const insertAppHistory = `
+insert into app_history(application_no,app_history_id,app_history_date,app_history_reason) values (?,?,now(),?)`;
 module.exports = {
   dependantSelectById,
   selectById,
@@ -436,4 +438,5 @@ module.exports = {
   approveStatus,
   rejectStatus,
   modifyApp,
+  insertAppHistory,
 };

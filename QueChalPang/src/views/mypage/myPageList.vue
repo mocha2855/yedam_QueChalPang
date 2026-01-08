@@ -61,7 +61,7 @@
                     </th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody v-if="myPage.dependantInfo != ''">
                   <tr v-for="member in myPage.dependantInfo" :key="member.dependant_no">
                     <!-- 개별 선택 체크박스 -->
                     <td class="align-middle text-center">
@@ -96,6 +96,12 @@
                       {{ member.dependant_date }}
                     </td>
                   </tr>
+                </tbody>
+                <tbody v-else>
+                  <h5>
+                    담당지원자가 없습니다.<br />
+                    지원자 등록을 진행해주세요
+                  </h5>
                 </tbody>
               </table>
             </div>

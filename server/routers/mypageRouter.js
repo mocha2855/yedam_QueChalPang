@@ -64,4 +64,28 @@ router.get("/guardianInfo/:id", async (req, res) => {
   res.send(post);
 });
 
+// 보호자 지원자 정보
+router.get("/selectGuardianDependantById/:id", async (req, res) => {
+  let id = req.params.id;
+  console.log(id);
+  let post = await mypageService.findGuardianDependantById(id);
+  res.send(post);
+});
+
+// 관리자
+// 센터정보
+router.get("/findCenterInfoById", async (req, res) => {
+  let post = await mypageService.findCenterInfoById();
+  res.send(post);
+});
+
+// 센터 정보 변경
+router.put("/changeCenterInfo/:id", async (req, res) => {
+  let id = req.params.id;
+  let data = req.body;
+  console.log(data);
+  let post = await mypageService.updateCenterInfo(id, data);
+  res.send(post);
+});
+
 module.exports = router;

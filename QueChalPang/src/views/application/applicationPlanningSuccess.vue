@@ -1,11 +1,6 @@
 <template>
   <div>
-    <div
-      v-if="
-        id == application.dependantInfo.manager_id ||
-        id == application.dependantInfo.application_rejector
-      "
-    >
+    <div>
       <h5>지원계획서</h5>
 
       <div
@@ -14,7 +9,7 @@
       >
         <h5>현재 지원계획서가<br />존재하지 않습니다.</h5>
       </div>
-      
+
       <div class="card-body p-0" v-else>
         <div>
           <div v-if="application.planningRejected.length > 0">
@@ -272,9 +267,10 @@ const application = useApplicationStore()
 const route = useRoute()
 
 // 권한 및 담당 지원자 일치 확인
-let id = counters.isLogIn.info.member_id
+// let id = counters.isLogIn.info.member_id
 let memAuthority = counters.isLogIn.info.member_authority // 권한
-
+console.log(application.planningSuccess.length)
+console.log(application.planningRejected.length)
 // 반려된 계획서 수정버튼
 const changePlanningStatus = async (data) => {
   if (application.planningState == 1) {

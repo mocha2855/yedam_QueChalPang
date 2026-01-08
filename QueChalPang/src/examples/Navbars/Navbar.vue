@@ -2,7 +2,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useStore } from 'vuex'
+// import { useStore } from 'vuex'
 import { useCounterStore } from '@/stores/member'
 
 import { storeToRefs } from 'pinia'
@@ -11,7 +11,7 @@ const counterStore = useCounterStore()
 const { isLogIn } = storeToRefs(counterStore)
 const router = useRouter()
 const showMenu = ref(false)
-const store = useStore()
+// const store = useStore()
 
 // 현재 활성화된 메뉴를 표시하기 위한 로직
 const getRoute = () => {
@@ -20,7 +20,7 @@ const getRoute = () => {
   return routeArr[1]
 }
 
-const toggleConfigurator = () => store.commit('toggleConfigurator')
+// const toggleConfigurator = () => store.commit('toggleConfigurator')
 
 const priority = (auth) => {
   if (isLogIn.value.isLogIn) {
@@ -51,10 +51,9 @@ isConfirm()
 
 // 마이페이지 이동
 const goMyPage = () => {
-  if (isLogIn.value.info.member_authority == 'a2')
+  if (isLogIn.value.info.member_authority == 'a2' || isLogIn.value.info.member_authority == 'a3')
     router.push({ name: 'myPage', params: { id: isLogIn.value.info.member_id } })
-  if (isLogIn.value.info.member_authority == 'a1')
-    router.push({ name: 'myPageGuardian', params: { id: isLogIn.value.info.member_id } })
+  if (isLogIn.value.info.member_authority == 'a1') router.push({ name: 'myPageGuardian' })
 }
 
 const supportRoute = computed(() => {
@@ -127,7 +126,7 @@ const navbarType = computed(() => {
       <router-link
         v-if="!isLogIn.isLogIn || isLogIn.info.member_authority === 'a1'"
         to="/"
-        class="navbar-brand"
+        class="navbar-brand p-0"
       >
         <img src="/네비사진.jpg" alt="발달장애인 지원프로그램 로고" class="navbar-logo" />
       </router-link>
@@ -282,11 +281,11 @@ const navbarType = computed(() => {
             </span>
           </li>
 
-          <li class="px-3 nav-item d-flex align-items-center">
+          <!-- <li class="px-3 nav-item d-flex align-items-center">
             <a class="p-0 nav-link" :style="{ color: textColor }" @click="toggleConfigurator">
               <i class="cursor-pointer fa fa-cog"></i>
             </a>
-          </li>
+          </li> -->
           <li class="nav-item dropdown d-flex align-items-center pe-2">
             <a
               href="#"
