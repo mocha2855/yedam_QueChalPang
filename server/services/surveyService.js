@@ -24,8 +24,6 @@ const findByNo = async (no) => {
   });
   //항목에 세부항목 담기
   title.subtitles = detail;
-  //console.log(title);
-  //console.log(qitem);
 
   return title;
 };
@@ -72,6 +70,7 @@ const addSurvey = async (data) => {
         survey_subtitle_no,
         question.text,
         question.type,
+        question.need_detail || false,
       ]);
     }
   }
