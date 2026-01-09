@@ -112,6 +112,11 @@ const navbarType = computed(() => {
   }
   return 'navbar-staff'
 })
+
+// 브라우저 닫을 때 로그인 정보 비우기.
+window.addEventListener('beforeunload', () => {
+  clearInfo()
+})
 </script>
 
 <template>
