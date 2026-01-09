@@ -7,9 +7,9 @@ import { useMeetingLogStore } from '@/stores/meetingLog'
 
 const route = useRoute()
 const store = useMeetingLogStore()
-const {logs, selectedResvId, detailLoading} = storeToRefs(store)
+const { logs, selectedResvId, detailLoading } = storeToRefs(store)
 
-onMounted(()=>{
+onMounted(() => {
   store.fetchByAppNo(route.params.id)
 })
 
@@ -17,7 +17,7 @@ watch(
   () => route.params.id,
   (newId) => {
     if (newId) store.fetchByAppNo(newId)
-  }
+  },
 )
 
 const pick = (row) => {
@@ -53,9 +53,8 @@ const viewLog = async (row) => {
 }
 
 const writeLog = (row) => {
-store.startWrite(row)
+  store.startWrite(row)
 }
-
 </script>
 
 <template>
@@ -79,55 +78,45 @@ store.startWrite(row)
         <tr
           v-for="(row, idx) in logs"
           :key="row.resv_id"
-          style="cursor:pointer"
+          style="cursor: pointer"
           :class="{ 'table-active': row.resv_id === selectedResvId }"
           @click="pick(row)"
         >
           <td>
             <span class="round-badge">{{ logs.length - idx }}회차</span>
           </td>
-          <td>{{ row.resv_day.slice(0,10) }}</td>
+          <td>{{ row.resv_day.slice(0, 10) }}</td>
           <td>{{ timeText(row.start_at) }}</td>
           <td>
-            <span
-              class="status-badge"
-              :class="statusInfo(row.resv_status).class"
-            >
+            <span class="status-badge" :class="statusInfo(row.resv_status).class">
               {{ statusInfo(row.resv_status).label }}
             </span>
-          </td>          
-          <td>
-              <button
-                v-if="row.has_meeting_log === 1"
-                class="btn btn-sm btn-outline-secondary"
-                @click.stop="viewLog(row)"
-              >
-                내역보기
-              </button>
-
-              <button
-                v-else
-                class="btn btn-sm btn-outline-primary"
-                @click.stop="writeLog(row)"
-              >
-                작성하기
-              </button>
           </td>
-         </tr>
+          <td>
+            <button
+              v-if="row.has_meeting_log === 1"
+              class="btn btn-sm btn-outline-secondary"
+              @click.stop="viewLog(row)"
+            >
+              내역보기
+            </button>
+
+            <button v-else class="btn btn-sm btn-outline-primary" @click.stop="writeLog(row)">
+              작성하기
+            </button>
+          </td>
+        </tr>
 
         <tr v-if="logs.length === 0">
-          <td colspan="4" class="text-center text-secondary py-4">
-            상담내역이 없습니다.
-          </td>
+          <td colspan="4" class="text-center text-secondary py-4">상담내역이 없습니다.</td>
         </tr>
       </tbody>
     </table>
   </div>
 </template>
 
-
 <style scoped>
-  .round-badge {
+.round-badge {
   display: inline-block;
   padding: 4px 10px;
   border-radius: 999px;
@@ -204,5 +193,4 @@ tbody tr:hover {
 .row-active {
   background: rgba(94, 114, 228, 0.12) !important;
 }
-
 </style>

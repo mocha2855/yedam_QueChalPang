@@ -53,4 +53,12 @@ const selectLogDetailByResvId = `
   WHERE r.resv_id = ?
 `;
 
-module.exports = { insertMeetingLog, selectLogbyAppNo, selectLogDetailByResvId } 
+// 상담일지 작성시 상담확정으로 변경(260108_JH)
+const updatereserveStatus = `update reservation set resv_status = 'f3' where resv_id = ?`;
+
+module.exports = {
+  insertMeetingLog,
+  selectLogbyAppNo,
+  selectLogDetailByResvId,
+  updatereserveStatus,
+};
