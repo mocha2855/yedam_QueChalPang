@@ -139,7 +139,7 @@ const navbarType = computed(() => {
               class="nav-link"
               :style="{ color: textColor }"
               :class="
-                getRoute() === 'dashboard-default' ? 'font-weight-bold opacity-10' : 'opacity-6'
+                getRoute() === 'dashboard-default' ? 'font-weight-bold opacity-10' : 'opacity-9'
               "
             >
               <i class="ni ni-tv-2 me-2"></i>메인
@@ -330,7 +330,7 @@ const navbarType = computed(() => {
 
 /* a1일 때: 검정 -> 화이트 호버 */
 .navbar-a1 .navbar-nav.me-auto .nav-link:hover {
-  color: #ffffff !important;
+  color: #5c3706 !important;
 }
 
 /* a2/a3/a4일 때: 화이트 -> 블랙 호버 */
