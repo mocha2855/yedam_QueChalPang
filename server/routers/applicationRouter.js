@@ -1,8 +1,14 @@
 // boardRouter.js
 const express = require("express");
+const multer = require("multer");
+
 const router = express.Router();
 const applicationService = require("../services/applicationServiceJH.js");
 
+const upload = multer({
+  storage: "storage",
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB 제한 등
+});
 // 지원자 정보
 router.get(`/dependantInfo/:no`, async (req, res) => {
   let no = req.params.no;
