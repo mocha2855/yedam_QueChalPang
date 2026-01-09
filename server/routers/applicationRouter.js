@@ -1,8 +1,14 @@
 // boardRouter.js
 const express = require("express");
+const multer = require("multer");
+
 const router = express.Router();
 const applicationService = require("../services/applicationServiceJH.js");
 
+const upload = multer({
+  storage: "storage",
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB 제한 등
+});
 // 지원자 정보
 router.get(`/dependantInfo/:no`, async (req, res) => {
   let no = req.params.no;
@@ -160,13 +166,17 @@ router.get("/resultReview/:no", async (req, res) => {
 });
 
 // 지원결과서 승인요청(담당자)
-router.post("/submitResultInfo/:no", async (req, res) => {
-  let data = req.body;
-  console.log(data);
-  let no = req.params.no;
-  let post = await applicationService.addResultInfo(no, data);
-  res.send(post);
-});
+router.post(
+  "/submitResultInfo/:no",
+  upload.array("files"),
+  async (req, res) => {
+    let data = req.body;
+    console.log(data);
+    let no = req.params.no;
+    let post = await applicationService.addResultInfo(no, data);
+    res.send(post);
+  }
+);
 
 // 지원결과서 승인(관리자)
 router.put("/successResultInfo/:no", async (req, res) => {
