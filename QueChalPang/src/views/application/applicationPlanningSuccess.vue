@@ -1,10 +1,49 @@
 <!-- application/applicationPlanningSuccess.vue -->
+<!-- 승인완료된 지원계획서와 반려된 지원계획서 나오는 왼쪽섹션 -->
+<script setup>
+import { useCounterStore } from '@/stores/member'
+import { useApplicationStore } from '@/stores/application'
+import { useRoute } from 'vue-router'
+import axios from 'axios'
+const counters = useCounterStore()
+const application = useApplicationStore()
+const route = useRoute()
 
+// 권한 및 담당 지원자 일치 확인
+// let id = counters.isLogIn.info.member_id
+let memAuthority = counters.isLogIn.info.member_authority // 권한
+console.log(application.planningSuccess.length)
+console.log(application.planningRejected.length)
+
+// 반려된 계획서 수정버튼
+const changePlanningStatus = async (data) => {
+  if (application.planningState == 1) {
+    alert('작성하던 계획서를 마무리해주세요!')
+    return
+  }
+  if (application.planningChanging.length != 0) {
+    alert('수정하던 작업을 마무리해주세요.')
+    return
+  }
+  console.log(data)
+
+  await axios
+    .put('/api/successPlanningInfo/' + data, {
+      planning_status: 'i1',
+    })
+    .then(async (res) => {
+      console.log(res)
+      await application.countRealReview(route.params.id)
+      application.planningState = 2
+      // application.countRealReview(route.params.id)
+      //application.planningState = 2
+    })
+}
+</script>
 <template>
   <div>
     <div>
       <h5>지원계획서</h5>
-
       <div
         v-if="application.planningSuccess.length == 0 && application.planningRejected.length == 0"
         class="d-flex justify-content-center align-items-center h-100"
@@ -16,13 +55,12 @@
         <div>
           <div v-if="application.planningRejected.length > 0">
             <div class="card mb-3" v-for="plan in application.planningRejected" :key="plan">
-              <!-- 반려중 -->
+              <!-- 반려된 지원계획서 -->
               <div class="card-body">
                 <div class="formTop">
                   <h5>
-                    <span class="badge badge-sm bg-gradient-secondary">반려</span>지원계획{{
-                      plan.ranking
-                    }}
+                    <span class="badge badge-sm bg-gradient-secondary">반려</span> 지원계획
+                    {{ plan.ranking }}
                   </h5>
                 </div>
 
@@ -151,6 +189,7 @@
                     </div>
                   </div>
 
+                  <!-- 반려계획서의 수정버튼은 담당자(a2)에만 보이게-->
                   <button
                     type="button"
                     v-if="memAuthority == 'a2'"
@@ -169,9 +208,8 @@
             <div class="card mb-3" v-for="plan in application.planningSuccess" :key="plan">
               <div class="card-body">
                 <h5>
-                  <span class="badge badge-sm bg-gradient-success">승인</span>지원계획{{
-                    plan.ranking
-                  }}
+                  <span class="badge badge-sm bg-gradient-success">승인</span> 지원계획
+                  {{ plan.ranking }}
                 </h5>
                 <form action="#" name="planning">
                   <div class="row g-3 mb-2 align-items-center">
@@ -259,40 +297,5 @@
     </div>
   </div>
 </template>
-<script setup>
-import { useCounterStore } from '@/stores/member'
-import { useApplicationStore } from '@/stores/application'
-import { useRoute } from 'vue-router'
-import axios from 'axios'
-const counters = useCounterStore()
-const application = useApplicationStore()
-const route = useRoute()
 
-// 권한 및 담당 지원자 일치 확인
-// let id = counters.isLogIn.info.member_id
-let memAuthority = counters.isLogIn.info.member_authority // 권한
-console.log(application.planningSuccess.length)
-console.log(application.planningRejected.length)
-// 반려된 계획서 수정버튼
-const changePlanningStatus = async (data) => {
-  if (application.planningState == 1) {
-    alert('작성하던 계획서를 마무리해주세요!')
-    return
-  }
-  if (application.planningChanging.length != 0) {
-    alert('수정하던 작업을 마무리해주세요.')
-    return
-  }
-  console.log(data)
-  await axios
-    .put('/api/successPlanningInfo/' + data, {
-      planning_status: 'i1',
-    })
-    .then((res) => {
-      console.log(res)
-      application.countRealReview(route.params.id)
-      application.planningState = 2
-    })
-}
-</script>
 <style scoped></style>

@@ -1,19 +1,22 @@
 <!-- 계획서 검토중 리스트 -->
- <!-- application/sections/PlanningReviewList.vue -->
+<!-- application/sections/PlanningReviewList.vue -->
 <template>
   <div v-if="show">
     <div class="card mb-3" v-for="plan in plans" :key="plan.planning_no">
       <div class="card-body">
         <div v-if="!isApproveOpen(plan.planning_no) && !isRejectOpen(plan.planning_no)">
           <div class="formTop">
+            <!-- 담당자한테만 띄우기 -->
             <h5 v-if="memAuthority === 'a2'">
               <span class="badge badge-sm bg-gradient-secondary">검토중</span>지원계획{{
                 plan.ranking
               }}
             </h5>
+            <!-- 관리자한테만 띄우기 -->
             <p v-else-if="memAuthority === 'a3'">지원계획{{ plan.ranking }}</p>
           </div>
 
+          <!-- 오른쪽에 나타나는 대기중인 지원계획 정보카드 -->
           <form name="planning">
             <div class="row g-3 mb-2 align-items-center">
               <div class="col-2"><label class="col-form-label">지원기간</label></div>
@@ -49,6 +52,7 @@
             </div>
           </form>
 
+          <!-- 승인, 반려버튼은 관리자(a3)일때만 표시 -->
           <div class="d-flex justify-content-end" v-if="memAuthority === 'a3'">
             <button
               type="button"
