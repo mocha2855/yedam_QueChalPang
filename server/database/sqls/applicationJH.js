@@ -117,10 +117,20 @@ const rejectPlanningUpdateInfo = `
 `;
 
 // 지원계획서 반려 후 승인요청(담당자)
+// const changingPlanningUpdateInfo
+// update planning
+// set ?
+// where planning_no =
 const changingPlanningUpdateInfo = `
-update planning 
-set ?
-where planning_no = ?`;
+UPDATE planning 
+SET 
+    planning_title = ?, 
+    planning_content = ?, 
+    planning_status = 'i1',
+    planning_approvedDate = NULL,
+    planning_reject = NULL,
+    planning_reject_date = NULL
+WHERE planning_no = ?`;
 
 // 지원현황에서 목록 불러오기(일반사용자)
 const selectApplicationsById = `SELECT *
