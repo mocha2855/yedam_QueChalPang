@@ -1,11 +1,12 @@
 <script setup>
-import { onBeforeMount, ref, computed } from 'vue'
+import { onBeforeMount, ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCounterStore } from '@/stores/member'
 import axios from 'axios'
 const router = useRouter()
 const member = useCounterStore().isLogIn.info
 const surveyList = ref([])
+const activeSubtitleNo = ref(null)
 const getApplicationList = async () => {
   let result = await axios.get(`/api/allsurveys`)
   surveyList.value = result.data
@@ -59,6 +60,17 @@ const structuredSurvey = computed(() => {
     }
   })
 })
+// 첫 번째 탭 자동 활성화
+watch(
+  structuredSurvey,
+  (newVal) => {
+    if (newVal && newVal[0]?.subtitles?.[0]) {
+      activeSubtitleNo.value = newVal[0].subtitles[0].survey_subtitle_no
+    }
+  },
+  { immediate: true },
+)
+
 const dependants = ref([])
 const selectedDependant = ref({})
 const selectedOption = ref(0)
@@ -236,40 +248,12 @@ const supportRoute = computed(() => {
 </script>
 
 <template>
-  <div class="card mb-1">
+  <div class="card mb-1 no-shadow">
     <div class="card-header pb-0">
       <div class="d-flex justify-content-between align-items-center">
         <h6 class="mb-0">지원자 정보</h6>
       </div>
     </div>
-    <!-- <div class="card mb-3">
-      <div class="card-body row row-cols-3">
-        <div class="fs-5 col" :value="selectedDependant.dependant_no">
-          <span class="fs-5">지원자: </span>
-          <span class="fw-bold fs-5">{{ selectedDependant.dependant_name }}</span>
-        </div>
-        <div class="fs-5 col" :value="selectedDependant.dependant_name">
-          <span class="fs-5">보호자: </span>
-          <span class="fw-bold fs-5">{{ selectedDependant.member_name }}</span>
-        </div>
-        <div class="fs-5 col" :value="returnStatus(selectedDependant.status)">
-          <span class="fs-5">대기단계: </span>
-          <span class="fw-bold fs-5">{{ returnStatus(selectedDependant.status) }}</span>
-        </div>
-        <div class="fs-5 col" :value="selectedDependant.despendant_gender">
-          <span class="fs-5">성별: </span>
-          <span class="fw-bold fs-5">{{ selectedDependant.despendant_gender }}</span>
-        </div>
-        <div class="fs-5 col" :value="selectedDependant.dependant_birth">
-          <span class="fs-5">생일: </span>
-          <span class="fw-bold fs-5">{{ selectedDependant.dependant_birth }}</span>
-        </div>
-        <div class="fs-5 col" :value="selectedDependant.disability_name">
-          <span class="fs-5">장애유형: </span>
-          <span class="fw-bold fs-5">{{ selectedDependant.disability_name }}</span>
-        </div>
-      </div>
-    </div> -->
     <div class="card-body px-0 pt-0 pb-2">
       <div class="table-responsive p-0">
         <table class="table align-items-center mb-0">
@@ -328,109 +312,208 @@ const supportRoute = computed(() => {
         </table>
       </div>
     </div>
-  </div>
-  <div class="card">
-    <div class="card-header pb-0">
+
+    <!-- 지원 신청서를 같은 카드 안에 포함 -->
+    <div class="card-header pb-0 pt-3" style="border-top: 2px solid #e9ecef">
       <div class="d-flex justify-content-between align-items-center">
         <h6 class="mb-0">지원 신청서</h6>
         <button class="btn btn-primary p-1" @click="checkAllYes()">전체 예 체크</button>
       </div>
     </div>
-    <div class="card-body px-0 pt-0 pb-2">
-      <div class="row" v-for="survey in structuredSurvey" :key="survey.survey_no">
-        <div class="col-1"></div>
-        <div class="col-11">
-          <h6>{{ survey.survey_title }} (v{{ survey.survey_version }})</h6>
-        </div>
 
-        <div v-for="sub in survey.subtitles" :key="sub.survey_subtitle_no" class="row mb-4">
-          <div class="col-12">
-            <label style="padding-left: 1%" class="text-lg">{{ sub.survey_subtitle }}</label>
-            <p style="padding-left: 2%" class="text-xs text-gray">
-              {{ sub.survey_subtitle_detail }}
-            </p>
-          </div>
-
-          <ul>
-            <li
-              v-for="q in sub.questions"
-              :key="q.survey_qitem_no"
-              class="mb-3 list-unstyled"
-              style="padding-left: 1%"
+    <div class="card-body px-0 pt-0 pb-2 no-shadow">
+      <div v-for="survey in structuredSurvey" :key="survey.survey_no">
+        <!-- 탭 네비게이션 -->
+        <ul class="nav nav-tabs px-3 custom-tabs" role="tablist">
+          <li
+            v-for="sub in survey.subtitles"
+            :key="sub.survey_subtitle_no"
+            class="nav-item"
+            role="presentation"
+          >
+            <button
+              class="nav-link tab-button"
+              :class="{ active: activeSubtitleNo === sub.survey_subtitle_no }"
+              type="button"
+              role="tab"
+              @click="activeSubtitleNo = sub.survey_subtitle_no"
             >
-              <p class="mb-1 fw-bold">Q. {{ q.survey_qitem_question }}</p>
+              {{ sub.survey_subtitle }}
+            </button>
+          </li>
+        </ul>
 
-              <div v-if="q.survey_qitem_type === '예/아니요'">
-                <div class="form-check form-check-inline">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    :name="'question_' + q.survey_qitem_no"
-                    :id="'radio_yes_' + q.survey_qitem_no"
-                    value="Y"
-                    v-model="getAnswer(q.survey_qitem_no, q.survey_qitem_type).type"
-                  />
-                  <label class="form-check-label" :for="'radio_yes_' + q.survey_qitem_no">예</label>
-                </div>
+        <!-- 탭 컨텐츠 -->
+        <div class="tab-content mt-3 no-shadow">
+          <div
+            v-for="sub in survey.subtitles"
+            :key="sub.survey_subtitle_no"
+            class="tab-pane fade no-shadow"
+            :class="{
+              show: activeSubtitleNo === sub.survey_subtitle_no,
+              active: activeSubtitleNo === sub.survey_subtitle_no,
+            }"
+            role="tabpanel"
+          >
+            <!-- 소제목 헤더 -->
+            <div class="subtitle-header">
+              <h6 class="subtitle-title">{{ sub.survey_subtitle }}</h6>
+              <small class="text-muted">{{ sub.survey_subtitle_detail }}</small>
+            </div>
 
-                <div class="form-check form-check-inline">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    :name="'question_' + q.survey_qitem_no"
-                    :id="'radio_no_' + q.survey_qitem_no"
-                    value="N"
-                    v-model="getAnswer(q.survey_qitem_no, q.survey_qitem_type).type"
-                  />
-                  <label class="form-check-label" :for="'radio_no_' + q.survey_qitem_no"
-                    >아니오</label
+            <!-- 질문 목록 -->
+            <div class="questions-wrapper">
+              <div v-for="q in sub.questions" :key="q.survey_qitem_no" class="question-item">
+                <p class="question-text">Q. {{ q.survey_qitem_question }}</p>
+
+                <div v-if="q.survey_qitem_type === '예/아니요'">
+                  <div class="radio-wrapper">
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        :name="'question_' + q.survey_qitem_no"
+                        :id="'radio_yes_' + q.survey_qitem_no"
+                        value="Y"
+                        v-model="getAnswer(q.survey_qitem_no, q.survey_qitem_type).type"
+                      />
+                      <label class="form-check-label" :for="'radio_yes_' + q.survey_qitem_no">
+                        예
+                      </label>
+                    </div>
+
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        :name="'question_' + q.survey_qitem_no"
+                        :id="'radio_no_' + q.survey_qitem_no"
+                        value="N"
+                        v-model="getAnswer(q.survey_qitem_no, q.survey_qitem_type).type"
+                      />
+                      <label class="form-check-label" :for="'radio_no_' + q.survey_qitem_no">
+                        아니오
+                      </label>
+                    </div>
+                  </div>
+
+                  <div
+                    v-if="
+                      q.needDetail &&
+                      getAnswer(q.survey_qitem_no, q.survey_qitem_type)?.type === 'Y'
+                    "
+                    class="detail-inputs"
                   >
-                </div>
-
-                <div
-                  v-if="
-                    q.needDetail && getAnswer(q.survey_qitem_no, q.survey_qitem_type)?.type === 'Y'
-                  "
-                  class="mt-3"
-                >
-                  <div class="mb-3">
-                    <small class="text-muted d-block mt-1">구체적 사유</small>
-
-                    <input
-                      type="text"
-                      class="form-control"
-                      v-model="getAnswer(q.survey_qitem_no, q.survey_qitem_type).reason"
-                      placeholder="구체적인 사유를 입력해주세요"
-                      style="display: block !important; height: 40px !important"
-                    />
-                  </div>
-                  <div class="mb-3">
-                    <input
-                      type="date"
-                      class="form-control"
-                      v-model="getAnswer(q.survey_qitem_no, q.survey_qitem_type).date"
-                      style="display: block !important; height: 40px !important"
-                    />
+                    <div class="detail-input-group">
+                      <label class="detail-label">구체적 사유</label>
+                      <input
+                        type="text"
+                        class="form-control no-shadow"
+                        v-model="getAnswer(q.survey_qitem_no, q.survey_qitem_type).reason"
+                        placeholder="구체적인 사유를 입력해주세요"
+                      />
+                    </div>
+                    <div class="detail-input-group">
+                      <label class="detail-label">날짜</label>
+                      <input
+                        type="date"
+                        class="form-control no-shadow"
+                        v-model="getAnswer(q.survey_qitem_no, q.survey_qitem_type).date"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div v-else>
-                <input
-                  style="display: flex"
-                  type="text"
-                  class="form-control"
-                  v-model="getAnswer[(q.survey_qitem_no, q.survey_qitem_type)]"
-                />
+                <div v-else>
+                  <input
+                    type="text"
+                    class="form-control no-shadow"
+                    v-model="getAnswer[(q.survey_qitem_no, q.survey_qitem_type)]"
+                  />
+                </div>
               </div>
-            </li>
-          </ul>
+            </div>
+          </div>
         </div>
-        <div class="col-5"></div>
-        <div class="col-2">
-          <button class="btn bg-gradient-primary" @click="addApplication()">등록</button>
+
+        <!-- 등록 버튼 -->
+        <div class="d-flex justify-content-center mt-4 mb-3">
+          <button class="btn bg-gradient-primary px-5" @click="addApplication()">등록</button>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.no-shadow {
+  box-shadow: none !important;
+}
+
+.custom-tabs {
+  border-bottom: 1px solid #dee2e6;
+  box-shadow: none !important;
+}
+
+.tab-button {
+  padding: 6px 12px;
+  font-size: 13px;
+  box-shadow: none !important;
+  border: 1px solid #dee2e6;
+  border-bottom: none;
+}
+
+.subtitle-header {
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  margin: 10px;
+}
+
+.subtitle-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.questions-wrapper {
+  padding: 0 16px;
+}
+
+.question-item {
+  padding: 20px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.question-text {
+  margin-bottom: 12px;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.radio-wrapper {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 15px;
+}
+
+.detail-inputs {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.detail-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 0;
+}
+</style>

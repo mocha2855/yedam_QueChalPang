@@ -209,6 +209,7 @@ const updateApp = async (updateList) => {
     item.app_answer_no, // 1
     item.survey_qitem_no, // 2 (필수값)
     item.application_no, // 3 (필수값)
+    item.app_answer_type,
     item.app_reason, // 4
     item.app_date, // 5
   ]);

@@ -208,9 +208,10 @@ const insertAppAnswer = `insert into app_answer(survey_qitem_no,application_no,a
 
 // 지원신청서 조사지 답변 수정
 const modifyApp = `INSERT INTO app_answer 
-        (app_answer_no, survey_qitem_no, application_no, app_reason, app_date)
+        (app_answer_no, survey_qitem_no, application_no,app_answer_type, app_reason, app_date)
       VALUES ?
       ON DUPLICATE KEY UPDATE
+      app_answer_type = VALUES(app_answer_type),
         app_reason = VALUES(app_reason),
         app_date = VALUES(app_date)`;
 
