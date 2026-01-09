@@ -48,6 +48,7 @@ const applicationRoutes = [
       {
         path: 'meetingLog',
         name: 'meetingLog',
+        props: true,
         components: {
           default: meetingLogDetail,
           right: meetingLogList,

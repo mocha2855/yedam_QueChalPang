@@ -117,10 +117,20 @@ const rejectPlanningUpdateInfo = `
 `;
 
 // 지원계획서 반려 후 승인요청(담당자)
+// const changingPlanningUpdateInfo
+// update planning
+// set ?
+// where planning_no =
 const changingPlanningUpdateInfo = `
-update planning 
-set ?
-where planning_no = ?`;
+UPDATE planning 
+SET 
+    planning_title = ?, 
+    planning_content = ?, 
+    planning_status = 'i1',
+    planning_approvedDate = NULL,
+    planning_reject = NULL,
+    planning_reject_date = NULL
+WHERE planning_no = ?`;
 
 // 지원현황에서 목록 불러오기(일반사용자)
 const selectApplicationsById = `SELECT *
@@ -198,9 +208,10 @@ const insertAppAnswer = `insert into app_answer(survey_qitem_no,application_no,a
 
 // 지원신청서 조사지 답변 수정
 const modifyApp = `INSERT INTO app_answer 
-        (app_answer_no, survey_qitem_no, application_no, app_reason, app_date)
+        (app_answer_no, survey_qitem_no, application_no,app_answer_type, app_reason, app_date)
       VALUES ?
       ON DUPLICATE KEY UPDATE
+      app_answer_type = VALUES(app_answer_type),
         app_reason = VALUES(app_reason),
         app_date = VALUES(app_date)`;
 

@@ -2,6 +2,12 @@
 <!-- 자식 -->
 <script setup>
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+// import { useMeetingLogStore } from '@/stores/meetingLog'
+
+const router = useRouter()
+// const route = useRoute() // 0108
+// const meetingLog = useMeetingLogStore()
 
 const props = defineProps({
   selectedDate: { type: Date, required: true }, //부모가 무조건 selectedDate를 내려줘야 함
@@ -34,14 +40,31 @@ const statusMap = {
   f4: { label: '상담취소', class: 'status-cancel' },
 }
 
-const statusInfo = (s) => {
+// 현재 날짜 기점으로 상태 변화 -0108
+// 날짜 변경
+const statusInfo = (s, d) => {
+  console.log(new Date(d))
+
+  let today = new Date()
+  console.log(today > new Date(d))
   return statusMap[s] ?? { label: s ?? '', class: 'status-default' }
 }
 
-// 상담내역 작성하러가기
-// const writingMeeting = () => {
-//   router.push
-// }
+// 상담내역 작성하러가기 - 0108
+const writingMeeting = (data) => {
+  // meetingLog.fetchByAppNo(route.params.id)
+  // meetingLog.logs.forEach((data) => {
+  //   if (data.resv_no == id) {
+  //     if (data.has_meeting_log === 1) {
+  //       meetingLog.fetchDetailByResvId(data.resv_id)
+  //     } else {
+  //       meetingLog.startWrite(data)
+  //     }
+  //   }
+  // })
+
+  router.push({ name: 'meetingLog', params: { id: data } })
+}
 </script>
 
 <template>
@@ -84,13 +107,15 @@ const statusInfo = (s) => {
               </td>
 
               <td class="align-middle text-center">
-                <span class="status-badge" :class="statusInfo(r.status).class">
-                  {{ statusInfo(r.status).label }}
+                <span class="status-badge" :class="statusInfo(r.status, r.resv_day).class">
+                  {{ statusInfo(r.status, r.resv_day).label }}
                 </span>
               </td>
               <!-- 0108 상담내역 작성하기 추가 -->
               <td class="align-middle text-center">
-                <button class="btn btn-primary text-xs">작성하기</button>
+                <button class="btn btn-primary text-xs" @click="writingMeeting(r.application_no)">
+                  작성하기
+                </button>
               </td>
             </tr>
           </tbody>

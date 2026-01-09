@@ -1,5 +1,5 @@
-<!-- 계획서 반려 검토중 리스트(관리자) -->
-  <!-- application/sections/PlanningRejectedReviewList.vue -->
+<!--a3 관리자만 띄우는 화면용임 계획서 반려 검토중 리스트(관리자) -->
+<!-- application/sections/PlanningRejectedReviewList.vue -->
 
 <template>
   <div class="card mb-3" v-for="plan in plans" :key="plan.planning_no">
@@ -22,10 +22,10 @@
           <div class="row g-3 mb-2 align-items-center">
             <div class="col-2"><label class="col-form-label">지원기간</label></div>
             <div class="col-3">
-              <input type="text" v-model="plan.planning_start" class="form-control" />
+              <input type="text" v-model="plan.planning_start" class="form-control" readonly />
             </div>
             <div class="col-3">
-              <input type="text" v-model="plan.planning_end" class="form-control" />
+              <input type="text" v-model="plan.planning_end" class="form-control" readonly />
             </div>
             <div class="col-2"><label class="col-form-label">작성자</label></div>
             <div class="col-2">
@@ -36,14 +36,14 @@
           <div class="row g-3 mb-2 align-items-center">
             <div class="col-2"><label class="col-form-label">제목</label></div>
             <div class="col-10">
-              <input type="text" v-model="plan.planning_title" class="form-control" />
+              <input type="text" v-model="plan.planning_title" class="form-control" readonly />
             </div>
           </div>
 
           <div class="row g-3 mb-2 align-items-center">
             <div class="col-2"><label class="col-form-label">내용</label></div>
             <div class="col-10">
-              <input type="text" v-model="plan.planning_content" class="form-control" />
+              <input type="text" v-model="plan.planning_content" class="form-control" readonly />
             </div>
           </div>
 
@@ -75,7 +75,7 @@
           <div class="row g-3 mb-2 align-items-center">
             <div class="col-2"><label class="col-form-label">반려사유</label></div>
             <div class="col-10">
-              <input type="text" v-model="plan.planning_reject" class="form-control" readonly />
+              <input type="text" v-model="plan.planning_reject" class="form-control" />
             </div>
           </div>
         </form>

@@ -90,7 +90,7 @@ router.post("/submitPlanningInfo/:no", async (req, res) => {
   res.send(post);
 });
 
-// 지원계획서 승인(관리자)
+// 반려된 지원계획서 승인(관리자)
 router.put("/successPlanningInfo/:no", async (req, res) => {
   let no = req.params.no;
   let data = req.body;

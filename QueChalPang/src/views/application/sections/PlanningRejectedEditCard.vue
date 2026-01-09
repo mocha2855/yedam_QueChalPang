@@ -20,10 +20,10 @@
           <div class="row g-3 mb-2 align-items-center">
             <div class="col-2"><label class="col-form-label">지원기간</label></div>
             <div class="col-3">
-              <input type="text" v-model="localPlan.planning_start" class="form-control" />
+              <input type="date" v-model="localPlan.planning_start" class="form-control" />
             </div>
             <div class="col-3">
-              <input type="text" v-model="localPlan.planning_end" class="form-control" />
+              <input type="date" v-model="localPlan.planning_end" class="form-control" />
             </div>
             <div class="col-2"><label class="col-form-label">작성자</label></div>
             <div class="col-2">
