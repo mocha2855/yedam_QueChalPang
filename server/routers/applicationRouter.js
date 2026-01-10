@@ -123,6 +123,15 @@ router.put("/submitChangingPlanningInfo/:no", async (req, res) => {
   res.send(post);
 });
 
+// 지원계획서 임시 저장(담당자)
+router.post("/firstPlanSave/:no", async (req, res) => {
+  let data = req.body;
+  console.log(data);
+  let no = req.params.no;
+  let post = await applicationService.addPlanSaveInfo(no, data);
+  res.send(post);
+});
+
 // 지원서 전체 가져오기(일반사용자 및 담당자)
 router.get("/searchApplicationById/:id/:authority", async (req, res) => {
   let { id, authority } = req.params;
@@ -211,4 +220,5 @@ router.post(`/applicationHistory`, async (req, res) => {
   console.log(input);
   let result = await applicationService.addAppHistory(input);
 });
+
 module.exports = router;

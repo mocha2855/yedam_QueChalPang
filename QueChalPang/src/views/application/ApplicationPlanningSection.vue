@@ -8,12 +8,14 @@
         :mem-name="memName"
         :real-count="realCount"
         :add-count="addCount"
+        :first-save="firstSave"
         :planned-status="application.dependantInfo?.status_status"
         :has-changing-work="application.planningChanging?.length > 0"
         @update:addCount="(v) => (addCount = v)"
         @requestAdd="onRequestAdd"
         @deleted="onDeletedCreate"
         @submitted="onSubmitCreate"
+        @saved="onSubmitSave"
       />
 
       <!-- 담당자(a2) 반려된거 수정 -->
@@ -33,7 +35,7 @@
 
     <!-- 반려 검토중(관리자 & 담당자 같이 줘야함) -->
     <PlanningRejectedReviewList
-      v-if="memAuthority === 'a3' && application.planningChangingReview?.length > 0"
+      v-if="application.planningChangingReview?.length > 0"
       :mem-authority="memAuthority"
       :plans="application.planningChangingReview"
       @approve="approvePlan"
@@ -74,6 +76,7 @@ const application = useApplicationStore()
 // 권한/이름은 computed로(로그인 정보 바뀌어도 안전)
 const memAuthority = computed(() => counters.isLogIn.info.member_authority)
 const memName = computed(() => counters.isLogIn.info.member_name)
+const firstSave = computed(() => application.planningFistSave)
 
 const realCount = ref(0)
 let addCount = ref(0)
@@ -92,6 +95,7 @@ onBeforeMount(async () => {
   } else {
     realCount.value = 1
   }
+  await application.countRealReview(route.params.id)
 })
 
 const onRequestAdd = () => {
@@ -101,6 +105,27 @@ const onRequestAdd = () => {
 
 const onDeletedCreate = () => {
   application.planningState = 0
+}
+
+// 임시저장 0111
+const onSubmitSave = async (payload) => {
+  console.log(payload)
+  await axios.post('/api/firstPlanSave/' + route.params.id, {
+    planning_id: application.dependantInfo.manager_id,
+    planning_rejecter: application.dependantInfo.application_rejector,
+    planning_start: payload.startDate,
+    planning_end: payload.endDate,
+    planning_title: payload.title,
+    planning_content: payload.content,
+    planning_status: 'i0',
+  })
+  alert('임시저장 완료')
+  await refresh()
+
+  // 기존 동작 맞추기: 카운트/폼 상태 리셋
+  realCount.value = application.planned + 2
+  addCount.value = 0
+  application.planningState = 1
 }
 
 // 신규 승인요청(담당자 a2) - axios는 부모에서!

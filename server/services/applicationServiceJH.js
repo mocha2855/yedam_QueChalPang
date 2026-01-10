@@ -76,6 +76,13 @@ const addPlanningInfo = async (application_no, data) => {
   return post;
 };
 
+// 지원계획서 임시저장 0111
+const addPlanSaveInfo = async (application_no, data) => {
+  let param = { application_no, ...data };
+  let post = await mysql.bquery("insertPlanSaveInfo", param);
+  return post;
+};
+
 // 지원계획서 승인(관리자)
 const updatePlanningInfo = async (planning_no, data) => {
   let post = await mysql.bquery("sucessPlanningUpdateInfo", [
@@ -277,4 +284,5 @@ module.exports = {
   applicationApproveInfo,
   updateApp,
   addAppHistory,
+  addPlanSaveInfo, // 0111 임시저장
 };
