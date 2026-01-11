@@ -100,7 +100,7 @@ router.post("/submitPlanningInfo/:no", async (req, res) => {
 router.put("/successPlanningInfo/:no", async (req, res) => {
   let no = req.params.no;
   let data = req.body;
-  console.log(data);
+  console.log(no, data);
   let post = await applicationService.updatePlanningInfo(no, data);
   res.send(post);
 });
@@ -123,12 +123,29 @@ router.put("/submitChangingPlanningInfo/:no", async (req, res) => {
   res.send(post);
 });
 
-// 지원계획서 임시 저장(담당자)
+// 지원계획서 임시 저장(담당자) 0111
 router.post("/firstPlanSave/:no", async (req, res) => {
   let data = req.body;
   console.log(data);
   let no = req.params.no;
   let post = await applicationService.addPlanSaveInfo(no, data);
+  res.send(post);
+});
+
+// 지언계획서 임시 저장(이미 한번 했을 경우) 0111
+router.put("/firstSaveOneMore/:no", async (req, res) => {
+  let data = req.body;
+  console.log(data);
+  let no = req.params.no;
+  console.log("no: ", no);
+  let post = await applicationService.modifyFirstSaveInfo(no, data);
+  res.send(post);
+});
+
+// 지원계획서 임시 저장 삭제(담당자) 0111
+router.put("/delFirstSave/:no", async (req, res) => {
+  let no = req.params.no;
+  let post = await applicationService.removeFirstSaveInfo(no);
   res.send(post);
 });
 
@@ -219,6 +236,31 @@ router.post(`/applicationHistory`, async (req, res) => {
   let input = req.body;
   console.log(input);
   let result = await applicationService.addAppHistory(input);
+});
+
+// 지원결과서 임시저장 0111
+router.post("/saveFirstResult", async (req, res) => {
+  let data = req.body;
+  console.log(data);
+  let post = await applicationService.addFirstResultInfo(data);
+  res.send(post);
+});
+
+// 지원결과서 임시 저장(이미 한번 했을 경우) 0111
+router.put("/saveResultOneMOre/:no", async (req, res) => {
+  let data = req.body;
+  console.log(data);
+  let no = req.params.no;
+  console.log("no: ", no);
+  let post = await applicationService.modifyResultFirstSaveInfo(no, data);
+  res.send(post);
+});
+
+// 지원결과서 임시저장 삭제 0111
+router.delete("/delResultFirstSave/:no", async (req, res) => {
+  let no = req.params.no;
+  let post = await applicationService.removeResultFirstSaveInfo(no);
+  res.send(post);
 });
 
 module.exports = router;

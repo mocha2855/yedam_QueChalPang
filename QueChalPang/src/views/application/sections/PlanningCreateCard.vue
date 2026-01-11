@@ -31,8 +31,8 @@
                 </div>
                 <div class="col-3">
                   <input
-                    v-if="writeSave == true"
-                    type="text"
+                    v-if="writeSave == true && formData.planning_start != null"
+                    type="date"
                     v-model="formData.planning_start"
                     class="form-control"
                   />
@@ -45,8 +45,8 @@
                 </div>
                 <div class="col-3">
                   <input
-                    v-if="writeSave == true"
-                    type="text"
+                    v-if="writeSave == true && formData.planning_end != null"
+                    type="date"
                     v-model="formData.planning_end"
                     class="form-control"
                   />
@@ -138,7 +138,6 @@ const planNum = ref(0)
 
 const addPlanningForm = () => {
   planNum.value = props.realCount
-
   // 기존 로직 그대로 옮김
   if (props.addCount === 0) {
     if (props.hasChangingWork) {
@@ -177,10 +176,10 @@ const delForm = () => {
 
 const openConfirm = () => {
   if (
-    !formData.value.startDate ||
-    !formData.value.endDate ||
-    !formData.value.title ||
-    !formData.value.content
+    !formData.value.planning_start ||
+    !formData.value.planning_end ||
+    !formData.value.planning_title ||
+    !formData.value.planning_content
   ) {
     alert('내용 입력을 완료해주세요')
     return
@@ -195,6 +194,7 @@ const closeConfirm = () => {
 
 const confirmSubmit = () => {
   emit('submitted', { ...formData.value })
+  formData.value = {}
   checked.value = false
 }
 
@@ -223,6 +223,9 @@ const callSaveInfo = () => {
 const closeCallSaveInfo = () => {
   callFirstSave.value = false
   writeSave.value = false
-  planNum.value = props.realCount
+  formData.value = []
+  emit('update:addCount', 1)
+  emit('requestAdd')
+  emit('cancelSaved')
 }
 </script>

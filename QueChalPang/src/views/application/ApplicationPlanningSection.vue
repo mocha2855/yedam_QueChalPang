@@ -16,6 +16,7 @@
         @deleted="onDeletedCreate"
         @submitted="onSubmitCreate"
         @saved="onSubmitSave"
+        @cancelSaved="onDeleteSave"
       />
 
       <!-- 담당자(a2) 반려된거 수정 -->
@@ -109,34 +110,88 @@ const onDeletedCreate = () => {
 
 // 임시저장 0111
 const onSubmitSave = async (payload) => {
+  if (application.planningFistSave.length > 0) {
+    await axios.put('/api/firstSaveOneMore/' + route.params.id, {
+      planning_id: application.dependantInfo.manager_id,
+      planning_rejecter: application.dependantInfo.application_rejector,
+      planning_start: payload.planning_start,
+      planning_end: payload.planning_end,
+      planning_title: payload.planning_title,
+      planning_content: payload.planning_content,
+    })
+    alert('임시저장 완료')
+    await refresh()
+    // 기존 동작 맞추기: 카운트/폼 상태 리셋
+    realCount.value = application.planned + 1
+    addCount.value = 0
+    application.planningState = 0
+
+    return
+  }
   console.log(payload)
   await axios.post('/api/firstPlanSave/' + route.params.id, {
     planning_id: application.dependantInfo.manager_id,
     planning_rejecter: application.dependantInfo.application_rejector,
-    planning_start: payload.startDate,
-    planning_end: payload.endDate,
-    planning_title: payload.title,
-    planning_content: payload.content,
+    planning_start: payload.planning_start,
+    planning_end: payload.planning_end,
+    planning_title: payload.planning_title,
+    planning_content: payload.planning_content,
     planning_status: 'i0',
   })
   alert('임시저장 완료')
   await refresh()
 
   // 기존 동작 맞추기: 카운트/폼 상태 리셋
-  realCount.value = application.planned + 2
+  realCount.value = application.planned + 1
   addCount.value = 0
-  application.planningState = 1
+  application.planningState = 0
+}
+
+// 임시저장 불러오기 중 취소시 삭제 0111
+const onDeleteSave = async () => {
+  await axios //
+    .put('/api/delFirstSave/' + route.params.id)
+    .then((res) => {
+      console.log(res)
+    })
+
+  application.planningFistSave = []
+  // 기존 동작 맞추기: 카운트/폼 상태 리셋
+  realCount.value = application.planned + 1
+  application.planningState = 0
 }
 
 // 신규 승인요청(담당자 a2) - axios는 부모에서!
 const onSubmitCreate = async (payload) => {
+  if (application.planningFistSave.length > 0) {
+    console.log(firstSave.value[0].planning_no)
+    await axios.put('/api/successPlanningInfo/' + firstSave.value[0].planning_no, {
+      planning_id: application.dependantInfo.manager_id,
+      planning_rejecter: application.dependantInfo.application_rejector,
+      planning_start: payload.planning_start,
+      planning_end: payload.planning_end,
+      planning_title: payload.planning_title,
+      planning_content: payload.planning_content,
+      planning_status: 'i1',
+    })
+    alert('승인요청 완료')
+    await refresh()
+
+    // 기존 동작 맞추기: 카운트/폼 상태 리셋
+    realCount.value = application.planned + 1
+    addCount.value = 0
+    application.planningState = 0
+
+    return
+  }
+
   await axios.post('/api/submitPlanningInfo/' + route.params.id, {
     planning_id: application.dependantInfo.manager_id,
     planning_rejecter: application.dependantInfo.application_rejector,
-    planning_start: payload.startDate,
-    planning_end: payload.endDate,
-    planning_title: payload.title,
-    planning_content: payload.content,
+    planning_start: payload.planning_start,
+    planning_end: payload.planning_end,
+    planning_title: payload.planning_title,
+    planning_content: payload.planning_content,
   })
 
   alert('승인요청 완료')

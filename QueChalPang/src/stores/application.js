@@ -25,6 +25,7 @@ export const useApplicationStore = defineStore('application', {
     resultRejected: [],
     resultChanging: [],
     resultChangingReview: [],
+    resultfirstSave: [],
   }),
 
   actions: {
@@ -136,9 +137,20 @@ export const useApplicationStore = defineStore('application', {
 
       const dateChange = (day) => {
         if (!day) return null
+
         const d = new Date(day)
         if (Number.isNaN(d.getTime())) return null
-        return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`
+        if (d.getMonth() + 1 > 10) {
+          if (d.getDate() < 10) {
+            return `${d.getFullYear()}-${d.getMonth() + 1}-0${d.getDate()}`
+          }
+          return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`
+        } else {
+          if (d.getDate() < 10) {
+            return `${d.getFullYear()}-0${d.getMonth() + 1}-0${d.getDate()}`
+          }
+          return `${d.getFullYear()}-0${d.getMonth() + 1}-${d.getDate()}`
+        }
       }
 
       for (let i = 0; i < this.allPlanned.length; i++) {
@@ -163,7 +175,7 @@ export const useApplicationStore = defineStore('application', {
           this.planningReview.push(it)
         }
         // 임시저장 0111
-        else if (it.planning_status === 'i0') {
+        else if (it.planning_status === 'i0' && it.planning_reject == null) {
           this.planningFistSave.push(it)
         } else if (
           it.planning_status === 'i1' &&
@@ -225,6 +237,7 @@ export const useApplicationStore = defineStore('application', {
       this.resultRejected = []
       this.resultChanging = []
       this.resultChangingReview = []
+      this.resultfirstSave = []
 
       const res = await axios.get(`/api/resultReview/${applicationNo}`)
       this.allResult = Array.isArray(res.data) ? res.data : []
@@ -252,6 +265,8 @@ export const useApplicationStore = defineStore('application', {
           it.result_approvedDate == null
         ) {
           this.resultReview.push(it)
+        } else if (it.result_status === 'i0') {
+          this.resultfirstSave.push(it)
         } else if (
           it.result_status === 'i1' &&
           it.result_reject != null &&
