@@ -84,8 +84,9 @@ const openAssignManagerModal = (row) => {
     dependantNo: row.dependant_no,
     dependantName: row.dependant_name,
     guardianName: row.guardian_name,
+    onComplete: () => location.reload(),
   })
-  console.log('해당데이터값',row)
+  console.log('해당데이터값', row)
 }
 
 //지원계획서
@@ -246,7 +247,9 @@ onBeforeMount(() => {
               <!-- 담당자이름 -->
               <td class="align-middle text-center text-sm">
                 <template v-if="row.manager_name">
-                  <span class="text-secondary text-xs font-weight-bold">{{ row.manager_name }}</span>
+                  <span class="text-secondary text-xs font-weight-bold">{{
+                    row.manager_name
+                  }}</span>
                 </template>
                 <template v-else>
                   <button

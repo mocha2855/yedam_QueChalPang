@@ -79,6 +79,7 @@ const confirmAssign = async () => {
   try {
     await applicationStore.assignManager(payload.value.applicationNo, managerId.value)
     alert('담당자가 배정되었습니다.')
+    payload.value.onComplete?.()
     closeModal()
   } catch (e) {
     console.error('[AssignManagerModal] confirmAssign error:', e)
@@ -96,21 +97,28 @@ watch(
       fetchManagers()
     }
   },
-  { immediate: true } // 이미 열린 상태로 마운트될 수도 있으니
+  { immediate: true }, // 이미 열린 상태로 마운트될 수도 있으니
 )
 </script>
 
 <template>
   <div
     class="modal-card"
-    style="background: #fff; border-radius: 8px; padding: 16px 20px; min-width: 360px; max-width: 480px;"
+    style="
+      background: #fff;
+      border-radius: 8px;
+      padding: 16px 20px;
+      min-width: 360px;
+      max-width: 480px;
+    "
   >
     <!-- header -->
-    <div class="modal-header mb-3" style="display: flex; justify-content: space-between; align-items: center;">
+    <div
+      class="modal-header mb-3"
+      style="display: flex; justify-content: space-between; align-items: center"
+    >
       <h6 class="mb-0">담당자 배정</h6>
-      <button type="button" class="btn btn-sm btn-outline-secondary" @click="closeModal">
-        ✕
-      </button>
+      <button type="button" class="btn btn-sm btn-outline-secondary" @click="closeModal">✕</button>
     </div>
 
     <!-- body -->
@@ -119,9 +127,7 @@ watch(
         <strong>{{ payload.guardianName }}</strong> 보호자의
         <strong>{{ payload.dependantName }}</strong> 님 신청서
       </p>
-      <p class="text-xs text-secondary mb-3">
-        (신청서 번호: {{ payload.applicationNo }})
-      </p>
+      <p class="text-xs text-secondary mb-3">(신청서 번호: {{ payload.applicationNo }})</p>
 
       <div class="mb-3">
         <label class="form-label text-sm mb-1">배정할 담당자</label>
@@ -132,11 +138,7 @@ watch(
           :disabled="loading || managerList.length === 0"
         >
           <option value="">담당자 선택</option>
-          <option
-            v-for="m in managerList"
-            :key="m.member_id"
-            :value="m.member_id"
-          >
+          <option v-for="m in managerList" :key="m.member_id" :value="m.member_id">
             {{ m.member_name }} ({{ m.member_id }})
           </option>
         </select>
@@ -157,10 +159,8 @@ watch(
     </div>
 
     <!-- footer -->
-    <div class="modal-footer mt-3" style="display: flex; justify-content: flex-end; gap: 8px;">
-      <button type="button" class="btn btn-secondary btn-sm mb-0" @click="closeModal">
-        취소
-      </button>
+    <div class="modal-footer mt-3" style="display: flex; justify-content: flex-end; gap: 8px">
+      <button type="button" class="btn btn-secondary btn-sm mb-0" @click="closeModal">취소</button>
       <button type="button" class="btn btn-primary btn-sm mb-0" @click="confirmAssign">
         배정하기
       </button>

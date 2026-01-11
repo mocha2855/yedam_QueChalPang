@@ -118,12 +118,12 @@
                     <label for="content" class="col-form-label">내용</label>
                   </div>
                   <div class="col-10">
-                    <input
-                      type="text"
+                    <textarea
                       name="content"
                       id="content"
                       v-model="formData.content"
                       class="form-control"
+                      rows="8"
                     />
                   </div>
                 </div>
@@ -243,12 +243,12 @@
                   <label for="content" class="col-form-label">내용</label>
                 </div>
                 <div class="col-10">
-                  <input
-                    type="text"
+                  <textarea
                     name="content"
                     id="content"
                     v-model="application.resultChanging[0].result_content"
                     class="form-control"
+                    rows="8"
                   />
                 </div>
               </div>
@@ -424,8 +424,7 @@
                 <label for="content" class="col-form-label">내용</label>
               </div>
               <div class="col-10">
-                <input
-                  type="text"
+                <textarea
                   name="content"
                   id="content"
                   v-model="plan.result_content"
@@ -610,7 +609,7 @@
               </div>
               <div class="row g-3 mb-2 align-items-center">
                 <div class="col-2">
-                  <label for="title" class="col-form-label">결과</label>
+                  <label for="title" class="col-form-label">제목</label>
                 </div>
                 <div class="col-10">
                   <input
@@ -628,12 +627,12 @@
                   <label for="content" class="col-form-label">내용</label>
                 </div>
                 <div class="col-10">
-                  <input
-                    type="text"
+                  <textarea
                     name="content"
                     id="content"
                     v-model="plan.result_content"
                     class="form-control"
+                    rows="8"
                     readonly
                   />
                 </div>

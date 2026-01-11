@@ -1,54 +1,47 @@
-<!-- views/QnaGuardian.vue -->
+<!-- views/qna/QnaTeacher.vue -->
 <script setup>
 import { computed, onMounted, watch } from 'vue'
 import { useCounterStore } from '@/stores/member'
 import { useQnaStore } from '@/stores/qna'
 import { storeToRefs } from 'pinia'
-import { useModalStore } from '@/stores/modal'
-// import { useRouter } from 'vue-router'
 import router from '@/router'
-// import QnaGuardianDetail from './QnaGuardianDetail.vue'
 
 const counterStore = useCounterStore()
 const { isLogIn } = storeToRefs(counterStore)
 
 const qnaStore = useQnaStore()
-const modal = useModalStore()
 const { filteredRows } = storeToRefs(qnaStore)
 
-const memberId = computed(() => isLogIn.value?.info?.member_id)
+// 담당자(teacher) id
+const managerId = computed(() => isLogIn.value?.info?.member_id)
 
-const fetch = () => qnaStore.fetchByMemberId(memberId.value)
+const fetch = () => qnaStore.fetchByManagerMain(managerId.value)
 
-onMounted(fetch)
+onMounted(() => {
+  if (managerId.value) fetch()
+})
 
-watch(memberId, (v) => {
+watch(managerId, (v) => {
   if (v) fetch()
 })
 
-const qnaWrite = () => {
-  modal.open('qnaAdd')
-}
-
 const goDetail = (no) => {
-  console.log('클릭된 번호:', no) // 여기서 undefined가 나오면 위 1번(Store) 문제임
-
+  console.log('클릭된 번호:', no)
   if (no) {
-    router.push({ name: 'qnaGuardianDetail', params: { qnaNo: no } })
+    // 담당자 상세 라우트로 갈 거면 이름 바꿔주면 됨
+    router.push({ name: 'qnaTeacherDetail', params: { qnaNo: no } })
   }
 }
 </script>
 
 <template>
-  <div class="qna-guardian">
-    <!-- 오른쪽 메인 콘텐츠 -->
+  <div class="qna-teacher">
     <section class="content-area content-wrap">
-      <!-- 상단 버튼 -->
+      <!-- 상단 타이틀(버튼 대신) -->
       <div class="hero-row">
-        <button type="button" class="hero-btn" @click="qnaWrite">1:1 질문작성</button>
+        <div class="hero-title">담당 질문목록</div>
       </div>
 
-      <!-- 질문내역테이블 -->
       <div class="list-card">
         <div class="list-header">
           <div class="list-title">문의내역</div>
@@ -59,8 +52,8 @@ const goDetail = (no) => {
             <thead>
               <tr>
                 <th>제목</th>
-                <th style="width: 120px">지원자</th>
                 <th style="width: 120px">카테고리</th>
+                <th style="width: 120px">지원자</th>
                 <th style="width: 100px">작성자</th>
                 <th style="width: 100px">담당자</th>
                 <th style="width: 100px">답변자</th>
@@ -79,9 +72,9 @@ const goDetail = (no) => {
                     </span>
                   </div>
                 </td>
-                <td class="text-center">{{ r.dependant }}</td>
 
                 <td class="text-center">{{ r.category }}</td>
+                <td class="text-center">{{ r.dependant }}</td>
                 <td class="text-center">{{ r.writer }}</td>
                 <td class="text-center">{{ r.manager }}</td>
                 <td class="text-center">{{ r.responder || '-' }}</td>
@@ -91,7 +84,7 @@ const goDetail = (no) => {
               </tr>
 
               <tr v-if="filteredRows.length === 0">
-                <td colspan="7" class="text-center py-4 text-muted">조회 결과가 없습니다.</td>
+                <td colspan="6" class="text-center py-4 text-muted">조회 결과가 없습니다.</td>
               </tr>
             </tbody>
           </table>
@@ -106,79 +99,8 @@ const goDetail = (no) => {
   cursor: pointer;
 }
 
-.qna-guardian {
+.qna-teacher {
   padding: 16px;
-}
-
-.qna-grid {
-  display: grid;
-  grid-template-columns: 240px 1fr;
-  gap: 20px;
-  align-items: start;
-}
-
-.filter-card {
-  background: #f6f6f6;
-  border: 1px solid #d9d9d9;
-  padding: 14px;
-  border-radius: 8px;
-}
-
-.filter-title {
-  font-weight: 800;
-  margin-bottom: 10px;
-}
-
-.filter-section {
-  margin: 14px 0;
-}
-
-.filter-label {
-  font-size: 12px;
-  font-weight: 700;
-  margin-bottom: 8px;
-  color: #444;
-}
-
-.date-range {
-  display: grid;
-  grid-template-columns: 1fr 24px 1fr;
-  gap: 6px;
-  align-items: center;
-}
-
-.date-dash {
-  text-align: center;
-  color: #666;
-  font-weight: 700;
-}
-
-.pill-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.pill {
-  border: 1px solid #bfbfbf;
-  background: #fff;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  cursor: pointer;
-  line-height: 1;
-  transition: 0.15s;
-}
-
-.pill:hover {
-  border-color: #2f6df6;
-}
-
-.pill.active {
-  background: #ff8a00;
-  border-color: #ff8a00;
-  color: #fff;
-  font-weight: 800;
 }
 
 .content-area {
@@ -191,31 +113,26 @@ const goDetail = (no) => {
   width: 100%;
 }
 
+/* 상단 */
 .hero-row {
   display: flex;
   justify-content: center;
   margin: 6px 0 18px;
 }
 
-.hero-btn {
-  background: #0b4bb3;
-  color: #fff;
-  border: none;
-  padding: 18px 40px;
-  border-radius: 12px;
-  font-size: 28px;
+.hero-title {
+  width: 100%;
+  text-align: center;
   font-weight: 900;
-  letter-spacing: -0.5px;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
-  cursor: pointer;
-  transition: 0.15s;
+  font-size: 22px;
+  padding: 12px 14px;
+  border: 1px solid #d9d9d9;
+  border-radius: 12px;
+  background: #fff;
+  color: #222;
 }
 
-.hero-btn:hover {
-  transform: translateY(-1px);
-  background: #083f99;
-}
-
+/* 카드 */
 .list-card {
   background: #fff;
   border: 1px solid #d9d9d9;
@@ -233,6 +150,7 @@ const goDetail = (no) => {
   font-weight: 900;
 }
 
+/* 테이블 */
 .table-wrap {
   overflow-x: auto;
 }
@@ -265,6 +183,7 @@ const goDetail = (no) => {
 }
 
 .status-badge {
+  margin-left: auto;
   font-size: 11px;
   padding: 4px 10px;
   border-radius: 999px;
@@ -291,15 +210,5 @@ const goDetail = (no) => {
   padding: 4px 10px;
   border-radius: 999px;
   font-size: 12px;
-}
-
-.title-cell {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.status-badge {
-  margin-left: auto;
 }
 </style>

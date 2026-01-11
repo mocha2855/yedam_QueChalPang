@@ -32,25 +32,17 @@ const selectedLabel = computed(
 )
 
 // 1) 처음: e1 & null
-const isInitial = computed(
-  () => currentStatus.value === 'e1' && statusStatus.value == null,
-)
+const isInitial = computed(() => currentStatus.value === 'e1' && statusStatus.value == null)
 
 // 2) 관리자에게 반려된 상태: e1 & i3
-const isRejected = computed(
-  () => currentStatus.value === 'e1' && statusStatus.value === 'i3',
-)
+const isRejected = computed(() => currentStatus.value === 'e1' && statusStatus.value === 'i3')
 
 // 3) 관리자 승인 대기중: i1
-const isWaitingApproval = computed(
-  () => statusStatus.value === 'i1',
-)
+const isWaitingApproval = computed(() => statusStatus.value === 'i1')
 
 // 4) 관리자 승인 완료: e3/e4/e5 + i2
 const isApproved = computed(
-  () =>
-    ['e3', 'e4', 'e5'].includes(currentStatus.value) &&
-    statusStatus.value === 'i2',
+  () => ['e3', 'e4', 'e5'].includes(currentStatus.value) && statusStatus.value === 'i2',
 )
 
 const openModal = () => {
@@ -72,7 +64,6 @@ const submit = async () => {
   await application.loadApplicationContext(route.params.id)
 }
 </script>
-
 
 <template>
   <!-- 1. 처음 상태: 아직 아무 요청도 안 한 상태 (e1 + NULL) -->
@@ -98,14 +89,12 @@ const submit = async () => {
     <button class="btn-request" type="button" @click="openModal">승인요청</button>
 
     <ApplicationModal v-if="checked">
-      <template #header>
-        대기단계 승인 요청하기
-      </template>
+      <template #header> 대기단계 승인 요청하기 </template>
 
       <template #body>
         <p class="modal-text">
-          대기단계로 {{ selectedLabel }} 을 선택하셨습니다.<br/>
-          관리자에게 승인요청 하시겠습니까? 
+          대기단계로 {{ selectedLabel }} 을 선택하셨습니다.<br />
+          관리자에게 승인요청 하시겠습니까?
         </p>
       </template>
       <template #footer>
@@ -126,9 +115,7 @@ const submit = async () => {
       <span>{{ rejectReason }}</span>
     </p>
 
-    <p class="wait-title" style="margin-top: 12px;">
-      다시 대기단계를 선택하여 승인요청을 해주세요.
-    </p>
+    <p class="wait-title" style="margin-top: 12px">다시 대기단계를 선택하여 승인요청을 해주세요.</p>
 
     <div class="wait-circles">
       <button
@@ -147,9 +134,7 @@ const submit = async () => {
 
     <ApplicationModal v-if="checked">
       <template #body>
-        <p class="modal-text">
-          {{ selectedLabel }} 단계로 다시 승인요청 하시겠습니까?
-        </p>
+        <p class="modal-text">{{ selectedLabel }} 단계로 다시 승인요청 하시겠습니까?</p>
       </template>
       <template #footer>
         <button class="btn-request" @click="submit">확인</button>
@@ -159,29 +144,29 @@ const submit = async () => {
   </div>
 
   <!-- 3. 관리자 승인 대기중 (검토중: i1) -->
-<div v-else-if="isWaitingApproval" class="wait-wrap">
-  <p class="wait-title">
-    <b>{{ dependantName }}</b> 님의 대기단계 승인 요청이 접수되었습니다.<br />
-    <b>관리자의 대기단계 승인을 기다리는 중입니다.</b>
-  </p>
+  <div v-else-if="isWaitingApproval" class="wait-wrap">
+    <p class="wait-title">
+      <b>{{ dependantName }}</b> 님의 대기단계 승인 요청이 접수되었습니다.<br />
+      <b>관리자의 대기단계 승인을 기다리는 중입니다.</b>
+    </p>
 
-  <!-- ▶ 여기: 상태별 색깔 동그라미 -->
-  <div
-    v-if="['e3', 'e4', 'e5'].includes(currentStatus)"
-    class="status-circle"
-    :class="{
-      'status-plan': currentStatus === 'e3',      // 계획
-      'status-focus': currentStatus === 'e4',     // 중점
-      'status-emergency': currentStatus === 'e5', // 긴급
-    }"
-  >
-    {{ statusLabel }}
+    <!-- 상태별 색깔 동그라미 -->
+    <div
+      v-if="['e3', 'e4', 'e5'].includes(currentStatus)"
+      class="status-circle"
+      :class="{
+        'status-plan': currentStatus === 'e3', // 계획
+        'status-focus': currentStatus === 'e4', // 중점
+        'status-emergency': currentStatus === 'e5', // 긴급
+      }"
+    >
+      {{ statusLabel }}
+    </div>
+
+    <p class="wait-title">
+      요청된 대기단계는 <b>{{ statusLabel }}</b> 입니다.
+    </p>
   </div>
-
-  <p class="wait-title">
-    요청된 대기단계는 <b>{{ statusLabel }}</b> 입니다.
-  </p>
-</div>
 
   <!-- 4. 관리자 승인 완료 -->
   <div v-else-if="isApproved" class="wait-wrap approved-wrap">
@@ -193,15 +178,12 @@ const submit = async () => {
       {{ statusLabel }}
     </div>
 
-    <p class="approved-text">
-      입니다.
-    </p>
+    <p class="approved-text">입니다.</p>
   </div>
 
   <!-- 5. 그 외 상태 -->
   <h4 v-else>상담을 먼저 진행해주세요.</h4>
 </template>
-
 
 <style scoped>
 .wait-wrap {
@@ -318,24 +300,24 @@ const submit = async () => {
   font-size: 18px;
   font-weight: 700;
 
-  /* 공통 기본값 (혹시 모를 대비용) */
+  /* 공통 기본 */
   background: #f1f1f1;
   color: #111827;
 }
 
-/* 계획 (e3) = 초록 */
+/*e3*/
 .status-plan {
   background: #16a34a;
   color: #ffffff;
 }
 
-/* 중점 (e4) = 노랑 */
+/* e4 */
 .status-focus {
   background: #facc15;
   color: #111827;
 }
 
-/* 긴급 (e5) = 빨강 */
+/* e5 */
 .status-emergency {
   background: #ef4444;
   color: #ffffff;
@@ -351,5 +333,4 @@ const submit = async () => {
     opacity: 1;
   }
 }
-
 </style>

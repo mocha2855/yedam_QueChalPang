@@ -192,7 +192,17 @@ const navbarType = computed(() => {
               <i class="ni ni-support-16 me-2"></i>문의하기
             </router-link>
           </li>
-
+          <!-- 담당자(a2) 문의관리 -->
+          <li v-if="isLogIn.info.member_authority === 'a2'" class="nav-item">
+            <router-link
+              to="/qnaTeacher"
+              class="nav-link"
+              :style="{ color: textColor }"
+              :class="getRoute() === 'qnaTeacher' ? 'font-weight-bold opacity-10' : 'opacity-9'"
+            >
+              <i class="ni ni-support-16 me-2"></i>문의관리
+            </router-link>
+          </li>
           <li v-if="isLogIn.info.member_authority === 'a4'" class="nav-item">
             <router-link
               to="/surveys"

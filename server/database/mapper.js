@@ -18,7 +18,7 @@ const pool = mysql.createPool({
   connectionLimit: process.env.MARIADB_LIMIT,
 });
 
-//reservation
+//reservation, qna
 const rquery = async (sql, params = []) => {
   let conn = null;
   try {

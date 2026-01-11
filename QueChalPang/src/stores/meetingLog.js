@@ -89,7 +89,6 @@ export const useMeetingLogStore = defineStore('meetingLog', {
       }
     },
 
-    // ✅ 저장 버튼 (백 POST 연결)
     async submitWriteForm() {
       // 기본 검증
       if (!this.writeForm.resv_id) {
@@ -101,8 +100,6 @@ export const useMeetingLogStore = defineStore('meetingLog', {
         return
       }
 
-      // 작성자(member_id) 필요 -> 로그인 스토어에서 가져오는게 제일 안전
-      // (너 프로젝트는 useCounterStore 존재하니까 거기서 꺼내자)
       const { useCounterStore } = await import('@/stores/member')
       const counter = useCounterStore()
       const memberId = counter.isLogIn?.info?.member_id
@@ -111,8 +108,6 @@ export const useMeetingLogStore = defineStore('meetingLog', {
         alert('로그인 정보가 없습니다.')
         return
       }
-
-      // 성공하면 상담상태 f3변환
 
       const changeReulst = await axios.put('/api/reserveStatusChange/' + this.writeForm.resv_id, {
         resv_status: 'f3',
@@ -128,7 +123,6 @@ export const useMeetingLogStore = defineStore('meetingLog', {
 
       const res = await axios.post('/api/meetingLog', payload)
 
-      // 성공하면: detail 채우고 view로 전환
       this.detail = (res.data && changeReulst.data) || null
       this.mode = 'view'
 
