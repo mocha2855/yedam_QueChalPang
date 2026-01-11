@@ -1,5 +1,18 @@
 <template>
-  <div class="fixed-top d-flex justify-content-end p-3 mt-6"></div>
+  <div class="fixed-top d-flex justify-content-end p-3 mt-6">
+    <div class="col-4">
+      <ArgonAlert
+        v-show="argonAlert"
+        color="warning"
+        icon="ni ni-bell-55"
+        dismissible
+        @close="argonAlert = false"
+      >
+        {{ msg }}
+      </ArgonAlert>
+    </div>
+  </div>
+
   <div class="py-4 container-fluid">
     <div class="row">
       <div class="col-12">
@@ -170,10 +183,23 @@ import Swal from 'sweetalert2'
 
 import { onBeforeMount, ref } from 'vue'
 import ArgonInput from '@/components/ArgonInput.vue'
+import ArgonAlert from '@/components/ArgonAlert.vue'
 
 const myPage = useMyPageStore()
 const counter = useCounterStore()
 const router = useRouter()
+
+// 알림 관련
+const msg = ref('')
+const argonAlert = ref(false)
+
+const showAlert = (message) => {
+  msg.value = message
+  argonAlert.value = true
+  setTimeout(() => {
+    argonAlert.value = false
+  }, 1500)
+}
 
 let centerAddress = ref()
 let centerTel = ref()
@@ -274,12 +300,7 @@ const completeChangeInfo = async () => {
     center_address: centerAddress.value,
     center_tel: centerTel.value,
   })
-  await Swal.fire({
-    icon: 'success',
-    title: '변경되었습니다!',
-    showConfirmButton: false,
-    timer: 1500,
-  })
+  showAlert('변경되었습니다!')
   changeMangerInfo.value = true
 }
 </script>

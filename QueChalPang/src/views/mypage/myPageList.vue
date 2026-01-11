@@ -314,4 +314,8 @@ const delList = async () => {
 .row-rejected:hover {
   background-color: #f8f9fa;
 }
+/* 체크박스 색상 변경 */
+input[type='checkbox'] {
+  accent-color: #000000;
+}
 </style>
