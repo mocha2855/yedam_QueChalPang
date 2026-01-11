@@ -62,7 +62,11 @@
                   </tr>
                 </thead>
                 <tbody v-if="myPage.dependantInfo != ''">
-                  <tr v-for="member in myPage.dependantInfo" :key="member.dependant_no">
+                  <tr
+                    v-for="member in myPage.dependantInfo"
+                    :key="member.dependant_no"
+                    style="cursor: pointer"
+                  >
                     <!-- 개별 선택 체크박스 -->
                     <td class="align-middle text-center">
                       <input

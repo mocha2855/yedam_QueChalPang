@@ -43,6 +43,7 @@ router.post("/addDependantInfo", async (req, res) => {
   let data = req.body;
   console.log(data);
   let post = await mypageService.addDependantInfo(data);
+  console.log(post);
   res.send(post);
 });
 

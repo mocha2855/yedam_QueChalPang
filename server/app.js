@@ -3,11 +3,11 @@ const express = require("express");
 const app = express();
 const port = 3000;
 const cors = require("cors");
-
+const path = require("path");
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.listen(port, () => {
   console.log("Server start");
   console.log(`http://localhost:${port}`);
@@ -24,7 +24,6 @@ const qnaRouter = require("./routers/qnaRouter.js");
 const surveyRouter = require("./routers/surveyRouter.js");
 const mypageRouter = require("./routers/mypageRouter.js");
 const meetingLogRouter = require("./routers/meetingLogRouter.js");
-
 
 app.use("/api", meetingLogRouter);
 app.use("/api", reservationRouter);

@@ -44,7 +44,11 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="member in myPage.guardianDependantInfo" :key="member">
+                  <tr
+                    v-for="member in myPage.guardianDependantInfo"
+                    :key="member"
+                    style="cursor: pointer"
+                  >
                     <td class="align-middle text-center" @click="goDetail(member.dependant_no)">
                       <p class="text-sm font-weight-bold mb-0">
                         {{ member.dependant_name }}

@@ -357,6 +357,7 @@ const completeChangeInfo = async () => {
         console.log(res)
         alert('등록완료')
         changeMangerInfo.value = true
+        router.push({ path: `/myPageList/${counter.isLogIn.info.member_id}` })
         return
       })
   } else if (counter.isLogIn.info.member_authority == 'a1') {
@@ -374,6 +375,7 @@ const completeChangeInfo = async () => {
         console.log(res)
         alert('등록완료')
         changeMangerInfo.value = true
+        router.push({ path: `/myPageGuardianList` })
         return
       })
   }
