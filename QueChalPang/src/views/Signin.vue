@@ -9,7 +9,7 @@ import ArgonInput from '@/components/ArgonInput.vue'
 import ArgonSwitch from '@/components/ArgonSwitch.vue'
 import ArgonButton from '@/components/ArgonButton.vue'
 import { storeToRefs } from 'pinia'
-
+import Swal from 'sweetalert2'
 const body = document.getElementsByTagName('body')[0]
 const store = useStore()
 const counterStore = useCounterStore()
@@ -53,7 +53,11 @@ onMounted(() => {
 })
 const logIn = async () => {
   if (member.id == '' || member.pass == '') {
-    alert('아이디 또는 비밀번호가 입력되지 않았습니다. 입력해주세요.')
+    Toast.fire({
+      icon: 'error',
+      title: '아이디 또는 비밀번호가 입력되지 않았습니다. 입력해주세요.',
+    })
+
     return
   }
   let result = await axios.post(`/api/member/login`, member)
@@ -74,7 +78,10 @@ const logIn = async () => {
       router.push({ name: '/' }) // 나머지는 메인으로
     }
   } else {
-    alert(result.msg)
+    Toast.fire({
+      icon: 'error',
+      title: result.msg,
+    })
   }
 
   console.log(isLogIn.value)
@@ -86,6 +93,17 @@ const toFindId = () => {
 const toResetPassword = () => {
   router.push({ name: 'ResetPass' })
 }
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  },
+})
 </script>
 <template>
   <navbar v-bind:darkMode="true" />
