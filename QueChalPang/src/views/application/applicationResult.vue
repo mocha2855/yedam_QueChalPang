@@ -41,6 +41,19 @@
             <button class="btn-cancel" v-on:click="UnCheckPlan">취소</button>
           </template>
         </ApplicationModal>
+        <ApplicationModal v-if="callFirstSave">
+          <template v-slot:header><h2></h2></template>
+          <template v-slot:body
+            ><h4 style="text-align: center">
+              작성하던 내용을<br />
+              불러오시겠습니까?
+            </h4></template
+          >
+          <template v-slot:footer>
+            <button class="btn-save" v-on:click="callSaveInfo">확인</button>
+            <button class="btn-cancel" v-on:click="closeCallSaveInfo">취소</button>
+          </template>
+        </ApplicationModal>
       </div>
 
       <div class="card mb-3">
@@ -52,7 +65,9 @@
                   <h5>지원결과{{ resultList.ranking }} 입력</h5>
                 </div>
                 <div style="float: right">
-                  <button type="button" class="btn btn-primary btn-sm">임시저장</button>
+                  <button type="button" class="btn btn-primary btn-sm" @click="saveForm">
+                    임시저장
+                  </button>
                   <button type="button" @click="delForm" class="btn btn-danger btn-sm">삭제</button>
                 </div>
               </div>
@@ -107,7 +122,7 @@
                       type="text"
                       name="title"
                       id="title"
-                      v-model="formData.title"
+                      v-model="formData.result_title"
                       class="form-control"
                       aria-describedby="passwordHelpInline"
                     />
@@ -121,7 +136,7 @@
                     <textarea
                       name="content"
                       id="content"
-                      v-model="formData.content"
+                      v-model="formData.result_content"
                       class="form-control"
                       rows="8"
                     />
@@ -152,6 +167,20 @@
               <template v-slot:footer>
                 <button class="btn-save" v-on:click="sucessResult">확인</button>
                 <button class="btn-cancel" v-on:click="notChecked">취소</button>
+              </template>
+            </ApplicationModal>
+            <!-- 담당자 지원결과서 임시저장 -->
+            <!--임시저장 0111   -->
+            <ApplicationModal v-if="saveChecked">
+              <template v-slot:header><h2></h2></template>
+              <template v-slot:body
+                ><h4 style="text-align: center">
+                  작성하던 내용을<br />정말 임시저장하시겠습니까?
+                </h4></template
+              >
+              <template v-slot:footer>
+                <button class="btn-save" v-on:click="saveSubmit">확인</button>
+                <button class="btn-cancel" v-on:click="closeConfirm">취소</button>
               </template>
             </ApplicationModal>
           </div>
@@ -257,7 +286,28 @@
                   <label for="attachmentFile" class="col-form-label">첨부파일</label>
                 </div>
                 <div class="col-10">
+                  <div
+                    v-if="
+                      application.resultChanging[0].fileList &&
+                      application.resultChanging[0].fileList.length > 0
+                    "
+                    class="mb-2"
+                  >
+                    <h6>기존 첨부파일:</h6>
+                    <div
+                      v-for="file in application.resultChanging[0].fileList"
+                      :key="file.attachment_no"
+                    >
+                      <a href="#" @click.prevent="downloadFile(file.attachment_no)">
+                        {{ file.attachment_orginal }}
+                      </a>
+                    </div>
+                  </div>
+
                   <input type="file" class="form-control" multiple @change="getFile" />
+                  <p class="text-muted" style="font-size: 12px">
+                    * 파일을 새로 선택하면 기존 파일에 추가됩니다.
+                  </p>
                 </div>
               </div>
               <div class="d-flex justify-content-between">
@@ -437,7 +487,22 @@
                 <label for="attachmentFile" class="col-form-label">첨부파일</label>
               </div>
               <div class="col-10">
-                <input type="text" class="form-control" readonly />
+                <div v-if="plan.fileList && plan.fileList.length > 0" class="card card-body p-2">
+                  <div v-for="file in plan.fileList" :key="file.attachment_no" class="mb-1">
+                    <a
+                      href="#"
+                      @click.prevent="downloadFile(file.attachment_no)"
+                      class="text-decoration-none text-primary fw-bold"
+                    >
+                      💾 {{ file.attachment_orginal }}
+                    </a>
+                    <span class="text-muted ms-2" style="font-size: 0.8em">
+                      ({{ (file.attachment_size / 1024).toFixed(1) }} KB)
+                    </span>
+                  </div>
+                </div>
+
+                <input v-else type="text" class="form-control" value="첨부파일 없음" readonly />
               </div>
             </div>
             <div class="d-flex justify-content-between">
@@ -642,7 +707,21 @@
                   <label for="attachmentFile" class="col-form-label">첨부파일</label>
                 </div>
                 <div class="col-10">
-                  <input type="text" class="form-control" readonly />
+                  <div v-if="plan.fileList && plan.fileList.length > 0" class="card card-body p-2">
+                    <div v-for="file in plan.fileList" :key="file.attachment_no" class="mb-1">
+                      <a
+                        href="#"
+                        @click.prevent="downloadFile(file.attachment_no)"
+                        class="text-decoration-none text-primary fw-bold"
+                      >
+                        💾 {{ file.attachment_orginal }}
+                      </a>
+                      <span class="text-muted ms-2" style="font-size: 0.8em">
+                        ({{ (file.attachment_size / 1024).toFixed(1) }} KB)
+                      </span>
+                    </div>
+                  </div>
+                  <input v-else type="text" class="form-control" value="첨부파일 없음" readonly />
                 </div>
               </div>
             </form>
@@ -743,6 +822,20 @@ onBeforeMount(async () => {
   }
   console.log(`realCount.value: ${realCount.value}`)
   console.log(`addCount.value: ${addCount.value}`)
+  // 1. 검토중 리스트 파일 로드
+  if (application.resultReview.length > 0) {
+    await fetchFilesForPlans(application.resultReview)
+  }
+
+  // 2. 반려 검토중 리스트 파일 로드
+  if (application.resultChangingReview.length > 0) {
+    await fetchFilesForPlans(application.resultChangingReview)
+  }
+
+  // 3. 반려 후 수정 리스트 파일 로드
+  if (application.resultChanging.length > 0) {
+    await fetchFilesForPlans(application.resultChanging)
+  }
 })
 
 // 계획선택 모달창 확인버튼
@@ -771,6 +864,11 @@ let addCount = ref(0) // 계획추가 버튼용
 let selectPlan = ref(false)
 
 const addResultForm = () => {
+  if (application.resultfirstSave.length > 0) {
+    callFirstSave.value = true
+    application.planningState = 1
+    return
+  }
   if (application.resultChanging.length > 0) {
     alert('수정하던 작업을 마무리해주세요.')
     return
@@ -812,10 +910,10 @@ let checked = ref(false)
 
 const submitResultInfo = async () => {
   if (
-    formData.value.title == undefined ||
-    formData.value.content == undefined ||
-    formData.value.title == '' ||
-    formData.value.content == ''
+    formData.value.result_title == undefined ||
+    formData.value.result_content == undefined ||
+    formData.value.result_title == '' ||
+    formData.value.result_content == ''
   ) {
     alert('내용 입력을 완료해주세요')
     return
@@ -878,33 +976,82 @@ const sucessResult = async (data) => {
 
   // 담당자
   if (memAuthority == 'a2') {
-    const finalForm = new FormData()
-    finalForm.append('planning_id', application.dependantInfo.manager_id)
-    finalForm.append('planning_rejecter', application.dependantInfo.application_rejector)
-    finalForm.append('planning_start', resultList.value.planning_start)
-    finalForm.append('planning_end', resultList.value.planning_end)
-    finalForm.append('result_title', formData.value.title)
-    finalForm.append('result_content', formData.value.content)
-    await axios //
-      .post('/api/submitResultInfo/' + resultList.value.planning_no, finalForm, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-      .then((res) => {
-        console.log(res)
-        alert('승인요청 완료')
-        application.countRealResult(route.params.id)
-        checked.value = false
-        selectPlanCheck.value = false
-        selectPlan.value = false
+    if (application.resultfirstSave.length > 0) {
+      if (application.resultfirstSave.length > 0) {
+        const finalForm = new FormData()
+        finalForm.append('planning_id', application.dependantInfo.manager_id)
+        finalForm.append('planning_rejecter', application.dependantInfo.application_rejector)
+        finalForm.append('planning_start', resultList.value.planning_start)
+        finalForm.append('planning_end', resultList.value.planning_end)
+        finalForm.append('result_status', 'i1')
+        finalForm.append('result_title', formData.value.result_title)
+        finalForm.append('result_content', formData.value.result_content)
+        // 파일 데이터 (배열 반복)
+        if (attachmentFiles.value.length > 0) {
+          attachmentFiles.value.forEach((file) => {
+            finalForm.append('files', file)
+          })
+        }
+        await axios
+          .put('/api/saveResultOneMOre/' + resultList.value.planning_no, finalForm, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          })
+          .then((res) => {
+            console.log(res)
+            alert('승인요청 완료')
 
-        addCount.value = 0
-        formData.value = {}
-        attachmentFiles.value = []
-        resultList.value = {}
-        count.value = 1
-      })
+            application.countRealResult(route.params.id)
+            saveChecked.value = false
+
+            checked.value = false
+            selectPlanCheck.value = false
+            selectPlan.value = false
+
+            addCount.value = 0
+            formData.value = {}
+            attachmentFiles.value = []
+            resultList.value = {}
+            count.value = 1
+          })
+      }
+      return
+    } else {
+      const finalForm = new FormData()
+      finalForm.append('planning_id', application.dependantInfo.manager_id)
+      finalForm.append('planning_rejecter', application.dependantInfo.application_rejector)
+      finalForm.append('planning_start', resultList.value.planning_start)
+      finalForm.append('planning_end', resultList.value.planning_end)
+      finalForm.append('result_title', formData.value.result_title)
+      finalForm.append('result_content', formData.value.result_content)
+      // 파일 데이터 (배열 반복)
+      if (attachmentFiles.value.length > 0) {
+        attachmentFiles.value.forEach((file) => {
+          finalForm.append('files', file)
+        })
+      }
+      await axios //
+        .post('/api/submitResultInfo/' + resultList.value.planning_no, finalForm, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+        .then((res) => {
+          console.log(res)
+          alert('승인요청 완료')
+          application.countRealResult(route.params.id)
+          checked.value = false
+          selectPlanCheck.value = false
+          selectPlan.value = false
+
+          addCount.value = 0
+          formData.value = {}
+          attachmentFiles.value = []
+          resultList.value = {}
+          count.value = 1
+        })
+    }
   }
   // 관리자
   if (memAuthority == 'a3') {
@@ -1031,10 +1178,139 @@ const submitChaingResultInfo = async (data) => {
     })
 }
 
+// 지원 결과서 임시저장 0111
+let saveChecked = ref(false)
+const saveForm = () => {
+  saveChecked.value = true
+}
+
+const saveSubmit = async () => {
+  if (application.resultfirstSave.length > 0) {
+    await axios
+      .put('/api/saveResultOneMOre/' + application.resultfirstSave[0].planning_no, {
+        planning_rejecter: resultList.value.planning_rejecter,
+        planning_id: counters.isLogIn.info.member_id,
+        result_title: formData.value.result_title,
+        result_content: formData.value.result_content,
+        result_status: 'i0',
+        planning_start: resultList.value.planning_start,
+        planning_end: resultList.value.planning_end,
+      })
+      .then((res) => {
+        console.log(res)
+        alert('임시저장 완료')
+
+        application.countRealResult(route.params.id)
+        saveChecked.value = false
+
+        checked.value = false
+        selectPlanCheck.value = false
+        selectPlan.value = false
+
+        addCount.value = 0
+        formData.value = {}
+        attachmentFiles.value = []
+        resultList.value = {}
+        count.value = 1
+      })
+    return
+  }
+  await axios
+    .post('/api/saveFirstResult', {
+      planning_no: resultList.value.planning_no,
+      planning_rejecter: resultList.value.planning_rejecter,
+      planning_id: counters.isLogIn.info.member_id,
+      result_title: formData.value.result_title,
+      result_content: formData.value.result_content,
+      result_status: 'i0',
+      planning_start: resultList.value.planning_start,
+      planning_end: resultList.value.planning_end,
+    })
+    .then((res) => {
+      console.log(res)
+      alert('임시저장 완료')
+
+      application.countRealResult(route.params.id)
+      saveChecked.value = false
+
+      checked.value = false
+      selectPlanCheck.value = false
+      selectPlan.value = false
+
+      addCount.value = 0
+      formData.value = {}
+      attachmentFiles.value = []
+      resultList.value = {}
+      count.value = 1
+    })
+}
+
+const closeConfirm = () => {
+  saveChecked.value = false
+}
+
+const callFirstSave = ref(false)
+
+const callSaveInfo = () => {
+  callFirstSave.value = false
+  selectPlanCheck.value = !selectPlanCheck.value
+  resultList.value = application.resultfirstSave[0]
+  formData.value = application.resultfirstSave[0]
+}
+
+const closeCallSaveInfo = async () => {
+  await axios //
+    .delete('/api/delResultFirstSave/' + application.resultfirstSave[0].planning_no)
+    .then((res) => {
+      console.log(res)
+      formData.value = {}
+      attachmentFiles.value = []
+      resultList.value = {}
+
+      callFirstSave.value = false
+      selectPlan.value = true
+      if (addCount.value == 0) {
+        addCount.value = 1
+        return
+      }
+    })
+}
+
 const attachmentFiles = ref([])
 const getFile = (e) => {
   attachmentFiles.value = Array.from(e.target.files)
   console.log('선택된 파일들:', attachmentFiles.value)
+}
+// 다운로드
+const downloadFile = (attachmentNo) => {
+  // 백엔드 다운로드 API 주소를 호출하여 브라우저가 다운로드하게 함
+  window.location.href = `http://localhost:3000/api/download/${attachmentNo}`
+  // 포트번호(3000)나 도메인은 환경에 맞게 수정하세요.
+  // 프록시가 설정되어 있다면 '/api/download/...' 만 써도 됩니다.
+}
+// 파일 목록을 가져와서 plan 객체 안에 심어주는 함수
+const fetchFilesForPlans = async (plans) => {
+  // 리스트가 비어있으면 종료
+  if (!plans || plans.length === 0) return
+  console.log(plans)
+  // 리스트 하나하나(plan)를 꺼내서 확인
+  for (const plan of plans) {
+    // 1. 그룹 ID가 있는지 확인 (파일이 있는 결과서인지)
+    if (plan.attachment_no && plan.attachment_no !== 0) {
+      try {
+        // 2. 백엔드에 파일 목록 요청
+        const res = await axios.get(`/api/attachments/${plan.attachment_no}`)
+
+        // 3. 가져온 파일 목록을 해당 plan 객체 안에 'fileList'라는 이름으로 심어줌
+        // 이렇게 해야 템플릿(HTML)에서 v-for="file in plan.fileList"로 보여줄 수 있음
+        plan.fileList = res.data
+
+        console.log(`파일 로드 완료 (그룹 ${plan.attachment_no}):`, plan.fileList)
+      } catch (err) {
+        console.error(`파일 목록 조회 실패 (Group: ${plan.attachment_no})`, err)
+      }
+    }
+  }
 }
 </script>
 <style scoped>

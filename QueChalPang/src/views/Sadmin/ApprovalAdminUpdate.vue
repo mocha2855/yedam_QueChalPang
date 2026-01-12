@@ -3,7 +3,6 @@ import { useRouter, useRoute } from 'vue-router'
 import { useApprovalStore } from '@/stores/approval'
 
 import { ref, reactive, onBeforeMount, computed } from 'vue'
-import ArgonButton from '@/components/ArgonButton.vue'
 import ArgonInput from '@/components/ArgonInput.vue'
 import ArgonAlert from '@/components/ArgonAlert.vue'
 import axios from 'axios'
@@ -142,162 +141,157 @@ const goBack = () => {
     </div>
   </div>
 
-  <div class="py-4 container-fluid">
+  <div class="py-4 container" style="max-width: 900px">
     <div class="row">
       <div class="col-12">
-        <div class="card">
-          <div class="card-header pb-0">
-            <h6>담당자 정보수정</h6>
+        <!-- 헤더 섹션 -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h3 class="mb-2" style="color: #2d3748; font-weight: 600">관리자 정보수정</h3>
+            <p style="color: #718096; margin: 0; font-size: 14px">
+              관리자의 정보를 수정할 수 있습니다
+            </p>
           </div>
+          <button
+            class="btn"
+            @click="goBack()"
+            style="
+              background-color: #5a67d8;
+              color: white;
+              border: none;
+              padding: 10px 24px;
+              border-radius: 8px;
+              font-size: 14px;
+              font-weight: 500;
+            "
+          >
+            목록으로
+          </button>
+        </div>
 
-          <div class="card-body px-0 pt-0 pb-2">
-            <div class="position-relative">
-              <div class="position-absolute bottom-0 end-2">
-                <ArgonButton color="success" class="p-2" variant="gradient" @click="goBack()">
-                  목록으로
-                </ArgonButton>
+        <!-- 메인 카드 -->
+        <div class="card" style="border: none; border-radius: 16px">
+          <div class="card-body p-5">
+            <form @submit.prevent="updateMemberInfo">
+              <!-- 아이디 (수정 불가) -->
+              <div class="mb-4">
+                <label class="form-label" style="color: #4a5568; font-weight: 500; font-size: 14px"
+                  >아이디</label
+                >
+                <ArgonInput
+                  type="text"
+                  v-model="memberInfo.id"
+                  disabled
+                  placeholder="아이디"
+                  style="background-color: #f7fafc"
+                />
               </div>
-            </div>
 
-            <div class="container">
-              <div class="card-body">
-                <form @submit.prevent="updateMemberInfo">
-                  <!-- 아이디 (수정 불가) -->
-                  <div class="row mb-3">
-                    <div class="col-2"></div>
-                    <div class="col-2">
-                      <h6>아이디</h6>
-                    </div>
-                    <div class="col-6">
-                      <ArgonInput
-                        type="text"
-                        v-model="memberInfo.id"
-                        disabled
-                        placeholder="아이디"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <div class="col-2"></div>
-                    <div class="col-2">
-                      <h6>담당자명</h6>
-                    </div>
-                    <div class="col-6">
-                      <ArgonInput type="text" v-model="memberInfo.name" placeholder="이름" />
-                    </div>
-                  </div>
-                  <div class="row mb-3">
-                    <div class="col-2"></div>
-                    <div class="col-2">
-                      <h6>기관명</h6>
-                    </div>
-                    <div class="col-6">
-                      <ArgonInput
-                        type="text"
-                        v-model="memberInfo.centerName"
-                        disabled
-                        placeholder="기관명"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <div class="col-2"></div>
-                    <div class="col-2">
-                      <h6>연락처</h6>
-                    </div>
-                    <div class="col-6">
-                      <ArgonInput
-                        type="text"
-                        v-model="memberInfo.phone"
-                        placeholder="010-1234-5678"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <div class="col-2"></div>
-                    <div class="col-2">
-                      <h6>이메일</h6>
-                    </div>
-                    <div class="col-6">
-                      <ArgonInput
-                        type="email"
-                        v-model="memberInfo.email"
-                        placeholder="example@yedam.com"
-                      />
-                    </div>
-                  </div>
-
-                  <!-- 비밀번호 변경 섹션 -->
-                  <div class="row mb-3">
-                    <div class="col-2"></div>
-                    <div class="col-2">
-                      <h6>비밀번호 변경</h6>
-                    </div>
-                    <div class="col-6">
-                      <ArgonInput
-                        type="password"
-                        v-model="password.new"
-                        placeholder="새 비밀번호"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <div class="col-2"></div>
-                    <div class="col-2"></div>
-                    <div class="col-6">
-                      <ArgonInput
-                        type="password"
-                        v-model="password.confirm"
-                        placeholder="비밀번호 확인"
-                      />
-                      <small
-                        v-if="isPasswordMatch !== null"
-                        :class="{
-                          'text-success': isPasswordMatch,
-                          'text-danger': !isPasswordMatch,
-                        }"
-                      >
-                        {{
-                          isPasswordMatch
-                            ? '비밀번호가 일치합니다.'
-                            : '비밀번호가 일치하지 않습니다.'
-                        }}
-                      </small>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-4"></div>
-                    <div class="text-center col-2">
-                      <ArgonButton
-                        fullWidth
-                        color="warning"
-                        variant="gradient"
-                        class="my-4 mb-2"
-                        type="submit"
-                      >
-                        수정
-                      </ArgonButton>
-                    </div>
-                    <div class="text-center col-2">
-                      <ArgonButton
-                        fullWidth
-                        color="dark"
-                        variant="gradient"
-                        class="my-4 mb-2"
-                        @click="goBack"
-                      >
-                        취소
-                      </ArgonButton>
-                    </div>
-                  </div>
-                </form>
+              <!-- 관리자명 -->
+              <div class="mb-4">
+                <label class="form-label" style="color: #4a5568; font-weight: 500; font-size: 14px"
+                  >관리자명</label
+                >
+                <ArgonInput type="text" v-model="memberInfo.name" placeholder="이름" />
               </div>
-            </div>
+
+              <!-- 기관명 -->
+              <div class="mb-4">
+                <label class="form-label" style="color: #4a5568; font-weight: 500; font-size: 14px"
+                  >기관명</label
+                >
+                <ArgonInput
+                  type="text"
+                  v-model="memberInfo.centerName"
+                  disabled
+                  placeholder="기관명"
+                  style="background-color: #f7fafc"
+                />
+              </div>
+
+              <!-- 연락처 -->
+              <div class="mb-4">
+                <label class="form-label" style="color: #4a5568; font-weight: 500; font-size: 14px"
+                  >연락처</label
+                >
+                <ArgonInput type="text" v-model="memberInfo.phone" placeholder="010-1234-5678" />
+              </div>
+
+              <!-- 이메일 -->
+              <div class="mb-4">
+                <label class="form-label" style="color: #4a5568; font-weight: 500; font-size: 14px"
+                  >이메일</label
+                >
+                <ArgonInput
+                  type="email"
+                  v-model="memberInfo.email"
+                  placeholder="example@yedam.com"
+                />
+              </div>
+
+              <!-- 비밀번호 변경 섹션 -->
+              <div class="mb-4">
+                <label class="form-label" style="color: #4a5568; font-weight: 500; font-size: 14px"
+                  >비밀번호 변경</label
+                >
+                <ArgonInput
+                  type="password"
+                  v-model="password.new"
+                  placeholder="새 비밀번호"
+                  class="mb-2"
+                />
+                <ArgonInput
+                  type="password"
+                  v-model="password.confirm"
+                  placeholder="비밀번호 확인"
+                />
+                <small
+                  v-if="isPasswordMatch !== null"
+                  :class="{
+                    'text-success': isPasswordMatch,
+                    'text-danger': !isPasswordMatch,
+                  }"
+                  style="font-size: 12px"
+                >
+                  {{ isPasswordMatch ? '비밀번호가 일치합니다.' : '비밀번호가 일치하지 않습니다.' }}
+                </small>
+              </div>
+
+              <!-- 버튼 -->
+              <div class="d-flex justify-content-center gap-2 mt-5">
+                <button
+                  type="button"
+                  class="btn"
+                  @click="goBack"
+                  style="
+                    background-color: #f7fafc;
+                    color: #4a5568;
+                    border: 1px solid #e2e8f0;
+                    padding: 12px 32px;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    font-weight: 500;
+                  "
+                >
+                  취소
+                </button>
+                <button
+                  type="submit"
+                  class="btn"
+                  style="
+                    background-color: #5a67d8;
+                    color: white;
+                    border: none;
+                    padding: 12px 32px;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    font-weight: 500;
+                  "
+                >
+                  수정
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>

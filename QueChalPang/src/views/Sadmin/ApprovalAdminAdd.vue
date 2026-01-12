@@ -16,33 +16,39 @@
   <div class="py-4 container" style="max-width: 900px">
     <div class="row">
       <div class="col-12">
-        <div class="card">
-          <div class="card-header py-3">
-            <h5>관리자 등록</h5>
-          </div>
-          <div class="card-body py-3">
+        <!-- 헤더 섹션 -->
+        <div class="mb-4">
+          <h3 class="mb-2" style="color: #2d3748; font-weight: 600">관리자 등록</h3>
+          <p style="color: #718096; font-size: 14px">새로운 관리자 정보를 등록합니다</p>
+        </div>
+
+        <!-- 메인 카드 -->
+        <div class="card" style="border: none; border-radius: 16px">
+          <div class="card-body p-5">
             <form role="form" v-on:submit.prevent="">
               <!-- 아이디 -->
-              <div class="row mb-2 align-items-center">
-                <div class="col-2">
-                  <label class="col-form-label"><small>아이디</small></label>
-                </div>
-                <div class="col-7">
+              <div class="mb-4">
+                <label class="form-label" style="color: #4a5568; font-weight: 500; font-size: 14px"
+                  >아이디</label
+                >
+                <div class="d-flex gap-2">
                   <argon-input
-                    size="sm"
+                    style="flex: 1"
                     type="text"
                     placeholder="아이디"
                     v-model="managerInfo.member_id"
                     :disabled="idChecked"
                   />
-                </div>
-                <div class="col-3">
                   <button
-                    btn-sm
                     type="button"
-                    :class="['btn', 'w-100', idChecked ? 'btn-secondary' : 'btn-primary']"
+                    class="btn"
                     :disabled="idChecked"
                     @click="checkMemberId()"
+                    :style="
+                      idChecked
+                        ? 'background-color: #cbd5e0; color: #4a5568; border: none; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; white-space: nowrap; cursor: not-allowed;'
+                        : 'background-color: #5a67d8; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; white-space: nowrap;'
+                    "
                   >
                     중복확인
                   </button>
@@ -50,123 +56,183 @@
               </div>
 
               <!-- 비밀번호 -->
-              <div class="row mb-3 align-items-center">
-                <div class="col-2">
-                  <label class="col-form-label">비밀번호</label>
-                </div>
-                <div class="col-10">
-                  <argon-input
-                    size="sm"
-                    type="password"
-                    placeholder="비밀번호"
-                    v-model="managerInfo.member_password"
-                  />
-                </div>
+              <div class="mb-4">
+                <label class="form-label" style="color: #4a5568; font-weight: 500; font-size: 14px"
+                  >비밀번호</label
+                >
+                <argon-input
+                  type="password"
+                  placeholder="비밀번호"
+                  v-model="managerInfo.member_password"
+                />
               </div>
 
               <!-- 비밀번호 확인 -->
-              <div class="row mb-3 align-items-center">
-                <div class="col-2">
-                  <label class="col-form-label">비밀번호 확인</label>
-                </div>
-                <div class="col-10">
-                  <argon-input
-                    type="password"
-                    placeholder="비밀번호 확인"
-                    v-model="passwordConfirm"
-                  />
-                </div>
+              <div class="mb-4">
+                <label class="form-label" style="color: #4a5568; font-weight: 500; font-size: 14px"
+                  >비밀번호 확인</label
+                >
+                <argon-input
+                  type="password"
+                  placeholder="비밀번호 확인"
+                  v-model="passwordConfirm"
+                />
               </div>
 
               <!-- 이름 -->
-              <div class="row mb-3 align-items-center">
-                <div class="col-2">
-                  <label class="col-form-label">이름</label>
-                </div>
-                <div class="col-10">
-                  <argon-input type="text" placeholder="이름" v-model="managerInfo.member_name" />
-                </div>
+              <div class="mb-4">
+                <label class="form-label" style="color: #4a5568; font-weight: 500; font-size: 14px"
+                  >이름</label
+                >
+                <argon-input type="text" placeholder="이름" v-model="managerInfo.member_name" />
               </div>
 
               <!-- 이메일 -->
-              <div class="row mb-3 align-items-center">
-                <div class="col-2">
-                  <label class="col-form-label">이메일</label>
-                </div>
-                <div class="col-10">
-                  <argon-input
-                    type="email"
-                    placeholder="example@example.com"
-                    v-model="managerInfo.member_email"
-                  />
-                </div>
+              <div class="mb-4">
+                <label class="form-label" style="color: #4a5568; font-weight: 500; font-size: 14px"
+                  >이메일</label
+                >
+                <argon-input
+                  type="email"
+                  placeholder="example@example.com"
+                  v-model="managerInfo.member_email"
+                />
               </div>
 
               <!-- 전화번호 -->
-              <div class="row mb-3 align-items-center">
-                <div class="col-2">
-                  <label class="col-form-label">전화번호</label>
-                </div>
-                <div class="col-3">
-                  <argon-input maxlength="3" placeholder="010" v-model="tel.tel1" />
-                </div>
-                <div class="col-3">
-                  <argon-input maxlength="4" placeholder="0000" v-model="tel.tel2" />
-                </div>
-                <div class="col-4">
-                  <argon-input maxlength="4" placeholder="0000" v-model="tel.tel3" />
+              <div class="mb-4">
+                <label class="form-label" style="color: #4a5568; font-weight: 500; font-size: 14px"
+                  >전화번호</label
+                >
+                <div class="d-flex gap-2">
+                  <argon-input style="flex: 1" maxlength="3" placeholder="010" v-model="tel.tel1" />
+                  <argon-input
+                    style="flex: 1"
+                    maxlength="4"
+                    placeholder="0000"
+                    v-model="tel.tel2"
+                  />
+                  <argon-input
+                    style="flex: 1"
+                    maxlength="4"
+                    placeholder="0000"
+                    v-model="tel.tel3"
+                  />
                 </div>
               </div>
 
               <!-- 소속 기관 -->
-              <div class="row mb-3 align-items-center">
-                <div class="col-2">
-                  <label class="col-form-label">소속 기관</label>
-                </div>
-                <div class="col-7">
-                  <argon-input v-model="selectedCenterName" placeholder="기관 선택" disabled />
-                </div>
-                <div class="col-3">
-                  <button type="button" class="btn btn-primary w-100" @click="openCenterPopup">
+              <div class="mb-4">
+                <label class="form-label" style="color: #4a5568; font-weight: 500; font-size: 14px"
+                  >소속 기관</label
+                >
+                <div class="d-flex gap-2">
+                  <argon-input
+                    style="flex: 1; background-color: #f7fafc"
+                    v-model="selectedCenterName"
+                    placeholder="기관 선택"
+                    disabled
+                  />
+                  <button
+                    type="button"
+                    class="btn"
+                    @click="openCenterPopup"
+                    style="
+                      background-color: #5a67d8;
+                      color: white;
+                      border: none;
+                      padding: 12px 24px;
+                      border-radius: 8px;
+                      font-size: 14px;
+                      font-weight: 500;
+                      white-space: nowrap;
+                    "
+                  >
                     기관 찾기
                   </button>
                 </div>
               </div>
 
               <!-- 주소 -->
-              <div class="row mb-3 align-items-center">
-                <div class="col-2">
-                  <label class="col-form-label">주소</label>
-                </div>
-                <div class="col-7">
-                  <argon-input v-model="address" placeholder="주소" disabled />
-                </div>
-                <div class="col-3">
-                  <button type="button" class="btn btn-primary w-100" @click="openPostcode">
+              <div class="mb-4">
+                <label class="form-label" style="color: #4a5568; font-weight: 500; font-size: 14px"
+                  >주소</label
+                >
+                <div class="d-flex gap-2 mb-2">
+                  <argon-input
+                    style="flex: 1; background-color: #f7fafc"
+                    v-model="address"
+                    placeholder="주소"
+                    disabled
+                  />
+                  <button
+                    type="button"
+                    class="btn"
+                    @click="openPostcode"
+                    style="
+                      background-color: #5a67d8;
+                      color: white;
+                      border: none;
+                      padding: 12px 24px;
+                      border-radius: 8px;
+                      font-size: 14px;
+                      font-weight: 500;
+                      white-space: nowrap;
+                    "
+                  >
                     주소 찾기
                   </button>
                 </div>
-              </div>
-
-              <!-- 상세주소 -->
-              <div class="row mb-3 align-items-center">
-                <div class="col-2"></div>
-                <div class="col-7">
-                  <argon-input id="detail_input" v-model="detailAddress" placeholder="상세주소" />
-                </div>
-                <div class="col-3">
-                  <argon-input v-model="extraAddress" placeholder="참고" disabled />
+                <div class="d-flex gap-2">
+                  <argon-input
+                    style="flex: 2"
+                    id="detail_input"
+                    v-model="detailAddress"
+                    placeholder="상세주소"
+                  />
+                  <argon-input
+                    style="flex: 1; background-color: #f7fafc"
+                    v-model="extraAddress"
+                    placeholder="참고"
+                    disabled
+                  />
                 </div>
               </div>
 
               <!-- 버튼 -->
-              <div class="row mt-4">
-                <div class="col-12 text-center">
-                  <argon-button color="info" class="mx-2" @click="addManagerInfo()">
-                    관리자 등록
-                  </argon-button>
-                  <ArgonButton color="dark" class="mx-2" @click="goBack"> 취소 </ArgonButton>
-                </div>
+              <div class="d-flex justify-content-center gap-2 mt-5">
+                <button
+                  type="button"
+                  class="btn"
+                  @click="goBack"
+                  style="
+                    background-color: #f7fafc;
+                    color: #4a5568;
+                    border: 1px solid #e2e8f0;
+                    padding: 12px 32px;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    font-weight: 500;
+                  "
+                >
+                  취소
+                </button>
+                <button
+                  type="button"
+                  class="btn"
+                  @click="addManagerInfo()"
+                  style="
+                    background-color: #5a67d8;
+                    color: white;
+                    border: none;
+                    padding: 12px 32px;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    font-weight: 500;
+                  "
+                >
+                  관리자 등록
+                </button>
               </div>
             </form>
           </div>
@@ -186,7 +252,6 @@
 import { computed, ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
-import ArgonButton from '@/components/ArgonButton.vue'
 import ArgonInput from '@/components/ArgonInput.vue'
 import ArgonAlert from '@/components/ArgonAlert.vue'
 import CenterSearchModal from '../components/modals/CenterSearchModal.vue'

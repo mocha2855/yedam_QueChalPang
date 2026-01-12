@@ -25,6 +25,11 @@ const isAuthPage = computed(() => {
     route.path.indexOf('Id') > 0
   )
 })
+
+// 메인 대시보드도 풀화면
+const isFullWidthPage = computed(() => {
+  return isAuthPage.value || route.path === '/dashboard-default'
+})
 </script>
 
 <template>
@@ -35,7 +40,7 @@ const isAuthPage = computed(() => {
   <div class="app-layout">
     <Sidenav v-if="showSidenav" />
 
-    <main class="app-main" :class="{ 'app-main--full': isAuthPage }">
+    <main class="app-main" :class="{ 'app-main--full': isFullWidthPage }">
       <router-view />
     </main>
   </div>
@@ -65,7 +70,7 @@ const isAuthPage = computed(() => {
   z-index: 1;
 }
 
-/* signin/signup에서는 꽉 차게 */
+/* signin/signup 그리고 메인 대시보드에서는 꽉 차게 */
 .app-main--full {
   margin-left: 0;
   padding: 0;
