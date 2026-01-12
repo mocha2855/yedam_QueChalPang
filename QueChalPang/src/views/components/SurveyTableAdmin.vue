@@ -68,9 +68,9 @@ const changeDateFormat = (input) => {
   return result
 }
 
-const addApp = () => {
-  router.push({ name: 'AddApplication' })
-}
+// const addApp = () => {
+//   router.push({ name: 'AddApplication' })
+// }
 
 //해당 지원자의 지원신청서 페이지로 이동
 const goToApplication = (appNo) => {
@@ -135,14 +135,14 @@ onBeforeMount(() => {
             </option>
           </select>
         </div>
-        <button
+        <!-- <button
           v-else
-          class="btn btn-primary btn-sm text-xxs p-1 mb-0"
+          class="btn btn-primary btn-lg text-sm p-1 mb-0"          
           type="button"
           @click="addApp()"
         >
           지원신청서 등록
-        </button>
+        </button> -->
       </div>
     </div>
     <div class="card-body px-0 pt-0 pb-2">
