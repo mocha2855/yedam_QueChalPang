@@ -147,7 +147,34 @@
                     <label for="attachmentFile" class="col-form-label">첨부파일</label>
                   </div>
                   <div class="col-10">
-                    <input type="file" class="form-control" multiple @change="getFile" />
+                    <div
+                      v-if="
+                        application.resultfirstSave.length > 0 &&
+                        application.resultfirstSave[0].fileList &&
+                        application.resultfirstSave[0].fileList.length > 0
+                      "
+                      class="mb-2"
+                    >
+                      <h6>기존 첨부파일:</h6>
+                      <div
+                        v-for="file in application.resultfirstSave[0].fileList"
+                        :key="file.attachment_no"
+                      >
+                        <a href="#" @click.prevent="downloadFile(file.attachment_no)">
+                          {{ file.attachment_orginal }}
+                        </a>
+                      </div>
+                    </div>
+                    <input
+                      v-if="!(application.resultfirstSave.length > 0)"
+                      type="file"
+                      class="form-control"
+                      multiple
+                      @change="getFile"
+                    />
+                    <p class="text-muted" style="font-size: 12px">
+                      * 파일을 새로 선택하면 기존 파일에 추가됩니다.
+                    </p>
                   </div>
                 </div>
               </form>
@@ -836,6 +863,11 @@ onBeforeMount(async () => {
   if (application.resultChanging.length > 0) {
     await fetchFilesForPlans(application.resultChanging)
   }
+
+  // 4. 임시 저장 리스트 파일 로드
+  if (application.resultfirstSave.length > 0) {
+    await fetchFilesForPlans(application.resultfirstSave)
+  }
 })
 
 // 계획선택 모달창 확인버튼
@@ -975,28 +1007,19 @@ const sucessResult = async (data) => {
   console.log(data)
 
   // 담당자
+
   if (memAuthority == 'a2') {
     if (application.resultfirstSave.length > 0) {
       if (application.resultfirstSave.length > 0) {
-        const finalForm = new FormData()
-        finalForm.append('planning_id', application.dependantInfo.manager_id)
-        finalForm.append('planning_rejecter', application.dependantInfo.application_rejector)
-        finalForm.append('planning_start', resultList.value.planning_start)
-        finalForm.append('planning_end', resultList.value.planning_end)
-        finalForm.append('result_status', 'i1')
-        finalForm.append('result_title', formData.value.result_title)
-        finalForm.append('result_content', formData.value.result_content)
-        // 파일 데이터 (배열 반복)
-        if (attachmentFiles.value.length > 0) {
-          attachmentFiles.value.forEach((file) => {
-            finalForm.append('files', file)
-          })
-        }
         await axios
-          .put('/api/saveResultOneMOre/' + resultList.value.planning_no, finalForm, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
+          .put('/api/saveResultOneMOre/' + application.resultfirstSave[0].planning_no, {
+            planning_id: counters.isLogIn.info.member_id,
+            planning_rejecter: application.dependantInfo.application_rejector,
+            planning_start: resultList.value.planning_start,
+            planning_end: resultList.value.planning_end,
+            result_title: formData.value.result_title,
+            result_content: formData.value.result_content,
+            result_status: 'i1',
           })
           .then((res) => {
             console.log(res)
@@ -1026,6 +1049,7 @@ const sucessResult = async (data) => {
       finalForm.append('result_title', formData.value.result_title)
       finalForm.append('result_content', formData.value.result_content)
       // 파일 데이터 (배열 반복)
+      console.log('finalForm: ', finalForm)
       if (attachmentFiles.value.length > 0) {
         attachmentFiles.value.forEach((file) => {
           finalForm.append('files', file)
@@ -1186,15 +1210,14 @@ const saveForm = () => {
 
 const saveSubmit = async () => {
   if (application.resultfirstSave.length > 0) {
-    await axios
+    await axios //
       .put('/api/saveResultOneMOre/' + application.resultfirstSave[0].planning_no, {
-        planning_rejecter: resultList.value.planning_rejecter,
         planning_id: counters.isLogIn.info.member_id,
-        result_title: formData.value.result_title,
-        result_content: formData.value.result_content,
-        result_status: 'i0',
+        planning_rejecter: application.dependantInfo.application_rejector,
         planning_start: resultList.value.planning_start,
         planning_end: resultList.value.planning_end,
+        result_title: formData.value.result_title,
+        result_content: formData.value.result_content,
       })
       .then((res) => {
         console.log(res)
@@ -1215,16 +1238,26 @@ const saveSubmit = async () => {
       })
     return
   }
-  await axios
-    .post('/api/saveFirstResult', {
-      planning_no: resultList.value.planning_no,
-      planning_rejecter: resultList.value.planning_rejecter,
-      planning_id: counters.isLogIn.info.member_id,
-      result_title: formData.value.result_title,
-      result_content: formData.value.result_content,
-      result_status: 'i0',
-      planning_start: resultList.value.planning_start,
-      planning_end: resultList.value.planning_end,
+
+  const finalForm = new FormData()
+  finalForm.append('planning_id', counters.isLogIn.info.member_id)
+  finalForm.append('planning_rejecter', application.dependantInfo.application_rejector)
+  finalForm.append('planning_start', resultList.value.planning_start)
+  finalForm.append('planning_end', resultList.value.planning_end)
+  finalForm.append('result_title', formData.value.result_title)
+  finalForm.append('result_content', formData.value.result_content)
+  console.log('finalForm: ', finalForm)
+  // 파일 데이터 (배열 반복)
+  if (attachmentFiles.value.length > 0) {
+    attachmentFiles.value.forEach((file) => {
+      finalForm.append('files', file)
+    })
+  }
+  await axios //
+    .post('/api/saveFirstResult/' + resultList.value.planning_no, finalForm, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     })
     .then((res) => {
       console.log(res)
@@ -1266,6 +1299,7 @@ const closeCallSaveInfo = async () => {
       formData.value = {}
       attachmentFiles.value = []
       resultList.value = {}
+      application.resultfirstSave = []
 
       callFirstSave.value = false
       selectPlan.value = true
@@ -1278,6 +1312,7 @@ const closeCallSaveInfo = async () => {
 
 const attachmentFiles = ref([])
 const getFile = (e) => {
+  console.log(e.target.files)
   attachmentFiles.value = Array.from(e.target.files)
   console.log('선택된 파일들:', attachmentFiles.value)
 }

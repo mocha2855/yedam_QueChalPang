@@ -97,7 +97,7 @@ const changePlanningStatus = async (data) => {
                         type="text"
                         name="writer"
                         id="writer"
-                        value="최강희"
+                        v-model="plan.member_name"
                         class="form-control"
                         readonly
                       />
@@ -244,7 +244,7 @@ const changePlanningStatus = async (data) => {
                         type="text"
                         name="writer"
                         id="writer"
-                        value="최강희"
+                        v-model="plan.member_name"
                         class="form-control"
                         readonly
                       />

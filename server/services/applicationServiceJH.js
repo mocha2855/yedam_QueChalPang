@@ -328,18 +328,78 @@ const addAppHistory = async (input) => {
 };
 
 // 지원결과서 임시저장 0111
-const addFirstResultInfo = async (data) => {
-  let post = await mysql.bquery("insertFirstResultInfo", data);
-  return post;
+const addFirstResultInfo = async (data, files) => {
+  try {
+    // ---------------------------------------------------------
+    // [STEP 1] 그룹 ID 채번 (MAX + 1 전략)
+    // ---------------------------------------------------------
+    let newGroupId = null;
+    if (files && files.length > 0) {
+      const [rows] = await mysql.bquery("getMaxGroupId");
+      newGroupId = rows.newGroupId; // 예: 100
+    }
+
+    // ---------------------------------------------------------
+    // [STEP 2] 결과 정보 저장 (부모 테이블)
+    // ---------------------------------------------------------
+    const {
+      planningNo,
+      planning_id,
+      planning_rejecter,
+      result_title,
+      result_content,
+      planning_start,
+      planning_end,
+    } = data;
+
+    const result = await mysql.bquery("insertFirstResultInfo", [
+      planningNo,
+      planning_id,
+      planning_rejecter,
+      result_title,
+      result_content,
+      planning_start,
+      planning_end,
+      newGroupId, // ★ 채번한 정수형 ID 저장
+    ]);
+
+    // ---------------------------------------------------------
+    // [STEP 3] 첨부파일 저장 (파일이 있을 경우)
+    // ---------------------------------------------------------
+    if (files && files.length > 0) {
+      const fileValues = files.map((file) => {
+        return [
+          newGroupId, // 1. attachment_group (INT)
+          file.originalname, // 2. attachment_orginal
+          file.path, // 3. attachment_path
+          new Date(), // 4. attachment_date
+          path.extname(file.originalname), // 5. attachment_filetype
+          String(file.size), // 6. attachment_size
+        ];
+      });
+
+      // 배열을 한 번 더 감싸서 전달 (Bulk Insert)
+      await mysql.bquery("insertAttachment", [fileValues]);
+    }
+
+    return { groupId: newGroupId, insertResult: result.data };
+  } catch (err) {
+    throw err;
+  }
+  // let post = await mysql.bquery("insertFirstResultInfo", data);
+  // return post;
 };
 
 // 지원결과서 임시저장(이미 한 번 했을 경우) 0111
-const modifyResultFirstSaveInfo = async (planning_no, data) => {
-  let post = await mysql.bquery("updateResultFirstSaveInfo", [
-    data,
-    planning_no,
-  ]);
-  return post;
+const modifyResultFirstSaveInfo = async (serviceData, no) => {
+  try {
+    const result = await mysql.bquery("updateResultFirstSaveInfo", [
+      serviceData,
+      no,
+    ]);
+  } catch (err) {
+    throw err;
+  }
 };
 
 // 지원결과서 임시저장 삭제 0111
