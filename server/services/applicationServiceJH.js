@@ -312,6 +312,7 @@ const getAttachmentList = async (groupId) => {
   try {
     // [수정] 대괄호 제거 (mapper.js 특성 반영)
     const rows = await mysql.bquery("getAttachmentList", [groupId]);
+    console.log("list", rows);
     return rows;
   } catch (err) {
     throw err;
@@ -321,6 +322,7 @@ const getAttachmentList = async (groupId) => {
 const getAttachmentFile = async (attachmentNo) => {
   try {
     const rows = await mysql.bquery("getAttachment", [attachmentNo]);
+    console.log("file", rows);
     return rows[0]; // 파일 정보 객체 리턴
   } catch (err) {
     throw err;

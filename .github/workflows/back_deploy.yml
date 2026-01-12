@@ -6,7 +6,6 @@ on:
       - "server/**"
     branches:
       - main
-      - QueChalPang_SJW
 jobs:
   deploy:
     runs-on: ubuntu-latest

@@ -17,8 +17,14 @@ const storage = multer.diskStorage({
     done(null, "uploads/");
   },
   filename(req, file, done) {
+    file.originalname = Buffer.from(file.originalname, "latin1").toString(
+      "utf8"
+    );
+    console.log(file.originalname);
     const ext = path.extname(file.originalname);
     const basename = path.basename(file.originalname, ext);
+
+    // 저장될 파일명 생성
     done(null, basename + "_" + Date.now() + ext);
   },
 });
@@ -267,10 +273,15 @@ router.get("/download/:attachment_no", async (req, res) => {
     // __dirname은 현재 파일(routers 폴더) 위치이므로 상위로 이동(..) 필요할 수 있음
     // 프로젝트 구조에 따라 경로 조정 필요 (절대경로 추천)
     const filePath = path.join(__dirname, "../", fileInfo.attachment_path);
+    const originalName = fileInfo.attachment_orginal;
 
-    // res.download(실제경로, 원본파일명)
-    // 이렇게 하면 사용자는 "file_1234.jpg"가 아니라 "원본이름.jpg"로 다운받게 됨
-    res.download(filePath, fileInfo.attachment_orginal, (err) => {
+    const encodedName = encodeURIComponent(originalName);
+
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename*=UTF-8''${encodedName}`
+    );
+    res.sendFile(filePath, (err) => {
       if (err) {
         console.error("다운로드 에러:", err);
         res.status(500).send("다운로드 중 에러 발생");
