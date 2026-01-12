@@ -15,8 +15,8 @@ const showMenu = ref(false)
 // const store = useStore()
 
 // 알림 관련 변수 추가
-const notificationCount = ref(0)
-const notificationList = ref([])
+const notificationCount = ref(0) //알림 총갯수(종에 빨강이)
+const notificationList = ref([]) //알림 상세 목록
 let intervalId = null
 
 // 알림 개수 가져오는 함수 추가
@@ -28,21 +28,21 @@ const fetchNotificationCount = async () => {
 
   try {
     // 사용자 정보를 쿼리 파라미터로 보내기
+    //axios params에서 보내서 값 가져옴
     const response = await axios.get('/api/notifications/count', {
       params: {
+        //쿼리 파라미터로 사용자 권한 전달
         userId: isLogIn.value.info.member_id,
         userAuth: isLogIn.value.info.member_authority,
       },
     })
 
-    console.log('✅ 응답 성공:', response.data)
     notificationCount.value = response.data.count
   } catch (error) {
-    console.error('❌ 알림 조회 실패:', error)
     console.error('에러 응답:', error.response?.data)
   }
 }
-// 👇 알림 목록 가져오기 추가
+//알림 목록 가져오기 추가
 const fetchNotificationList = async () => {
   if (!isLogIn.value.isLogIn) return
 
@@ -53,9 +53,9 @@ const fetchNotificationList = async () => {
         userAuth: isLogIn.value.info.member_authority,
       },
     })
-    notificationList.value = response.data.notifications
+    notificationList.value = response.data.notifications //notificationList 여기에다가 결과 저장
   } catch (error) {
-    console.error('❌ 알림 목록 조회 실패:', error)
+    console.error('알림 목록 조회 실패:', error)
   }
 }
 

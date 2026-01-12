@@ -49,6 +49,13 @@ const isFullWidthPage = computed(() => {
 </template>
 
 <style>
+@font-face {
+  font-family: 'Cubano';
+  src: url('@/assets/fonts/Cubano.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 .app-navbar {
   position: sticky;
   top: 0;

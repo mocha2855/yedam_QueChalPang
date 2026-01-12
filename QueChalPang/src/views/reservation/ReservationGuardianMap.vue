@@ -23,7 +23,7 @@ const centerName = ref('')
 const centerAddr = ref('')
 
 //확인버튼 누르면 홈으로
-const goHome = () => router.push('/')
+const goHome = () => router.push('/ReservationGuardianHistory')
 
 //카카오지도
 onMounted(async () => {
