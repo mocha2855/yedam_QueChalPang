@@ -1,14 +1,28 @@
 // boardRouter.js
 const express = require("express");
 const multer = require("multer");
-
+const fs = require("fs");
+const path = require("path");
 const router = express.Router();
 const applicationService = require("../services/applicationServiceJH.js");
 
-const upload = multer({
-  storage: "storage",
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB 제한 등
+try {
+  fs.readdirSync("uploads");
+} catch (error) {
+  fs.mkdirSync("uploads");
+}
+
+const storage = multer.diskStorage({
+  destination(req, file, done) {
+    done(null, "uploads/");
+  },
+  filename(req, file, done) {
+    const ext = path.extname(file.originalname);
+    const basename = path.basename(file.originalname, ext);
+    done(null, basename + "_" + Date.now() + ext);
+  },
 });
+const upload = multer({ storage: storage });
 // 지원자 정보
 router.get(`/dependantInfo/:no`, async (req, res) => {
   let no = req.params.no;
@@ -196,11 +210,22 @@ router.post(
   "/submitResultInfo/:no",
   upload.array("files"),
   async (req, res) => {
-    let data = req.body;
-    console.log(data);
-    let no = req.params.no;
-    let post = await applicationService.addResultInfo(no, data);
-    res.send(post);
+    try {
+      const serviceData = {
+        planningNo: req.params.no,
+        ...req.body,
+      };
+      // Service 호출 (req.files 전달)
+      const result = await applicationService.addResultInfo(
+        serviceData,
+        req.files
+      );
+
+      res.json({ message: "등록 성공", groupId: result.groupId });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "서버 에러" });
+    }
   }
 );
 
@@ -263,4 +288,49 @@ router.delete("/delResultFirstSave/:no", async (req, res) => {
   res.send(post);
 });
 
+// 파일목록조회
+// [GET] 파일 목록 조회
+router.get("/attachments/:group_id", async (req, res) => {
+  try {
+    const groupId = req.params.group_id;
+    // 그룹 ID가 없거나 0이면 빈 배열 리턴
+    if (!groupId || groupId === "0") {
+      return res.json([]);
+    }
+
+    const fileList = await applicationService.getAttachmentList(groupId);
+    res.json(fileList);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "목록 조회 실패" });
+  }
+});
+// 파일 다운로드
+router.get("/download/:attachment_no", async (req, res) => {
+  try {
+    const attachmentNo = req.params.attachment_no;
+    const fileInfo = await applicationService.getAttachmentFile(attachmentNo);
+
+    if (!fileInfo) {
+      return res.status(404).send("파일을 찾을 수 없습니다.");
+    }
+
+    // DB에 저장된 경로 (예: uploads/file_1234.jpg)
+    // __dirname은 현재 파일(routers 폴더) 위치이므로 상위로 이동(..) 필요할 수 있음
+    // 프로젝트 구조에 따라 경로 조정 필요 (절대경로 추천)
+    const filePath = path.join(__dirname, "../", fileInfo.attachment_path);
+
+    // res.download(실제경로, 원본파일명)
+    // 이렇게 하면 사용자는 "file_1234.jpg"가 아니라 "원본이름.jpg"로 다운받게 됨
+    res.download(filePath, fileInfo.attachment_orginal, (err) => {
+      if (err) {
+        console.error("다운로드 에러:", err);
+        res.status(500).send("다운로드 중 에러 발생");
+      }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("서버 에러");
+  }
+});
 module.exports = router;

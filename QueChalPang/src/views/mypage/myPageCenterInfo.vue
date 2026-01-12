@@ -1,103 +1,170 @@
 <template>
-  <div class="fixed-top d-flex justify-content-end p-3 mt-6"></div>
+  <div class="fixed-top d-flex justify-content-end p-3 mt-6">
+    <div class="col-4">
+      <ArgonAlert
+        v-show="argonAlert"
+        color="warning"
+        icon="ni ni-bell-55"
+        dismissible
+        @close="argonAlert = false"
+      >
+        {{ msg }}
+      </ArgonAlert>
+    </div>
+  </div>
+
   <div class="py-4 container-fluid">
     <div class="row">
       <div class="col-12">
-        <div class="card" v-if="myPage.centerInfo != ''">
-          <div class="card-header pb-0 px-5 mx-5">
-            <h5>기관정보</h5>
-            <hr class="mb-4" style="height: 5px; background-color: black" />
+        <div v-if="myPage.centerInfo != ''">
+          <!-- 헤더 섹션 -->
+          <div class="mb-4">
+            <h3 class="mb-2" style="color: #2d3748; font-weight: 600">기관정보</h3>
+            <p style="color: #718096">기관 정보를 확인하고 수정할 수 있습니다</p>
           </div>
-          <div class="card-body px-0 pt-0 pb-2">
-            <div class="container px-0">
-              <div class="card-body px-0 py-0">
-                <form role="form">
-                  <div class="row px-0">
-                    <div class="col-1 px-0">
-                      <h6 class="mt-2">기관명</h6>
-                    </div>
 
-                    <div class="col-5 mb-2">
-                      <argon-input id="center_name" v-model="selectedCenter.center_name" disabled />
-                    </div>
-                    <div class="col-1">
-                      <button
-                        type="button"
-                        class="p-2 btn btn-primary w-100"
-                        @click="openCenterCode"
-                        v-if="!changeMangerInfo"
-                      >
-                        기관 찾기
-                      </button>
-                    </div>
-                    <hr class="mb-4" style="height: 1px; background-color: black" />
-                  </div>
-
-                  <div class="row px-0">
-                    <div class="col-1 px-0">
-                      <h6 class="mt-2">주소</h6>
-                    </div>
-                    <div class="col-5 mb-2">
-                      <argon-input id="tel" v-model="centerAddress" :disabled="changeMangerInfo" />
-                    </div>
-                    <hr class="mb-4" style="height: 1px; background-color: black" />
-                  </div>
-
-                  <div class="row px-0">
-                    <div class="col-1 px-0">
-                      <h6 class="mt-2">전화번호</h6>
-                    </div>
-                    <div class="col-5 mb-2">
-                      <argon-input id="tel" v-model="centerTel" :disabled="changeMangerInfo" />
-                    </div>
-                    <hr class="mb-4" style="height: 1px; background-color: black" />
-                  </div>
-
-                  <div class="row px-0">
-                    <div class="col-1 px-0">
-                      <h6 class="mt-2">기관 담당자 수</h6>
-                    </div>
-                    <div class="col-5 mb-2">
-                      <argon-input
-                        id="email"
-                        type="email"
-                        v-model="centerMember"
-                        aria-label="email"
-                        disabled
-                      />
-                    </div>
-                    <hr class="mb-2" style="height: 1px; background-color: black" />
-                  </div>
-
-                  <div class="float-sm-end">
+          <!-- 메인 카드 -->
+          <div class="card shadow-sm" style="border: none; border-radius: 16px">
+            <div class="card-body p-5">
+              <form role="form">
+                <!-- 기관명 -->
+                <div class="mb-4">
+                  <label
+                    class="form-label"
+                    style="color: #4a5568; font-weight: 500; font-size: 14px"
+                    >기관명</label
+                  >
+                  <div class="d-flex gap-2">
+                    <argon-input
+                      id="center_name"
+                      v-model="selectedCenter.center_name"
+                      disabled
+                      style="flex: 1; background-color: #f7fafc"
+                    />
                     <button
-                      type="button"
-                      class="btn btn-primary"
-                      @click="changeInfo"
-                      v-if="changeMangerInfo"
-                    >
-                      수정
-                    </button>
-                    <button
-                      type="button"
-                      class="btn btn-primary"
                       v-if="!changeMangerInfo"
-                      @click="completeChangeInfo"
+                      type="button"
+                      class="btn"
+                      @click="openCenterCode"
+                      style="
+                        background-color: #5a67d8;
+                        color: white;
+                        border: none;
+                        padding: 12px 24px;
+                        border-radius: 8px;
+                        font-size: 14px;
+                        font-weight: 500;
+                        white-space: nowrap;
+                      "
                     >
-                      저장
+                      기관 찾기
                     </button>
+                  </div>
+                </div>
 
+                <!-- 주소 -->
+                <div class="mb-4">
+                  <label
+                    class="form-label"
+                    style="color: #4a5568; font-weight: 500; font-size: 14px"
+                    >주소</label
+                  >
+                  <argon-input
+                    id="tel"
+                    v-model="centerAddress"
+                    :disabled="changeMangerInfo"
+                    :style="changeMangerInfo ? 'background-color: #f7fafc' : ''"
+                  />
+                </div>
+
+                <!-- 전화번호 -->
+                <div class="mb-4">
+                  <label
+                    class="form-label"
+                    style="color: #4a5568; font-weight: 500; font-size: 14px"
+                    >전화번호</label
+                  >
+                  <argon-input
+                    id="tel"
+                    v-model="centerTel"
+                    :disabled="changeMangerInfo"
+                    :style="changeMangerInfo ? 'background-color: #f7fafc' : ''"
+                  />
+                </div>
+
+                <!-- 기관 담당자 수 -->
+                <div class="mb-4">
+                  <label
+                    class="form-label"
+                    style="color: #4a5568; font-weight: 500; font-size: 14px"
+                    >기관 담당자 수</label
+                  >
+                  <argon-input
+                    id="email"
+                    type="email"
+                    v-model="centerMember"
+                    aria-label="email"
+                    disabled
+                    style="background-color: #f7fafc"
+                  />
+                </div>
+
+                <!-- 버튼 그룹 -->
+                <div class="d-flex justify-content-end gap-2 mt-5">
+                  <button
+                    v-if="changeMangerInfo"
+                    type="button"
+                    class="btn"
+                    @click="changeInfo"
+                    style="
+                      background-color: #5a67d8;
+                      color: white;
+                      border: none;
+                      padding: 12px 32px;
+                      border-radius: 8px;
+                      font-size: 14px;
+                      font-weight: 500;
+                    "
+                  >
+                    수정
+                  </button>
+
+                  <template v-if="!changeMangerInfo">
                     <button
                       type="button"
-                      class="btn btn-dark"
-                      v-if="!changeMangerInfo"
+                      class="btn"
                       @click="returnInfo"
+                      style="
+                        background-color: #f7fafc;
+                        color: #4a5568;
+                        border: 1px solid #e2e8f0;
+                        padding: 12px 32px;
+                        border-radius: 8px;
+                        font-size: 14px;
+                        font-weight: 500;
+                      "
                     >
                       취소
                     </button>
-                  </div>
-                </form>
-              </div>
+                    <button
+                      type="button"
+                      class="btn"
+                      @click="completeChangeInfo"
+                      style="
+                        background-color: #5a67d8;
+                        color: white;
+                        border: none;
+                        padding: 12px 32px;
+                        border-radius: 8px;
+                        font-size: 14px;
+                        font-weight: 500;
+                      "
+                    >
+                      저장
+                    </button>
+                  </template>
+                </div>
+              </form>
             </div>
           </div>
         </div>
@@ -112,13 +179,27 @@ import { useCounterStore } from '@/stores/member'
 import { useRouter } from 'vue-router'
 import { onMounted, onUnmounted } from 'vue'
 import axios from 'axios'
+import Swal from 'sweetalert2'
 
 import { onBeforeMount, ref } from 'vue'
 import ArgonInput from '@/components/ArgonInput.vue'
+import ArgonAlert from '@/components/ArgonAlert.vue'
 
 const myPage = useMyPageStore()
 const counter = useCounterStore()
 const router = useRouter()
+
+// 알림 관련
+const msg = ref('')
+const argonAlert = ref(false)
+
+const showAlert = (message) => {
+  msg.value = message
+  argonAlert.value = true
+  setTimeout(() => {
+    argonAlert.value = false
+  }, 1500)
+}
 
 let centerAddress = ref()
 let centerTel = ref()
@@ -126,7 +207,12 @@ let centerMember = ref()
 
 onBeforeMount(async () => {
   if (counter.isLogIn.info.member_authority != 'a3') {
-    alert('기관관리자만 접근가능합니다.')
+    await Swal.fire({
+      icon: 'warning',
+      title: '접근 권한 없음',
+      text: '기관관리자만 접근가능합니다.',
+      confirmButtonText: '확인',
+    })
     router.push({ name: 'Dashboard' })
   }
   // 관리자 정보
@@ -207,16 +293,14 @@ const openCenterCode = () => {
 
 // 변경완료 후
 const completeChangeInfo = async () => {
-  await axios //
-    .put('/api/changeManagerInfo/' + myPage.managerInfo.member_id, {
-      center_no: selectedCenter.value.center_no,
-    })
-  await axios //
-    .put('/api/changeCenterInfo/' + selectedCenter.value.center_no, {
-      center_address: centerAddress.value,
-      center_tel: centerTel.value,
-    })
-  alert('변경완료')
+  await axios.put('/api/changeManagerInfo/' + myPage.managerInfo.member_id, {
+    center_no: selectedCenter.value.center_no,
+  })
+  await axios.put('/api/changeCenterInfo/' + selectedCenter.value.center_no, {
+    center_address: centerAddress.value,
+    center_tel: centerTel.value,
+  })
+  showAlert('변경되었습니다!')
   changeMangerInfo.value = true
 }
 </script>

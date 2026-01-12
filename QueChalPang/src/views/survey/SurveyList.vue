@@ -40,7 +40,7 @@ const goTosurveyAdd = () => {
         <div class="card">
           <!-- 헤더 -->
           <div class="card-header d-flex justify-content-between align-items-center pb-0">
-            <h6 class="mb-0">조사지 목록</h6>
+            <h6 class="mb-0">지원서 목록</h6>
             <button class="btn btn-primary btn-sm" @click="goTosurveyAdd">
               <i class="fas fa-plus"></i> 항목추가
             </button>

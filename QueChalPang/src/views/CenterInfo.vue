@@ -79,7 +79,7 @@ const endCenter = async () => {
 </script>
 
 <template>
-  <div class="fixed-top d-flex justify-content-end p-3 mt-6">
+  <div class="fixed-top d-flex justify-content-end mt-6">
     <div class="col-4">
       <ArgonAlert
         v-show="argonAlert"

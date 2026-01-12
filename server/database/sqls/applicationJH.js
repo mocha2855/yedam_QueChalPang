@@ -396,7 +396,9 @@ join member m2 on r.planning_rejecter = m2.member_id
 `;
 
 // 지원결과서 승인요청(담당자)
-const insertResultInfo = `insert into result set ?`;
+const insertResultInfo = `INSERT INTO result
+    (planning_no, planning_id, planning_rejecter, result_title, result_content, result_status, planning_start, planning_end, attachment_no)
+    VALUES (?, ?, ?, ?, ?, 'i1', ?, ?, ?)`;
 
 // 지원결과서 승인 및 재승인
 const sucessResultUpdateInfo = `update result
@@ -484,6 +486,26 @@ const updateResultFirstSaveInfo = `update result set ? where planning_no = ? and
 // 지원결과서 임시저장 삭제(담당자) 0111
 const deleteResultFirstSaveInfo = `delete from result where planning_no = ? and result_status = 'i0'`;
 
+const getMaxGroupId = `
+    SELECT IFNULL(MAX(attachment_group), 0) + 1 AS newGroupId 
+    FROM attachment
+  `;
+const insertAttachment = `
+    INSERT INTO attachment 
+    (attachment_group, attachment_orginal, attachment_path, attachment_date, attachment_filetype, attachment_size) 
+    VALUES ?
+  `;
+
+const getAttachmentList = `
+    SELECT attachment_no, attachment_orginal, attachment_path, attachment_size
+    FROM attachment
+    WHERE attachment_group = ?
+  `;
+const getAttachment = `
+    SELECT attachment_path, attachment_orginal
+    FROM attachment
+    WHERE attachment_no = ?
+  `;
 module.exports = {
   dependantSelectById,
   selectManagerByDependant,
@@ -519,4 +541,8 @@ module.exports = {
   insertFirstResultInfo, // 지원결과서 임시저장 0111
   updateResultFirstSaveInfo, // 0111 결과서임시저장(이미 한 번 했을 경우)
   deleteResultFirstSaveInfo, // 지원결과서 임시저장 삭제 0111
+  getMaxGroupId,
+  insertAttachment,
+  getAttachmentList,
+  getAttachment,
 };

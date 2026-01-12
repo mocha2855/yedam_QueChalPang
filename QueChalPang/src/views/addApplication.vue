@@ -1,5 +1,6 @@
 <script setup>
 import { onBeforeMount, ref, computed, watch } from 'vue'
+import Swal from 'sweetalert2'
 import { useRouter } from 'vue-router'
 import { useCounterStore } from '@/stores/member'
 import axios from 'axios'
@@ -153,8 +154,51 @@ const getAnswer = (qitemNo, qType) => {
   return answers.value[qitemNo]
 }
 const addApplication = async () => {
-  if (Object.keys(answers.value).length != qitemNo.value.length) {
-    alert('신청서 작성이 완료되지 않았습니다. 모든 질문지에 대해 답변을 모두 입력해주세요.')
+  // 답변 체크
+  let hasEmpty = false
+
+  structuredSurvey.value.forEach((survey) => {
+    survey.subtitles.forEach((sub) => {
+      sub.questions.forEach((q) => {
+        const answer = answers.value[q.survey_qitem_no]
+        const qType = q.survey_qitem_type?.trim()
+
+        // 답변 없음
+        if (!answer) {
+          hasEmpty = true
+          return
+        }
+
+        // 예/아니요 타입 체크
+        if (qType === '예/아니요') {
+          if (!answer.type) {
+            hasEmpty = true
+            return
+          }
+          // 구체적 사유 필요한 경우
+          if (q.needDetail && answer.type === 'Y') {
+            if (!answer.reason?.trim() || !answer.date?.trim()) {
+              hasEmpty = true
+              return
+            }
+          }
+        } else {
+          // 일반 텍스트
+          if (!answer.trim?.() && !answer) {
+            hasEmpty = true
+            return
+          }
+        }
+      })
+    })
+  })
+
+  if (hasEmpty) {
+    await Swal.fire({
+      icon: 'warning',
+      title: '모든 질문에 답변해주세요',
+      confirmButtonText: '확인',
+    })
     return
   }
   let answerList = []
@@ -223,11 +267,20 @@ const addApplication = async () => {
       input,
     )
     console.log(result)
-    alert('신청서가 등록되었습니다.')
+    await Swal.fire({
+      icon: 'success',
+      title: '신청서가 등록되었습니다!',
+      showConfirmButton: false,
+      timer: 1500,
+    })
     router.push({ path: supportRoute.value })
   } catch (error) {
     console.error(error)
-    alert('등록 중 오류가 발생했습니다.')
+    await Swal.fire({
+      icon: 'error',
+      title: '등록 중 오류가 발생했습니다',
+      confirmButtonText: '확인',
+    })
   }
 }
 const supportRoute = computed(() => {
