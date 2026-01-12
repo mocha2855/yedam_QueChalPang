@@ -7,183 +7,173 @@
   >
     <div class="row">
       <div class="col-12">
-        <div class="card">
-          <div class="card-header pb-0 px-5 mx-5">
-            <h5>지원자 등록</h5>
-            <hr class="mb-4" style="height: 5px; background-color: black" />
-          </div>
-          <div class="card-body px-0 pt-0 pb-2">
-            <div class="container px-0">
-              <div class="card-body px-0 py-0">
-                <form role="form">
-                  <div class="row px-0">
-                    <div class="col-1 px-0">
-                      <h6 class="mt-2">이름</h6>
-                    </div>
-                    <div class="col-5 mb-2">
-                      <argon-input
-                        id="name"
-                        type="text"
-                        aria-label="Name"
-                        v-model="dependantDetail.dependant_name"
-                        v-bind:disabled="changeMangerInfo"
-                      />
-                    </div>
-                    <hr class="mb-4" style="height: 1px; background-color: black" />
-                  </div>
-                  <div class="row px-0">
-                    <div class="col-1 px-0">
-                      <h6 class="mt-2">생년월일</h6>
-                    </div>
-                    <div class="col-5 mb-2">
-                      <argon-input
-                        type="date"
-                        v-model="dependantDetail.dependant_birth"
-                        v-bind:disabled="changeMangerInfo"
-                      />
-                    </div>
-                    <hr class="mb-4" style="height: 1px; background-color: black" />
-                  </div>
+        <!-- 헤더 섹션 -->
+        <div class="mb-4">
+          <h3 class="mb-2" style="color: #2d3748; font-weight: 600">지원자 등록</h3>
+          <p style="color: #718096">새로운 지원자 정보를 등록합니다</p>
+        </div>
 
-                  <div class="row px-0">
-                    <div class="col-1 px-0">
-                      <h6 class="mt-2">성별</h6>
-                    </div>
-                    <div class="col-5 mb-2">
-                      <select
-                        class="btn btn px-0 col-12 mx-0"
-                        v-model="dependantDetail.dependant_gender"
-                        v-bind:disabled="changeMangerInfo"
-                        style="text-align: left"
-                      >
-                        <option
-                          class="dropdown-item"
-                          value="g0"
-                          v-bind:key="index"
-                          style="color: #000; text-align: left"
-                        >
-                          선택
-                        </option>
-                        <option
-                          class="dropdown-item"
-                          value="g1"
-                          v-bind:key="index"
-                          style="color: #000; text-align: left"
-                        >
-                          남자
-                        </option>
-                        <option
-                          class="dropdown-item"
-                          value="g2"
-                          v-bind:key="index"
-                          style="color: #000; text-align: left"
-                        >
-                          여자
-                        </option>
-                      </select>
-                    </div>
-                    <hr class="mb-4" style="height: 1px; background-color: black" />
-                  </div>
-
-                  <div class="row px-0">
-                    <div class="col-1 px-0">
-                      <h6 class="mt-2">주소</h6>
-                    </div>
-
-                    <div class="col-5 mb-2">
-                      <argon-input v-model="detailAddress" placeholder="주소" disabled />
-                    </div>
-                    <div class="col-1">
-                      <button
-                        type="button"
-                        class="p-2 btn btn-primary w-100"
-                        @click="openPostcode"
-                        v-bind:disabled="changeMangerInfo"
-                      >
-                        주소 찾기
-                      </button>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-1 px-0"><h6 class="mt-2"></h6></div>
-                    <div class="col-5 mb-2">
-                      <argon-input
-                        id="detail_input"
-                        placeholder="상세주소"
-                        v-model="writingAddress"
-                        v-bind:disabled="changeMangerInfo"
-                      />
-                    </div>
-                  </div>
-                  <hr class="mb-4" style="height: 1px; background-color: black" />
-
-                  <div class="row px-0">
-                    <div class="col-1 px-0">
-                      <h6 class="mt-2">장애유형</h6>
-                    </div>
-
-                    <div class="col-5 mb-2">
-                      <div class="row">
-                        <select
-                          class="btn btn px-0 col-6 mx-2"
-                          v-model="dependantDetail.disability_no"
-                          @change="changeValue(dependantDetail.disability_no)"
-                          v-bind:disabled="changeMangerInfo"
-                        >
-                          <option
-                            class="dropdown-item"
-                            v-for="(disability, index) in disabilityName"
-                            :value="index"
-                            v-bind:key="index"
-                            style="color: #000; text-align: left"
-                          >
-                            {{ disability.name }}
-                          </option>
-                        </select>
-                        <div class="col-5 mb-2 px-0 ms-2" v-if="writingDisability">
-                          <argon-input
-                            id="disability_input"
-                            placeholder="장애유형을 입력해주세요."
-                            v-model="realDisability"
-                            v-bind:disabled="changeMangerInfo"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <hr class="mb-4" style="height: 1px; background-color: black" />
-                  </div>
-
-                  <div class="row px-0">
-                    <div class="col-1 px-0">
-                      <h6 class="mt-2">등록일</h6>
-                    </div>
-                    <div class="col-5 mb-2">
-                      <argon-input
-                        id="day"
-                        type="text"
-                        aria-label="text"
-                        v-model="today"
-                        disabled
-                      />
-                    </div>
-                    <hr class="mb-2" style="height: 1px; background-color: black" />
-                  </div>
-
-                  <div class="float-sm-end">
-                    <button
-                      type="button"
-                      class="btn btn-primary"
-                      @click="completeChangeInfo"
-                      v-if="!changeMangerInfo"
-                    >
-                      등록
-                    </button>
-                  </div>
-                </form>
+        <!-- 메인 카드 -->
+        <div class="card shadow-sm" style="border: none; border-radius: 16px">
+          <div class="card-body p-5">
+            <form role="form">
+              <!-- 이름 -->
+              <div class="mb-4">
+                <label class="form-label" style="color: #4a5568; font-weight: 500; font-size: 14px"
+                  >이름</label
+                >
+                <argon-input
+                  id="name"
+                  type="text"
+                  aria-label="Name"
+                  v-model="dependantDetail.dependant_name"
+                  v-bind:disabled="changeMangerInfo"
+                />
               </div>
-            </div>
+
+              <!-- 생년월일 -->
+              <div class="mb-4">
+                <label class="form-label" style="color: #4a5568; font-weight: 500; font-size: 14px"
+                  >생년월일</label
+                >
+                <argon-input
+                  type="date"
+                  v-model="dependantDetail.dependant_birth"
+                  v-bind:disabled="changeMangerInfo"
+                />
+              </div>
+
+              <!-- 성별 -->
+              <div class="mb-4">
+                <label class="form-label" style="color: #4a5568; font-weight: 500; font-size: 14px"
+                  >성별</label
+                >
+                <select
+                  class="form-select"
+                  v-model="dependantDetail.dependant_gender"
+                  v-bind:disabled="changeMangerInfo"
+                  style="
+                    padding: 12px 16px;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px;
+                    font-size: 14px;
+                  "
+                >
+                  <option value="g0">선택</option>
+                  <option value="g1">남자</option>
+                  <option value="g2">여자</option>
+                </select>
+              </div>
+
+              <!-- 주소 -->
+              <div class="mb-4">
+                <label class="form-label" style="color: #4a5568; font-weight: 500; font-size: 14px"
+                  >주소</label
+                >
+                <div class="d-flex gap-2 mb-2">
+                  <argon-input
+                    v-model="detailAddress"
+                    placeholder="주소"
+                    disabled
+                    style="flex: 1; background-color: #f7fafc"
+                  />
+                  <button
+                    type="button"
+                    class="btn"
+                    @click="openPostcode"
+                    v-bind:disabled="changeMangerInfo"
+                    style="
+                      background-color: #5a67d8;
+                      color: white;
+                      border: none;
+                      padding: 12px 24px;
+                      border-radius: 8px;
+                      font-size: 14px;
+                      font-weight: 500;
+                      white-space: nowrap;
+                    "
+                  >
+                    주소 찾기
+                  </button>
+                </div>
+                <argon-input
+                  id="detail_input"
+                  placeholder="상세주소를 입력해주세요"
+                  v-model="writingAddress"
+                  v-bind:disabled="changeMangerInfo"
+                />
+              </div>
+
+              <!-- 장애유형 -->
+              <div class="mb-4">
+                <label class="form-label" style="color: #4a5568; font-weight: 500; font-size: 14px"
+                  >장애유형</label
+                >
+                <select
+                  class="form-select mb-2"
+                  v-model="dependantDetail.disability_no"
+                  @change="changeValue(dependantDetail.disability_no)"
+                  v-bind:disabled="changeMangerInfo"
+                  style="
+                    padding: 12px 16px;
+                    border: 1px solid #e2e8f0;
+                    border-radius: 8px;
+                    font-size: 14px;
+                  "
+                >
+                  <option
+                    v-for="(disability, index) in disabilityName"
+                    :value="index"
+                    v-bind:key="index"
+                  >
+                    {{ disability.name }}
+                  </option>
+                </select>
+                <argon-input
+                  v-if="writingDisability"
+                  id="disability_input"
+                  placeholder="장애유형을 입력해주세요"
+                  v-model="realDisability"
+                  v-bind:disabled="changeMangerInfo"
+                />
+              </div>
+
+              <!-- 등록일 -->
+              <div class="mb-4">
+                <label class="form-label" style="color: #4a5568; font-weight: 500; font-size: 14px"
+                  >등록일</label
+                >
+                <argon-input
+                  id="day"
+                  type="text"
+                  aria-label="text"
+                  v-model="today"
+                  disabled
+                  style="background-color: #f7fafc"
+                />
+              </div>
+
+              <!-- 버튼 -->
+              <div class="d-flex justify-content-end mt-5">
+                <button
+                  type="button"
+                  class="btn"
+                  @click="completeChangeInfo"
+                  v-if="!changeMangerInfo"
+                  style="
+                    background-color: #5a67d8;
+                    color: white;
+                    border: none;
+                    padding: 12px 32px;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    font-weight: 500;
+                  "
+                >
+                  등록
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
@@ -197,17 +187,23 @@ import { useRouter } from 'vue-router'
 import ArgonInput from '@/components/ArgonInput.vue'
 import { useCounterStore } from '@/stores/member'
 import axios from 'axios'
+import Swal from 'sweetalert2'
 
 const counter = useCounterStore()
 
 const router = useRouter()
 
-onBeforeMount(() => {
+onBeforeMount(async () => {
   if (
     counter.isLogIn.info.member_authority == 'a3' ||
     counter.isLogIn.info.member_authority == 'a4'
   ) {
-    alert('기관담당자, 보호자만 접근가능합니다.')
+    await Swal.fire({
+      icon: 'warning',
+      title: '접근 권한 없음',
+      text: '기관담당자, 보호자만 접근가능합니다.',
+      confirmButtonText: '확인',
+    })
     router.push({ name: 'Dashboard' })
   }
 })
@@ -307,33 +303,61 @@ const changeValue = (data) => {
 let changeMangerInfo = ref(false)
 const completeChangeInfo = async () => {
   if (dependantDetail.value.dependant_name == '' || dependantDetail.value.dependant_name == null) {
-    alert('이름을 입력해주세요')
+    await Swal.fire({
+      icon: 'warning',
+      title: '이름을 입력해주세요',
+      confirmButtonText: '확인',
+    })
     return
   } else if (
     dependantDetail.value.dependant_birth == '' ||
     dependantDetail.value.dependant_birth == null
   ) {
-    alert('생일을 입력해주세요')
+    await Swal.fire({
+      icon: 'warning',
+      title: '생일을 입력해주세요',
+      confirmButtonText: '확인',
+    })
     return
   } else if (dependantDetail.value.dependant_gender == 'g0') {
-    alert('성별을 선택해주세요')
+    await Swal.fire({
+      icon: 'warning',
+      title: '성별을 선택해주세요',
+      confirmButtonText: '확인',
+    })
     return
   } else if (detailAddress.value == '' || detailAddress.value == null) {
-    alert('주소를 입력해주세요')
+    await Swal.fire({
+      icon: 'warning',
+      title: '주소를 입력해주세요',
+      confirmButtonText: '확인',
+    })
     return
   } else if (writingAddress.value == '' || writingAddress.value == null) {
     document.getElementById('detail_input').focus()
-    alert('주소를 입력해주세요')
+    await Swal.fire({
+      icon: 'warning',
+      title: '상세주소를 입력해주세요',
+      confirmButtonText: '확인',
+    })
     return
   } else if (dependantDetail.value.disability_no == 0) {
-    alert('장애유형을 선택해주세요.')
+    await Swal.fire({
+      icon: 'warning',
+      title: '장애유형을 선택해주세요',
+      confirmButtonText: '확인',
+    })
     return
   } else if (
     dependantDetail.value.disability_no == 16 &&
     (realDisability.value == '' || realDisability.value == null)
   ) {
     document.getElementById('disability_input').focus()
-    alert('장애유형을 입력해주세요')
+    await Swal.fire({
+      icon: 'warning',
+      title: '장애유형을 입력해주세요',
+      confirmButtonText: '확인',
+    })
     return
   } else if (
     dependantDetail.value.disability_no == 16 &&
@@ -343,7 +367,7 @@ const completeChangeInfo = async () => {
   }
 
   if (counter.isLogIn.info.member_authority == 'a2') {
-    await axios //
+    await axios
       .post('/api/addDependantInfo', {
         dependant_name: dependantDetail.value.dependant_name,
         dependant_birth: dependantDetail.value.dependant_birth,
@@ -353,14 +377,19 @@ const completeChangeInfo = async () => {
         dependant_date: dependantDetail.value.dependant_date,
         manager_main: counter.isLogIn.info.member_id,
       })
-      .then((res) => {
+      .then(async (res) => {
         console.log(res)
-        alert('등록완료')
+        await Swal.fire({
+          icon: 'success',
+          title: '등록되었습니다!',
+          showConfirmButton: false,
+          timer: 1500,
+        })
         changeMangerInfo.value = true
         return
       })
   } else if (counter.isLogIn.info.member_authority == 'a1') {
-    await axios //
+    await axios
       .post('/api/addDependantInfo', {
         dependant_name: dependantDetail.value.dependant_name,
         dependant_birth: dependantDetail.value.dependant_birth,
@@ -370,9 +399,14 @@ const completeChangeInfo = async () => {
         dependant_date: today,
         member_id: counter.isLogIn.info.member_id,
       })
-      .then((res) => {
+      .then(async (res) => {
         console.log(res)
-        alert('등록완료')
+        await Swal.fire({
+          icon: 'success',
+          title: '등록되었습니다!',
+          showConfirmButton: false,
+          timer: 1500,
+        })
         changeMangerInfo.value = true
         return
       })

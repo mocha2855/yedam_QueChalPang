@@ -2,7 +2,7 @@
   <div class="container">
     <!-- 헤더 -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h4 class="mb-0">조사지 상세</h4>
+      <h4 class="mb-0">지원서 상세</h4>
       <button class="btn btn-sm btn-secondary" @click="goBack">
         <i class="fas fa-list"></i> 목록으로
       </button>
@@ -27,7 +27,12 @@
     <!-- 세부항목 탭 -->
     <div class="card">
       <div class="card-header pb-0">
-        <h6 class="mb-3">세부항목</h6>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="mb-0">세부항목</h6>
+          <button class="btn btn-sm btn-primary" @click="goTosurveyUpdate(surveyInfo.no)">
+            <i class="fas fa-edit"></i> 수정
+          </button>
+        </div>
         <!-- Nav Tabs -->
         <ul class="nav nav-tabs" role="tablist">
           <li
@@ -84,11 +89,31 @@
               class="card mb-3"
             >
               <div class="card-body">
-                <div class="d-flex align-items-center mb-2">
-                  <span class="badge bg-primary me-2">질문 {{ qIndex + 1 }}</span>
-                  <span class="badge bg-secondary">{{ question.survey_qitem_type }}</span>
+                <div class="d-flex align-items-center mb-3">
+                  <span class="badge bg-primary">질문 {{ qIndex + 1 }}</span>
                 </div>
-                <p class="mb-0">{{ question.survey_qitem_question }}</p>
+
+                <!-- 질문 내용 -->
+                <div class="mb-3">
+                  <label class="form-label fw-bold">질문 내용</label>
+                  <input class="form-control" v-model="question.survey_qitem_question" readonly />
+                </div>
+
+                <!-- 질문 타입 -->
+                <div class="mb-3">
+                  <label class="form-label fw-bold">질문 타입</label>
+                  <input class="form-control" v-model="question.survey_qitem_type" readonly />
+                </div>
+
+                <!-- 예/아니요일 때 추가 입력 정보 표시 -->
+                <div v-if="question.survey_qitem_type === '예/아니요' && question.need_detail">
+                  <div class="alert alert-info mb-0">
+                    <small
+                      ><i class="fas fa-info-circle"></i> 사용자가 "예"를 선택하면 구체적 사유와
+                      날짜를 입력받습니다.</small
+                    >
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -103,16 +128,8 @@
         </div>
       </div>
     </div>
-
-    <!-- 하단 버튼 -->
-    <div class="mt-4 text-end">
-      <button class="btn btn-primary" @click="goTosurveyUpdate(surveyInfo.no)">
-        <i class="fas fa-edit"></i> 수정
-      </button>
-    </div>
   </div>
 </template>
-
 <script setup>
 import { onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'

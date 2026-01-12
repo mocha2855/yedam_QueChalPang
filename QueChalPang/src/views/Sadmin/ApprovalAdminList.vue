@@ -5,9 +5,9 @@ import { useCounterStore } from '@/stores/member'
 import { useRouter } from 'vue-router'
 import { onBeforeMount, ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
-import ArgonButton from '@/components/ArgonButton.vue'
 import ArgonPagination from '@/components/ArgonPagination.vue'
 import ArgonPaginationItem from '@/components/ArgonPaginationItem.vue'
+import Swal from 'sweetalert2'
 
 const store = useApprovalStore()
 const member = useCounterStore()
@@ -62,18 +62,47 @@ const isAllChecked = computed({
   },
 })
 
+// hover 스타일 적용 여부 확인
+const canHover = (confirm) => {
+  return confirm !== 'l3' && confirm !== 'l4'
+}
+
 // 승인 처리
 const handleApprove = async (id) => {
-  if (confirm('승인하시겠습니까?')) {
+  const result = await Swal.fire({
+    icon: 'question',
+    title: '승인하시겠습니까?',
+    showCancelButton: true,
+    confirmButtonText: '승인',
+    cancelButtonText: '취소',
+  })
+  if (result.isConfirmed) {
     await store.approveMember(id)
-    alert('승인되었습니다.')
+    await Swal.fire({
+      icon: 'success',
+      title: '승인되었습니다!',
+      showConfirmButton: false,
+      timer: 1500,
+    })
   }
 }
 // 승인 거절 처리
 const handleReject = async (id) => {
-  if (confirm('거절하시겠습니까?')) {
+  const result = await Swal.fire({
+    icon: 'question',
+    title: '거절하시겠습니까?',
+    showCancelButton: true,
+    confirmButtonText: '거절',
+    cancelButtonText: '취소',
+  })
+  if (result.isConfirmed) {
     await store.rejectMember(id)
-    alert('거절되었습니다.')
+    await Swal.fire({
+      icon: 'success',
+      title: '거절되었습니다!',
+      showConfirmButton: false,
+      timer: 1500,
+    })
   }
 }
 
@@ -89,24 +118,39 @@ const approveSelected = async () => {
 
   //승인 대기가 없으면
   if (pendingIds.length === 0) {
-    alert('승인 대기 중인 회원을 선택해주세요.')
+    await Swal.fire({
+      icon: 'warning',
+      title: '승인 대기 중인 회원을 선택해주세요',
+      confirmButtonText: '확인',
+    })
     checkedIds.value = [] //체크 해제
     return
   }
 
   if (pendingIds.length < checkedIds.value.length) {
     const diff = checkedIds.value.length - pendingIds.length
-    const ok = confirm(
-      `${diff}명은 이미 처리되었습니다.\n${pendingIds.length}명만 승인하시겠습니까?`,
-    )
-    if (!ok) {
+    const result = await Swal.fire({
+      icon: 'question',
+      title: `${diff}명은 이미 처리되었습니다`,
+      text: `${pendingIds.length}명만 승인하시겠습니까?`,
+      showCancelButton: true,
+      confirmButtonText: '승인',
+      cancelButtonText: '취소',
+    })
+    if (!result.isConfirmed) {
       checkedIds.value = [] // 체크 해제
       return
     }
   } else {
     // 전부 l2면 일반 확인창
-    const ok = confirm(`${pendingIds.length}명을 승인하시겠습니까?`)
-    if (!ok) return
+    const result = await Swal.fire({
+      icon: 'question',
+      title: `${pendingIds.length}명을 승인하시겠습니까?`,
+      showCancelButton: true,
+      confirmButtonText: '승인',
+      cancelButtonText: '취소',
+    })
+    if (!result.isConfirmed) return
   }
 
   // 승인 처리
@@ -114,7 +158,12 @@ const approveSelected = async () => {
     await store.approveMember(id)
   }
 
-  alert(`${pendingIds.length}명이 승인되었습니다.`)
+  await Swal.fire({
+    icon: 'success',
+    title: `${pendingIds.length}명이 승인되었습니다!`,
+    showConfirmButton: false,
+    timer: 1500,
+  })
   checkedIds.value = []
 }
 const deleteSelected = async () => {
@@ -127,30 +176,50 @@ const deleteSelected = async () => {
   })
 
   if (deletableIds.length === 0) {
-    alert('삭제 가능한 회원을 선택해주세요.')
+    await Swal.fire({
+      icon: 'warning',
+      title: '삭제 가능한 회원을 선택해주세요',
+      confirmButtonText: '확인',
+    })
     checkedIds.value = []
     return
   }
 
   if (deletableIds.length < checkedIds.value.length) {
     const di = checkedIds.value.length - deletableIds.length
-    const ok = confirm(
-      `${di}명은 이미 삭제되었습니다.\n${deletableIds.length}명을 삭제하시겠습니까?`,
-    )
-    if (!ok) {
+    const result = await Swal.fire({
+      icon: 'question',
+      title: `${di}명은 이미 삭제되었습니다`,
+      text: `${deletableIds.length}명을 삭제하시겠습니까?`,
+      showCancelButton: true,
+      confirmButtonText: '삭제',
+      cancelButtonText: '취소',
+    })
+    if (!result.isConfirmed) {
       checkedIds.value = []
       return
     }
   } else {
-    const ok = confirm(`${deletableIds.length}명을 삭제하시겠습니까?`)
-    if (!ok) return
+    const result = await Swal.fire({
+      icon: 'question',
+      title: `${deletableIds.length}명을 삭제하시겠습니까?`,
+      showCancelButton: true,
+      confirmButtonText: '삭제',
+      cancelButtonText: '취소',
+    })
+    if (!result.isConfirmed) return
   }
 
   for (const id of deletableIds) {
     await store.deleteMember(id)
   }
 
-  alert(`${deletableIds.length}명이 삭제되었습니다.`)
+  await Swal.fire({
+    icon: 'success',
+    title: `${deletableIds.length}명이 삭제되었습니다!`,
+    showConfirmButton: false,
+    timer: 1500,
+  })
   checkedIds.value = []
 }
 
@@ -159,7 +228,12 @@ onBeforeMount(async () => {
 
   if (authority !== 'a4') {
     // a4아니면 막음
-    alert('담당자 또는 시스템 관리자만 접근할 수 있습니다.')
+    await Swal.fire({
+      icon: 'warning',
+      title: '접근 권한 없음',
+      text: '담당자 또는 시스템 관리자만 접근할 수 있습니다.',
+      confirmButtonText: '확인',
+    })
     router.push({ name: 'Dashboard' })
     return
   }
@@ -177,97 +251,143 @@ const goToUserAdd = () => {
   <div class="py-4 container-fluid">
     <div class="row">
       <div class="col-12">
-        <div class="card">
-          <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-            <h6>관리자 승인 관리</h6>
-            <p class="text-sm mb-0" style="color: #000">
-              승인 대기: {{ adminPendingList.length }}건
+        <!-- 헤더 섹션 -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h3 class="mb-2" style="color: #2d3748; font-weight: 600">관리자 승인 관리</h3>
+            <p style="color: #718096; margin: 0; font-size: 14px">
+              관리자의 가입 승인을 관리할 수 있습니다
             </p>
           </div>
-          <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-            <!-- 왼쪽: 회원추가 -->
-            <button class="btn btn-sm btn-primary" @click="goToUserAdd">
-              <i class="fas fa-plus"></i> 관리자추가
-            </button>
-
-            <!-- 오른쪽: 선택 버튼들 -->
+          <div style="text-align: right">
+            <p class="mb-2" style="color: #2d3748; font-weight: 600; font-size: 15px">
+              승인 대기: {{ adminPendingList.length }}건
+            </p>
             <div class="d-flex gap-2">
               <button
-                class="btn btn-success btn-sm"
+                class="btn"
+                @click="goToUserAdd"
+                style="
+                  background-color: #5a67d8;
+                  color: white;
+                  border: none;
+                  padding: 8px 18px;
+                  border-radius: 8px;
+                  font-size: 13px;
+                  font-weight: 500;
+                "
+              >
+                <i class="fas fa-plus"></i> 관리자추가
+              </button>
+              <button
+                class="btn"
                 :disabled="checkedIds.length === 0"
                 @click="approveSelected"
+                :style="
+                  checkedIds.length === 0
+                    ? 'background-color: #cbd5e0; color: #718096; border: none; padding: 8px 18px; border-radius: 8px; font-size: 13px; cursor: not-allowed;'
+                    : 'background-color: #48bb78; color: white; border: none; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 500;'
+                "
               >
                 선택 승인
               </button>
-
               <button
-                class="btn btn-outline-danger btn-sm"
+                class="btn"
                 :disabled="checkedIds.length === 0"
                 @click="deleteSelected"
+                :style="
+                  checkedIds.length === 0
+                    ? 'background-color: #cbd5e0; color: #718096; border: none; padding: 8px 18px; border-radius: 8px; font-size: 13px; cursor: not-allowed;'
+                    : 'background-color: #fc8181; color: white; border: none; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 500;'
+                "
               >
                 선택 삭제
               </button>
             </div>
           </div>
-          <div class="card-body px-0 pt-0 pb-2">
-            <div class="table-responsive p-0">
-              <table class="table align-items-center">
-                <thead>
+        </div>
+
+        <!-- 메인 카드 -->
+        <div class="card" style="border: none; border-radius: 16px">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table align-items-center mb-0">
+                <thead style="background-color: #f7fafc">
                   <tr>
-                    <!--전체 선택 체크 박스-->
-                    <th class="text-center">
+                    <th class="text-center" style="padding: 14px">
                       <input type="checkbox" v-model="isAllChecked" />
                     </th>
                     <th
-                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder"
+                      class="text-center text-uppercase text-secondary text-xs font-weight-bolder"
+                      style="padding: 14px; color: #4a5568"
                     >
                       아이디
                     </th>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder">이름</th>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder">
+                    <th
+                      class="text-uppercase text-secondary text-xs font-weight-bolder"
+                      style="padding: 14px; color: #4a5568"
+                    >
+                      이름
+                    </th>
+                    <th
+                      class="text-uppercase text-secondary text-xs font-weight-bolder"
+                      style="padding: 14px; color: #4a5568"
+                    >
                       기관명
                     </th>
-                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder">
+                    <th
+                      class="text-uppercase text-secondary text-xs font-weight-bolder"
+                      style="padding: 14px; color: #4a5568"
+                    >
                       가입일
                     </th>
                     <th
-                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder"
+                      class="text-center text-uppercase text-secondary text-xs font-weight-bolder"
+                      style="padding: 14px; color: #4a5568"
                     >
                       상태
                     </th>
                     <th
-                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder"
+                      class="text-center text-uppercase text-secondary text-xs font-weight-bolder"
+                      style="padding: 14px; color: #4a5568"
                     >
                       관리
                     </th>
                     <th
-                      class="text-center text-uppercase text-secondary text-xxs font-weight-bolder"
+                      class="text-center text-uppercase text-secondary text-xs font-weight-bolder"
+                      style="padding: 14px; color: #4a5568"
                     >
                       수정
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="member in paginatedList" :key="member.member_id">
+                  <tr
+                    v-for="member in paginatedList"
+                    :key="member.member_id"
+                    :class="{
+                      'row-hover': canHover(member.member_confirm),
+                    }"
+                  >
                     <!-- 개별 선택 체크박스 -->
-                    <td class="align-middle text-center">
+                    <td class="align-middle text-center" style="padding: 14px">
                       <input type="checkbox" :value="member.member_id" v-model="checkedIds" />
                     </td>
-                    <td class="align-middle text-center">
-                      <p class="text-sm font-weight-bold mb-0">
+                    <td class="align-middle text-center" style="padding: 14px">
+                      <p class="text-xs font-weight-bold mb-0" style="color: #2d3748">
                         {{ member.member_id }}
                       </p>
                     </td>
-                    <td class="text-sm">
+                    <td class="text-xs" style="padding: 14px; color: #4a5568">
                       {{ member.member_name }}
                     </td>
-                    <td class="text-sm">
+                    <td class="text-xs" style="padding: 14px; color: #4a5568">
                       {{ member.center_name }}
                     </td>
-                    <td class="text-sm">
+                    <td class="text-xs" style="padding: 14px; color: #4a5568">
                       {{ member.member_date.substring(0, 10) }}
                     </td>
-                    <td class="align-middle text-center">
+                    <td class="align-middle text-center" style="padding: 14px">
                       <span
                         :class="{
                           badge: true,
@@ -276,37 +396,60 @@ const goToUserAdd = () => {
                           'bg-gradient-warning': member.member_confirm == 'l2',
                           'bg-gradient-danger': member.member_confirm == 'l3',
                         }"
+                        style="font-size: 11px"
                       >
                         {{ getStatus(member.member_confirm) }}
                       </span>
                     </td>
-                    <td class="align-middle text-center">
+                    <td class="align-middle text-center" style="padding: 14px">
                       <div
                         v-if="member.member_confirm == 'l2'"
                         class="d-flex gap-1 justify-content-center"
                       >
-                        <ArgonButton
-                          color="success"
-                          size="xs"
+                        <button
+                          class="btn btn-sm"
                           @click="handleApprove(member.member_id)"
+                          style="
+                            background-color: #48bb78;
+                            color: white;
+                            border: none;
+                            padding: 5px 14px;
+                            border-radius: 6px;
+                            font-size: 12px;
+                          "
                         >
                           승인
-                        </ArgonButton>
-                        <ArgonButton
-                          color="danger"
-                          size="xs"
+                        </button>
+                        <button
+                          class="btn btn-sm"
                           @click="handleReject(member.member_id)"
+                          style="
+                            background-color: #fc8181;
+                            color: white;
+                            border: none;
+                            padding: 5px 14px;
+                            border-radius: 6px;
+                            font-size: 12px;
+                          "
                         >
                           거절
-                        </ArgonButton>
+                        </button>
                       </div>
                       <span v-else class="text-xs text-secondary">-</span>
                     </td>
-                    <td class="align-middle text-center">
+                    <td class="align-middle text-center" style="padding: 14px">
                       <button
                         v-if="member.member_confirm === 'l1'"
-                        class="btn btn-sm btn-outline-secondary"
+                        class="btn btn-sm btn-no-hover"
                         @click="approvalAdminUpdate(member.member_id)"
+                        style="
+                          background-color: #f7fafc;
+                          color: #4a5568;
+                          border: 1px solid #e2e8f0;
+                          padding: 5px 14px;
+                          border-radius: 6px;
+                          font-size: 12px;
+                        "
                       >
                         수정하기
                       </button>
@@ -316,7 +459,7 @@ const goToUserAdd = () => {
               </table>
             </div>
             <!-- 페이지네이션 추가! -->
-            <div class="d-flex justify-content-center mt-3">
+            <div class="d-flex justify-content-center mt-3 mb-3">
               <argon-pagination color="success">
                 <!-- 이전 버튼 -->
                 <argon-pagination-item
@@ -348,3 +491,30 @@ const goToUserAdd = () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* hover 효과 */
+.row-hover {
+  transition: background-color 0.2s;
+}
+
+.row-hover:hover {
+  background-color: #f7fafc;
+}
+
+/* 수정하기 버튼 호버 제거 */
+.btn-no-hover {
+  transition: none !important;
+}
+
+.btn-no-hover:hover {
+  background-color: #f7fafc !important;
+  color: #4a5568 !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* 체크박스 색상 변경 */
+input[type='checkbox'] {
+  accent-color: #2d3748;
+}
+</style>
