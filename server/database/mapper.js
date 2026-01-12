@@ -7,6 +7,7 @@ const memberSql = require("./sqls/member.js");
 const centerSql = require("./sqls/center.js");
 const surveySql = require("./sqls/survey");
 const mypagesql = require("./sqls/myPage.js");
+const notificationSql = require("./sqls/notification.js");
 
 console.log(process.env.MARIADB_HOST);
 
@@ -18,7 +19,7 @@ const pool = mysql.createPool({
   connectionLimit: process.env.MARIADB_LIMIT,
 });
 
-//reservation
+//reservation, qna
 const rquery = async (sql, params = []) => {
   let conn = null;
   try {
@@ -100,6 +101,20 @@ const myPageQuery = async (selected, values) => {
     if (conn) conn.release(); // pool로 반환.
   }
 };
+//알림 추가
+const notificationQuery = async (selected, values) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    let executeSql = notificationSql[selected];
+    console.log("sql:", executeSql);
+    console.log("value:", values);
+    let result = (await conn.query(executeSql, values))[0];
+    return result;
+  } finally {
+    if (conn) conn.release();
+  }
+};
 
 module.exports = {
   rquery,
@@ -108,4 +123,5 @@ module.exports = {
   memberQuery,
   centerQuery,
   myPageQuery,
+  notificationQuery,
 };

@@ -2,7 +2,7 @@
   <div class="container">
     <!-- 헤더 -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h4 class="mb-0">조사지 등록</h4>
+      <h4 class="mb-0">지원서 등록</h4>
       <button class="btn btn-sm btn-secondary" @click="goBack">
         <i class="fas fa-list"></i> 목록으로
       </button>
@@ -63,10 +63,10 @@
             :class="{ active: activeTab === sIndex, show: activeTab === sIndex }"
           >
             <!-- 세부항목 삭제 버튼 -->
-            <div class="text-end mb-3" v-if="surveyInfo.subtitles.length > 1">
+            <div class="text-end mb-4" v-if="surveyInfo.subtitles.length > 1">
               <button
                 @click="deleteSubtitle(subtitle.id)"
-                class="btn btn-sm btn-danger"
+                class="btn btn-sm btn-outline-danger"
                 type="button"
               >
                 <i class="fas fa-trash"></i> 세부항목 삭제
@@ -96,12 +96,12 @@
 
             <hr />
 
-            <!-- 질문 목록 -->
+            <!-- 질문 목록 헤더 -->
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h6 class="mb-0">질문 목록</h6>
               <button
                 @click="addQuestion(subtitle.id)"
-                class="btn btn-sm btn-secondary"
+                class="btn btn-sm btn-outline-primary"
                 type="button"
               >
                 <i class="fas fa-plus"></i> 질문 추가
@@ -112,22 +112,21 @@
             <div
               v-for="(question, qIndex) in subtitle.questions"
               :key="question.id"
-              class="card mb-3"
+              class="question-card mb-3"
             >
-              <div class="card-body">
-                <!-- 질문 헤더 -->
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                  <span class="badge bg-primary">질문 {{ qIndex + 1 }}</span>
-                  <button
-                    v-if="subtitle.questions.length > 1"
-                    @click="deleteQuestion(subtitle.id, question.id)"
-                    class="btn btn-sm btn-warning"
-                    type="button"
-                  >
-                    <i class="fas fa-trash"></i> 질문 삭제
-                  </button>
-                </div>
+              <div class="question-header">
+                <span class="badge bg-primary">질문 {{ qIndex + 1 }}</span>
+                <button
+                  v-if="subtitle.questions.length > 1"
+                  @click="deleteQuestion(subtitle.id, question.id)"
+                  class="btn btn-sm btn-outline-danger"
+                  type="button"
+                >
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
 
+              <div class="question-body">
                 <!-- 질문 내용 -->
                 <div class="mb-3">
                   <label class="form-label">질문 내용</label>
@@ -145,7 +144,7 @@
                 </div>
 
                 <!-- 예/아니오일 때만 보임 -->
-                <div v-if="question.type === '예/아니오'" class="detail-option">
+                <div v-if="question.type === '예/아니오'">
                   <div class="form-check">
                     <input
                       class="form-check-input"
@@ -157,10 +156,12 @@
                       "예" 선택 시 추가 입력 받기
                     </label>
                   </div>
-
                   <!-- 체크박스 선택하면 안내 메시지 -->
-                  <div v-if="question.needDetail" class="alert alert-info mt-2" role="alert">
-                    <small>사용자가 "예"를 선택하면 사유와 날짜를 모두 입력받습니다.</small>
+                  <div v-if="question.needDetail" class="alert alert-info mt-2 mb-0">
+                    <small
+                      ><i class="fas fa-info-circle"></i> 사용자가 "예"를 선택하면 구체적 사유와
+                      날짜를 입력받습니다.</small
+                    >
                   </div>
                 </div>
               </div>
@@ -289,10 +290,35 @@ onMounted(() => {
 }
 
 .card {
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  box-shadow: none;
+  border: 1px solid #e9ecef;
 }
 
 .gap-2 {
-  gap: 0.5rem;
+  gap: 8px;
+}
+
+.question-card {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.question-body {
+  padding: 16px;
+}
+
+.btn-outline-danger,
+.btn-outline-primary {
+  border-width: 1px;
 }
 </style>
