@@ -71,9 +71,46 @@ const findplanningReviewById = async (no) => {
 };
 
 // 지원계획서 승인요청
-const addPlanningInfo = async (application_no, data) => {
-  let param = { application_no, ...data };
-  let post = await mysql.bquery("insertPlannginInfo", param);
+const addPlanningInfo = async (data, files) => {
+  let newGroupId = null;
+  if (files && files.length > 0) {
+    const [rows] = await mysql.bquery("getMaxGroupId");
+    newGroupId = rows.newGroupId; // 예: 100
+  }
+  const {
+    application_no,
+    planning_id,
+    planning_rejecter,
+    planning_start,
+    planning_end,
+    planning_title,
+    planning_content,
+  } = data;
+  let post = await mysql.bquery("insertPlannginInfo", [
+    application_no,
+    planning_id,
+    planning_rejecter,
+    planning_start,
+    planning_end,
+    planning_title,
+    planning_content,
+    newGroupId,
+  ]);
+  if (files && files.length > 0) {
+    const fileValues = files.map((file) => {
+      return [
+        newGroupId, // 1. attachment_group (INT)
+        file.originalname, // 2. attachment_orginal
+        file.path, // 3. attachment_path
+        new Date(), // 4. attachment_date
+        path.extname(file.originalname), // 5. attachment_filetype
+        String(file.size), // 6. attachment_size
+      ];
+    });
+
+    // 배열을 한 번 더 감싸서 전달 (Bulk Insert)
+    await mysql.bquery("insertAttachment", [fileValues]);
+  }
   return post;
 };
 
@@ -413,6 +450,7 @@ const getAttachmentList = async (groupId) => {
   try {
     // [수정] 대괄호 제거 (mapper.js 특성 반영)
     const rows = await mysql.bquery("getAttachmentList", [groupId]);
+    console.log("list", rows);
     return rows;
   } catch (err) {
     throw err;
@@ -422,6 +460,7 @@ const getAttachmentList = async (groupId) => {
 const getAttachmentFile = async (attachmentNo) => {
   try {
     const rows = await mysql.bquery("getAttachment", [attachmentNo]);
+    console.log("file", rows);
     return rows[0]; // 파일 정보 객체 리턴
   } catch (err) {
     throw err;

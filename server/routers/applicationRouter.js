@@ -14,11 +14,17 @@ try {
 
 const storage = multer.diskStorage({
   destination(req, file, done) {
-    done(null, "uploads/");
+    done(null, "../uploads/");
   },
   filename(req, file, done) {
+    file.originalname = Buffer.from(file.originalname, "latin1").toString(
+      "utf8"
+    );
+    console.log(file.originalname);
     const ext = path.extname(file.originalname);
     const basename = path.basename(file.originalname, ext);
+
+    // 저장될 파일명 생성
     done(null, basename + "_" + Date.now() + ext);
   },
 });
@@ -102,13 +108,25 @@ router.get("/planningReview/:no", async (req, res) => {
 });
 
 // 지원계획서 승인요청(담당자)
-router.post("/submitPlanningInfo/:no", async (req, res) => {
-  let data = req.body;
-  console.log(data);
-  let no = req.params.no;
-  let post = await applicationService.addPlanningInfo(no, data);
-  res.send(post);
-});
+router.post(
+  "/submitPlanningInfo/:no",
+  upload.array("files"),
+  async (req, res) => {
+    let no = req.params.no;
+    const serviceData = {
+      application_no: req.params.no,
+      ...req.body,
+    };
+    console.log("serviceData: ", serviceData);
+    // Service 호출 (req.files 전달)
+    const result = await applicationService.addPlanningInfo(
+      serviceData,
+      req.files
+    );
+
+    res.send(result);
+  }
+);
 
 // 반려된 지원계획서 승인(관리자)
 router.put("/successPlanningInfo/:no", async (req, res) => {
@@ -346,10 +364,15 @@ router.get("/download/:attachment_no", async (req, res) => {
     // __dirname은 현재 파일(routers 폴더) 위치이므로 상위로 이동(..) 필요할 수 있음
     // 프로젝트 구조에 따라 경로 조정 필요 (절대경로 추천)
     const filePath = path.join(__dirname, "../", fileInfo.attachment_path);
+    const originalName = fileInfo.attachment_orginal;
 
-    // res.download(실제경로, 원본파일명)
-    // 이렇게 하면 사용자는 "file_1234.jpg"가 아니라 "원본이름.jpg"로 다운받게 됨
-    res.download(filePath, fileInfo.attachment_orginal, (err) => {
+    const encodedName = encodeURIComponent(originalName);
+
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename*=UTF-8''${encodedName}`
+    );
+    res.sendFile(filePath, (err) => {
       if (err) {
         console.error("다운로드 에러:", err);
         res.status(500).send("다운로드 중 에러 발생");

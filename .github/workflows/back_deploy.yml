@@ -1,0 +1,39 @@
+name: Backend Deploy
+
+on:
+  push:
+    paths:
+      - "server/**"
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Upload to Server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          password: ${{ secrets.KEY }}
+          source: "server/*"
+          target: /root/server
+          strip_components: 1
+          rm: true
+
+      - name: Restart Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          password: ${{ secrets.KEY }}
+          script: |
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            cd /root/server
+            cp ../.env .env
+            npm install  --omit=dev
+            pm2 reload app || pm2 start app.js --name app

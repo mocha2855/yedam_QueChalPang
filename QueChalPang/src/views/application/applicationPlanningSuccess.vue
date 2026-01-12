@@ -123,12 +123,12 @@ const changePlanningStatus = async (data) => {
                       <label for="content" class="col-form-label">내용</label>
                     </div>
                     <div class="col-10">
-                      <input
-                        type="text"
+                      <textarea 
                         name="content"
                         id="content"
                         v-model="plan.planning_content"
                         class="form-control"
+                        rows="8"
                         readonly
                       />
                     </div>
@@ -270,12 +270,12 @@ const changePlanningStatus = async (data) => {
                       <label for="content" class="col-form-label">내용</label>
                     </div>
                     <div class="col-10">
-                      <input
-                        type="text"
+                      <textarea
                         name="content"
                         id="content"
                         v-model="plan.planning_content"
                         class="form-control"
+                        rows="8"
                         readonly
                       />
                     </div>

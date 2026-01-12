@@ -115,7 +115,7 @@
 
                 <div class="row g-3 mb-2 align-items-center">
                   <div class="col-2">
-                    <label for="title" class="col-form-label">결과</label>
+                    <label for="title" class="col-form-label">제목</label>
                   </div>
                   <div class="col-10">
                     <input

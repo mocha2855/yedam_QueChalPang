@@ -7,7 +7,7 @@ import { reactive } from 'vue'
 import axios from 'axios'
 import ArgonAlert from '@/components/ArgonAlert.vue'
 
-//주소api에서 쓰는 ref
+//주소api에서 쓰는 refs
 const address = ref('')
 const detailAddress = ref('')
 const extraAddress = ref('')
