@@ -58,6 +58,12 @@ manager_sub,
 (select min(status) from application where dependant_no=d.dependant_no) as status
 from dependant d where d.member_id=?`;
 
+// 관리자 직접 등록용 (승인완료 'l1')
+const insertManagerDirect = `
+insert into 
+member(member_id,member_pass,member_name,member_email,member_phone,member_address,center_no,member_authority,member_confirm) 
+values(?,sha2(?,256),?,?,?,?,?,?,'l1')`;
+
 const selectDependants2 = `select dependant_address,
 dependant_birth,
 dependant_date,
@@ -165,4 +171,5 @@ module.exports = {
   updateMemberInfoPassword,
   deleteMemberById,
   selectDependants2,
+  insertManagerDirect,
 };
