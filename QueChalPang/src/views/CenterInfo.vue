@@ -24,6 +24,7 @@ const center = reactive({
 })
 
 onBeforeMount(async () => {
+  console.log(route)
   await store.getInfo(getNo())
   center.name = store.centerInfo.center_name
   center.address = store.centerInfo.center_address.replaceAll('|', ' ')
