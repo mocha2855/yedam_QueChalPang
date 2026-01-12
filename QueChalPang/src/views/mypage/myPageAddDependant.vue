@@ -386,6 +386,7 @@ const completeChangeInfo = async () => {
           timer: 1500,
         })
         changeMangerInfo.value = true
+        router.push({ path: `/myPageList/${counter.isLogIn.info.member_id}` })
         return
       })
   } else if (counter.isLogIn.info.member_authority == 'a1') {
@@ -408,6 +409,7 @@ const completeChangeInfo = async () => {
           timer: 1500,
         })
         changeMangerInfo.value = true
+        router.push({ path: `/myPageGuardianList` })
         return
       })
   }

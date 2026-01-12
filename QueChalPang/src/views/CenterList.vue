@@ -122,7 +122,11 @@ const handleSuccess = (no) => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="center in centerSearchList" :key="center.center_no">
+                  <tr
+                    v-for="center in centerSearchList"
+                    :key="center.center_no"
+                    style="cursor: pointer"
+                  >
                     <!-- <td><ArgonCheckbox :id="center.center_no" :checked="checked" /></td> -->
                     <td class="align-middle text-center">
                       <p class="text-sm font-weight-bold mb-0">

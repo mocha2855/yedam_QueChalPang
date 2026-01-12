@@ -1,4 +1,5 @@
 const mysql = require("../database/mapper");
+const path = require("path");
 
 // 지원자 정보
 const dependantFindById = async (no) => {
@@ -223,10 +224,64 @@ const findResultReviewById = async (no) => {
 };
 
 // 지원결과서 승인요청
-const addResultInfo = async (planning_no, data) => {
-  let param = { planning_no, ...data };
-  let post = await mysql.bquery("insertResultInfo", param);
-  return post;
+const addResultInfo = async (data, files) => {
+  try {
+    // ---------------------------------------------------------
+    // [STEP 1] 그룹 ID 채번 (MAX + 1 전략)
+    // ---------------------------------------------------------
+    let newGroupId = null;
+    if (files && files.length > 0) {
+      const [rows] = await mysql.bquery("getMaxGroupId");
+      newGroupId = rows.newGroupId; // 예: 100
+    }
+
+    // ---------------------------------------------------------
+    // [STEP 2] 결과 정보 저장 (부모 테이블)
+    // ---------------------------------------------------------
+    const {
+      planningNo,
+      planning_id,
+      planning_rejecter,
+      result_title,
+      result_content,
+      planning_start,
+      planning_end,
+    } = data;
+
+    const result = await mysql.bquery("insertResultInfo", [
+      planningNo,
+      planning_id,
+      planning_rejecter,
+      result_title,
+      result_content,
+      planning_start,
+      planning_end,
+      newGroupId, // ★ 채번한 정수형 ID 저장
+    ]);
+
+    // ---------------------------------------------------------
+    // [STEP 3] 첨부파일 저장 (파일이 있을 경우)
+    // ---------------------------------------------------------
+    if (files && files.length > 0) {
+      const fileValues = files.map((file) => {
+        return [
+          newGroupId, // 1. attachment_group (INT)
+          file.originalname, // 2. attachment_orginal
+          file.path, // 3. attachment_path
+          new Date(), // 4. attachment_date
+          path.extname(file.originalname), // 5. attachment_filetype
+          String(file.size), // 6. attachment_size
+        ];
+      });
+
+      // 배열을 한 번 더 감싸서 전달 (Bulk Insert)
+      await mysql.bquery("insertAttachment", [fileValues]);
+    }
+
+    return { groupId: newGroupId, insertResult: result.data };
+  } catch (err) {
+    throw err;
+  }
 };
 
 // 지원결과서 승인(관리자)
@@ -252,7 +307,25 @@ const addAppHistory = async (input) => {
   let { appNo, id, reason } = input;
   let result = await mysql.bquery("insertAppHistory", [appNo, id, reason]);
 };
-
+// 파일 목록 조회
+const getAttachmentList = async (groupId) => {
+  try {
+    // [수정] 대괄호 제거 (mapper.js 특성 반영)
+    const rows = await mysql.bquery("getAttachmentList", [groupId]);
+    return rows;
+  } catch (err) {
+    throw err;
+  }
+};
+// 단일 파일 정보 조회 (다운로드용)
+const getAttachmentFile = async (attachmentNo) => {
+  try {
+    const rows = await mysql.bquery("getAttachment", [attachmentNo]);
+    return rows[0]; // 파일 정보 객체 리턴
+  } catch (err) {
+    throw err;
+  }
+};
 module.exports = {
   dependantFindById,
   findManagerByDependant,
@@ -277,4 +350,6 @@ module.exports = {
   applicationApproveInfo,
   updateApp,
   addAppHistory,
+  getAttachmentList,
+  getAttachmentFile,
 };
