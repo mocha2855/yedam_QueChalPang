@@ -77,6 +77,25 @@ const addPlanningInfo = async (application_no, data) => {
   return post;
 };
 
+// 지원계획서 임시저장 0111
+const addPlanSaveInfo = async (application_no, data) => {
+  let param = { application_no, ...data };
+  let post = await mysql.bquery("insertPlanSaveInfo", param);
+  return post;
+};
+
+// 지원계획서 임시저장(이미 한 번 했을 경우) 0111
+const modifyFirstSaveInfo = async (application_no, data) => {
+  let post = await mysql.bquery("updateFirstSaveInfo", [data, application_no]);
+  return post;
+};
+
+// 지원계획서 임시저장 삭제 0111
+const removeFirstSaveInfo = async (application_no) => {
+  let post = await mysql.bquery("deleteFirstSaveInfo", application_no);
+  return post;
+};
+
 // 지원계획서 승인(관리자)
 const updatePlanningInfo = async (planning_no, data) => {
   let post = await mysql.bquery("sucessPlanningUpdateInfo", [
@@ -307,6 +326,28 @@ const addAppHistory = async (input) => {
   let { appNo, id, reason } = input;
   let result = await mysql.bquery("insertAppHistory", [appNo, id, reason]);
 };
+
+// 지원결과서 임시저장 0111
+const addFirstResultInfo = async (data) => {
+  let post = await mysql.bquery("insertFirstResultInfo", data);
+  return post;
+};
+
+// 지원결과서 임시저장(이미 한 번 했을 경우) 0111
+const modifyResultFirstSaveInfo = async (planning_no, data) => {
+  let post = await mysql.bquery("updateResultFirstSaveInfo", [
+    data,
+    planning_no,
+  ]);
+  return post;
+};
+
+// 지원결과서 임시저장 삭제 0111
+const removeResultFirstSaveInfo = async (planning_no) => {
+  let post = await mysql.bquery("deleteResultFirstSaveInfo", planning_no);
+  return post;
+};
+
 // 파일 목록 조회
 const getAttachmentList = async (groupId) => {
   try {
@@ -350,6 +391,12 @@ module.exports = {
   applicationApproveInfo,
   updateApp,
   addAppHistory,
+  addPlanSaveInfo, // 0111 임시저장
+  modifyFirstSaveInfo, // 0111 임시저장(이미 한번 했을 경우)
+  removeFirstSaveInfo, // 0111 임시저장 삭제
+  addFirstResultInfo, // 0111 결과서 임시저장
+  modifyResultFirstSaveInfo, // 0111 결과서 임시저장(이미 한번 했을 경우)
+  removeResultFirstSaveInfo, // 0111 결과서 임시저장 삭제
   getAttachmentList,
   getAttachmentFile,
 };
