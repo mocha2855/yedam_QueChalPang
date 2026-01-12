@@ -1,13 +1,13 @@
 const mysql = require("../database/mapper");
 
 // 지원자 정보
-const dependantFindById = async (no) => {
+const dependantFindById = async no => {
   let post = mysql.bquery("dependantSelectById", no);
   return post;
 };
 
 //해당 지원자와 똑같은 센터의 담당자 조회
-const findManagerByDependant = async (deptNo) => {
+const findManagerByDependant = async deptNo => {
   const result = await mysql.bquery("selectManagerByDependant", deptNo);
   return result;
 };
@@ -23,7 +23,7 @@ const assignManagerInfo = async (applicationNo, data) => {
 };
 
 // 대기단계 선택시 상태확인
-const findById = async (no) => {
+const findById = async no => {
   let post = await mysql.bquery("selectById", no);
   return post;
 };
@@ -58,13 +58,13 @@ const applicationRejectInfo = async (no, data) => {
 };
 
 // 지원계획서 갯수 조회(계획서 추가시 숫자 파악 위해)
-const findPlanningById = async (no) => {
+const findPlanningById = async no => {
   let post = await mysql.bquery("selectPlanningById", no);
   return post;
 };
 
 // 검토 중, 반려, 승인 지원계획서 불러오기
-const findplanningReviewById = async (no) => {
+const findplanningReviewById = async no => {
   let post = await mysql.bquery("selectPlanningReviewById", no);
   return post;
 };
@@ -73,6 +73,25 @@ const findplanningReviewById = async (no) => {
 const addPlanningInfo = async (application_no, data) => {
   let param = { application_no, ...data };
   let post = await mysql.bquery("insertPlannginInfo", param);
+  return post;
+};
+
+// 지원계획서 임시저장 0111
+const addPlanSaveInfo = async (application_no, data) => {
+  let param = { application_no, ...data };
+  let post = await mysql.bquery("insertPlanSaveInfo", param);
+  return post;
+};
+
+// 지원계획서 임시저장(이미 한 번 했을 경우) 0111
+const modifyFirstSaveInfo = async (application_no, data) => {
+  let post = await mysql.bquery("updateFirstSaveInfo", [data, application_no]);
+  return post;
+};
+
+// 지원계획서 임시저장 삭제 0111
+const removeFirstSaveInfo = async application_no => {
+  let post = await mysql.bquery("deleteFirstSaveInfo", application_no);
   return post;
 };
 
@@ -184,7 +203,7 @@ const insertAppById = async (input, id, authority) => {
     id,
   ]);
   let appNo = appResult.insertId;
-  const bulkData = answerList.map((item) => {
+  const bulkData = answerList.map(item => {
     return [
       item.survey_qitem_no,
       appNo,
@@ -199,13 +218,13 @@ const insertAppById = async (input, id, authority) => {
 };
 
 // 지원신청서 조회
-const findAppByNo = async (no) => {
+const findAppByNo = async no => {
   let result = await mysql.bquery("selectAppByNo", no);
   return result;
 };
 // 지원신청서 수정
-const updateApp = async (updateList) => {
-  const bulkData = updateList.map((item) => [
+const updateApp = async updateList => {
+  const bulkData = updateList.map(item => [
     item.app_answer_no, // 1
     item.survey_qitem_no, // 2 (필수값)
     item.application_no, // 3 (필수값)
@@ -217,7 +236,7 @@ const updateApp = async (updateList) => {
   return result;
 };
 // 검토 중, 반려, 승인 지원계획서 불러오기
-const findResultReviewById = async (no) => {
+const findResultReviewById = async no => {
   let post = await mysql.bquery("selectResultReviewById", no);
   return post;
 };
@@ -248,9 +267,30 @@ const updateChangingResultInfo = async (result_no, data) => {
 };
 
 // 수정사유 등록
-const addAppHistory = async (input) => {
+const addAppHistory = async input => {
   let { appNo, id, reason } = input;
   let result = await mysql.bquery("insertAppHistory", [appNo, id, reason]);
+};
+
+// 지원결과서 임시저장 0111
+const addFirstResultInfo = async data => {
+  let post = await mysql.bquery("insertFirstResultInfo", data);
+  return post;
+};
+
+// 지원결과서 임시저장(이미 한 번 했을 경우) 0111
+const modifyResultFirstSaveInfo = async (planning_no, data) => {
+  let post = await mysql.bquery("updateResultFirstSaveInfo", [
+    data,
+    planning_no,
+  ]);
+  return post;
+};
+
+// 지원결과서 임시저장 삭제 0111
+const removeResultFirstSaveInfo = async planning_no => {
+  let post = await mysql.bquery("deleteResultFirstSaveInfo", planning_no);
+  return post;
 };
 
 module.exports = {
@@ -277,4 +317,10 @@ module.exports = {
   applicationApproveInfo,
   updateApp,
   addAppHistory,
+  addPlanSaveInfo, // 0111 임시저장
+  modifyFirstSaveInfo, // 0111 임시저장(이미 한번 했을 경우)
+  removeFirstSaveInfo, // 0111 임시저장 삭제
+  addFirstResultInfo, // 0111 결과서 임시저장
+  modifyResultFirstSaveInfo, // 0111 결과서 임시저장(이미 한번 했을 경우)
+  removeResultFirstSaveInfo, // 0111 결과서 임시저장 삭제
 };

@@ -55,6 +55,4 @@ defineEmits(['confirm', 'cancel'])
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
 }
-
-
 </style>

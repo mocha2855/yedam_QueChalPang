@@ -54,7 +54,7 @@
                       {{ member.dependant_gender }}
                     </td>
                     <td class="align-middle text-center" @click="goDetail(member.dependant_no)">
-                      {{ member.dependant_birth }}
+                      {{ member.dependant_age }}
                     </td>
 
                     <td class="align-middle text-center" @click="goDetail(member.dependant_no)">
