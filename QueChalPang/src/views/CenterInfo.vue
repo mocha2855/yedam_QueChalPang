@@ -1,11 +1,10 @@
 <script setup>
 import { useCenterStore } from '@/stores/center'
 import { useRouter, useRoute } from 'vue-router'
-import { onBeforeMount, reactive, ref } from 'vue'
+import { onBeforeMount, reactive } from 'vue'
 import ArgonButton from '@/components/ArgonButton.vue'
 import ArgonInput from '@/components/ArgonInput.vue'
-import ArgonAlert from '@/components/ArgonAlert.vue'
-
+import Swal from 'sweetalert2'
 import axios from 'axios'
 const store = useCenterStore()
 const route = useRoute()
@@ -23,17 +22,7 @@ const center = reactive({
   email: '',
   lunch: '',
 })
-// 알림전용변수
-const msg = ref('')
-const argonAlert = ref(false)
-// 알림작동 시키는 함수
-const showAlert = (message) => {
-  msg.value = message
-  argonAlert.value = true
-  setTimeout(() => {
-    argonAlert.value = false
-  }, 1500)
-}
+
 onBeforeMount(async () => {
   await store.getInfo(getNo())
   center.name = store.centerInfo.center_name
@@ -66,31 +55,51 @@ const chageDate = (input) => {
 const toUpdate = () => {
   router.push({ name: 'centerUpdate', params: { no: getNo() } })
 }
-const endCenter = async () => {
-  let result = await axios.put(`/api/centerEnd/${getNo()}`)
-  if (result.affectedRows == 0) {
-    showAlert('처리가 되지않았습니다.')
-    return
-  } else {
-    alert('센터 운영이 종료되었습니다.')
-    window.location.reload()
-  }
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  },
+})
+const endCenter = () => {
+  Swal.fire({
+    title: '정말로 종료 하시겠습니까?',
+    text: '다시 되돌릴 수 없습니다. 신중하세요.',
+    icon: 'warning',
+    buttonsStyling: false,
+    showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+    confirmButtonText: '종료', // confirm 버튼 텍스트 지정
+    cancelButtonText: '취소', // cancel 버튼 텍스트 지정
+    customClass: {
+      confirmButton: 'my-swal-confirm',
+      cancelButton: 'my-swal-cancel',
+    },
+  }).then(async (result) => {
+    // 만약 Promise리턴을 받으면,
+    if (result.isConfirmed) {
+      // 만약 모달창에서 confirm 버튼을 눌렀다면
+
+      let result = await axios.put(`/api/centerEnd/${getNo()}`)
+      if (result.affectedRows == 0) {
+        Toast.fire({
+          icon: 'error',
+          title: '처리가 되지않았습니다.',
+        })
+        return
+      } else {
+        Swal.fire('센터 운영이 종료되었습니다.', 'success').then(window.location.reload())
+      }
+    }
+  })
 }
 </script>
 
 <template>
-  <div class="fixed-top d-flex justify-content-end mt-6">
-    <div class="col-4">
-      <ArgonAlert
-        v-show="argonAlert"
-        color="warning"
-        icon="ni ni-bell-55"
-        dismissible
-        @close="argonAlert = false"
-        >{{ msg }}</ArgonAlert
-      >
-    </div>
-  </div>
   <div class="py-4 container-fluid">
     <div class="row">
       <div class="col-12">
@@ -249,3 +258,39 @@ const endCenter = async () => {
     </div>
   </div>
 </template>
+<style>
+/* 확인(종료) 버튼 - 빨간색 */
+.my-swal-confirm {
+  background-color: #e74c3c !important; /* 빨간색 */
+  color: white;
+  border: none;
+  border-radius: 5px; /* 모서리 곡률 */
+  padding: 10px 30px; /* 상하 좌우 여백 (크기 조절) */
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-right: 10px; /* 두 버튼 사이 간격 */
+  min-width: 100px; /* 최소 가로 길이 고정 */
+}
+
+/* 취소 버튼 - 회색 */
+.my-swal-cancel {
+  background-color: #6c757d !important; /* 회색 */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 30px; /* 확인 버튼과 동일하게 설정 */
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  min-width: 100px; /* 최소 가로 길이 고정 */
+}
+
+/* 마우스 올렸을 때 효과 (선택사항) */
+.my-swal-confirm:hover {
+  background-color: #c0392b !important;
+}
+.my-swal-cancel:hover {
+  background-color: #5a6268 !important;
+}
+</style>
