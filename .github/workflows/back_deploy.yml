@@ -20,6 +20,7 @@ jobs:
           password: ${{ secrets.KEY }}
           source: "server/*"
           target: /root/server
+          strip_components: 1
           rm: true
 
       - name: Restart Server
