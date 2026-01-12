@@ -33,7 +33,7 @@
 
     <!-- 반려 검토중(관리자 & 담당자 같이 줘야함) -->
     <PlanningRejectedReviewList
-      v-if="memAuthority === 'a3' && application.planningChangingReview?.length > 0"
+      v-if="(memAuthority === 'a3' || memAuthority === 'a1') && application.planningChangingReview?.length > 0"
       :mem-authority="memAuthority"
       :plans="application.planningChangingReview"
       @approve="approvePlan"
@@ -84,6 +84,8 @@ const refresh = async () => {
 
 onBeforeMount(async () => {
   await application.countPlanning(route.params.id)
+  await refresh()
+
   addCount.value = application.planned
 
   if (addCount.value !== 0) {

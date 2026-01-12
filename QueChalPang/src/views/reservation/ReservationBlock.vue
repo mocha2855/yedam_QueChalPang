@@ -199,7 +199,7 @@ const calendarAttrs = computed(() => [
           />
 
           <div class="mt-3 small text-muted">
-            * 점심시간/예약된 시간은 잠금 처리되어 변경할 수 없습니다.
+            * 점심시간은 변경할 수 없습니다.
           </div>
         </div>
       </div>
