@@ -26,6 +26,8 @@ export const useApplicationStore = defineStore('application', {
     resultChanging: [],
     resultChangingReview: [],
     resultfirstSave: [],
+
+    attachmentFiles: [],
   }),
 
   actions: {
@@ -296,6 +298,40 @@ export const useApplicationStore = defineStore('application', {
         resultRejected: this.resultRejected,
         resultChanging: this.resultChanging,
         resultChangingReview: this.resultChangingReview,
+      }
+    },
+    async getFile(e) {
+      console.log(e.target.files)
+      this.attachmentFiles.value = Array.from(e.target.files)
+      console.log('선택된 파일들:', this.attachmentFiles.value)
+    },
+    async downloadFile(attachmentNo) {
+      // 백엔드 다운로드 API 주소를 호출하여 브라우저가 다운로드하게 함
+      window.location.href = `http://localhost:3000/api/download/${attachmentNo}`
+      // 포트번호(3000)나 도메인은 환경에 맞게 수정하세요.
+      // 프록시가 설정되어 있다면 '/api/download/...' 만 써도 됩니다.
+    },
+    async fetchFilesForPlans(plans) {
+      // 리스트가 비어있으면 종료
+      if (!plans || plans.length === 0) return
+      console.log(plans)
+      // 리스트 하나하나(plan)를 꺼내서 확인
+      for (const plan of plans) {
+        // 1. 그룹 ID가 있는지 확인 (파일이 있는 결과서인지)
+        if (plan.attachment_no && plan.attachment_no !== 0) {
+          try {
+            // 2. 백엔드에 파일 목록 요청
+            const res = await axios.get(`/api/attachments/${plan.attachment_no}`)
+
+            // 3. 가져온 파일 목록을 해당 plan 객체 안에 'fileList'라는 이름으로 심어줌
+            // 이렇게 해야 템플릿(HTML)에서 v-for="file in plan.fileList"로 보여줄 수 있음
+            plan.fileList = res.data
+
+            console.log(`파일 로드 완료 (그룹 ${plan.attachment_no}):`, plan.fileList)
+          } catch (err) {
+            console.error(`파일 목록 조회 실패 (Group: ${plan.attachment_no})`, err)
+          }
+        }
       }
     },
   },

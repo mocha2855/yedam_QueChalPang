@@ -186,14 +186,22 @@ const onSubmitCreate = async (payload) => {
 
     return
   }
-
-  await axios.post('/api/submitPlanningInfo/' + route.params.id, {
-    planning_id: application.dependantInfo.manager_id,
-    planning_rejecter: application.dependantInfo.application_rejector,
-    planning_start: payload.planning_start,
-    planning_end: payload.planning_end,
-    planning_title: payload.planning_title,
-    planning_content: payload.planning_content,
+  const finalForm = new FormData()
+  finalForm.append('planning_id', application.dependantInfo.manager_id)
+  finalForm.append('planning_rejecter', application.dependantInfo.application_rejector)
+  finalForm.append('planning_start', payload.planning_start)
+  finalForm.append('planning_end', payload.planning_end)
+  finalForm.append('planning_title', payload.planning_title)
+  finalForm.append('planning_content', payload.planning_content)
+  if (application.attachmentFiles.value.length > 0) {
+    application.attachmentFiles.value.forEach((file) => {
+      finalForm.append('files', file)
+    })
+  }
+  await axios.post('/api/submitPlanningInfo/' + route.params.id, finalForm, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
   })
 
   alert('승인요청 완료')

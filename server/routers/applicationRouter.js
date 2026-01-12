@@ -14,7 +14,7 @@ try {
 
 const storage = multer.diskStorage({
   destination(req, file, done) {
-    done(null, "uploads/");
+    done(null, "../uploads/");
   },
   filename(req, file, done) {
     file.originalname = Buffer.from(file.originalname, "latin1").toString(
@@ -108,13 +108,25 @@ router.get("/planningReview/:no", async (req, res) => {
 });
 
 // 지원계획서 승인요청(담당자)
-router.post("/submitPlanningInfo/:no", async (req, res) => {
-  let data = req.body;
-  console.log(data);
-  let no = req.params.no;
-  let post = await applicationService.addPlanningInfo(no, data);
-  res.send(post);
-});
+router.post(
+  "/submitPlanningInfo/:no",
+  upload.array("files"),
+  async (req, res) => {
+    let no = req.params.no;
+    const serviceData = {
+      application_no: req.params.no,
+      ...req.body,
+    };
+    console.log("serviceData: ", serviceData);
+    // Service 호출 (req.files 전달)
+    const result = await applicationService.addPlanningInfo(
+      serviceData,
+      req.files
+    );
+
+    res.send(result);
+  }
+);
 
 // 반려된 지원계획서 승인(관리자)
 router.put("/successPlanningInfo/:no", async (req, res) => {
