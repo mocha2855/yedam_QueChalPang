@@ -19,7 +19,7 @@ jobs:
           username: ${{ secrets.USER }}
           password: ${{ secrets.KEY }}
           source: "server/*"
-          target: /root/server
+          target: /root
           rm: true
 
       - name: Restart Server

@@ -9,7 +9,7 @@ router.post("/meetingLog", async (req, res) => {
     const { resv_id, member_id, log_title, log_content } = req.body;
     console.log(req.body);
 
-    // 필수값 체크
+    // 필수값 체크d
     if (!resv_id || !member_id || !log_title || !log_content) {
       return res.status(400).json({
         message: "missing fields",
