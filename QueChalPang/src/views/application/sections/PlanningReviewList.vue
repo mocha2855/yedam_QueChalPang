@@ -44,7 +44,7 @@
             <div class="row g-3 mb-2 align-items-center">
               <div class="col-2"><label class="col-form-label">내용</label></div>
               <div class="col-10">
-                <textarea v-model="plan.planning_content" class="form-control" readonly />
+                <textarea v-model="plan.planning_content" class="form-control" rows="8" readonly />
               </div>
             </div>
 

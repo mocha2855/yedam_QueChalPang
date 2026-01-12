@@ -10,6 +10,10 @@ const findAllCenter = async (key, value, badge) => {
     ]);
     return result;
   }
+  //badge 없으면: 전체조회(이거 살려야해요..없으면 시스템관리자에서 안보임)
+  // if (!badge.trim()) {
+  //   return await mysql.centerQuery("selectAllCenterWithoutBadge", [key, value]);
+  // }
 
   const badgeArray = badge.replaceAll("'", "").split(",");
   let result = await mysql.centerQuery("searchAllCenter", [

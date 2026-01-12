@@ -66,41 +66,43 @@ const closeModal = () => {
         <table class="table align-items-center mb-0">
           <thead>
             <tr>
-              <th class="text-primary text-lg align-middle text-center">보호자</th>
-              <th class="text-primary text-lg align-middle text-center">지원자</th>
-              <th class="text-primary text-lg align-middle text-center">예약 날짜</th>
-              <th class="text-primary text-lg align-middle text-center">예약 상태</th>
-              <th class="text-primary text-lg align-middle text-center">상담 시간</th>
-              <th class="text-primary text-lg align-middle text-center">상태변경</th>
+              <th class="text-secondary opacity-7">보호자</th>
+              <th class="text-secondary opacity-7">지원자</th>
+              <th class="text-secondary opacity-7">예약 날짜</th>
+              <th class="text-secondary opacity-7">예약 상태</th>
+              <th class="text-secondary opacity-7">상담 시간</th>
+              <th class="text-secondary opacity-7 px-6">상태변경</th>
             </tr>
           </thead>
 
           <tbody>
             <tr v-for="r in pendingReservedList" :key="r.resv_id">
-              <td class="align-middle text-center"> 
-                <p class="text-sm font-weight-bold mb-0">{{ r.guardian_name }}</p>
+              <td>
+                <h6 class="mb-0 mx-3 text-sm">{{ r.guardian_name }}</h6>
               </td>
-              <td class="align-middle text-center">
-                <p class="text-sm font-weight-bold mb-0">{{ r.dependant_name }}</p>
+              <td>
+                <h6 class="mb-0 mx-3 text-sm">{{ r.dependant_name }}</h6>
               </td>
 
-              <td class="align-middle text-center">
-                <p class="text-sm font-weight-bold mb-0">
+              <td>
+                <h6 class="mb-0 mx-3 text-sm">
                   {{ r.start_at.slice(0, 10) }}
-                </p>
+                </h6>
               </td>
 
-              <td class="align-middle text-center">
-                <p class="text-sm font-weight-bold mb-0">
+              <td>
+                <h6 class="mb-0 mx-3 px-2 text-sm">
                   {{ statusText(r.resv_status) }}
-                </p>
+                </h6>
               </td>
 
-              <td class="text-sm font-weight-bold mb-0">
-                {{ timeText(r.start_at) }}
+              <td>
+                <h6 class="mb-0 mx-3 px-2 text-sm">
+                  {{ timeText(r.start_at) }}
+                </h6>
               </td>
 
-              <td class="align-middle">
+              <td>
                 <button class="btn btn-success btn-sm me-2" v-on:click="openAcceptModal(r)">
                   <!-- openAcceptModel(r)의 r은 현재 클릭한 행의 데이터들.  -->
                   수락
@@ -141,10 +143,10 @@ const closeModal = () => {
 
 /* 테이블 헤더 */
 .table thead th {
-  font-size: 0.75rem;          /* 헤더 글씨 작게 */
+  font-size: 0.75rem; /* 헤더 글씨 작게 */
   font-weight: 600;
-  color: #8392ab;              /* Argon 회색 톤 */
-  text-transform: none;        /* 대문자 변형 방지 */
+  color: #8392ab; /* Argon 회색 톤 */
+  text-transform: none; /* 대문자 변형 방지 */
   letter-spacing: -0.2px;
   padding: 0.9rem 1rem;
   white-space: nowrap;
@@ -227,6 +229,4 @@ const closeModal = () => {
 .table {
   min-width: 720px;
 }
-
-
 </style>
