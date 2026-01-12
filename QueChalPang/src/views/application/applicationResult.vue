@@ -457,6 +457,7 @@
                   id="startDate"
                   v-model="plan.planning_start"
                   class="form-control"
+                  readonly
                 />
               </div>
               <div class="col-3">
@@ -466,6 +467,7 @@
                   id="endDate"
                   v-model="plan.planning_end"
                   class="form-control"
+                  readonly
                 />
               </div>
               <div class="col-2">
@@ -484,7 +486,7 @@
             </div>
             <div class="row g-3 mb-2 align-items-center">
               <div class="col-2">
-                <label for="title" class="col-form-label">결과</label>
+                <label for="title" class="col-form-label">결과제목</label>
               </div>
               <div class="col-10">
                 <input
@@ -493,6 +495,7 @@
                   id="title"
                   v-model="plan.result_title"
                   class="form-control"
+                  readonly
                 />
               </div>
             </div>
@@ -506,6 +509,8 @@
                   id="content"
                   v-model="plan.result_content"
                   class="form-control"
+                  rows="8"
+                  readonly
                 />
               </div>
             </div>

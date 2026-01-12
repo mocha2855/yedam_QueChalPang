@@ -114,7 +114,7 @@ const submitAnswer = async () => {
           <textarea
             v-model="answerText"
             class="textarea"
-            rows="6"
+            rows="8"
             placeholder="답변 내용을 입력하세요"
           />
         </div>
