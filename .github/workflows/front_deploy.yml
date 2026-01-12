@@ -5,7 +5,7 @@ on:
     paths:
       - "QueChalPang/**"
     branches:
-      - QueChalPang_SJW
+      - main
 jobs:
   deploy:
     runs-on: ubuntu-latest
