@@ -28,9 +28,16 @@ const getAdminCenterList = async () => {
         key: 'center_name',
         value: '',
         badge: '',
+        _t: Date.now(),
+      },
+      headers: {
+        'Cache-Control': 'no-cache',
       },
     })
+    console.log(result.data)
+
     centerList.value = result.data
+    console.log(centerList.value)
 
     if (centerList.value.length > 0) {
       selectedCenter.value = centerList.value[0].center_no
@@ -346,7 +353,7 @@ onBeforeMount(() => {
 
 .card-header h6 {
   font-size: 1.05rem;
-  font-weight: 600;       
+  font-weight: 600;
   color: #111827;
   letter-spacing: -0.2px;
 }
@@ -370,9 +377,9 @@ onBeforeMount(() => {
   border-bottom: 1px solid #e5e7eb;
 
   padding: 13px 14px;
-  font-size: 0.85rem !important;     
-  font-weight: 600;        
-  color: #000000 !important;     
+  font-size: 0.85rem !important;
+  font-weight: 600;
+  color: #000000 !important;
   text-transform: none !important;
   letter-spacing: -0.15px;
   white-space: nowrap;
@@ -449,5 +456,4 @@ onBeforeMount(() => {
 .text-center {
   white-space: nowrap;
 }
-
 </style>
