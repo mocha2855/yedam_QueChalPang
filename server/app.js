@@ -4,7 +4,7 @@ const app = express();
 const cors = require("cors");
 const path = require("path");
 require("dotenv").config();
-const port = MARIADB_PORT;
+const port = process.env.MARIADB_PORT;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
