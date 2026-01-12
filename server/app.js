@@ -3,15 +3,16 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const path = require("path");
+require("dotenv").config();
 const port = process.env.MARIADB_PORT;
-
+console.log(port);
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.listen(port, () => {
   console.log("Server start");
-  console.log(`http://localhost:${port}`);
+  console.log(`http://${process.env.MARIADB_HOST}:${port}`);
 });
 
 app.get("/", (req, res) => {
