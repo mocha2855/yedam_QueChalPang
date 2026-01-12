@@ -27,7 +27,7 @@ router.get(`/member/:key/:value`, async (req, res) => {
   let result = await memberService.isExist(key, value);
   res.send(result);
 });
-//회원가입
+//회원가입.
 router.post(`/member`, async (req, res) => {
   let input = req.body;
   let output = await memberService.addMemberInfo(input);
