@@ -17,7 +17,28 @@ const sidebarType = computed(() => store.state.sidebarType)
 const darkMode = computed(() => store.state.darkMode)
 
 // 이 부분 추가
-const hiddenRoutes = ['dashboard-default', 'signin', 'signup', 'find-id', 'resetPassword']
+const hiddenRoutes = [
+  'dashboard-default',
+  'signin',
+  'signup',
+  'find-id',
+  'resetPassword',
+  'surveys',
+  'survey',
+  'surveyAdd',
+  'surveyUpdate',
+  'resrvTeacher', // 담당자 상담 예약
+  'resrvGuardian', // 보호자 상담 예약
+  'resrvGuardianConfirm', // 상담 예약 확인
+  'resrvGuardianMap', // 상담 지도
+  'resrvGuardianHistory', // 상담 이력
+  'resrvBlock', // 상담 차단
+  // QnA 추가
+  'qnaGuardian',
+  'qnaGuardianDetail',
+  'qnaTeacher',
+  'qnaTeacherDetail',
+]
 
 const shouldHideSidenav = computed(() => {
   const currentRoute = route.path.split('/')[1]
