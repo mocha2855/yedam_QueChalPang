@@ -73,7 +73,7 @@ const goToMeetingLog = (applicationNo) => {
       <div class="d-flex justify-content-between align-items-center">
         <h6 class="mb-0">지원신청 현황</h6>
 
-        <button class="btn btn-primary btn-sm text-xxs p-1 mb-0" type="button" @click="addApp()">
+        <button class="btn btn-primary btn-lg text-sm p-1 mb-0" type="button" @click="addApp()">
           지원신청서 등록
         </button>
       </div>
