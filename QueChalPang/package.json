@@ -33,6 +33,7 @@
     "pinia": "^3.0.4",
     "pinia-plugin-persistedstate": "^4.7.1",
     "quill": "^2.0.3",
+    "sweetalert2": "^11.26.17",
     "v-calendar": "^3.1.2",
     "vue": "3.4.19",
     "vue-count-to": "1.0.13",

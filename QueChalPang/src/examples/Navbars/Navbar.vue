@@ -1,17 +1,78 @@
 <!-- Navbar.vue -->
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 // import { useStore } from 'vuex'
 import { useCounterStore } from '@/stores/member'
 
 import { storeToRefs } from 'pinia'
+import axios from 'axios'
 
 const counterStore = useCounterStore()
 const { isLogIn } = storeToRefs(counterStore)
 const router = useRouter()
 const showMenu = ref(false)
 // const store = useStore()
+
+// 알림 관련 변수 추가
+const notificationCount = ref(0)
+const notificationList = ref([])
+let intervalId = null
+
+// 알림 개수 가져오는 함수 추가
+const fetchNotificationCount = async () => {
+  // 로그인 안 했으면 종료
+  if (!isLogIn.value.isLogIn) {
+    return
+  }
+
+  try {
+    // 사용자 정보를 쿼리 파라미터로 보내기
+    const response = await axios.get('/api/notifications/count', {
+      params: {
+        userId: isLogIn.value.info.member_id,
+        userAuth: isLogIn.value.info.member_authority,
+      },
+    })
+
+    console.log('✅ 응답 성공:', response.data)
+    notificationCount.value = response.data.count
+  } catch (error) {
+    console.error('❌ 알림 조회 실패:', error)
+    console.error('에러 응답:', error.response?.data)
+  }
+}
+// 👇 알림 목록 가져오기 추가
+const fetchNotificationList = async () => {
+  if (!isLogIn.value.isLogIn) return
+
+  try {
+    const response = await axios.get('/api/notifications/list', {
+      params: {
+        userId: isLogIn.value.info.member_id,
+        userAuth: isLogIn.value.info.member_authority,
+      },
+    })
+    notificationList.value = response.data.notifications
+  } catch (error) {
+    console.error('❌ 알림 목록 조회 실패:', error)
+  }
+}
+
+// 드롭다운 토글 시 목록도 가져오기 & 열었을 시 삭제
+const toggleNotifications = async () => {
+  // 드롭다운을 닫을 때
+  if (showMenu.value) {
+    notificationCount.value = 0 // 개수 0으로
+    notificationList.value = [] // 목록 비우기
+  }
+  // 드롭다운을 열 때
+  else {
+    await fetchNotificationList()
+  }
+
+  showMenu.value = !showMenu.value
+}
 
 // 현재 활성화된 메뉴를 표시하기 위한 로직
 const getRoute = () => {
@@ -112,6 +173,21 @@ const navbarType = computed(() => {
   }
   return 'navbar-staff'
 })
+
+//onMounted, onUnmounted 추가
+onMounted(() => {
+  // 로그인 상태일 때만 알림 가져오기
+  if (isLogIn.value.isLogIn) {
+    fetchNotificationCount()
+    intervalId = setInterval(fetchNotificationCount, 30000) // 30초마다
+  }
+})
+
+onUnmounted(() => {
+  if (intervalId) {
+    clearInterval(intervalId)
+  }
+})
 </script>
 
 <template>
@@ -192,7 +268,17 @@ const navbarType = computed(() => {
               <i class="ni ni-support-16 me-2"></i>문의하기
             </router-link>
           </li>
-
+          <!-- 담당자(a2) 문의관리 -->
+          <li v-if="isLogIn.info.member_authority === 'a2'" class="nav-item">
+            <router-link
+              to="/qnaTeacher"
+              class="nav-link"
+              :style="{ color: textColor }"
+              :class="getRoute() === 'qnaTeacher' ? 'font-weight-bold opacity-10' : 'opacity-9'"
+            >
+              <i class="ni ni-support-16 me-2"></i>문의관리
+            </router-link>
+          </li>
           <li v-if="isLogIn.info.member_authority === 'a4'" class="nav-item">
             <router-link
               to="/surveys"
@@ -281,31 +367,69 @@ const navbarType = computed(() => {
             </span>
           </li>
 
-          <!-- <li class="px-3 nav-item d-flex align-items-center">
-            <a class="p-0 nav-link" :style="{ color: textColor }" @click="toggleConfigurator">
-              <i class="cursor-pointer fa fa-cog"></i>
-            </a>
-          </li> -->
-          <li class="nav-item dropdown d-flex align-items-center pe-2">
+          <!-- 회원가입 버튼 추가 (로그인 안 했을 때만) -->
+          <li v-if="!isLogIn.isLogIn" class="nav-item d-flex align-items-center">
+            <router-link
+              :to="{ name: 'Signup' }"
+              class="px-0 nav-link font-weight-bold"
+              :style="{ color: textColor }"
+            >
+              <i class="fa fa-user-plus me-sm-2"></i>회원가입
+            </router-link>
+          </li>
+
+          <!-- 알림 (로그인 했을 때만) -->
+          <li v-if="isLogIn.isLogIn" class="nav-item dropdown d-flex align-items-center pe-2">
             <a
               href="#"
-              class="p-0 nav-link"
+              class="p-0 nav-link position-relative"
               :style="{ color: textColor }"
               :class="[showMenu ? 'show' : '']"
-              @click="showMenu = !showMenu"
+              @click="toggleNotifications"
             >
               <i class="cursor-pointer fa fa-bell"></i>
+              <span v-if="notificationCount > 0" class="notification-badge">
+                {{ notificationCount }}
+              </span>
             </a>
-            <ul class="px-2 py-3 dropdown-menu dropdown-menu-end" :class="showMenu ? 'show' : ''">
-              <li class="mb-2">
+            <ul
+              class="px-2 py-3 dropdown-menu dropdown-menu-end"
+              :class="showMenu ? 'show' : ''"
+              style="min-width: 300px; max-height: 400px; overflow-y: auto"
+            >
+              <!-- 알림이 없을 때 -->
+              <li v-if="notificationList.length === 0" class="text-center py-3">
+                <small class="text-muted">새로운 알림이 없습니다</small>
+              </li>
+
+              <!-- 알림 목록 -->
+              <li v-for="(notification, index) in notificationList" :key="index" class="mb-2">
                 <a class="dropdown-item border-radius-md" href="javascript:;">
-                  <div class="py-1 d-flex">
-                    <div class="my-auto">
-                      <img src="../../assets/img/team-2.jpg" class="avatar avatar-sm me-3" />
-                    </div>
-                    <div class="d-flex flex-column justify-content-center">
-                      <h6 class="mb-1 text-sm font-weight-normal">새로운 메시지가 도착했습니다.</h6>
-                    </div>
+                  <div class="py-1">
+                    <h6 class="mb-0 text-sm font-weight-normal">
+                      {{ notification.message }}
+                    </h6>
+                    <small class="text-muted">
+                      <!-- 회원가입 알림일 때 -->
+                      <span v-if="notification.type === 'member_pending'">
+                        {{ notification.member_name }}
+                        - {{ new Date(notification.created_at).toLocaleDateString('ko-KR') }}
+                      </span>
+                      <!-- 기존 알림들 -->
+                      <span v-else>
+                        {{ notification.dependant_name }}
+                        <span v-if="notification.start_at">
+                          - {{ new Date(notification.start_at).toLocaleDateString('ko-KR') }}
+                        </span>
+                        <span v-else-if="notification.application_date">
+                          -
+                          {{ new Date(notification.application_date).toLocaleDateString('ko-KR') }}
+                        </span>
+                        <span v-else-if="notification.planning_date">
+                          - {{ new Date(notification.planning_date).toLocaleDateString('ko-KR') }}
+                        </span>
+                      </span>
+                    </small>
                   </div>
                 </a>
               </li>
@@ -458,5 +582,19 @@ const navbarType = computed(() => {
 
 .navbar-nav.me-auto {
   margin-left: -20px;
+}
+/* 👇 이것만 맨 아래 추가 */
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #dc3545;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: bold;
+  min-width: 18px;
+  text-align: center;
 }
 </style>

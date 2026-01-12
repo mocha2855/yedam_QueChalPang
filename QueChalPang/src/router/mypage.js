@@ -33,7 +33,7 @@ const mypageRoutes = [
   {
     path: '/myPageCenterInfo',
     name: 'myPageCenterInfo',
-    component: () => import('../views/mypage/myPageGuardianList.vue'), // 마이페이지 센터 정보(관리자)
+    component: () => import('../views/mypage/myPageCenterInfo.vue'), // 마이페이지 센터 정보(관리자)
   },
 ]
 

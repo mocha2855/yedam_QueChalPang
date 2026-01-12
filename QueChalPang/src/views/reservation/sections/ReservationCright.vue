@@ -1,10 +1,10 @@
 <!-- src/components/ReservationCright.vue -->
 <!-- 자식 -->
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
-// import { useMeetingLogStore } from '@/stores/meetingLog'
+import RejectReasonModal from '../modals/RejectReasonModal.vue'
 
 const router = useRouter()
 // const route = useRoute() // 0108
@@ -13,6 +13,7 @@ const router = useRouter()
 const props = defineProps({
   selectedDate: { type: Date, required: true }, //부모가 무조건 selectedDate를 내려줘야 함
   reservations: { type: Array, default: () => [] },
+  managerId: { type: String, required: true },
 })
 
 // 선택한 날짜표시
@@ -39,6 +40,33 @@ const statusMap = {
   f2: { label: '예약확정', class: 'status-confirm' },
   f3: { label: '상담완료', class: 'status-done' },
   f4: { label: '상담취소', class: 'status-cancel' },
+}
+
+const showCancelModal = ref(false)
+const cancelTarget = ref(null)
+
+const openCancelModal = (row) => {
+  cancelTarget.value = row
+  showCancelModal.value = true
+}
+
+const closeCancelModal = () => {
+  showCancelModal.value = false
+  cancelTarget.value = null
+}
+
+const onCancelConfirm = async (reason) => {
+  if (!cancelTarget.value) return
+
+  await axios.put('/api/updateRstatus', {
+    resvId: cancelTarget.value.resv_id,
+    managerId: cancelTarget.value.manager_id,
+    resvStatus: 'f4',
+    rejectReason: reason,
+  })
+
+  cancelTarget.value.status = 'f4'
+  closeCancelModal()
 }
 
 // 현재 날짜 기점으로 상태 변화 -0108
@@ -94,6 +122,8 @@ const writingMeeting = (data) => {
               <th class="text-center text-primary">보호자</th>
               <th class="text-center text-primary">지원자</th>
               <th class="text-center text-primary">상담시작시간</th>
+              <th class="text-center text-primary">예약취소</th>
+
               <th class="text-center text-primary">상태</th>
               <th class="text-center text-primary">일지</th>
             </tr>
@@ -114,7 +144,15 @@ const writingMeeting = (data) => {
                   {{ timeText(r.start_at) }}
                 </span>
               </td>
-
+              <td class="align-middle text-center">
+                <button
+                  class="btn btn-outline-danger btn-sm text-xs"
+                  :disabled="r.status !== 'f2'"
+                  @click="openCancelModal(r)"
+                >
+                  취소
+                </button>
+              </td>
               <td class="align-middle text-center">
                 <span class="status-badge" :class="statusInfo(r).class">
                   {{ statusInfo(r).label }}
@@ -129,6 +167,13 @@ const writingMeeting = (data) => {
             </tr>
           </tbody>
         </table>
+        <RejectReasonModal
+          :show="showCancelModal"
+          title="예약 취소 사유 작성"
+          placeholder="취소 사유를 입력해주세요."
+          @cancel="closeCancelModal"
+          @confirm="onCancelConfirm"
+        />
       </div>
     </div>
   </div>

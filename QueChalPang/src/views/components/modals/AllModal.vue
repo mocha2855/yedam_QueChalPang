@@ -5,6 +5,7 @@
       <!--팀원들이 여기에 추가 -->
       <ReasonModal v-if="modal.type === 'reason'" />
       <AssignManagerModal v-else-if="modal.type === 'assignManager'" />
+      <QnaAddModal v-else-if="modal.type === 'qnaAdd'" />
     </div>
   </div>
 </template>
@@ -12,7 +13,8 @@
 <script setup>
 import { useModalStore } from '@/stores/modal'
 import ReasonModal from './ReasonModal.vue'
-import AssignManagerModal from './AssignManagerModal.vue';
+import AssignManagerModal from './AssignManagerModal.vue'
+import QnaAddModal from '@/views/qna/modals/QnaAddModal.vue'
 
 const modal = useModalStore()
 // console.log(modal)
