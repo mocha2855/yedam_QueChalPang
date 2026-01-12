@@ -8,7 +8,7 @@ router.get(`/members`, async (req, res) => {
   res.send(list);
 });
 
-//멤버 단건조회(조건 id)
+//멤버 단건조회(조건 id)a
 router.get(`/member/:id`, async (req, res) => {
   let id = req.params.id;
   let info = await memberService.findByMemberId(id);
