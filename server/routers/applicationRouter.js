@@ -120,7 +120,7 @@ router.post("/submitPlanningInfo/:no", async (req, res) => {
 router.put("/successPlanningInfo/:no", async (req, res) => {
   let no = req.params.no;
   let data = req.body;
-  console.log(data);
+  console.log(no, data);
   let post = await applicationService.updatePlanningInfo(no, data);
   res.send(post);
 });
@@ -140,6 +140,32 @@ router.put("/submitChangingPlanningInfo/:no", async (req, res) => {
   let data = req.body;
   console.log(data);
   let post = await applicationService.updateChangingPlanningInfo(no, data);
+  res.send(post);
+});
+
+// 지원계획서 임시 저장(담당자) 0111
+router.post("/firstPlanSave/:no", async (req, res) => {
+  let data = req.body;
+  console.log(data);
+  let no = req.params.no;
+  let post = await applicationService.addPlanSaveInfo(no, data);
+  res.send(post);
+});
+
+// 지언계획서 임시 저장(이미 한번 했을 경우) 0111
+router.put("/firstSaveOneMore/:no", async (req, res) => {
+  let data = req.body;
+  console.log(data);
+  let no = req.params.no;
+  console.log("no: ", no);
+  let post = await applicationService.modifyFirstSaveInfo(no, data);
+  res.send(post);
+});
+
+// 지원계획서 임시 저장 삭제(담당자) 0111
+router.put("/delFirstSave/:no", async (req, res) => {
+  let no = req.params.no;
+  let post = await applicationService.removeFirstSaveInfo(no);
   res.send(post);
 });
 
@@ -195,6 +221,7 @@ router.post(
         planningNo: req.params.no,
         ...req.body,
       };
+      console.log("serviceData: ", serviceData);
       // Service 호출 (req.files 전달)
       const result = await applicationService.addResultInfo(
         serviceData,
@@ -242,6 +269,58 @@ router.post(`/applicationHistory`, async (req, res) => {
   console.log(input);
   let result = await applicationService.addAppHistory(input);
 });
+
+// 지원결과서 임시저장 0111
+router.post("/saveFirstResult/:no", upload.array("files"), async (req, res) => {
+  try {
+    const serviceData = {
+      planningNo: req.params.no,
+      ...req.body,
+    };
+    console.log("serviceData: ", serviceData);
+    // Service 호출 (req.files 전달)
+    const result = await applicationService.addFirstResultInfo(
+      serviceData,
+      req.files
+    );
+
+    res.json({ message: "등록 성공", groupId: result.groupId });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "서버 에러" });
+  }
+
+  // let data = req.body;
+  // console.log(data);
+  // let post = await applicationService.addFirstResultInfo(data);
+  // res.send(post);
+});
+
+// 지원결과서 임시 저장(이미 한번 했을 경우) 0111
+router.put("/saveResultOneMOre/:no", async (req, res) => {
+  try {
+    let serviceData = req.body;
+    let no = req.params.no;
+    console.log("serviceData: ", serviceData);
+    // Service 호출 (req.files 전달)
+    const result = await applicationService.modifyResultFirstSaveInfo(
+      serviceData,
+      no
+    );
+    res.json({ message: "등록 성공" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "서버 에러" });
+  }
+});
+
+// 지원결과서 임시저장 삭제 0111
+router.delete("/delResultFirstSave/:no", async (req, res) => {
+  let no = req.params.no;
+  let post = await applicationService.removeResultFirstSaveInfo(no);
+  res.send(post);
+});
+
 // 파일목록조회
 // [GET] 파일 목록 조회
 router.get("/attachments/:group_id", async (req, res) => {

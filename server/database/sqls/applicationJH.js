@@ -91,10 +91,19 @@ const rejectStatus = `
 const selectPlanningById = `select count(*) counts from planning where application_no=?`;
 
 // 검토 중, 반려, 승인 지원계획서 불러오기
-const selectPlanningReviewById = `select *, rank() over (order by planning_date) ranking from planning where application_no =?`;
+const selectPlanningReviewById = `select *, rank() over (order by planning_date) ranking from planning p join member m on p.planning_id = m.member_id where application_no =?`;
 
 // 지원계획서 승인요청(담당자)
 const insertPlannginInfo = `insert into planning set ?`;
+
+// 지원계획서 임시저장(담당자) 0111
+const insertPlanSaveInfo = `insert into planning set ?`;
+
+// 지원계획서 임시저장(이미 한 번 했을 경우) 0111
+const updateFirstSaveInfo = `update planning set ? where application_no = ? and planning_status = 'i0'`;
+
+// 지원계획서 임시저장 삭제(담당자) 0111
+const deleteFirstSaveInfo = `delete from planning where application_no = ? and planning_status = 'i0'`;
 
 // 지원계획서 승인 및 재승인
 const sucessPlanningUpdateInfo = `update planning 
@@ -127,9 +136,7 @@ SET
     planning_title = ?, 
     planning_content = ?, 
     planning_status = 'i1',
-    planning_approvedDate = NULL,
-    planning_reject = NULL,
-    planning_reject_date = NULL
+    planning_approvedDate = NULL
 WHERE planning_no = ?`;
 
 // 지원현황에서 목록 불러오기(일반사용자)
@@ -469,6 +476,18 @@ const selectApplicationsByCenter = `
 `;
 const insertAppHistory = `
 insert into app_history(application_no,app_history_id,app_history_date,app_history_reason) values (?,?,now(),?)`;
+
+// 지원결과서 임시저장 0111
+const insertFirstResultInfo = `INSERT INTO result
+    (planning_no, planning_id, planning_rejecter, result_title, result_content, result_status, planning_start, planning_end, attachment_no)
+    VALUES (?, ?, ?, ?, ?, 'i0', ?, ?, ?)`;
+
+// 지원결과서 임시저장(이미 한 번 했을 경우) 0111
+const updateResultFirstSaveInfo = `update result set ? where planning_no = ? and result_status = 'i0'`;
+
+// 지원결과서 임시저장 삭제(담당자) 0111
+const deleteResultFirstSaveInfo = `delete from result where planning_no = ? and result_status = 'i0'`;
+
 const getMaxGroupId = `
     SELECT IFNULL(MAX(attachment_group), 0) + 1 AS newGroupId 
     FROM attachment
@@ -518,6 +537,12 @@ module.exports = {
   rejectStatus,
   modifyApp,
   insertAppHistory,
+  insertPlanSaveInfo, // 0111 임시저장
+  updateFirstSaveInfo, // 0111 임시저장(이미 한 번 했을 경우)
+  deleteFirstSaveInfo, // 0111 임시 저장 삭제
+  insertFirstResultInfo, // 지원결과서 임시저장 0111
+  updateResultFirstSaveInfo, // 0111 결과서임시저장(이미 한 번 했을 경우)
+  deleteResultFirstSaveInfo, // 지원결과서 임시저장 삭제 0111
   getMaxGroupId,
   insertAttachment,
   getAttachmentList,

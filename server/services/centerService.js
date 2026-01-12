@@ -3,12 +3,16 @@ const mysql = require("../database/mapper.js");
 // 전체 센터 목록
 const findAllCenter = async (key, value, badge) => {
   // badge가 빈 문자열이면 전체 조회
-  // if (!badge || badge === "") {
-  //   let result = await mysql.centerQuery("selectAllCenterWithoutBadge", [
-  //     key || "center_name",
-  //     value || "",
-  //   ]);
-  //   return result;
+  if (!badge || badge === "") {
+    let result = await mysql.centerQuery("selectAllCenterWithoutBadge", [
+      key || "center_name",
+      value || "",
+    ]);
+    return result;
+  }
+  //badge 없으면: 전체조회(이거 살려야해요..없으면 시스템관리자에서 안보임)
+  // if (!badge.trim()) {
+  //   return await mysql.centerQuery("selectAllCenterWithoutBadge", [key, value]);
   // }
 
   const badgeArray = badge.replaceAll("'", "").split(",");

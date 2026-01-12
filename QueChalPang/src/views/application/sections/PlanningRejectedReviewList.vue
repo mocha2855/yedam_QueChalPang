@@ -1,6 +1,5 @@
-<!--a3 관리자만 띄우는 화면용임 계획서 반려 검토중 리스트(관리자) -->
+<!--a3 관리자만 띄우는 화면용임 계획서 반려 검토중 리스트(관리자). 여기서 a1도 볼수 있게 -->
 <!-- application/sections/PlanningRejectedReviewList.vue -->
-
 <template>
   <div class="card mb-3" v-for="plan in plans" :key="plan.planning_no">
     <div class="card-body" v-if="plans.length > 0">
@@ -54,14 +53,14 @@
 
           <div class="d-flex justify-content-between">
             <div class="row g-3 mb-2 align-items-center">
-              <div class="col-7"><label class="col-form-label">결재자</label></div>
-              <div class="col-5">
+              <div class="col-6"><label class="col-form-label">결재자</label></div>
+              <div class="col-6">
                 <input type="text" v-model="plan.planning_rejecter" class="form-control" readonly />
               </div>
             </div>
             <div class="row g-3 mb-2 align-items-center">
-              <div class="col-5"><label class="col-form-label">반려일</label></div>
-              <div class="col-7">
+              <div class="col-6"><label class="col-form-label">반려일</label></div>
+              <div class="col-6">
                 <input
                   type="text"
                   v-model="plan.planning_reject_date"
@@ -75,8 +74,16 @@
           <div class="row g-3 mb-2 align-items-center">
             <div class="col-2"><label class="col-form-label">반려사유</label></div>
             <div class="col-10">
-              <input type="text" v-model="plan.planning_reject" class="form-control" />
+              <input type="text" v-model="plan.planning_reject" class="form-control" readonly />
             </div>
+            <input
+              type="text"
+              v-model="plan.planning_reject"
+              class="form-control"
+              :readonly="isReadOnlyViewer"
+              v-if="props.memAuthority == 'a1'"
+              :class="{ 'readonly-input': isReadOnlyViewer }"
+            />
           </div>
         </form>
 
@@ -99,6 +106,7 @@
       </div>
 
       <ConfirmModal
+        v-if="memAuthority === 'a3'"
         :show="isApproveOpen(plan.planning_no)"
         :message="`지원계획서${plan.ranking}를<br/> 승인하시겠습니까?`"
         @confirm="emit('approve', plan.planning_no)"
@@ -106,6 +114,7 @@
       />
 
       <RejectConfirmModal
+        v-if="memAuthority === 'a3'"
         :show="isRejectOpen(plan.planning_no)"
         :message="`지원계획서${plan.ranking}를<br/> 반려하시겠습니까?`"
         @reject="emit('reject', plan.planning_no)"
@@ -120,10 +129,12 @@ import { computed, ref } from 'vue'
 import ConfirmModal from '../modals/ConfirmModal.vue'
 import RejectConfirmModal from '../modals/RejectConfirmModal.vue'
 
-defineProps({
+const props = defineProps({
   memAuthority: { type: String, required: true },
   plans: { type: Array, default: () => [] },
 })
+
+const isReadOnlyViewer = computed(() => props.memAuthority === 'a1')
 
 const emit = defineEmits(['approve', 'reject'])
 

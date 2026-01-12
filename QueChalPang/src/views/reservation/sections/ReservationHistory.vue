@@ -1,5 +1,3 @@
-
-
 <!-- src/components/ReservationHistory.vue -->
 <script setup>
 import { ref, computed, onMounted } from 'vue'
@@ -45,6 +43,16 @@ onMounted(fetchHistory)
 <template>
   <div class="card">
     <div class="card-header pb-0">
+      <div class="topbar">
+        <RouterLink
+          :to="{
+            name: 'ReservationGuardian',
+          }"
+          class="back-link"
+        >
+          ← 목록으로 돌아가기
+        </RouterLink>
+      </div>
       <h6>승인 대기 중인 상담예약</h6>
     </div>
     <div class="card-body px-0 pt-0 pb-2">
@@ -112,5 +120,24 @@ onMounted(fetchHistory)
 
 .status-default {
   background-color: #ebebeb;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.back-link {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffa229;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: #ff863b;
+  text-decoration: underline;
 }
 </style>

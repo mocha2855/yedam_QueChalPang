@@ -16,6 +16,7 @@ export const useApplicationStore = defineStore('application', {
     planningRejected: [],
     planningChanging: [],
     planningChangingReview: [],
+    planningFistSave: [],
     planningState: 0,
 
     allResult: [],
@@ -24,6 +25,7 @@ export const useApplicationStore = defineStore('application', {
     resultRejected: [],
     resultChanging: [],
     resultChangingReview: [],
+    resultfirstSave: [],
   }),
 
   actions: {
@@ -128,15 +130,27 @@ export const useApplicationStore = defineStore('application', {
       this.planningRejected = []
       this.planningChanging = []
       this.planningChangingReview = []
+      this.planningFistSave = []
 
       const res = await axios.get(`/api/planningReview/${applicationNo}`)
       this.allPlanned = Array.isArray(res.data) ? res.data : []
 
       const dateChange = (day) => {
         if (!day) return null
+
         const d = new Date(day)
         if (Number.isNaN(d.getTime())) return null
-        return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`
+        if (d.getMonth() + 1 > 10) {
+          if (d.getDate() < 10) {
+            return `${d.getFullYear()}-${d.getMonth() + 1}-0${d.getDate()}`
+          }
+          return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`
+        } else {
+          if (d.getDate() < 10) {
+            return `${d.getFullYear()}-0${d.getMonth() + 1}-0${d.getDate()}`
+          }
+          return `${d.getFullYear()}-0${d.getMonth() + 1}-${d.getDate()}`
+        }
       }
 
       for (let i = 0; i < this.allPlanned.length; i++) {
@@ -152,54 +166,58 @@ export const useApplicationStore = defineStore('application', {
           ? dateChange(it.planning_approvedDate)
           : null
 
-        //   if (
-        //     it.planning_status === 'i1' &&
-        //     it.planning_reject == null &&
-        //     it.planning_reject_date == null &&
-        //     it.planning_approvedDate == null
-        //   ) {
-        //     this.planningReview.push(it)
-        //   } else if (
-        //     it.planning_status === 'i1' &&
-        //     it.planning_reject != null &&
-        //     it.planning_reject_date != null &&
-        //     it.planning_approvedDate != null
-        //   ) {
-        //     this.planningChanging.push(it)
-        //   } else if (
-        //     it.planning_status === 'i1' &&
-        //     it.planning_reject != null &&
-        //     it.planning_reject_date != null &&
-        //     it.planning_approvedDate == null
-        //   ) {
-        //     it.checked = false
-        //     this.planningChangingReview.push(it)
-        //   } else if (it.planning_status === 'i2') {
-        //     this.planningSuccess.push(it)
-        //   } else if (it.planning_status === 'i3') {
-        //     this.planningRejected.push(it)
-        //   }
-        // }
-        if (it.planning_status === 'i1') {
-          if (it.planning_reject == null) {
-            // 1. 신규 검토중 (반려 사유 없음)
-            this.planningReview.push(it)
-          } else {
-            // 반려 사유가 있는 경우 (i1이면서 reject가 있음)
-            if (it.planning_approvedDate != null) {
-              // 2. 담당자가 수정 버튼을 막 누른 상태 (수정 폼 노출 대상)
-              this.planningChanging.push(it)
-            } else {
-              // 3. 담당자가 수정을 마치고 다시 승인 요청을 보낸 상태 (관리자 검토 대상)
-              it.checked = false
-              this.planningChangingReview.push(it)
-            }
-          }
+        if (
+          it.planning_status === 'i1' &&
+          it.planning_reject == null &&
+          it.planning_reject_date == null &&
+          it.planning_approvedDate == null
+        ) {
+          this.planningReview.push(it)
+        }
+        // 임시저장 0111
+        else if (it.planning_status === 'i0' && it.planning_reject == null) {
+          this.planningFistSave.push(it)
+        } else if (
+          it.planning_status === 'i1' &&
+          it.planning_reject != null &&
+          it.planning_reject_date != null &&
+          it.planning_approvedDate != null
+        ) {
+          this.planningChanging.push(it)
+        } else if (
+          it.planning_status === 'i1' &&
+          it.planning_reject != null &&
+          it.planning_reject_date != null &&
+          it.planning_approvedDate == null
+        ) {
+          it.checked = false
+          this.planningChangingReview.push(it)
         } else if (it.planning_status === 'i2') {
           this.planningSuccess.push(it)
         } else if (it.planning_status === 'i3') {
           this.planningRejected.push(it)
         }
+
+        // if (it.planning_status === 'i1') {
+        //   if (it.planning_reject == null) {
+        //     // 1. 신규 검토중 (반려 사유 없음)
+        //     this.planningReview.push(it)
+        //   } else {
+        //     // 반려 사유가 있는 경우 (i1이면서 reject가 있음)
+        //     if (it.planning_approvedDate != null) {
+        //       // 2. 담당자가 수정 버튼을 막 누른 상태 (수정 폼 노출 대상)
+        //       this.planningChanging.push(it)
+        //     } else {
+        //       // 3. 담당자가 수정을 마치고 다시 승인 요청을 보낸 상태 (관리자 검토 대상)
+        //       it.checked = false
+        //       this.planningChangingReview.push(it)
+        //     }
+        //   }
+        // } else if (it.planning_status === 'i2') {
+        //   this.planningSuccess.push(it)
+        // } else if (it.planning_status === 'i3') {
+        //   this.planningRejected.push(it)
+        // }
       }
       return {
         allPlanned: this.allPlanned,
@@ -219,6 +237,7 @@ export const useApplicationStore = defineStore('application', {
       this.resultRejected = []
       this.resultChanging = []
       this.resultChangingReview = []
+      this.resultfirstSave = []
 
       const res = await axios.get(`/api/resultReview/${applicationNo}`)
       this.allResult = Array.isArray(res.data) ? res.data : []
@@ -246,6 +265,8 @@ export const useApplicationStore = defineStore('application', {
           it.result_approvedDate == null
         ) {
           this.resultReview.push(it)
+        } else if (it.result_status === 'i0') {
+          this.resultfirstSave.push(it)
         } else if (
           it.result_status === 'i1' &&
           it.result_reject != null &&

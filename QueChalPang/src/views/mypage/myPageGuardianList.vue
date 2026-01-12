@@ -92,7 +92,7 @@
                       @click="goDetail(member.dependant_no)"
                       style="padding: 16px; color: #4a5568"
                     >
-                      {{ member.dependant_birth }}
+                      {{ member.dependant_age }}
                     </td>
 
                     <td
