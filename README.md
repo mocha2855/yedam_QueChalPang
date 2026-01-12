@@ -83,7 +83,7 @@ npm run build
 - **장지원** 
 
 ### 개발 기간
-2024년 ~ 2025년 (예담직업전문학교 팀 프로젝트)
+2025년 ~ 2026년 (예담직업전문학교 팀 프로젝트)
 
 ### 개발 환경
 - **Frontend**: Vue.js 3, Vue Router, Pinia (상태관리)
@@ -92,8 +92,8 @@ npm run build
 - **배포**: Naver Cloud Platform
 - **협업 도구**: GitHub, GitHub Desktop
 
-### 기술 스택 상세
-- **언어**: Vue,CSS
+### 기술 스택 상세 
+- **언어**: JavaScript 
 - **빌드 도구**: Vite
 - **버전 관리**: Git
 
