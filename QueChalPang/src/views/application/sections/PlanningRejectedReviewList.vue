@@ -76,7 +76,6 @@
             <div class="col-10">
               <input type="text" v-model="plan.planning_reject" class="form-control" readonly />
             </div>
-            <input type="text" v-if="props.memAuthority == 'a1'" />
             <input
               type="text"
               v-model="plan.planning_reject"
