@@ -88,6 +88,8 @@ const refresh = async () => {
 
 onBeforeMount(async () => {
   await application.countPlanning(route.params.id)
+  await refresh()
+
   addCount.value = application.planned
 
   if (addCount.value !== 0) {

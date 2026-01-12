@@ -91,7 +91,7 @@ const rejectStatus = `
 const selectPlanningById = `select count(*) counts from planning where application_no=?`;
 
 // 검토 중, 반려, 승인 지원계획서 불러오기
-const selectPlanningReviewById = `select *, rank() over (order by planning_date) ranking from planning where application_no =?`;
+const selectPlanningReviewById = `select *, rank() over (order by planning_date) ranking from planning p join member m on p.planning_id = m.member_id where application_no =?`;
 
 // 지원계획서 승인요청(담당자)
 const insertPlannginInfo = `insert into planning set ?`;
@@ -478,7 +478,9 @@ const insertAppHistory = `
 insert into app_history(application_no,app_history_id,app_history_date,app_history_reason) values (?,?,now(),?)`;
 
 // 지원결과서 임시저장 0111
-const insertFirstResultInfo = `insert into result set ?`;
+const insertFirstResultInfo = `INSERT INTO result
+    (planning_no, planning_id, planning_rejecter, result_title, result_content, result_status, planning_start, planning_end, attachment_no)
+    VALUES (?, ?, ?, ?, ?, 'i0', ?, ?, ?)`;
 
 // 지원결과서 임시저장(이미 한 번 했을 경우) 0111
 const updateResultFirstSaveInfo = `update result set ? where planning_no = ? and result_status = 'i0'`;

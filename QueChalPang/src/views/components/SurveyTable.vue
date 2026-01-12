@@ -73,7 +73,7 @@ const goToMeetingLog = (applicationNo) => {
       <div class="d-flex justify-content-between align-items-center">
         <h6 class="mb-0">지원신청 현황</h6>
 
-        <button class="btn btn-primary btn-sm text-xxs p-1 mb-0" type="button" @click="addApp()">
+        <button class="btn btn-primary btn-lg text-sm p-1 mb-0" type="button" @click="addApp()">
           지원신청서 등록
         </button>
       </div>
@@ -245,3 +245,127 @@ const goToMeetingLog = (applicationNo) => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.card {
+  border: 1px solid #eef1f5;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.06);
+  overflow: hidden;
+  background: #fff;
+}
+
+/* ===== Header ===== */
+.card-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid #eef1f5;
+  background: #fff;
+}
+
+.card-header h6 {
+  font-size: 1.05rem;
+  font-weight: 600;       /* 과한 bold 제거 */
+  color: #111827;
+  letter-spacing: -0.2px;
+}
+
+/* ===== Table Layout ===== */
+.table-responsive {
+  overflow-x: auto;
+}
+
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 1100px;
+}
+
+.table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+
+  padding: 13px 14px;
+  font-size: 0.85rem !important;     
+  font-weight: 600;        
+  color: #000000 !important;     
+  text-transform: none !important;
+  letter-spacing: -0.15px;
+  white-space: nowrap;
+}
+
+.table tbody td {
+  padding: 13px 14px;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: middle;
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #111827;
+}
+
+.table tbody tr {
+  background: #fff;
+  transition: background 0.12s ease;
+}
+
+.table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.table tbody p {
+  margin: 0;
+  font-size: 0.95rem !important;
+  font-weight: 400 !important;
+  color: #111827;
+  line-height: 1.4;
+}
+
+.table tbody .text-secondary {
+  font-size: 0.93rem !important;
+  font-weight: 400 !important;
+  color: #6b7280 !important;
+}
+
+.table tbody td:nth-child(9) p {
+  font-size: 0.9rem !important;
+  color: #4b5563 !important;
+}
+
+.table .btn.btn-sm {
+  font-size: 0.88rem;
+  font-weight: 500;
+  padding: 7px 13px;
+  border-radius: 10px;
+  box-shadow: none;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+}
+
+.table .btn.btn-success.btn-sm {
+  background: #16a34a;
+  border-color: rgba(22, 163, 74, 0.25);
+}
+
+.table .btn.btn-primary.btn-sm {
+  background: #2563eb;
+  border-color: rgba(37, 99, 235, 0.25);
+}
+
+.table .btn:hover {
+  filter: brightness(0.97);
+  transform: translateY(-1px);
+  transition: transform 0.12s ease;
+}
+
+.empty-text {
+  color: #9ca3af;
+  font-size: 0.92rem;
+  font-weight: 400;
+}
+
+.text-center {
+  white-space: nowrap;
+}
+
+</style>

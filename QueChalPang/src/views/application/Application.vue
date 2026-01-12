@@ -110,10 +110,9 @@
     </div>
 
     <!-- RIGHT -->
-    <div
-      v-if="!(counter.isLogIn.info.member_authority == 'a1' && route.path.includes('planning'))"
-      class="col right-col"
-    >
+     <!--v-if="!(counter.isLogIn.info.member_authority == 'a1' && route.path.includes('planning'))"
+ -->
+    <div class="col right-col">
       <div class="panel right-panel">
         <router-view v-slot="{ Component }">
           <component :is="Component" :dependantInfo="dependantInfo" />
