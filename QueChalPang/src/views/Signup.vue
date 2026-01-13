@@ -368,7 +368,7 @@ const addMemberInfo = async () => {
     })
 
     return
-  } else if (member.address.replace(' ', '') == '') {
+  } else if (address.value == '') {
     Toast.fire({
       icon: 'error',
       title: '주소가 입력되지 않았습니다.',
