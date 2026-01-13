@@ -26,6 +26,9 @@ onMounted(fetchDetail)
     <div>
       <button class="back-btn btn-warning btn-sm fs-6" @click="$router.back()">← 뒤로가기</button>
     </div>
+    <!-- <div class="topbar">
+      <RouterLink :to="{ name: 'qnaGuardian' }" class="back-link"> ← 목록으로 돌아가기 </RouterLink>
+    </div> -->
     <div class="qna-card">
       <div class="qna-title">
         {{ qna.qna_title }}
@@ -128,4 +131,23 @@ onMounted(fetchDetail)
   color: #999;
   font-style: italic;
 }
+
+/* .topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.back-link {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffa229;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: #ff863b;
+  text-decoration: underline;
+} */
 </style>

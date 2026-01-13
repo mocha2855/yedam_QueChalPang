@@ -73,7 +73,8 @@ const selectedTime = ref('')
 // ========================
 // 날짜 범위 (내일부터 2주)
 // ========================
-const today = new Date()
+let date = new Date()
+const today = new Date(`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate() + 1}`)
 today.setHours(0, 0, 0, 0)
 
 const maxDate = new Date(today)
@@ -232,13 +233,13 @@ const goReservHistory = () => {
 
 <template>
   <div class="py-4 container-fluid">
-    <div class="row mb-3">
-      <div class="col-12 d-flex justify-content-start">
-        <button class="btn btn-outline-primary btn-sm" @click="goReservHistory">
-          상담예약 확인하기
-        </button>
-      </div>
+  <div class="row justify-content-center mb-0">
+    <div class="col-12 col-md-10 col-lg-7 col-xl-6 d-flex justify-content-start">
+      <button class="btn btn-outline-primary btn-sm" @click="goReservHistory">
+        상담예약 확인하기
+      </button>
     </div>
+  </div>
     <!-- 대상자 + 신청서 -->
     <div class="py-4 container-fluid">
       <!-- 대상자 + 신청서 -->

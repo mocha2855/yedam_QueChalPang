@@ -68,7 +68,7 @@ const addMemberInfo = async (input) => {
   return result;
 };
 
-// 담당자/관리자 등록
+// /관리자 등록
 const addManager = async (input) => {
   let value = [
     input.member_id,
@@ -79,10 +79,10 @@ const addManager = async (input) => {
     input.member_address,
     input.center_no,
     input.member_authority,
-    input.member_confirm,
+    // inpu담당자t.member_confirm,
   ];
 
-  let result = await mysql.memberQuery("insertMemberInfo", value);
+  let result = await mysql.memberQuery("insertManagerDirect", value);
   return result;
 };
 

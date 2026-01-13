@@ -1,18 +1,4 @@
 <template>
-  <div class="fixed-top d-flex justify-content-end p-3 mt-6">
-    <div class="col-4">
-      <ArgonAlert
-        v-show="argonAlert"
-        color="warning"
-        icon="ni ni-bell-55"
-        dismissible
-        @close="argonAlert = false"
-      >
-        {{ msg }}
-      </ArgonAlert>
-    </div>
-  </div>
-
   <div class="py-4 container" style="max-width: 900px">
     <div class="row">
       <div class="col-12">
@@ -253,8 +239,8 @@ import { computed, ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import ArgonInput from '@/components/ArgonInput.vue'
-import ArgonAlert from '@/components/ArgonAlert.vue'
 import CenterSearchModal from '../components/modals/CenterSearchModal.vue'
+import Swal from 'sweetalert2'
 
 const router = useRouter()
 
@@ -292,18 +278,6 @@ const managerInfo = reactive({
   member_authority: 'a3',
   member_confirm: 'l1',
 })
-
-// 알림
-const msg = ref('')
-const argonAlert = ref(false)
-
-const showAlert = (message) => {
-  msg.value = message
-  argonAlert.value = true
-  setTimeout(() => {
-    argonAlert.value = false
-  }, 1500)
-}
 
 // 기관 팝업 열기(modal)
 const openCenterPopup = () => {
@@ -355,16 +329,28 @@ const openPostcode = () => {
 // 아이디 중복 확인
 const checkMemberId = async () => {
   if (managerInfo.member_id === '') {
-    showAlert('아이디를 입력해주세요.')
+    await Swal.fire({
+      icon: 'warning',
+      title: '아이디를 입력해주세요.',
+      confirmButtonText: '확인',
+    })
     return
   }
 
   try {
     let result = await axios.get(`/api/member/id/${managerInfo.member_id}`)
     if (result.data.result[0].count > 0) {
-      showAlert('이미 존재하는 아이디입니다.')
+      await Swal.fire({
+        icon: 'error',
+        title: '이미 존재하는 아이디입니다.',
+        confirmButtonText: '확인',
+      })
     } else {
-      showAlert('사용 가능한 아이디입니다.')
+      await Swal.fire({
+        icon: 'success',
+        title: '사용 가능한 아이디입니다.',
+        confirmButtonText: '확인',
+      })
       idChecked.value = true
     }
   } catch (error) {
@@ -377,35 +363,67 @@ const addManagerInfo = async () => {
   console.log('managerInfo:', managerInfo)
 
   if (!idChecked.value) {
-    showAlert('아이디 중복확인을 하지 않으셨습니다.')
+    await Swal.fire({
+      icon: 'warning',
+      title: '아이디 중복확인을 하지 않으셨습니다.',
+      confirmButtonText: '확인',
+    })
     return
   }
   if (managerInfo.member_password === '') {
-    showAlert('비밀번호를 입력해주세요.')
+    await Swal.fire({
+      icon: 'warning',
+      title: '비밀번호를 입력해주세요.',
+      confirmButtonText: '확인',
+    })
     return
   }
   if (managerInfo.member_password !== passwordConfirm.value) {
-    showAlert('비밀번호가 일치하지 않습니다.')
+    await Swal.fire({
+      icon: 'warning',
+      title: '비밀번호가 일치하지 않습니다.',
+      confirmButtonText: '확인',
+    })
     return
   }
   if (managerInfo.member_name === '') {
-    showAlert('이름을 입력해주세요.')
+    await Swal.fire({
+      icon: 'warning',
+      title: '이름을 입력해주세요.',
+      confirmButtonText: '확인',
+    })
     return
   }
   if (managerInfo.member_email === '') {
-    showAlert('이메일을 입력해주세요.')
+    await Swal.fire({
+      icon: 'warning',
+      title: '이메일을 입력해주세요.',
+      confirmButtonText: '확인',
+    })
     return
   }
   if (tel.tel1 === '' || tel.tel2 === '' || tel.tel3 === '') {
-    showAlert('전화번호를 입력해주세요.')
+    await Swal.fire({
+      icon: 'warning',
+      title: '전화번호를 입력해주세요.',
+      confirmButtonText: '확인',
+    })
     return
   }
   if (managerInfo.center_no === '') {
-    showAlert('소속 기관을 선택해주세요.')
+    await Swal.fire({
+      icon: 'warning',
+      title: '소속 기관을 선택해주세요.',
+      confirmButtonText: '확인',
+    })
     return
   }
   if (address.value === '' || detailAddress.value === '') {
-    showAlert('주소를 입력해주세요.')
+    await Swal.fire({
+      icon: 'warning',
+      title: '주소를 입력해주세요.',
+      confirmButtonText: '확인',
+    })
     return
   }
 
@@ -416,12 +434,21 @@ const addManagerInfo = async () => {
     let result = await axios.post('/api/member/manager', managerInfo)
 
     if (result.data.affectedRows > 0) {
-      showAlert('관리자가 등록되었습니다.')
+      await Swal.fire({
+        icon: 'success',
+        title: '관리자가 등록되었습니다.',
+        showConfirmButton: false,
+        timer: 1500,
+      })
       emit('success', result.data.insertId)
-      router.push({ name: 'ApprovalManagerList' })
+      router.push({ name: 'ApprovalAdminList' })
     }
   } catch (error) {
-    showAlert('등록에 실패했습니다.')
+    await Swal.fire({
+      icon: 'error',
+      title: '등록에 실패했습니다.',
+      confirmButtonText: '확인',
+    })
     console.error(error)
   }
 }

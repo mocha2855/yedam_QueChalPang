@@ -15,7 +15,6 @@
             <!-- 관리자한테만 띄우기 -->
             <p v-else-if="memAuthority === 'a3'">지원계획{{ plan.ranking }}</p>
             <p v-else-if="memAuthority === 'a1'">지원계획{{ plan.ranking }}</p>
-
           </div>
 
           <!-- 오른쪽에 나타나는 대기중인 지원계획 정보카드 -->
@@ -50,7 +49,23 @@
 
             <div class="row g-3 mb-2 align-items-center">
               <div class="col-2"><label class="col-form-label">첨부파일</label></div>
-              <div class="col-10"><input type="text" class="form-control" readonly /></div>
+              <div v-if="plan.fileList && plan.fileList.length > 0" class="col-10">
+                <div v-for="file in plan.fileList" :key="file.attachment_no" class="mb-1">
+                  <a
+                    href="#"
+                    @click.prevent="application.downloadFile(file.attachment_no)"
+                    class="text-decoration-none text-primary fw-bold"
+                  >
+                    💾 {{ file.attachment_orginal }}
+                  </a>
+                  <span class="text-muted ms-2" style="font-size: 0.8em">
+                    ({{ (file.attachment_size / 1024).toFixed(1) }} KB)
+                  </span>
+                </div>
+              </div>
+              <div v-else class="col-10">
+                <input type="text" class="form-control" value="첨부파일 없음" readonly />
+              </div>
             </div>
           </form>
 
@@ -92,14 +107,16 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import ConfirmModal from '../modals/ConfirmModal.vue'
 import RejectConfirmModal from '../modals/RejectConfirmModal.vue'
+import { useApplicationStore } from '@/stores/application'
 //import { useModalStore } from '@/stores/modal'
+const application = useApplicationStore()
 
 //const modal = useModalStore()
 
-defineProps({
+const props = defineProps({
   memAuthority: { type: String, required: true },
   plans: { type: Array, default: () => [] },
   show: { type: Boolean, default: true },
@@ -131,4 +148,20 @@ const closeAll = (id) => {
   rejectOpenSet.value.delete(id)
   //modal.rejectReason = ''
 }
+const planGroupIds = computed(() => {
+  return props.plans.map((p) => p.attachment_group)
+})
+
+// 2. 그룹 번호 목록이 변할 때만(데이터가 로드됐을 때만) 실행합니다.
+watch(
+  planGroupIds,
+  async (newIds) => {
+    // 데이터가 있고, ID가 하나라도 존재하면 실행
+    if (newIds && newIds.length > 0) {
+      // console.log('파일 목록 조회 시작 (그룹 ID 변경 감지)')
+      await application.fetchFilesForPlans(props.plans)
+    }
+  },
+  { immediate: true },
+) // deep 옵션은 필요 없습니다.
 </script>

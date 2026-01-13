@@ -113,10 +113,29 @@ WHERE p.application_no = ?
 `;
 
 // 지원계획서 승인요청(담당자)
-const insertPlannginInfo = `insert into planning set ?`;
+const insertPlannginInfo = `insert into planning(application_no,
+                                                planning_id,
+                                                planning_rejecter,
+                                                planning_date,
+                                                planning_start,
+                                                planning_end,
+                                                planning_title,
+                                                planning_content,
+                                                planning_status,
+                                                attachment_no) 
+                              values (?,?,?,now(),?,?,?,?,'i1',?)`;
 
 // 지원계획서 임시저장(담당자) 0111
-const insertPlanSaveInfo = `insert into planning set ?`;
+const insertPlanSaveInfo = `insert into planning(application_no,
+                                                planning_id,
+                                                planning_rejecter,
+                                                planning_start,
+                                                planning_end,
+                                                planning_title,
+                                                planning_content,
+                                                planning_status,
+                                                attachment_no) 
+                              values (?,?,?,?,?,?,?,'i0',?)`;
 
 // 지원계획서 임시저장(이미 한 번 했을 경우) 0111
 const updateFirstSaveInfo = `update planning set ? where application_no = ? and planning_status = 'i0'`;
