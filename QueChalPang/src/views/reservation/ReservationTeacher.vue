@@ -152,35 +152,43 @@ console.log('login info:', isLogIn.value?.value?.info ?? isLogIn.value?.info)
 </script>
 
 <template>
-  <div class="py-4 container-fluid">
-    <div class="col-12 d-flex justify-content-start">
-      <button class="btn btn-primary btn-lg fs-6" @click="goTimeBlock">상담시간 차단하기</button>
-    </div>
-    <!-- 캘린더 -->
-    <div class="row g-4 mb-4">
-      <div class="col-12 col-lg-6">
-        <div class="card p-3 h-100">
-          <h6 class="mb-3">날짜 선택</h6>
-          <DatePicker v-model="selectedDate" expanded locale="ko" :attributes="calendarAttrs" />
+  <div class="py-4 container-fluid resrv-wrapper">
+    <div class="py-4 container-fluid">
+      <div class="col-12 d-flex justify-content-start">
+        <button class="btn btn-primary btn-lg fs-6" @click="goTimeBlock">상담시간 차단하기</button>
+      </div>
+      <!-- 캘린더 -->
+      <div class="row g-4 mb-4">
+        <div class="col-12 col-lg-5">
+          <div class="card p-3 h-100">
+            <h6 class="mb-3">날짜 선택</h6>
+            <DatePicker v-model="selectedDate" expanded locale="ko" :attributes="calendarAttrs" />
+          </div>
+        </div>
+
+        <!-- 캘린더 오른쪽섹션 -->
+        <!-- 부모 -->
+        <div class="col-12 col-lg-7">
+          <ReservationCright :selectedDate="selectedDate" :reservations="reservations" />
         </div>
       </div>
 
-      <!-- 캘린더 오른쪽섹션 -->
-      <!-- 부모 -->
-      <div class="col-12 col-lg-6">
-        <ReservationCright :selectedDate="selectedDate" :reservations="reservations" />
-      </div>
-    </div>
-
-    <!-- 하단 승인대기중상담예약 섹션 -->
-    <div class="row">
-      <div class="col-12">
-        <ReservationTable
-          :pendingReservedList="pendingReservedList"
-          @accept="onAccept"
-          @reject="onReject"
-        />
+      <!-- 하단 승인대기중상담예약 섹션 -->
+      <div class="row">
+        <div class="col-12">
+          <ReservationTable
+            :pendingReservedList="pendingReservedList"
+            @accept="onAccept"
+            @reject="onReject"
+          />
+        </div>
       </div>
     </div>
   </div>
 </template>
+<style scoped>
+  .resrv-wrapper {
+  max-width: 1300px;
+  margin: 0 auto;
+}
+</style>

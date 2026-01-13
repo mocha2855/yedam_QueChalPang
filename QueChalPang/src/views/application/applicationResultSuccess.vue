@@ -146,8 +146,7 @@
                       <label for="rejectReason" class="col-form-label">반려사유</label>
                     </div>
                     <div class="col-10">
-                      <input
-                        type="text"
+                      <textarea
                         name="rejectReason"
                         id="rejectReason"
                         v-model="plan.result_reject"

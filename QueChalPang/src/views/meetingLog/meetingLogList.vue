@@ -95,15 +95,24 @@ const writeLog = (row) => {
           <td>
             <button
               v-if="row.has_meeting_log === 1"
-              class="btn btn-sm btn-outline-secondary"
+              class="btn btn-sm btn-outline-primary"
               @click.stop="viewLog(row)"
             >
               내역보기
             </button>
 
-            <button v-else class="btn btn-sm btn-outline-primary" @click.stop="writeLog(row)">
-              작성하기
-            </button>
+            <button
+            v-else
+            class="btn btn-sm"
+            :class="row.resv_status === 'f4'
+              ? 'btn-outline-secondary disabled'
+              : 'btn-outline-primary'"
+            :disabled="row.resv_status === 'f4'"
+            @click.stop="row.resv_status !== 'f4' && writeLog(row)"
+          >
+            작성하기
+          </button>
+
           </td>
         </tr>
 
