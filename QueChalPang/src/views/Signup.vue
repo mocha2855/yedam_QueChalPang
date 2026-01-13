@@ -64,7 +64,7 @@ onUnmounted(() => {
 })
 // 주소 api에서 사용하는 함수들
 const openCenterCode = () => {
-  window.open('/centerPopup', 'popupWindow', 'width=600, height=500, resizable=yes, scrollbars=yes')
+  window.open('/centerPopup', 'popupWindow', 'width=800, height=500, resizable=yes, scrollbars=yes')
 }
 const openPostcode = () => {
   new window.daum.Postcode({
