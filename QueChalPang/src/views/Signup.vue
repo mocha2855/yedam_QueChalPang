@@ -16,7 +16,7 @@ import { useRouter } from 'vue-router'
 // import AppFooter from '@/examples/PageLayout/Footer.vue'
 import ArgonInput from '@/components/ArgonInput.vue'
 import ArgonButton from '@/components/ArgonButton.vue'
-import ArgonAlert from '@/components/ArgonAlert.vue'
+import Swal from 'sweetalert2'
 const body = document.getElementsByTagName('body')[0]
 const router = useRouter()
 const store = useStore()
@@ -25,7 +25,17 @@ const postcode = ref('')
 const address = ref('')
 const detailAddress = ref('')
 const extraAddress = ref('')
-
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  },
+})
 onBeforeMount(() => {
   store.state.hideConfigButton = true
   store.state.showNavbar = false
@@ -106,7 +116,6 @@ const phoneBtn = reactive({
 })
 const isSignUp = ref(false)
 const msg = ref('')
-const argonAlert = ref(false)
 const selectedCenter = ref({ center_name: '', center_no: 0 })
 const authority = ref('a1')
 const phone2 = ref('')
@@ -149,20 +158,32 @@ const getColor = (id) => {
 // 아이디 중복체크
 const idCheck = async () => {
   if (member.id == '') {
-    showAlert('아이디가 입력되지 않았습니다. 아이디를 입력해주세요.')
+    Toast.fire({
+      icon: 'error',
+      title: '아이디가 입력되지 않았습니다. 아이디를 입력해주세요.',
+    })
     return
   }
   if (member.id.length < 6) {
-    showAlert('아이디는 최소 6자 이상 입력해야합니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '아이디는 최소 6자 이상 입력해야합니다.',
+    })
     return
   } else if (member.id.length > 100) {
-    showAlert('아이디는 100자를 넘을 수 없습니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '아이디는 100자를 넘을 수 없습니다.',
+    })
     return
   }
   let result = await axios.get(`/api/member/id/${member.id}`)
   console.log(result.data.result[0].count)
   if (result.data.result[0].count == 1) {
-    showAlert('이미 존재하는 아이디입니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '이미 존재하는 아이디입니다.',
+    })
     return
   } else {
     // 중복체크 성공하면 버튼 비활성화 및 스타일을 secondary로 변경
@@ -171,16 +192,37 @@ const idCheck = async () => {
   }
 }
 // 이메일 중복체크
-
 const emailCheck = async () => {
   if (member.email == '') {
-    showAlert('이메일이 입력되지 않았습니다. 이메일을 입력해주세요.')
+    Toast.fire({
+      icon: 'error',
+      title: '이메일이 입력되지 않았습니다. 이메일을 입력해주세요.',
+    })
     return
+  }
+  const emailInput = document.querySelector('input[type="email"]')
+  if (!emailInput.checkValidity()) {
+    // 유효성 검사에 실패하면 사용자에게 오류 메시지 표시
+    Toast.fire({
+      icon: 'error',
+      title: '유효하지 않은 이메일 주소입니다: ' + emailInput.validationMessage,
+    })
+    // 또는 브라우저 기본 UI 표시
+    emailInput.reportValidity()
+    return
+  } else {
+    Toast.fire({
+      icon: 'success',
+      title: '유효한 이메일 주소입니다!',
+    })
   }
   let result = await axios.get(`/api/member/email/${member.email}`)
   console.log(result.data.result[0].count)
   if (result.data.result[0].count == 1) {
-    showAlert('이미 가입된 이메일입니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '이미 가입된 이메일입니다.',
+    })
     return
   } else {
     // 중복체크 성공하면 버튼 비활성화 및 스타일을 secondary로 변경
@@ -191,10 +233,16 @@ const emailCheck = async () => {
 // 휴대폰 번호 인증을 위한 함수 1
 const phoneCheck = async () => {
   if (phone2.value == '') {
-    showAlert('휴대폰 번호가 입력되지 않았습니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '휴대폰 번호가 입력되지 않았습니다.',
+    })
     return
   } else if (isNaN(phone2.value)) {
-    showAlert('번호가 아닌 문자가 입력되었습니다. 숫자만 입력해주세요.')
+    Toast.fire({
+      icon: 'error',
+      title: '번호가 아닌 문자가 입력되었습니다. 숫자만 입력해주세요.',
+    })
     return
   }
 
@@ -204,7 +252,10 @@ const phoneCheck = async () => {
   let result = await axios.get(`/api/member/phone/${member.phone}`)
   console.log(result.data.result[0].count)
   if (result.data.result[0].count == 1) {
-    showAlert('이미 가입된 번호입니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '이미 가입된 번호입니다.',
+    })
     return
   } else {
     // 성공시 버튼 비활성화 및 스타일 변경
@@ -253,13 +304,7 @@ const losingTime = () => {
   timer.value = timer.value - 1
 }
 // 알림작동 시키는 함수
-const showAlert = (message) => {
-  msg.value = message
-  argonAlert.value = true
-  setTimeout(() => {
-    argonAlert.value = false
-  }, 1500)
-}
+
 // 팝업에서 센터 정보 가져오는 함수,
 const receiveCenterData = (data) => {
   console.log(data)
@@ -271,43 +316,90 @@ const addMemberInfo = async () => {
   console.log(member)
   member.address = member.address + ' ' + detailAddress.value
   if (!member.id) {
-    showAlert('아이디가 입력되지 않았습니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '아이디가 입력되지 않았습니다.',
+    })
     return
   } else if (member.pw.length < 6) {
-    showAlert('비밀번호는 최소 6글자 이상 입력이 필요합니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '비밀번호는 최소 6글자 이상 입력이 필요합니다.',
+    })
     return
   } else if (member.pw == '') {
-    showAlert('비밀번호가 입력되지 않았습니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '비밀번호가 입력되지 않았습니다.',
+    })
     return
   } else if (pwc.value == '') {
-    showAlert('비밀번호 확인이 입력되지 않았습니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '비밀번호 확인이 입력되지 않았습니다.',
+    })
+
     return
   } else if (pwc.value != member.pw) {
-    showAlert('비밀번호와 비밀번호 확인이 일치하지 않습니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '비밀번호와 비밀번호 확인이 일치하지 않습니다.',
+    })
+
     return
   } else if (member.name == '') {
-    showAlert('이름이 입력되지 않았습니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '이름이 입력되지 않았습니다.',
+    })
+
     return
   } else if (member.email == '') {
-    showAlert('이메일이 입력되지 않았습니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '이메일이 입력되지 않았습니다.',
+    })
+
     return
   } else if (member.phone == '') {
-    showAlert('휴대폰번호가 입력되지 않았습니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '휴대폰번호가 입력되지 않았습니다.',
+    })
+
     return
   } else if (member.address.replace(' ', '') == '') {
-    showAlert('주소가 입력되지 않았습니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '주소가 입력되지 않았습니다.',
+    })
+
     return
   } else if (member.center_no == 0) {
-    showAlert('센터가 입력되지 않았습니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '센터가 입력되지 않았습니다.',
+    })
+
     return
   } else if (idBtn.value) {
-    showAlert('아이디 중복확인이 되지 않았습니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '아이디 중복확인이 되지 않았습니다.',
+    })
+
     return
   } else if (emailBtn.value) {
-    showAlert('이메일 중복확인이 되지 않았습니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '이메일 중복확인이 되지 않았습니다.',
+    })
     return
   } else if (phoneBtn.phoneBtn || phoneBtn.phoneAuth) {
-    showAlert('휴대폰 인증이 진행되지 않았습니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '휴대폰 인증이 진행되지 않았습니다.',
+    })
     return
   }
   let result = await axios.post(`/api/member`, member)
@@ -379,18 +471,6 @@ const closeModal = () => {
       </div>
     </div>
   </Teleport>
-  <div class="fixed-top d-flex justify-content-end p-3">
-    <div class="col-4">
-      <ArgonAlert
-        v-show="argonAlert"
-        color="success"
-        icon="ni ni-bell-55"
-        dismissible
-        @close="argonAlert = false"
-        >{{ msg }}</ArgonAlert
-      >
-    </div>
-  </div>
   <div class="container top-0 position-sticky z-index-sticky">
     <div class="row">
       <div class="col-12">

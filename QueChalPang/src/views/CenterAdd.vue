@@ -5,8 +5,18 @@ import ArgonButton from '@/components/ArgonButton.vue'
 import ArgonInput from '@/components/ArgonInput.vue'
 import { reactive } from 'vue'
 import axios from 'axios'
-import ArgonAlert from '@/components/ArgonAlert.vue'
-
+import Swal from 'sweetalert2'
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  },
+})
 //주소api에서 쓰는 refs
 const address = ref('')
 const detailAddress = ref('')
@@ -60,34 +70,36 @@ const centerInfo = reactive({
   email: '',
   lunch: '12',
 })
-const msg = ref('')
 const checked = ref(false)
-const argonAlert = ref(false)
-// 알림작동 시키는 함수
-const showAlert = (message) => {
-  msg.value = message
-  argonAlert.value = true
-  setTimeout(() => {
-    argonAlert.value = false
-  }, 1500)
-}
 const checkCenterName = async () => {
   let result = await axios.get(`api/center/name/${centerInfo.name}`)
   if (result.data.count > 0) {
-    showAlert('이미 존재하는 센터명입니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '이미 존재하는 센터명입니다.',
+    })
   } else {
     checked.value = true
   }
 }
 const addCenterInfo = async () => {
   if (!checked.value) {
-    showAlert('센터명 중복확인을 하지 않으셨습니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '센터명 중복확인을 하지 않으셨습니다.',
+    })
     return
   } else if (centerInfo.email == '') {
-    showAlert('이메일이 입력되지 않았습니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '이메일이 입력되지 않았습니다.',
+    })
     return
   } else if (address.value == '' || detailAddress.value == '') {
-    showAlert('주소가 입력되지 않았습니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '주소가 입력되지 않았습니다.',
+    })
     return
   }
   centerInfo.address = `${address.value}|${extraAddress.value}|${detailAddress.value}`
@@ -101,18 +113,6 @@ const emit = defineEmits(['success'])
 </script>
 
 <template>
-  <div class="fixed-top d-flex justify-content-end p-3 mt-6">
-    <div class="col-4">
-      <ArgonAlert
-        v-show="argonAlert"
-        color="warning"
-        icon="ni ni-bell-55"
-        dismissible
-        @close="argonAlert = false"
-        >{{ msg }}</ArgonAlert
-      >
-    </div>
-  </div>
   <div class="py-4 container-fluid">
     <div class="row">
       <div class="col-12">
@@ -139,6 +139,9 @@ const emit = defineEmits(['success'])
                         v-model="centerInfo.name"
                         :disabled="checked"
                       />
+                      <label class="m-0" v-if="checked" for="email"
+                        >이메일 중복확인이 완료되었습니다.</label
+                      >
                     </div>
                     <div class="col-3">
                       <button
