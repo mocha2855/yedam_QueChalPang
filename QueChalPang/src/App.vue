@@ -94,7 +94,7 @@ const isReservationPage = computed(() => {
 
 .app-main {
   flex: 1;
-  padding: 24px;
+  padding: 20px 24px; /* 상단 20px, 좌우 24px */
   min-width: 0;
   margin-left: 260px;
   position: relative;
@@ -104,7 +104,7 @@ const isReservationPage = computed(() => {
 /* signin/signup, 메인 대시보드, 서베이 페이지에서는 꽉 차게 */
 .app-main--full {
   margin-left: 0;
-  padding: 40px 24px 24px 24px; /* 상단 40px, 좌우하단 24px */
+  padding: 0;
 }
 
 /* 대시보드는 패딩 없이 */

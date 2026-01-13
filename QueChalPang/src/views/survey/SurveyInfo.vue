@@ -178,19 +178,153 @@ const goTosurveyUpdate = () => {
 </script>
 
 <style scoped>
+/* 컨테이너 상단 여백 - margin-top 제거 */
+.container {
+  padding-top: 0.5rem;
+}
+
+/* 네비와 헤더 간격 축소 */
+.d-flex.justify-content-between.align-items-center {
+  margin-bottom: 0.75rem !important;
+}
+
+/* 헤더 크기 */
+h4 {
+  font-size: 1.1rem;
+  margin-bottom: 0 !important;
+}
+
+h6 {
+  font-size: 0.9rem;
+  margin-bottom: 0 !important;
+}
+
+/* 카드 여백 축소 */
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  margin-bottom: 0.75rem !important;
+}
+
+.card-header {
+  padding: 0.5rem 0.75rem !important;
+}
+
+.card-body {
+  padding: 0.75rem !important;
+}
+
+/* 탭 스타일 */
+.nav-tabs {
+  margin-bottom: 0 !important;
+}
+
 .nav-tabs .nav-link {
   cursor: pointer;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
 }
 
 .nav-tabs .nav-link.active {
   font-weight: 600;
 }
 
-.card {
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+/* 폼 레이블 */
+.form-label {
+  margin-bottom: 0.25rem !important;
+  font-size: 0.85rem;
+}
+
+/* 폼 컨트롤 */
+.form-control {
+  padding: 0.4rem 0.6rem !important;
+  font-size: 0.85rem !important;
+  height: calc(1.5em + 0.8rem + 2px) !important;
 }
 
 .form-control:read-only {
   background-color: #f8f9fa;
+}
+
+/* textarea */
+textarea.form-control {
+  height: auto !important;
+  min-height: 60px !important;
+}
+
+/* 버튼 크기 */
+.btn-sm {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.8rem;
+}
+
+/* 배지 */
+.badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
+/* 마진 축소 */
+.mb-4 {
+  margin-bottom: 0.75rem !important;
+}
+
+.mb-3 {
+  margin-bottom: 0.5rem !important;
+}
+
+.mb-2 {
+  margin-bottom: 0.35rem !important;
+}
+
+.mb-1 {
+  margin-bottom: 0.2rem !important;
+}
+
+/* 패딩 축소 */
+.py-4 {
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+}
+
+.py-3 {
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+
+.py-2 {
+  padding-top: 0.35rem !important;
+  padding-bottom: 0.35rem !important;
+}
+
+/* hr 여백 축소 */
+hr {
+  margin: 0.75rem 0 !important;
+}
+
+/* alert 크기 */
+.alert {
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.8rem !important;
+}
+
+.alert small {
+  font-size: 0.75rem !important;
+}
+
+/* row 간격 */
+.row {
+  margin-left: -0.5rem !important;
+  margin-right: -0.5rem !important;
+}
+
+.row > * {
+  padding-left: 0.5rem !important;
+  padding-right: 0.5rem !important;
+}
+
+/* 빈 상태 메시지 */
+.text-center.text-muted {
+  font-size: 0.85rem;
+  padding: 0.75rem 0 !important;
 }
 </style>

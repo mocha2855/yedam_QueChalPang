@@ -1,30 +1,22 @@
-<script setup></script>
-
 <template>
   <div class="dashboard">
     <!-- 히어로 섹션 -->
     <div class="hero-section">
       <div class="hero-content">
-        <!-- 상단 영역 -->
+        <!-- 상단 영역 - FOR MY FAMILY + 온라인 통합 신청 -->
         <div class="top-section">
           <h1 class="massive-title top-title">FOR MY FAMILY</h1>
           <div class="image-card-top">
-            <div class="image-placeholder">
-              <span>함께 준비하는 시간</span>
-            </div>
+            <span>쉽고 빠른 온라인 신청</span>
           </div>
         </div>
 
-        <!-- 중간 영역 -->
-        <div class="middle-section">
-          <div class="subtitle-card">
-            <h2>대기자 가족,<br />지금 시작하세요</h2>
-            <p>서비스 대기 가족을 위한<br />실질적 지원</p>
-          </div>
-        </div>
-
-        <!-- 하단 영역 -->
+        <!-- 하단 영역 - 통합 지원 플랫폼 + FOR OUR LIFE -->
         <div class="bottom-section">
+          <div class="subtitle-card">
+            <h2>발달장애 지원,<br />이제 온라인으로</h2>
+            <p>등록부터 승인까지<br />한 곳에서 간편하게</p>
+          </div>
           <h1 class="massive-title bottom-title">FOR OUR LIFE</h1>
         </div>
       </div>
@@ -51,21 +43,22 @@
 .hero-section {
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5efe7 0%, #e8dfd4 100%);
-  padding: 80px 60px;
+  background: linear-gradient(to bottom, #f5efe7 0%, #f5efe7 80%, #fcf9f4 80%, #fcf9f4 100%);
+  padding: 80px 40px 50px 40px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
   overflow: hidden;
+  position: relative;
 }
 
 .hero-content {
   width: 100%;
-  max-width: 1600px;
+  max-width: 1400px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 50px;
 }
 
 /* 상단 섹션 */
@@ -73,7 +66,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 40px;
+  gap: 30px;
   position: relative;
 }
 
@@ -82,76 +75,69 @@
 }
 
 .image-card-top {
-  width: 380px;
-  height: 280px;
-  background: linear-gradient(135deg, #d4c4b0 0%, #c5aa8e 100%);
-  border-radius: 40px;
+  width: 520px;
+  height: 200px;
+  background: white;
+  border-radius: 30px;
   overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
   flex-shrink: 0;
-}
-
-.image-placeholder {
-  width: 100%;
-  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.image-placeholder span {
-  font-size: 24px;
-  color: white;
-  font-weight: 700;
-}
-
-/* 중간 섹션 */
-.middle-section {
-  display: flex;
-  justify-content: flex-start;
-  padding-left: 60px;
-}
-
-.subtitle-card {
-  background: white;
-  border-radius: 40px;
-  padding: 50px 60px;
-  max-width: 550px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-}
-
-.subtitle-card h2 {
-  font-size: 44px;
-  font-weight: 700;
+.image-card-top span {
+  font-size: 26px;
   color: #4a3829;
-  margin: 0 0 24px 0;
-  line-height: 1.2;
-}
-
-.subtitle-card p {
-  font-size: 18px;
-  color: #7a6856;
-  line-height: 1.7;
-  margin: 0;
+  font-weight: 700;
 }
 
 /* 하단 섹션 */
 .bottom-section {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  position: relative;
+}
+
+.subtitle-card {
+  background: white;
+  border-radius: 30px;
+  padding: 45px 55px;
+  width: 520px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+}
+
+.subtitle-card h2 {
+  font-size: 40px;
+  font-weight: 700;
+  color: #4a3829;
+  margin: 0 0 20px 0;
+  line-height: 1.3;
+}
+
+.subtitle-card p {
+  font-size: 18px;
+  color: #7a6856;
+  line-height: 1.6;
+  margin: 0;
 }
 
 .bottom-title {
+  flex: 1;
   text-align: right;
 }
 
 /* 거대한 타이틀 */
 .massive-title {
-  font-size: 160px;
+  font-size: 130px;
   font-weight: 900;
   line-height: 0.9;
   margin: 0;
-  letter-spacing: -6px;
+  letter-spacing: -5px;
   text-transform: uppercase;
   white-space: nowrap;
 }
@@ -167,49 +153,54 @@
 /* 반응형 */
 @media (max-width: 1400px) {
   .massive-title {
-    font-size: 130px;
+    font-size: 110px;
+    letter-spacing: -4px;
   }
 
   .image-card-top {
-    width: 320px;
-    height: 240px;
+    width: 460px;
+    height: 180px;
+  }
+
+  .subtitle-card {
+    width: 460px;
+    padding: 40px 50px;
   }
 
   .subtitle-card h2 {
-    font-size: 38px;
+    font-size: 36px;
+  }
+
+  .subtitle-card p {
+    font-size: 17px;
   }
 }
 
 @media (max-width: 1024px) {
   .hero-section {
-    padding: 60px 40px;
+    padding: 60px 30px 40px 30px;
   }
 
   .massive-title {
-    font-size: 100px;
-    letter-spacing: -4px;
+    font-size: 90px;
+    letter-spacing: -3px;
   }
 
-  .top-section {
+  .top-section,
+  .bottom-section {
     flex-direction: column;
     align-items: flex-start;
   }
 
   .image-card-top {
     width: 100%;
-    max-width: 500px;
-  }
-
-  .middle-section {
-    padding-left: 0;
+    max-width: 600px;
+    height: 160px;
   }
 
   .subtitle-card {
-    max-width: 100%;
-  }
-
-  .bottom-section {
-    justify-content: flex-start;
+    width: 100%;
+    max-width: 600px;
   }
 
   .bottom-title {
@@ -219,20 +210,20 @@
 
 @media (max-width: 768px) {
   .hero-section {
-    padding: 40px 20px;
+    padding: 40px 20px 30px 20px;
   }
 
   .massive-title {
     font-size: 70px;
-    letter-spacing: -3px;
+    letter-spacing: -2px;
   }
 
   .hero-content {
-    gap: 30px;
+    gap: 35px;
   }
 
   .subtitle-card {
-    padding: 40px;
+    padding: 35px 40px;
   }
 
   .subtitle-card h2 {
@@ -244,18 +235,22 @@
   }
 
   .image-card-top {
-    height: 220px;
+    height: 140px;
+  }
+
+  .image-card-top span {
+    font-size: 20px;
   }
 }
 
 @media (max-width: 480px) {
   .massive-title {
     font-size: 48px;
-    letter-spacing: -2px;
+    letter-spacing: -1.5px;
   }
 
   .subtitle-card {
-    padding: 30px;
+    padding: 28px 32px;
   }
 
   .subtitle-card h2 {
@@ -263,10 +258,10 @@
   }
 
   .subtitle-card p {
-    font-size: 14px;
+    font-size: 15px;
   }
 
-  .image-placeholder span {
+  .image-card-top span {
     font-size: 18px;
   }
 }
