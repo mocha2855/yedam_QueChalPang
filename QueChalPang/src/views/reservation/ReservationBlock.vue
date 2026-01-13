@@ -174,7 +174,7 @@ const calendarAttrs = computed(() => [
 </script>
 
 <template>
-  <div class="py-4 container-fluid">
+  <div class="py-4 container-fluid block-wrapper">
     <div class="row g-4">
       <div>
         <button class="btn btn-warning btn-lg fs-6" @click="$router.back()">← 뒤로가기</button>   
@@ -284,7 +284,11 @@ const calendarAttrs = computed(() => [
 </template>
 
 <style scoped>
-/* 범례 */
+  .block-wrapper {
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
 .legend {
   display: flex;
   flex-wrap: wrap;
@@ -382,4 +386,5 @@ const calendarAttrs = computed(() => [
   opacity: 0.9;
   margin-top: 2px;
 }
+
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="py-4 container-fluid" v-if="dependantDetail.value != ''">
+  <div class="py-4 container-fluid dep-wrap" v-if="dependantDetail.value != ''">
     <div class="row">
       <div class="col-12">
         <!-- 헤더 섹션 -->
@@ -507,3 +507,9 @@ const completeChangeInfo = async () => {
     })
 }
 </script>
+<style scoped>
+    .dep-wrapper {
+  max-width: 1300px;
+  margin: 0 auto;
+}
+</style>

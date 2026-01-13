@@ -9,7 +9,7 @@
         </div>
 
         <!-- 메인 카드 -->
-        <div class="card shadow-sm" style="border: none; border-radius: 16px">
+        <div class="card shadow-sm main-card" style="border: none; border-radius: 16px">
           <div class="card-body p-5">
             <form role="form">
               <!-- 아이디 -->
@@ -563,3 +563,15 @@ const completeChangeInfo = async () => {
     })
 }
 </script>
+<style>
+  .main-card {
+  max-width: 800px;
+  margin: 0 auto;   
+}
+table th,
+table td {
+  text-align: center;
+  vertical-align: middle;
+}
+</style>
+
