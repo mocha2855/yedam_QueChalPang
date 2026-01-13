@@ -376,37 +376,36 @@ const goToUserAdd = () => {
                       <input type="checkbox" :value="member.member_id" v-model="checkedIds" />
                     </td>
                     <td class="align-middle text-center" style="padding: 14px">
-                      <p class="text-xs font-weight-bold mb-0" style="color: #2d3748">
+                      <p class="mb-0" style="color: #2d3748; font-size: 15px; font-weight: 600">
                         {{ member.member_id }}
                       </p>
                     </td>
-                    <td class="text-xs" style="padding: 14px; color: #4a5568">
+                    <td class="align-middle" style="padding: 14px; color: #4a5568; font-size: 15px">
                       {{ member.member_name }}
                     </td>
-                    <td class="text-xs" style="padding: 14px; color: #4a5568">
+                    <td class="align-middle" style="padding: 14px; color: #4a5568; font-size: 15px">
                       {{ member.center_name }}
                     </td>
-                    <td class="text-xs" style="padding: 14px; color: #4a5568">
+                    <td class="align-middle" style="padding: 14px; color: #4a5568; font-size: 15px">
                       {{ member.member_date.substring(0, 10) }}
                     </td>
                     <td class="align-middle text-center" style="padding: 14px">
-                      <span
+                      <button
+                        disabled
+                        class="btn btn-sm status-badge"
                         :class="{
-                          badge: true,
-                          'badge-sm': true,
-                          'bg-gradient-success': member.member_confirm == 'l1',
-                          'bg-gradient-warning': member.member_confirm == 'l2',
-                          'bg-gradient-danger': member.member_confirm == 'l3',
+                          'status-approved': member.member_confirm === 'l1',
+                          'status-pending': member.member_confirm === 'l2',
+                          'status-rejected': member.member_confirm === 'l3',
                         }"
-                        style="font-size: 11px"
                       >
                         {{ getStatus(member.member_confirm) }}
-                      </span>
+                      </button>
                     </td>
                     <td class="align-middle text-center" style="padding: 14px">
                       <div
                         v-if="member.member_confirm == 'l2'"
-                        class="d-flex gap-1 justify-content-center"
+                        class="d-flex gap-1 justify-content-center align-items-center"
                       >
                         <button
                           class="btn btn-sm"
@@ -415,9 +414,9 @@ const goToUserAdd = () => {
                             background-color: #48bb78;
                             color: white;
                             border: none;
-                            padding: 5px 14px;
+                            padding: 6px 16px;
                             border-radius: 6px;
-                            font-size: 12px;
+                            font-size: 13px;
                           "
                         >
                           승인
@@ -429,15 +428,15 @@ const goToUserAdd = () => {
                             background-color: #fc8181;
                             color: white;
                             border: none;
-                            padding: 5px 14px;
+                            padding: 6px 16px;
                             border-radius: 6px;
-                            font-size: 12px;
+                            font-size: 13px;
                           "
                         >
                           거절
                         </button>
                       </div>
-                      <span v-else class="text-xs text-secondary">-</span>
+                      <span v-else style="font-size: 15px; color: #a0aec0">-</span>
                     </td>
                     <td class="align-middle text-center" style="padding: 14px">
                       <button
@@ -448,13 +447,14 @@ const goToUserAdd = () => {
                           background-color: #f7fafc;
                           color: #4a5568;
                           border: 1px solid #e2e8f0;
-                          padding: 5px 14px;
+                          padding: 6px 16px;
                           border-radius: 6px;
-                          font-size: 12px;
+                          font-size: 13px;
                         "
                       >
                         수정하기
                       </button>
+                      <span v-else style="font-size: 15px; color: #a0aec0">-</span>
                     </td>
                   </tr>
                 </tbody>
@@ -495,6 +495,38 @@ const goToUserAdd = () => {
 </template>
 
 <style scoped>
+/* 상태 버튼 스타일 */
+.status-badge {
+  border: none;
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: not-allowed;
+  opacity: 1 !important;
+  color: white;
+}
+
+.status-approved {
+  background-color: #48bb78 !important;
+}
+
+.status-pending {
+  background-color: #ffc107 !important;
+}
+
+.status-rejected {
+  background-color: #fc8181 !important;
+}
+
+/* 테이블 정렬 */
+.table td {
+  vertical-align: middle !important;
+}
+
+.table th {
+  vertical-align: middle !important;
+}
+
 /* hover 효과 */
 .row-hover {
   transition: background-color 0.2s;
@@ -517,6 +549,6 @@ const goToUserAdd = () => {
 
 /* 체크박스 색상 변경 */
 input[type='checkbox'] {
-  accent-color: #2d3748;
+  accent-color: #000000;
 }
 </style>
