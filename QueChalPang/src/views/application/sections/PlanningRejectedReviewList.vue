@@ -28,7 +28,7 @@
             </div>
             <div class="col-2"><label class="col-form-label">작성자</label></div>
             <div class="col-2">
-              <input type="text" :value="writerName" class="form-control" readonly />
+              <input type="text" v-model="plan.member_name" class="form-control" readonly />
             </div>
           </div>
 
@@ -147,7 +147,9 @@ import { computed, ref, watch } from 'vue'
 import ConfirmModal from '../modals/ConfirmModal.vue'
 import RejectConfirmModal from '../modals/RejectConfirmModal.vue'
 import { useApplicationStore } from '@/stores/application'
+
 const application = useApplicationStore()
+
 const props = defineProps({
   memAuthority: { type: String, required: true },
   plans: { type: Array, default: () => [] },
@@ -156,8 +158,6 @@ const props = defineProps({
 const isReadOnlyViewer = computed(() => props.memAuthority === 'a1')
 
 const emit = defineEmits(['approve', 'reject'])
-
-const writerName = computed(() => '최강희')
 
 // UI 상태는 서버데이터에 섞지 말고 Set으로 관리
 const approveOpenSet = ref(new Set())

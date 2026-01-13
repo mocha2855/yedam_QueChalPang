@@ -105,22 +105,31 @@
                     <div class="col-2">
                       <label for="attachmentFile" class="col-form-label">첨부파일</label>
                     </div>
-                    <div v-if="plan.fileList && plan.fileList.length > 0" class="col-10">
-                      <div v-for="file in plan.fileList" :key="file.attachment_no" class="mb-1">
-                        <a
-                          href="#"
-                          @click.prevent="application.downloadFile(file.attachment_no)"
-                          class="text-decoration-none text-primary fw-bold"
-                        >
-                          💾 {{ file.attachment_orginal }}
-                        </a>
-                        <span class="text-muted ms-2" style="font-size: 0.8em">
-                          ({{ (file.attachment_size / 1024).toFixed(1) }} KB)
-                        </span>
+                    <div class="col-10">
+                      <div
+                        v-if="plan.fileList && plan.fileList.length > 0"
+                        class="card card-body p-2"
+                      >
+                        <div v-for="file in plan.fileList" :key="file.attachment_no" class="mb-1">
+                          <a
+                            href="#"
+                            @click.prevent="application.downloadFile(file.attachment_no)"
+                            class="text-decoration-none text-primary fw-bold"
+                          >
+                            💾 {{ file.attachment_orginal }}
+                          </a>
+                          <span class="text-muted ms-2" style="font-size: 0.8em">
+                            ({{ (file.attachment_size / 1024).toFixed(1) }} KB)
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <div v-else class="col-10">
-                      <input type="text" class="form-control" value="첨부파일 없음" readonly />
+                      <input
+                        v-else
+                        type="text"
+                        class="form-control"
+                        value="첨부파일 없음"
+                        readonly
+                      />
                     </div>
                   </div>
                   <div class="d-flex justify-content-between">
@@ -270,22 +279,31 @@
                     <div class="col-2">
                       <label for="attachmentFile" class="col-form-label">첨부파일</label>
                     </div>
-                    <div v-if="plan.fileList && plan.fileList.length > 0" class="col-10">
-                      <div v-for="file in plan.fileList" :key="file.attachment_no" class="mb-1">
-                        <a
-                          href="#"
-                          @click.prevent="application.downloadFile(file.attachment_no)"
-                          class="text-decoration-none text-primary fw-bold"
-                        >
-                          💾 {{ file.attachment_orginal }}
-                        </a>
-                        <span class="text-muted ms-2" style="font-size: 0.8em">
-                          ({{ (file.attachment_size / 1024).toFixed(1) }} KB)
-                        </span>
+                    <div class="col-10">
+                      <div
+                        v-if="plan.fileList && plan.fileList.length > 0"
+                        class="card card-body p-2"
+                      >
+                        <div v-for="file in plan.fileList" :key="file.attachment_no" class="mb-1">
+                          <a
+                            href="#"
+                            @click.prevent="application.downloadFile(file.attachment_no)"
+                            class="text-decoration-none text-primary fw-bold"
+                          >
+                            💾 {{ file.attachment_orginal }}
+                          </a>
+                          <span class="text-muted ms-2" style="font-size: 0.8em">
+                            ({{ (file.attachment_size / 1024).toFixed(1) }} KB)
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <div v-else class="col-10">
-                      <input type="text" class="form-control" value="첨부파일 없음" readonly />
+                      <input
+                        v-else
+                        type="text"
+                        class="form-control"
+                        value="첨부파일 없음"
+                        readonly
+                      />
                     </div>
                   </div>
                 </form>
@@ -338,9 +356,16 @@ const changeResultStatus = async (data) => {
     })
     .then((res) => {
       console.log(res)
-      application.countRealResult(route.params.id)
+
       application.planningState = 2
     })
+  await application.countRealResult(route.params.id)
+  await application.fetchFilesForPlans(application.resultReview)
+  await application.fetchFilesForPlans(application.resultfirstSave)
+  await application.fetchFilesForPlans(application.resultSuccess)
+  await application.fetchFilesForPlans(application.resultRejected)
+  await application.fetchFilesForPlans(application.resultChanging)
+  await application.fetchFilesForPlans(application.resultChangingReview)
 }
 const rejectedGroupIds = computed(() => {
   return application.resultSuccess.map((p) => p.attachment_group)

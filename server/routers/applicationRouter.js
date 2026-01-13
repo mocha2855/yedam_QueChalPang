@@ -179,9 +179,16 @@ router.put("/firstSaveOneMore/:no", async (req, res) => {
 });
 
 // 지원계획서 임시 저장 삭제(담당자) 0111
-router.put("/delFirstSave/:no", async (req, res) => {
+router.delete("/delFirstSave/:no", async (req, res) => {
   let no = req.params.no;
   let post = await applicationService.removeFirstSaveInfo(no);
+  res.send(post);
+});
+
+// 임시저장 취소시 첨부파일 삭제-0113
+router.delete("/delAttachment/:no", async (req, res) => {
+  let no = req.params.no;
+  let post = await applicationService.removeAttachment(no);
   res.send(post);
 });
 
@@ -376,7 +383,7 @@ router.get("/download/:attachment_no", async (req, res) => {
       "Content-Disposition",
       `attachment; filename*=UTF-8''${encodedName}`
     );
-    res.sendFile(filePath, (err) => {
+    res.sendFile(filePath, err => {
       if (err) {
         console.error("다운로드 에러:", err);
         res.status(500).send("다운로드 중 에러 발생");

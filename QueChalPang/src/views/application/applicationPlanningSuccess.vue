@@ -48,6 +48,12 @@ const changePlanningStatus = async (data) => {
       application.planningState = 2
       // application.countRealReview(route.params.id)
       //application.planningState = 2
+      await application.fetchFilesForPlans(application.planningFistSave)
+      await application.fetchFilesForPlans(application.planningSuccess)
+      await application.fetchFilesForPlans(application.planningRejected)
+      await application.fetchFilesForPlans(application.planningChanging)
+      await application.fetchFilesForPlans(application.planningChangingReview)
+      await application.fetchFilesForPlans(application.PlanningRejectedReviewList)
     })
 }
 // 1. 반려된 계획서(planningRejected)들의 파일 그룹 번호만 추출
