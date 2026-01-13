@@ -40,12 +40,6 @@ const fetchHistory = async () => {
 onMounted(fetchHistory)
 </script>
 <template>
-  <div class="page-top">
-    <button class="btn btn-outline-warning btn-sm back-btn" @click="$router.push({ name: 'ReservationGuardian' })">
-      ← 목록으로
-    </button>
-  </div>
-
   <div class="page-wrap">
     <div class="card history-card">
       <div class="card-header">
@@ -96,7 +90,7 @@ onMounted(fetchHistory)
 <style scoped>
 .page-top {
   max-width: 1300px;
-  margin: 0 auto 10px auto; 
+  margin: 0 auto 10px auto;
   display: flex;
   justify-content: flex-start;
 }
@@ -107,8 +101,8 @@ onMounted(fetchHistory)
 }
 
 .page-wrap {
-  max-width: 1300px;
-  margin: 0 auto; 
+  max-width: 100%;
+  margin: 0 auto;
 }
 
 .history-card {
@@ -238,7 +232,7 @@ onMounted(fetchHistory)
 .history-table thead th:last-child,
 .history-table tbody td:last-child {
   padding-right: 20px;
-  text-align: left; 
+  text-align: left;
 }
 
 .status-badge {
