@@ -51,7 +51,6 @@ const toYmdDash = computed(() => {
 //시간슬롯
 const baseSlots = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00']
 
-
 const slots = computed(() =>
   baseSlots.map((t) => {
     const isLunch = lunchTime.value === t
@@ -177,7 +176,7 @@ const calendarAttrs = computed(() => [
   <div class="py-4 container-fluid block-wrapper">
     <div class="row g-4">
       <div>
-        <button class="btn btn-warning btn-lg fs-6" @click="$router.back()">← 뒤로가기</button>   
+        <button class="btn btn-warning btn-lg fs-6" @click="$router.back()">← 뒤로가기</button>
       </div>
       <!-- 좌: 달력 -->
       <div class="col-12 col-lg-5">
@@ -198,9 +197,7 @@ const calendarAttrs = computed(() => [
             :attributes="calendarAttrs"
           />
 
-          <div class="mt-3 small text-muted">
-            * 점심시간은 변경할 수 없습니다.
-          </div>
+          <div class="mt-3 small text-muted">* 점심시간은 변경할 수 없습니다.</div>
         </div>
       </div>
 
@@ -276,7 +273,6 @@ const calendarAttrs = computed(() => [
               </span>
             </div>
           </div>
-
         </div>
       </div>
     </div>
