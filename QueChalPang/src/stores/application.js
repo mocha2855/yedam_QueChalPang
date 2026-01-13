@@ -326,6 +326,7 @@ export const useApplicationStore = defineStore('application', {
             // 3. 가져온 파일 목록을 해당 plan 객체 안에 'fileList'라는 이름으로 심어줌
             // 이렇게 해야 템플릿(HTML)에서 v-for="file in plan.fileList"로 보여줄 수 있음
             plan.fileList = res.data
+            console.log('plan: ', this.planningFistSave)
 
             console.log(`파일 로드 완료 (그룹 ${plan.attachment_no}):`, plan.fileList)
           } catch (err) {

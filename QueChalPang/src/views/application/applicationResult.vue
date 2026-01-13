@@ -493,6 +493,7 @@
                   id="title"
                   v-model="plan.result_title"
                   class="form-control"
+                  readonly
                 />
               </div>
             </div>
@@ -506,6 +507,7 @@
                   id="content"
                   v-model="plan.result_content"
                   class="form-control"
+                  readonly
                 />
               </div>
             </div>
@@ -819,6 +821,7 @@ import { useApplicationStore } from '@/stores/application'
 import axios from 'axios'
 import { useModalStore } from '@/stores/modal'
 import ApplicationModal from './modals/ApplicationModal.vue'
+import Swal from 'sweetalert2'
 
 const route = useRoute()
 const modal = useModalStore()
@@ -872,9 +875,14 @@ onBeforeMount(async () => {
 
 // 계획선택 모달창 확인버튼
 let selectPlanCheck = ref(false)
-const checkPlan = () => {
+const checkPlan = async () => {
   if (resultList.value == undefined) {
-    alert('계획서 선택을 완료해주세요')
+    await Swal.fire({
+      icon: 'warning',
+      text: '계획서 선택을 완료해주세요.',
+      confirmButtonText: '확인',
+    })
+
     return
   }
   selectPlanCheck.value = !selectPlanCheck.value
@@ -895,28 +903,42 @@ const UnCheckPlan = () => {
 let addCount = ref(0) // 계획추가 버튼용
 let selectPlan = ref(false)
 
-const addResultForm = () => {
+const addResultForm = async () => {
   if (application.resultfirstSave.length > 0) {
     callFirstSave.value = true
     application.planningState = 1
     return
   }
   if (application.resultChanging.length > 0) {
-    alert('수정하던 작업을 마무리해주세요.')
+    await Swal.fire({
+      icon: 'warning',
+      text: '수정하던 작업을 마무리해주세요.',
+      confirmButtonText: '확인',
+    })
     return
   }
   selectPlan.value = true
   if (addCount.value == 0) {
     addCount.value = 1
+    application.planningState = 1
+
     return
   }
   if (application.dependantInfo.status_status != 'i2') {
-    alert('대기단계 선택을 먼저 완료해주세요')
+    await Swal.fire({
+      icon: 'warning',
+      text: '대기단계 선택을 먼저 완료해주세요',
+      confirmButtonText: '확인',
+    })
     return
   }
 
   if (count.value != 1) {
-    alert('작성하던 내용을 완료해주세요.')
+    await Swal.fire({
+      icon: 'warning',
+      text: '작성하던 내용을 완료해주세요.',
+      confirmButtonText: '확인',
+    })
   }
 
   application.planningState = 1
@@ -947,7 +969,12 @@ const submitResultInfo = async () => {
     formData.value.result_title == '' ||
     formData.value.result_content == ''
   ) {
-    alert('내용 입력을 완료해주세요')
+    await Swal.fire({
+      icon: 'warning',
+      text: '내용 입력을 완료해주세요',
+      confirmButtonText: '확인',
+    })
+
     return
   }
   console.log('?: ', formData.value)
@@ -963,7 +990,12 @@ const modalOpen = async (data) => {
   // 검토중
   if (memAuthority == 'a3') {
     if (application.planningState == 3) {
-      alert('먼저 작업 중인 것을 완료해주세요.')
+      await Swal.fire({
+        icon: 'warning',
+        text: '먼저 작업 중인 것을 완료해주세요.',
+        confirmButtonText: '확인',
+      })
+
       return
     }
     application.resultReview.forEach((review) => {
@@ -994,7 +1026,12 @@ const modalOpen = async (data) => {
       application.resultChanging[0].result_title == '' ||
       application.resultChanging[0].result_content == ''
     ) {
-      alert('내용 입력을 완료해주세요')
+      await Swal.fire({
+        icon: 'warning',
+        text: '내용 입력을 완료해주세요.',
+        confirmButtonText: '확인',
+      })
+
       return
     }
     changingChecked.value = true
@@ -1023,7 +1060,12 @@ const sucessResult = async (data) => {
           })
           .then((res) => {
             console.log(res)
-            alert('승인요청 완료')
+            Swal.fire({
+              icon: 'success',
+              text: '승인요청 완료.',
+              confirmButtonText: '확인',
+            })
+            application.planningState = 0
 
             application.countRealResult(route.params.id)
             saveChecked.value = false
@@ -1063,7 +1105,13 @@ const sucessResult = async (data) => {
         })
         .then((res) => {
           console.log(res)
-          alert('승인요청 완료')
+          Swal.fire({
+            icon: 'success',
+            text: '승인요청 완료.',
+            confirmButtonText: '확인',
+          })
+          application.planningState = 0
+
           application.countRealResult(route.params.id)
           checked.value = false
           selectPlanCheck.value = false
@@ -1085,7 +1133,11 @@ const sucessResult = async (data) => {
       })
       .then((res) => {
         console.log(res)
-        alert('승인완료했습니다.')
+        Swal.fire({
+          icon: 'success',
+          text: '승인완료했습니다.',
+          confirmButtonText: '확인',
+        })
         application.planningState = 0
         application.countRealResult(route.params.id)
       })
@@ -1118,11 +1170,16 @@ const notChecked = (data) => {
 }
 
 // 반려버튼
-const modalClose = (data) => {
+const modalClose = async (data) => {
   console.log(data)
   if (memAuthority == 'a3') {
     if (application.planningState == 3) {
-      alert('작성하던 작업을 완료해주세요.')
+      await Swal.fire({
+        icon: 'warning',
+        text: '작성하던 작업을 완료해주세요.',
+        confirmButtonText: '확인',
+      })
+
       return
     }
     application.resultReview.forEach((review) => {
@@ -1149,8 +1206,12 @@ const modalClose = (data) => {
 
 // 반려모달창-확인버튼
 const rejectResult = async (data) => {
-  if (modal.rejectReason == undefined) {
-    alert('반려사유를 작성해주세요.')
+  if (modal.rejectReason == undefined || modal.rejectReason == '') {
+    await Swal.fire({
+      icon: 'warning',
+      text: '반려사유를 작성해주세요.',
+      confirmButtonText: '확인',
+    })
     return
   }
   await axios //
@@ -1160,7 +1221,11 @@ const rejectResult = async (data) => {
     })
     .then((res) => {
       console.log(res)
-      alert('반려했습니다.')
+      Swal.fire({
+        icon: 'success',
+        text: '반려했습니다.',
+        confirmButtonText: '확인',
+      })
       modal.rejectReason = undefined
       application.countRealResult(route.params.id)
       application.planningState = 0
@@ -1198,7 +1263,11 @@ const submitChaingResultInfo = async (data) => {
       application.resultChanging = []
       application.countRealResult(route.params.id)
       changingChecked.value = false
-      alert('승인요청 완료')
+      Swal.fire({
+        icon: 'success',
+        text: '승인요청 완료.',
+        confirmButtonText: '확인',
+      })
     })
 }
 
@@ -1221,7 +1290,11 @@ const saveSubmit = async () => {
       })
       .then((res) => {
         console.log(res)
-        alert('임시저장 완료')
+        Swal.fire({
+          icon: 'success',
+          text: '임시저장 완료.',
+          confirmButtonText: '확인',
+        })
 
         application.countRealResult(route.params.id)
         saveChecked.value = false
@@ -1244,8 +1317,12 @@ const saveSubmit = async () => {
   finalForm.append('planning_rejecter', application.dependantInfo.application_rejector)
   finalForm.append('planning_start', resultList.value.planning_start)
   finalForm.append('planning_end', resultList.value.planning_end)
-  finalForm.append('result_title', formData.value.result_title)
-  finalForm.append('result_content', formData.value.result_content)
+  if (formData.value.result_title) {
+    finalForm.append('result_title', formData.value.result_title)
+  }
+  if (formData.value.result_content) {
+    finalForm.append('result_content', formData.value.result_content)
+  }
   console.log('finalForm: ', finalForm)
   // 파일 데이터 (배열 반복)
   if (attachmentFiles.value.length > 0) {
@@ -1261,7 +1338,11 @@ const saveSubmit = async () => {
     })
     .then((res) => {
       console.log(res)
-      alert('임시저장 완료')
+      Swal.fire({
+        icon: 'success',
+        text: '임시저장 완료.',
+        confirmButtonText: '확인',
+      })
 
       application.countRealResult(route.params.id)
       saveChecked.value = false

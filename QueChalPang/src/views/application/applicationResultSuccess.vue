@@ -20,7 +20,6 @@
         <div>
           <div v-if="application.resultRejected.length > 0">
             <div class="card mb-3" v-for="plan in application.resultRejected" :key="plan">
-             
               <!-- 반려중 -->
               <div class="card-body">
                 <div class="row row-cols-auto">
@@ -276,6 +275,8 @@ import { useCounterStore } from '@/stores/member'
 import { useApplicationStore } from '@/stores/application'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
+import Swal from 'sweetalert2'
+
 const counters = useCounterStore()
 const application = useApplicationStore()
 const route = useRoute()
@@ -287,11 +288,19 @@ let memAuthority = counters.isLogIn.info.member_authority // 권한
 // 반려된 결과서 수정버튼
 const changeResultStatus = async (data) => {
   if (application.planningState == 1) {
-    alert('작성하던 계획서를 마무리해주세요!')
+    await Swal.fire({
+      icon: 'warning',
+      text: '작성하던 계획서를 마무리해주세요!',
+      confirmButtonText: '확인',
+    })
     return
   }
   if (application.resultChanging.length != 0) {
-    alert('수정하던 작업을 마무리해주세요.')
+    await Swal.fire({
+      icon: 'warning',
+      text: '수정하던 작업을 마무리해주세요.',
+      confirmButtonText: '확인',
+    })
     return
   }
   console.log(data)

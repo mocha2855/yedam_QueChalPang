@@ -76,8 +76,35 @@
 
               <div class="row g-3 mb-2 align-items-center">
                 <div class="col-2"><label class="col-form-label">첨부파일</label></div>
-                <div class="col-10">
+                <div v-if="application.planningFistSave == ''" class="col-10">
                   <input type="file" class="form-control" multiple @change="application.getFile" />
+                </div>
+                <div
+                  v-else-if="
+                    application.planningFistSave.length &&
+                    application.planningFistSave[0].attachment_no > 0
+                  "
+                  class="col-10"
+                >
+                  <div
+                    v-for="file in application.planningFistSave[0].fileList"
+                    :key="file.attachment_no"
+                    class="mb-1"
+                  >
+                    <a
+                      href="#"
+                      @click.prevent="application.downloadFile(file.attachment_no)"
+                      class="text-decoration-none text-primary fw-bold"
+                    >
+                      💾 {{ file.attachment_orginal }}
+                    </a>
+                    <span class="text-muted ms-2" style="font-size: 0.8em">
+                      ({{ (file.attachment_size / 1024).toFixed(1) }} KB)
+                    </span>
+                  </div>
+                </div>
+                <div v-else class="col-10">
+                  <input type="text" class="form-control" value="첨부파일 없음" readonly />
                 </div>
               </div>
             </form>
@@ -118,6 +145,8 @@
 import { ref } from 'vue'
 import ConfirmModal from '../modals/ConfirmModal.vue'
 import { useApplicationStore } from '@/stores/application'
+import Swal from 'sweetalert2'
+
 const application = useApplicationStore()
 const props = defineProps({
   memAuthority: { type: String, required: true },
@@ -128,9 +157,10 @@ const props = defineProps({
   addCount: { type: Number, required: true },
   plannedStatus: { type: String, default: '' },
   hasChangingWork: { type: Boolean, default: false },
+  dependantInfo: { type: Array, required: true },
 })
 
-const emit = defineEmits(['update:addCount', 'requestAdd', 'submitted', 'deleted'])
+const emit = defineEmits(['update:addCount', 'requestAdd', 'submitted', 'deleted', 'saved'])
 
 const formData = ref({})
 const checked = ref(false)
@@ -139,12 +169,24 @@ const count = ref(0)
 const callFirstSave = ref(false)
 const planNum = ref(0)
 
-const addPlanningForm = () => {
+const addPlanningForm = async () => {
+  if (props.dependantInfo.status_status != 'i2') {
+    await Swal.fire({
+      icon: 'warning',
+      text: '대기단계 선택을 먼저 완료해주세요',
+      confirmButtonText: '확인',
+    })
+    return
+  }
   planNum.value = props.realCount
   // 기존 로직 그대로 옮김
   if (props.addCount === 0) {
     if (props.hasChangingWork) {
-      alert('수정하던 작업을 마무리해주세요.')
+      await Swal.fire({
+        icon: 'warning',
+        text: '수정하던 작업을 마무리해주세요.',
+        confirmButtonText: '확인',
+      })
       return
     }
     if (props.firstSave.length > 0) {
@@ -158,13 +200,12 @@ const addPlanningForm = () => {
     return
   }
 
-  if (props.plannedStatus !== 'i2') {
-    alert('대기단계 선택을 먼저 완료해주세요')
-    return
-  }
-
   if (count.value !== 1) {
-    alert('작성하던 내용을 완료해주세요.')
+    await Swal.fire({
+      icon: 'warning',
+      text: '작성하던 내용을 완료해주세요.',
+      confirmButtonText: '확인',
+    })
     return
   }
 
@@ -177,14 +218,18 @@ const delForm = () => {
   emit('deleted')
 }
 
-const openConfirm = () => {
+const openConfirm = async () => {
   if (
     !formData.value.planning_start ||
     !formData.value.planning_end ||
     !formData.value.planning_title ||
     !formData.value.planning_content
   ) {
-    alert('내용 입력을 완료해주세요')
+    await Swal.fire({
+      icon: 'warning',
+      text: '내용 입력을 완료해주세요.',
+      confirmButtonText: '확인',
+    })
     return
   }
   count.value++
@@ -192,7 +237,7 @@ const openConfirm = () => {
 }
 
 const closeConfirm = () => {
-  checked.value = false
+  saveChecked.value = false
 }
 
 const confirmSubmit = () => {
