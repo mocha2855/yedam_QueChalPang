@@ -107,7 +107,7 @@ export const useApprovalStore = defineStore('approval', {
 
     // 승인 거절 목록만 (member_confirm = 'l3')
     rejectedList: (state) => {
-      return state.approvalList.filter((member) => member.member_confirm === 'l1')
+      return state.approvalList.filter((member) => member.member_confirm === 'l3')
     },
 
     // 삭제된 목록 추가 (member_confirm = 'l4')

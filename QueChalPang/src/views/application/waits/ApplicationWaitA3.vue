@@ -3,6 +3,7 @@
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useApplicationStore } from '@/stores/application'
+import Swal from 'sweetalert2'
 
 // 모달 컴포넌트들
 import ConformModal from '../modals/ConfirmModal.vue'
@@ -36,9 +37,13 @@ const approveMessage = computed(() =>
 )
 
 // ====== 승인 흐름 ======
-const openApprove = () => {
+const openApprove = async () => {
   if (!['e3', 'e4', 'e5'].includes(currentStatus.value)) {
-    alert('요청된 대기단계가 없습니다.')
+    await Swal.fire({
+      icon: 'warning',
+      text: '요청된 대기단계가 없습니다.',
+      confirmButtonText: '확인',
+    })
     return
   }
   showApproveModal.value = true
@@ -75,7 +80,11 @@ const saveRejectReason = async (reasonFromChild) => {
   const finalReason = (reasonFromChild ?? rejectReason.value).trim()
 
   if (!finalReason) {
-    alert('반려사유를 입력해주세요.')
+    await Swal.fire({
+      icon: 'warning',
+      text: '반려사유를 입력해주세요.',
+      confirmButtonText: '확인',
+    })
     return
   }
 

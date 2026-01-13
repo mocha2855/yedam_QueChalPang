@@ -6,6 +6,7 @@ import { useRoute } from 'vue-router'
 import axios from 'axios'
 import { useApplicationStore } from '@/stores/application'
 import ApplicationModal from '../modals/ApplicationModal.vue'
+import Swal from 'sweetalert2'
 
 const application = useApplicationStore()
 const route = useRoute()
@@ -45,14 +46,26 @@ const isApproved = computed(
   () => ['e3', 'e4', 'e5'].includes(currentStatus.value) && statusStatus.value === 'i2',
 )
 
-const openModal = () => {
-  if (!selectedStatus.value) return alert('대기단계를 선택해주세요')
+const openModal = async () => {
+  if (!selectedStatus.value) {
+    await Swal.fire({
+      icon: 'warning',
+      text: '대기단계를 선택해주세요',
+      confirmButtonText: '확인',
+    })
+    return
+  }
+
   checked.value = true
 }
 
 const submit = async () => {
   if (!selectedStatus.value) {
-    alert('대기단계를 선택해주세요')
+    await Swal.fire({
+      icon: 'warning',
+      text: '대기단계를 선택해주세요',
+      confirmButtonText: '확인',
+    })
     return
   }
 

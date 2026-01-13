@@ -26,9 +26,34 @@ const isAuthPage = computed(() => {
   )
 })
 
-// 메인 대시보드도 풀화면
+// 서베이 페이지 체크 추가
+const isSurveyPage = computed(() => {
+  return (
+    route.path.startsWith('/surveys') ||
+    route.path.startsWith('/survey') ||
+    route.path.startsWith('/surveyAdd') ||
+    route.path.startsWith('/surveyUpdate')
+  )
+})
+// QnA 페이지 체크 추가
+const isQnaPage = computed(() => {
+  return route.path.startsWith('/qna')
+})
+
+// 메인 대시보드, 인증 페이지, 서베이 페이지 모두 풀화면
 const isFullWidthPage = computed(() => {
-  return isAuthPage.value || route.path === '/dashboard-default'
+  return (
+    isAuthPage.value ||
+    route.path === '/dashboard-default' ||
+    isSurveyPage.value ||
+    isReservationPage.value ||
+    isQnaPage.value
+  )
+})
+
+// 상담(예약) 페이지 체크 추가
+const isReservationPage = computed(() => {
+  return route.path.startsWith('/resrv')
 })
 </script>
 
@@ -71,15 +96,19 @@ const isFullWidthPage = computed(() => {
   flex: 1;
   padding: 24px;
   min-width: 0;
-  /* background-color: rgb(255, 255, 255); */
   margin-left: 260px;
   position: relative;
   z-index: 1;
 }
 
-/* signin/signup 그리고 메인 대시보드에서는 꽉 차게 */
+/* signin/signup, 메인 대시보드, 서베이 페이지에서는 꽉 차게 */
 .app-main--full {
   margin-left: 0;
+  padding: 40px 24px 24px 24px; /* 상단 40px, 좌우하단 24px */
+}
+
+/* 대시보드는 패딩 없이 */
+.app-main--full:has([class*='dashboard']) {
   padding: 0;
 }
 </style>

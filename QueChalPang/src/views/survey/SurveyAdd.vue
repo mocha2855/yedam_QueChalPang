@@ -199,6 +199,7 @@
 import axios from 'axios'
 import { reactive, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import Swal from 'sweetalert2'
 
 const router = useRouter()
 
@@ -260,14 +261,37 @@ const deleteQuestion = (subtitleId, questionId) => {
 
 //조사지 등록
 const addSurvey = async () => {
-  const result = await axios.post('/api/surveys', surveyInfo)
+  // 저장 확인 창
+  const confirmResult = await Swal.fire({
+    icon: 'question',
+    title: '저장하시겠습니까?',
+    showCancelButton: true,
+    confirmButtonText: '저장',
+    cancelButtonText: '취소',
+  })
 
-  //등록
-  if (result.data) {
-    alert('등록되었습니다!')
-    router.push({ name: 'SurveyList' })
-  } else {
-    alert('실패했습니다')
+  if (!confirmResult.isConfirmed) return
+
+  try {
+    const result = await axios.post('/api/surveys', surveyInfo)
+
+    //등록 성공
+    if (result.data) {
+      await Swal.fire({
+        icon: 'success',
+        title: '등록되었습니다!',
+        showConfirmButton: false,
+        timer: 1500,
+      })
+      router.push({ name: 'SurveyList' })
+    }
+  } catch (error) {
+    await Swal.fire({
+      icon: 'error',
+      title: '실패했습니다',
+      text: '다시 시도해주세요',
+      confirmButtonText: '확인',
+    })
   }
 }
 
