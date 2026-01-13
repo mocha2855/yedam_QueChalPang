@@ -47,6 +47,12 @@ const changePlanningStatus = async (data) => {
       application.planningState = 2
       // application.countRealReview(route.params.id)
       //application.planningState = 2
+      await application.fetchFilesForPlans(application.planningFistSave)
+      await application.fetchFilesForPlans(application.planningSuccess)
+      await application.fetchFilesForPlans(application.planningRejected)
+      await application.fetchFilesForPlans(application.planningChanging)
+      await application.fetchFilesForPlans(application.planningChangingReview)
+      await application.fetchFilesForPlans(application.PlanningRejectedReviewList)
     })
 }
 </script>
@@ -147,8 +153,22 @@ const changePlanningStatus = async (data) => {
                     <div class="col-2">
                       <label for="attachmentFile" class="col-form-label">첨부파일</label>
                     </div>
-                    <div class="col-10">
-                      <input type="text" class="form-control" readonly />
+                    <div v-if="plan.fileList && plan.fileList.length > 0" class="col-10">
+                      <div v-for="file in plan.fileList" :key="file.attachment_no" class="mb-1">
+                        <a
+                          href="#"
+                          @click.prevent="application.downloadFile(file.attachment_no)"
+                          class="text-decoration-none text-primary fw-bold"
+                        >
+                          💾 {{ file.attachment_orginal }}
+                        </a>
+                        <span class="text-muted ms-2" style="font-size: 0.8em">
+                          ({{ (file.attachment_size / 1024).toFixed(1) }} KB)
+                        </span>
+                      </div>
+                    </div>
+                    <div v-else class="col-10">
+                      <input type="text" class="form-control" value="첨부파일 없음" readonly />
                     </div>
                   </div>
                   <div class="d-flex justify-content-between">
@@ -294,8 +314,22 @@ const changePlanningStatus = async (data) => {
                     <div class="col-2">
                       <label for="attachmentFile" class="col-form-label">첨부파일</label>
                     </div>
-                    <div class="col-10">
-                      <input type="text" class="form-control" readonly />
+                    <div v-if="plan.fileList && plan.fileList.length > 0" class="col-10">
+                      <div v-for="file in plan.fileList" :key="file.attachment_no" class="mb-1">
+                        <a
+                          href="#"
+                          @click.prevent="application.downloadFile(file.attachment_no)"
+                          class="text-decoration-none text-primary fw-bold"
+                        >
+                          💾 {{ file.attachment_orginal }}
+                        </a>
+                        <span class="text-muted ms-2" style="font-size: 0.8em">
+                          ({{ (file.attachment_size / 1024).toFixed(1) }} KB)
+                        </span>
+                      </div>
+                    </div>
+                    <div v-else class="col-10">
+                      <input type="text" class="form-control" value="첨부파일 없음" readonly />
                     </div>
                   </div>
                 </form>

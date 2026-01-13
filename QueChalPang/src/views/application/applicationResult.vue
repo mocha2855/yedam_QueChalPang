@@ -844,7 +844,22 @@ const selectPlanList = () => {
 
 onBeforeMount(async () => {
   // 계획서 갯수 파악
-  await application.countPlanning(route.params.id)
+  await application.countRealResult(route.params.id)
+  // 1. 검토중 리스트 파일 로드
+  await fetchFilesForPlans(application.resultReview)
+  console.log(application.resultReview[0])
+
+  // 2. 반려 검토중 리스트 파일 로드
+  await fetchFilesForPlans(application.resultChangingReview)
+
+  // 3. 반려 후 수정 리스트 파일 로드
+  await fetchFilesForPlans(application.resultChanging)
+
+  // 4. 임시 저장 리스트 파일 로드
+  await fetchFilesForPlans(application.resultfirstSave)
+  await fetchFilesForPlans(application.resultSuccess)
+  await fetchFilesForPlans(application.resultRejected)
+
   addCount.value = application.planned
   console.log('addCount: ', addCount.value)
   if (addCount.value != 0) {
@@ -855,25 +870,6 @@ onBeforeMount(async () => {
   }
   console.log(`realCount.value: ${realCount.value}`)
   console.log(`addCount.value: ${addCount.value}`)
-  // 1. 검토중 리스트 파일 로드
-  if (application.resultReview.length > 0) {
-    await fetchFilesForPlans(application.resultReview)
-  }
-
-  // 2. 반려 검토중 리스트 파일 로드
-  if (application.resultChangingReview.length > 0) {
-    await fetchFilesForPlans(application.resultChangingReview)
-  }
-
-  // 3. 반려 후 수정 리스트 파일 로드
-  if (application.resultChanging.length > 0) {
-    await fetchFilesForPlans(application.resultChanging)
-  }
-
-  // 4. 임시 저장 리스트 파일 로드
-  if (application.resultfirstSave.length > 0) {
-    await fetchFilesForPlans(application.resultfirstSave)
-  }
 })
 
 // 계획선택 모달창 확인버튼
@@ -924,6 +920,7 @@ const addResultForm = async () => {
   if (addCount.value == 0) {
     addCount.value = 1
     application.planningState = 1
+    count.value = 0
 
     return
   }
@@ -957,6 +954,7 @@ const delForm = () => {
     addCount.value = 0
     formData.value = {}
     application.planningState = 0
+    count.value = 1
   }
 }
 
@@ -1070,7 +1068,6 @@ const sucessResult = async (data) => {
             })
             application.planningState = 0
 
-            application.countRealResult(route.params.id)
             saveChecked.value = false
 
             checked.value = false
@@ -1083,6 +1080,12 @@ const sucessResult = async (data) => {
             resultList.value = {}
             count.value = 1
           })
+        await application.countRealResult(route.params.id)
+        await fetchFilesForPlans(application.resultReview)
+        await fetchFilesForPlans(application.resultSuccess)
+        await fetchFilesForPlans(application.resultRejected)
+        await fetchFilesForPlans(application.resultChanging)
+        await fetchFilesForPlans(application.resultChangingReview)
       }
       return
     } else {
@@ -1115,7 +1118,6 @@ const sucessResult = async (data) => {
           })
           application.planningState = 0
 
-          application.countRealResult(route.params.id)
           checked.value = false
           selectPlanCheck.value = false
           selectPlan.value = false
@@ -1126,6 +1128,14 @@ const sucessResult = async (data) => {
           resultList.value = {}
           count.value = 1
         })
+
+      await application.countRealResult(route.params.id)
+      await fetchFilesForPlans(application.resultReview)
+      await fetchFilesForPlans(application.resultSuccess)
+      await fetchFilesForPlans(application.resultRejected)
+      await fetchFilesForPlans(application.resultChanging)
+      await fetchFilesForPlans(application.resultChangingReview)
+      return
     }
   }
   // 관리자
@@ -1142,8 +1152,14 @@ const sucessResult = async (data) => {
           confirmButtonText: '확인',
         })
         application.planningState = 0
-        application.countRealResult(route.params.id)
       })
+    await application.countRealResult(route.params.id)
+    await fetchFilesForPlans(application.resultReview)
+    await fetchFilesForPlans(application.resultSuccess)
+    await fetchFilesForPlans(application.resultRejected)
+    await fetchFilesForPlans(application.resultChanging)
+    await fetchFilesForPlans(application.resultChangingReview)
+    return
   }
 }
 
@@ -1230,9 +1246,18 @@ const rejectResult = async (data) => {
         confirmButtonText: '확인',
       })
       modal.rejectReason = undefined
-      application.countRealResult(route.params.id)
+
       application.planningState = 0
     })
+  await application.countRealResult(route.params.id)
+  await fetchFilesForPlans(application.resultfirstSave)
+
+  await fetchFilesForPlans(application.resultReview)
+  await fetchFilesForPlans(application.resultSuccess)
+  await fetchFilesForPlans(application.resultRejected)
+  await fetchFilesForPlans(application.resultChanging)
+  await fetchFilesForPlans(application.resultChangingReview)
+  return
 }
 
 // 반려 후 수정 중 취소 버튼(담당자)
@@ -1244,8 +1269,16 @@ const cancelResultnfo = async (data) => {
     })
     .then(() => {
       application.resultChanging = []
-      application.countRealResult(route.params.id)
     })
+  await application.countRealResult(route.params.id)
+  await fetchFilesForPlans(application.resultfirstSave)
+
+  await fetchFilesForPlans(application.resultReview)
+  await fetchFilesForPlans(application.resultSuccess)
+  await fetchFilesForPlans(application.resultRejected)
+  await fetchFilesForPlans(application.resultChanging)
+  await fetchFilesForPlans(application.resultChangingReview)
+  return
 }
 
 // 반려 후 승인요청 모달창 승인 버튼(담당자)
@@ -1264,7 +1297,7 @@ const submitChaingResultInfo = async (data) => {
     .then((res) => {
       console.log(res)
       application.resultChanging = []
-      application.countRealResult(route.params.id)
+
       changingChecked.value = false
       Swal.fire({
         icon: 'success',
@@ -1272,6 +1305,14 @@ const submitChaingResultInfo = async (data) => {
         confirmButtonText: '확인',
       })
     })
+  await application.countRealResult(route.params.id)
+  await fetchFilesForPlans(application.resultfirstSave)
+
+  await fetchFilesForPlans(application.resultReview)
+  await fetchFilesForPlans(application.resultSuccess)
+  await fetchFilesForPlans(application.resultRejected)
+  await fetchFilesForPlans(application.resultChanging)
+  await fetchFilesForPlans(application.resultChangingReview)
 }
 
 // 지원 결과서 임시저장 0111
@@ -1299,7 +1340,6 @@ const saveSubmit = async () => {
           confirmButtonText: '확인',
         })
 
-        application.countRealResult(route.params.id)
         saveChecked.value = false
 
         checked.value = false
@@ -1312,6 +1352,14 @@ const saveSubmit = async () => {
         resultList.value = {}
         count.value = 1
       })
+    await application.countRealResult(route.params.id)
+    await fetchFilesForPlans(application.resultfirstSave)
+    await fetchFilesForPlans(application.resultReview)
+    await fetchFilesForPlans(application.resultSuccess)
+    await fetchFilesForPlans(application.resultRejected)
+    await fetchFilesForPlans(application.resultChanging)
+    await fetchFilesForPlans(application.resultChangingReview)
+
     return
   }
 
@@ -1347,7 +1395,6 @@ const saveSubmit = async () => {
         confirmButtonText: '확인',
       })
 
-      application.countRealResult(route.params.id)
       saveChecked.value = false
 
       checked.value = false
@@ -1360,6 +1407,13 @@ const saveSubmit = async () => {
       resultList.value = {}
       count.value = 1
     })
+  await application.countRealResult(route.params.id)
+  await fetchFilesForPlans(application.resultReview)
+  await fetchFilesForPlans(application.resultfirstSave)
+  await fetchFilesForPlans(application.resultSuccess)
+  await fetchFilesForPlans(application.resultRejected)
+  await fetchFilesForPlans(application.resultChanging)
+  await fetchFilesForPlans(application.resultChangingReview)
 }
 
 const closeConfirm = () => {
@@ -1380,6 +1434,16 @@ const closeCallSaveInfo = async () => {
     .delete('/api/delResultFirstSave/' + application.resultfirstSave[0].planning_no)
     .then((res) => {
       console.log(res)
+      console.log('??', application.resultfirstSave[0])
+
+      if (application.resultfirstSave[0].attachment_no) {
+        axios //
+          .delete(`/api/delAttachment/` + application.resultfirstSave[0].attachment_no)
+          .then((res) => {
+            console.log(res)
+          })
+      }
+
       formData.value = {}
       attachmentFiles.value = []
       resultList.value = {}
@@ -1410,12 +1474,14 @@ const downloadFile = (attachmentNo) => {
 // 파일 목록을 가져와서 plan 객체 안에 심어주는 함수
 const fetchFilesForPlans = async (plans) => {
   // 리스트가 비어있으면 종료
+  console.log('1', plans.length)
   if (!plans || plans.length === 0) return
-  console.log(plans)
+  console.log('2', plans)
   // 리스트 하나하나(plan)를 꺼내서 확인
   for (const plan of plans) {
+    console.log('3', plan)
     // 1. 그룹 ID가 있는지 확인 (파일이 있는 결과서인지)
-    if (plan.attachment_no && plan.attachment_no !== 0) {
+    if (plan.attachment_no != '' || plan.attachment_no != null) {
       try {
         // 2. 백엔드에 파일 목록 요청
         const res = await axios.get(`/api/attachments/${plan.attachment_no}`)
