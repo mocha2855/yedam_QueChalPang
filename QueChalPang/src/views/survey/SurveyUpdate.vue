@@ -2,7 +2,7 @@
   <div class="container">
     <!-- 헤더 -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h4 class="mb-0">조사지 수정</h4>
+      <h4 class="mb-0">지원서 수정</h4>
       <button class="btn btn-sm btn-secondary" @click="goBack">
         <i class="fas fa-list"></i> 목록으로
       </button>
@@ -190,7 +190,6 @@
 <script setup>
 import Swal from 'sweetalert2'
 import { useSurveyStore } from '@/stores/survey'
-import { useModalStore } from '@/stores/modal'
 import { useCounterStore } from '@/stores/member'
 import axios from 'axios'
 import { reactive, onMounted, ref } from 'vue'
@@ -199,11 +198,12 @@ import { useRouter, useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
 const store = useSurveyStore()
-const modal = useModalStore()
 const member = useCounterStore()
 
 // 활성화된 탭 인덱스
 const activeTab = ref(0)
+// 원래 세부항목 개수 저장
+const originalSubtitleCount = ref(0)
 
 const surveyInfo = reactive({
   no: '',
@@ -213,22 +213,25 @@ const surveyInfo = reactive({
   subtitles: [], //여기 배열에 질문,세부항목,설명 다들어감
 })
 
-// 세부항목 추가
+// 세부항목 추가 (화면에만 추가)
 const addSubtitle = () => {
   const newSubtitleId = Date.now()
 
-  //세부항목에 질문추가
   surveyInfo.subtitles.push({
     survey_subtitle_no: newSubtitleId,
     survey_subtitle: '',
     survey_subtitle_detail: '',
-    questionList: [],
+    questionList: [
+      {
+        survey_qitem_no: Date.now(),
+        survey_qitem_question: '',
+        survey_qitem_type: '예/아니요',
+        need_detail: false,
+      },
+    ],
   })
 
-  // 새로 추가된 탭으로 이동
   activeTab.value = surveyInfo.subtitles.length - 1
-
-  addQuestion(newSubtitleId)
 }
 
 // 세부항목 삭제
@@ -282,57 +285,108 @@ onMounted(async () => {
         need_detail: Boolean(question.need_detail), // 0→false, 1→true 변환
       })),
     }))
+
+    // 원래 세부항목 개수 저장
+    originalSubtitleCount.value = surveyInfo.subtitles.length
+
     surveyInfo.qitemType = data.qitems || ''
   }
-  console.log(data.survey_no)
-  console.log(data.qitems)
 })
 
-//수정(저장)버튼 누를 시 모달 창 열기
-const openModifyModal = () => {
-  modal.open('reason', {
-    onSubmit: async (reason) => {
-      await updateSurvey(reason)
+//수정(저장)버튼 누를 시 SweetAlert로 입력받기
+const openModifyModal = async () => {
+  const { value: reason } = await Swal.fire({
+    title: '수정 사유를 입력해주세요',
+    input: 'textarea',
+    inputPlaceholder: '수정 사유를 입력하세요...',
+    inputAttributes: {
+      'aria-label': '수정 사유',
+      style: 'min-height: 100px;',
+    },
+    showCancelButton: true,
+    confirmButtonText: '저장',
+    cancelButtonText: '취소',
+    confirmButtonColor: '#2196f3',
+    cancelButtonColor: '#f44336',
+    inputValidator: (value) => {
+      if (!value || value.trim() === '') {
+        return '수정 사유를 입력해주세요!'
+      }
     },
   })
-  console.log(modal.type)
+
+  if (reason) {
+    // 세부항목 개수 비교
+    if (surveyInfo.subtitles.length > originalSubtitleCount.value) {
+      // 세부항목이 추가됨 → 새 버전 생성
+      await createNewVersion(reason)
+    } else {
+      // 글자만 수정됨 → 기존 버전 업데이트
+      await updateSurvey(reason)
+    }
+  }
 }
 
-//조사지 수정 저장
+// 기존 버전 업데이트 (PUT)
 const updateSurvey = async (reason) => {
-  if (!reason || reason.trim() === '') {
+  const personName = member.isLogIn.info.member_name
+
+  try {
+    const result = await axios.put(`/api/surveys/${surveyInfo.no}`, {
+      survey_no: surveyInfo.no,
+      survey_title: surveyInfo.title,
+      survey_title_no: surveyInfo.title_no,
+      subtitles: surveyInfo.subtitles,
+      person: personName,
+      reason: reason,
+    })
+
+    if (result.data) {
+      await Swal.fire({
+        icon: 'success',
+        title: '수정되었습니다!',
+        showConfirmButton: false,
+        timer: 1500,
+      })
+      router.push({ name: 'surveyInfo', params: { no: surveyInfo.no } })
+    }
+  } catch (error) {
     await Swal.fire({
-      icon: 'warning',
-      title: '수정사유를 입력해주세요.',
+      icon: 'error',
+      title: '수정 실패',
+      text: error.response?.data?.message || '다시 시도해주세요',
       confirmButtonText: '확인',
     })
-    return
   }
-  const personName = member.isLogIn.info.member_name // 시스템관지라 권한부여
+}
 
-  const result = await axios.put(`/api/surveys/${surveyInfo.no}`, {
-    survey_no: surveyInfo.no,
-    survey_title: surveyInfo.title,
-    survey_title_no: surveyInfo.title_no,
-    subtitles: surveyInfo.subtitles,
-    person: personName,
-    reason: reason,
-  })
+// 새 버전 생성 (POST)
+const createNewVersion = async (reason) => {
+  const personName = member.isLogIn.info.member_name
 
-  //등록
-  if (result.data) {
-    await Swal.fire({
-      icon: 'success',
-      title: '수정되었습니다!',
-      showConfirmButton: false,
-      timer: 1500,
+  try {
+    const result = await axios.post('/api/surveys', {
+      survey_title_no: surveyInfo.title_no,
+      survey_title: surveyInfo.title,
+      subtitles: surveyInfo.subtitles,
+      person: personName,
+      reason: reason,
     })
-    router.push({ name: 'surveyInfo', params: { no: surveyInfo.no } })
-  } else {
-    Swal.fire({
+
+    if (result.data && result.data.survey_no) {
+      await Swal.fire({
+        icon: 'success',
+        title: '새 버전이 생성되었습니다!',
+        showConfirmButton: false,
+        timer: 1500,
+      })
+      router.push({ name: 'surveyInfo', params: { no: result.data.survey_no } })
+    }
+  } catch (error) {
+    await Swal.fire({
       icon: 'error',
-      title: '실패했습니다',
-      text: '다시 시도해주세요',
+      title: '생성 실패',
+      text: error.response?.data?.message || '다시 시도해주세요',
       confirmButtonText: '확인',
     })
   }
@@ -342,46 +396,216 @@ const goBack = () => {
   router.push({ name: 'SurveyList' })
 }
 </script>
-
 <style scoped>
+/* 컨테이너 상단 여백 축소 */
+.container {
+  padding-top: 8px;
+}
+
+/* 네비와 헤더 간격 축소 */
+.d-flex.justify-content-between.align-items-center {
+  margin-bottom: 12px !important;
+}
+
+/* 헤더 크기 */
+h4 {
+  font-size: 18px;
+  margin-bottom: 0 !important;
+}
+
+h6 {
+  font-size: 14px;
+  margin-bottom: 0 !important;
+}
+
+/* 카드 여백 축소 */
+.card {
+  box-shadow: none;
+  border: 1px solid #e9ecef;
+  margin-bottom: 12px !important;
+}
+
+.card-header {
+  padding: 8px 12px !important;
+}
+
+.card-body {
+  padding: 12px !important;
+}
+
+/* 탭 스타일 */
+.nav-tabs {
+  margin-bottom: 0 !important;
+}
+
 .nav-tabs .nav-link {
   cursor: pointer;
+  padding: 6px 13px;
+  font-size: 14px;
 }
 
 .nav-tabs .nav-link.active {
   font-weight: 600;
 }
 
-.card {
-  box-shadow: none;
-  border: 1px solid #e9ecef;
+/* 폼 레이블 */
+.form-label {
+  margin-bottom: 4px !important;
+  font-size: 14px;
 }
 
-.gap-2 {
-  gap: 8px;
+/* 폼 컨트롤 */
+.form-control {
+  padding: 6px 10px !important;
+  font-size: 14px !important;
+  height: calc(1.5em + 12px + 2px) !important;
 }
 
+/* textarea */
+textarea.form-control {
+  height: auto !important;
+  min-height: 60px !important;
+}
+
+/* select */
+select.form-control {
+  height: calc(1.5em + 12px + 2px) !important;
+}
+
+/* 버튼 크기 */
+.btn-sm {
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.btn-outline-danger,
+.btn-outline-primary {
+  border-width: 1px;
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+/* 배지 */
+.badge {
+  font-size: 12px;
+  padding: 4px 8px;
+}
+
+/* 질문 카드 */
 .question-card {
   border: 1px solid #dee2e6;
   border-radius: 8px;
   overflow: hidden;
+  margin-bottom: 8px !important;
 }
 
 .question-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
+  padding: 10px 12px;
   background-color: #f8f9fa;
   border-bottom: 1px solid #dee2e6;
 }
 
 .question-body {
-  padding: 16px;
+  padding: 12px;
 }
 
-.btn-outline-danger,
-.btn-outline-primary {
-  border-width: 1px;
+/* 마진 축소 */
+.mb-4 {
+  margin-bottom: 12px !important;
+}
+
+.mb-3 {
+  margin-bottom: 8px !important;
+}
+
+.mb-2 {
+  margin-bottom: 6px !important;
+}
+
+.mb-0 {
+  margin-bottom: 0 !important;
+}
+
+.mt-2 {
+  margin-top: 6px !important;
+}
+
+.mt-4 {
+  margin-top: 12px !important;
+}
+
+/* 패딩 축소 */
+.py-4 {
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+}
+
+.py-5 {
+  padding-top: 16px !important;
+  padding-bottom: 16px !important;
+}
+
+/* hr 여백 축소 */
+hr {
+  margin: 12px 0 !important;
+}
+
+/* alert 크기 */
+.alert {
+  padding: 8px 12px !important;
+  font-size: 13px !important;
+}
+
+.alert small {
+  font-size: 12px !important;
+}
+
+/* form-check */
+.form-check {
+  padding-left: 24px;
+  margin-bottom: 8px;
+}
+
+.form-check-input {
+  margin-top: 4px;
+}
+
+.form-check-label {
+  font-size: 14px;
+}
+
+/* row 간격 */
+.row {
+  margin-left: -8px !important;
+  margin-right: -8px !important;
+}
+
+.row > * {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+/* 빈 상태 메시지 */
+.text-center.text-muted {
+  font-size: 14px;
+}
+
+/* gap 축소 */
+.gap-2 {
+  gap: 6px !important;
+}
+
+/* 하단 버튼 */
+.btn-primary,
+.btn-secondary {
+  padding: 6px 13px !important;
+  font-size: 14px !important;
+}
+
+.text-end {
+  text-align: right !important;
 }
 </style>

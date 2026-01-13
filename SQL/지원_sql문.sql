@@ -14,7 +14,7 @@ where application_no=37;
 
 UPDATE member
 SET member_confirm = 'l2'
-WHERE member_id = 'user07';
+WHERE member_id = 'user30';
 
 select * from survey_qitem;
 select* from center;
@@ -29,6 +29,7 @@ delete from survey_subtitle where survey_subtitle_no= '14';
 delete from survey_qitem where survey_qitem_no= '25';
 -- survey 부분 select
 select * from survey;
+delete from survey where survey_no= '35';
 -- 전체 조회
 -- 활성만 가져와야함
 SELECT *
@@ -53,7 +54,7 @@ commit;
 
 UPDATE survey
 SET survey_version_status = 'active'
-WHERE survey_no = 4;
+WHERE survey_no = 28;
 commit;
 
 
