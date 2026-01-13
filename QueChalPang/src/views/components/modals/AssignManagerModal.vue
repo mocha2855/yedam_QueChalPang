@@ -4,6 +4,7 @@ import { ref, computed, watch } from 'vue'
 import axios from 'axios'
 import { useModalStore } from '@/stores/modal'
 import { useApplicationStore } from '@/stores/application'
+import Swal from 'sweetalert2'
 
 const modal = useModalStore()
 const applicationStore = useApplicationStore()
@@ -70,22 +71,54 @@ const fetchManagers = async () => {
   }
 }
 
+// const confirmAssign = async () => {
+//   if (!managerId.value) {
+//     alert('배정할 담당자를 선택해주세요.')
+//     return
+//   }
+
+//   try {
+//     await applicationStore.assignManager(payload.value.applicationNo, managerId.value)
+//     alert('담당자가 배정되었습니다.')
+//     payload.value.onComplete?.()
+//     closeModal()
+//   } catch (e) {
+//     console.error('[AssignManagerModal] confirmAssign error:', e)
+//     alert('담당자 배정 중 오류가 발생했습니다.')
+//   }
+// }
 const confirmAssign = async () => {
   if (!managerId.value) {
-    alert('배정할 담당자를 선택해주세요.')
-    return
+    return Swal.fire({
+      icon: 'warning',
+      title: '담당자를 선택해주세요',
+      confirmButtonColor: '#4a90c8',
+    })
   }
 
   try {
     await applicationStore.assignManager(payload.value.applicationNo, managerId.value)
-    alert('담당자가 배정되었습니다.')
+
+    await Swal.fire({
+      icon: 'success',
+      title: '담당자 배정 완료',
+      text: '담당자가 성공적으로 배정되었습니다.',
+      confirmButtonColor: '#4a90c8',
+    })
+
     payload.value.onComplete?.()
     closeModal()
   } catch (e) {
     console.error('[AssignManagerModal] confirmAssign error:', e)
-    alert('담당자 배정 중 오류가 발생했습니다.')
+    Swal.fire({
+      icon: 'error',
+      title: '담당자 배정 실패',
+      text: '담당자 배정 중 오류가 발생했습니다.',
+      confirmButtonColor: '#4a90c8',
+    })
   }
 }
+
 
 // 모달이 열릴 때마다 담당자 목록 새로 로딩
 watch(
