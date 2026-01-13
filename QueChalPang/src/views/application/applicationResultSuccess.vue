@@ -20,7 +20,6 @@
         <div>
           <div v-if="application.resultRejected.length > 0">
             <div class="card mb-3" v-for="plan in application.resultRejected" :key="plan">
-             
               <!-- 반려중 -->
               <div class="card-body">
                 <div class="row row-cols-auto">
@@ -106,8 +105,22 @@
                     <div class="col-2">
                       <label for="attachmentFile" class="col-form-label">첨부파일</label>
                     </div>
-                    <div class="col-10">
-                      <input type="text" class="form-control" readonly />
+                    <div v-if="plan.fileList && plan.fileList.length > 0" class="col-10">
+                      <div v-for="file in plan.fileList" :key="file.attachment_no" class="mb-1">
+                        <a
+                          href="#"
+                          @click.prevent="application.downloadFile(file.attachment_no)"
+                          class="text-decoration-none text-primary fw-bold"
+                        >
+                          💾 {{ file.attachment_orginal }}
+                        </a>
+                        <span class="text-muted ms-2" style="font-size: 0.8em">
+                          ({{ (file.attachment_size / 1024).toFixed(1) }} KB)
+                        </span>
+                      </div>
+                    </div>
+                    <div v-else class="col-10">
+                      <input type="text" class="form-control" value="첨부파일 없음" readonly />
                     </div>
                   </div>
                   <div class="d-flex justify-content-between">
@@ -258,8 +271,22 @@
                     <div class="col-2">
                       <label for="attachmentFile" class="col-form-label">첨부파일</label>
                     </div>
-                    <div class="col-10">
-                      <input type="text" class="form-control" readonly />
+                    <div v-if="plan.fileList && plan.fileList.length > 0" class="col-10">
+                      <div v-for="file in plan.fileList" :key="file.attachment_no" class="mb-1">
+                        <a
+                          href="#"
+                          @click.prevent="application.downloadFile(file.attachment_no)"
+                          class="text-decoration-none text-primary fw-bold"
+                        >
+                          💾 {{ file.attachment_orginal }}
+                        </a>
+                        <span class="text-muted ms-2" style="font-size: 0.8em">
+                          ({{ (file.attachment_size / 1024).toFixed(1) }} KB)
+                        </span>
+                      </div>
+                    </div>
+                    <div v-else class="col-10">
+                      <input type="text" class="form-control" value="첨부파일 없음" readonly />
                     </div>
                   </div>
                 </form>
@@ -275,6 +302,7 @@
 import { useCounterStore } from '@/stores/member'
 import { useApplicationStore } from '@/stores/application'
 import { useRoute } from 'vue-router'
+import { watch, computed } from 'vue'
 import axios from 'axios'
 const counters = useCounterStore()
 const application = useApplicationStore()
@@ -305,5 +333,33 @@ const changeResultStatus = async (data) => {
       application.planningState = 2
     })
 }
+const rejectedGroupIds = computed(() => {
+  return application.resultSuccess.map((p) => p.attachment_group)
+})
+
+const successGroupIds = computed(() => {
+  return application.resultRejected.map((p) => p.attachment_group)
+})
+
+watch(
+  rejectedGroupIds,
+  async (newIds) => {
+    if (newIds && newIds.length > 0) {
+      await application.fetchFilesForPlans(application.resultRejected)
+    }
+  },
+  { immediate: true },
+)
+
+// 4. 승인 계획서 파일 조회 (그룹 ID 변경 감지)
+watch(
+  successGroupIds,
+  async (newIds) => {
+    if (newIds && newIds.length > 0) {
+      await application.fetchFilesForPlans(application.resultSuccess)
+    }
+  },
+  { immediate: true },
+)
 </script>
 <style scoped></style>

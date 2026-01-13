@@ -48,7 +48,23 @@
 
           <div class="row g-3 mb-2 align-items-center">
             <div class="col-2"><label class="col-form-label">첨부파일</label></div>
-            <div class="col-10"><input type="text" class="form-control" readonly /></div>
+            <div v-if="plan.fileList && plan.fileList.length > 0" class="col-10">
+              <div v-for="file in plan.fileList" :key="file.attachment_no" class="mb-1">
+                <a
+                  href="#"
+                  @click.prevent="application.downloadFile(file.attachment_no)"
+                  class="text-decoration-none text-primary fw-bold"
+                >
+                  💾 {{ file.attachment_orginal }}
+                </a>
+                <span class="text-muted ms-2" style="font-size: 0.8em">
+                  ({{ (file.attachment_size / 1024).toFixed(1) }} KB)
+                </span>
+              </div>
+            </div>
+            <div v-else class="col-10">
+              <input type="text" class="form-control" value="첨부파일 없음" readonly />
+            </div>
           </div>
 
           <div class="d-flex justify-content-between">
@@ -125,10 +141,11 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import ConfirmModal from '../modals/ConfirmModal.vue'
 import RejectConfirmModal from '../modals/RejectConfirmModal.vue'
-
+import { useApplicationStore } from '@/stores/application'
+const application = useApplicationStore()
 const props = defineProps({
   memAuthority: { type: String, required: true },
   plans: { type: Array, default: () => [] },
@@ -161,4 +178,19 @@ const closeAll = (id) => {
   approveOpenSet.value.delete(id)
   rejectOpenSet.value.delete(id)
 }
+const planGroupIds = computed(() => {
+  return props.plans.map((p) => p.attachment_group)
+})
+
+watch(
+  planGroupIds,
+  async (newIds) => {
+    // 데이터가 있고, ID가 하나라도 존재하면 실행
+    if (newIds && newIds.length > 0) {
+      // console.log('파일 목록 조회 시작 (그룹 ID 변경 감지)')
+      await application.fetchFilesForPlans(props.plans)
+    }
+  },
+  { immediate: true },
+)
 </script>

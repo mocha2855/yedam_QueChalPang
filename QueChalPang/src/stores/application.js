@@ -307,7 +307,7 @@ export const useApplicationStore = defineStore('application', {
     },
     async downloadFile(attachmentNo) {
       // 백엔드 다운로드 API 주소를 호출하여 브라우저가 다운로드하게 함
-      window.location.href = `http://localhost:3000/api/download/${attachmentNo}`
+      window.location.href = `/api/download/${attachmentNo}`
       // 포트번호(3000)나 도메인은 환경에 맞게 수정하세요.
       // 프록시가 설정되어 있다면 '/api/download/...' 만 써도 됩니다.
     },

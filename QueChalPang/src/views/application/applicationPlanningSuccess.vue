@@ -5,6 +5,7 @@ import { useCounterStore } from '@/stores/member'
 import { useApplicationStore } from '@/stores/application'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
+import { watch, computed } from 'vue'
 const counters = useCounterStore()
 const application = useApplicationStore()
 const route = useRoute()
@@ -39,6 +40,37 @@ const changePlanningStatus = async (data) => {
       //application.planningState = 2
     })
 }
+// 1. 반려된 계획서(planningRejected)들의 파일 그룹 번호만 추출
+const rejectedGroupIds = computed(() => {
+  return application.planningRejected.map((p) => p.attachment_group)
+})
+
+// 2. 승인된 계획서(planningSuccess)들의 파일 그룹 번호만 추출
+const successGroupIds = computed(() => {
+  return application.planningSuccess.map((p) => p.attachment_group)
+})
+
+// 3. 반려 계획서 파일 조회 (그룹 ID 변경 감지)
+watch(
+  rejectedGroupIds,
+  async (newIds) => {
+    if (newIds && newIds.length > 0) {
+      await application.fetchFilesForPlans(application.planningRejected)
+    }
+  },
+  { immediate: true },
+)
+
+// 4. 승인 계획서 파일 조회 (그룹 ID 변경 감지)
+watch(
+  successGroupIds,
+  async (newIds) => {
+    if (newIds && newIds.length > 0) {
+      await application.fetchFilesForPlans(application.planningSuccess)
+    }
+  },
+  { immediate: true },
+)
 </script>
 <template>
   <div>
@@ -123,7 +155,7 @@ const changePlanningStatus = async (data) => {
                       <label for="content" class="col-form-label">내용</label>
                     </div>
                     <div class="col-10">
-                      <textarea 
+                      <textarea
                         name="content"
                         id="content"
                         v-model="plan.planning_content"
@@ -137,8 +169,22 @@ const changePlanningStatus = async (data) => {
                     <div class="col-2">
                       <label for="attachmentFile" class="col-form-label">첨부파일</label>
                     </div>
-                    <div class="col-10">
-                      <input type="text" class="form-control" readonly />
+                    <div v-if="plan.fileList && plan.fileList.length > 0" class="col-10">
+                      <div v-for="file in plan.fileList" :key="file.attachment_no" class="mb-1">
+                        <a
+                          href="#"
+                          @click.prevent="application.downloadFile(file.attachment_no)"
+                          class="text-decoration-none text-primary fw-bold"
+                        >
+                          💾 {{ file.attachment_orginal }}
+                        </a>
+                        <span class="text-muted ms-2" style="font-size: 0.8em">
+                          ({{ (file.attachment_size / 1024).toFixed(1) }} KB)
+                        </span>
+                      </div>
+                    </div>
+                    <div v-else class="col-10">
+                      <input type="text" class="form-control" value="첨부파일 없음" readonly />
                     </div>
                   </div>
                   <div class="d-flex justify-content-between">
@@ -284,8 +330,22 @@ const changePlanningStatus = async (data) => {
                     <div class="col-2">
                       <label for="attachmentFile" class="col-form-label">첨부파일</label>
                     </div>
-                    <div class="col-10">
-                      <input type="text" class="form-control" readonly />
+                    <div v-if="plan.fileList && plan.fileList.length > 0" class="col-10">
+                      <div v-for="file in plan.fileList" :key="file.attachment_no" class="mb-1">
+                        <a
+                          href="#"
+                          @click.prevent="application.downloadFile(file.attachment_no)"
+                          class="text-decoration-none text-primary fw-bold"
+                        >
+                          💾 {{ file.attachment_orginal }}
+                        </a>
+                        <span class="text-muted ms-2" style="font-size: 0.8em">
+                          ({{ (file.attachment_size / 1024).toFixed(1) }} KB)
+                        </span>
+                      </div>
+                    </div>
+                    <div v-else class="col-10">
+                      <input type="text" class="form-control" value="첨부파일 없음" readonly />
                     </div>
                   </div>
                 </form>

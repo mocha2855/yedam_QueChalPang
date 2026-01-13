@@ -41,13 +41,15 @@
           <div class="row g-3 mb-2 align-items-center">
             <div class="col-2"><label class="col-form-label">내용</label></div>
             <div class="col-10">
-              <textarea v-model="localPlan.planning_content" class="form-control" rows="8"/>
+              <textarea v-model="localPlan.planning_content" class="form-control" rows="8" />
             </div>
           </div>
 
           <div class="row g-3 mb-2 align-items-center">
             <div class="col-2"><label class="col-form-label">첨부파일</label></div>
-            <div class="col-10"><input type="file" class="form-control" /></div>
+            <div class="col-10">
+              <input type="file" class="form-control" multiple @change="application.getFile" />
+            </div>
           </div>
 
           <div class="d-flex justify-content-between">
@@ -122,7 +124,8 @@
 <script setup>
 import { reactive, watch, ref, computed } from 'vue'
 import ConfirmModal from '../modals/ConfirmModal.vue'
-
+import { useApplicationStore } from '@/stores/application'
+const application = useApplicationStore()
 const props = defineProps({
   plan: { type: Object, required: true },
   show: { type: Boolean, default: true },
