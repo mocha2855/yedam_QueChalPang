@@ -318,23 +318,26 @@
                       application.resultChanging[0].fileList &&
                       application.resultChanging[0].fileList.length > 0
                     "
-                    class="mb-2"
+                    class="card card-body p-2"
                   >
-                    <h6>기존 첨부파일:</h6>
                     <div
                       v-for="file in application.resultChanging[0].fileList"
                       :key="file.attachment_no"
+                      class="mb-1"
                     >
-                      <a href="#" @click.prevent="downloadFile(file.attachment_no)">
-                        {{ file.attachment_orginal }}
+                      <a
+                        href="#"
+                        @click.prevent="application.downloadFile(file.attachment_no)"
+                        class="text-decoration-none text-primary fw-bold"
+                      >
+                        💾 {{ file.attachment_orginal }}
                       </a>
+                      <span class="text-muted ms-2" style="font-size: 0.8em">
+                        ({{ (file.attachment_size / 1024).toFixed(1) }} KB)
+                      </span>
                     </div>
                   </div>
-
-                  <input type="file" class="form-control" multiple @change="getFile" />
-                  <p class="text-muted" style="font-size: 12px">
-                    * 파일을 새로 선택하면 기존 파일에 추가됩니다.
-                  </p>
+                  <input v-else type="text" class="form-control" value="첨부파일 없음" readonly />
                 </div>
               </div>
               <div class="d-flex justify-content-between">

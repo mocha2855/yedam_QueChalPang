@@ -355,9 +355,16 @@ const changeResultStatus = async (data) => {
     })
     .then((res) => {
       console.log(res)
-      application.countRealResult(route.params.id)
+
       application.planningState = 2
     })
+  await application.countRealResult(route.params.id)
+  await application.fetchFilesForPlans(application.resultReview)
+  await application.fetchFilesForPlans(application.resultfirstSave)
+  await application.fetchFilesForPlans(application.resultSuccess)
+  await application.fetchFilesForPlans(application.resultRejected)
+  await application.fetchFilesForPlans(application.resultChanging)
+  await application.fetchFilesForPlans(application.resultChangingReview)
 }
 </script>
 <style scoped></style>
