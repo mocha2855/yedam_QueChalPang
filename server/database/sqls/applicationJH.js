@@ -91,7 +91,26 @@ const rejectStatus = `
 const selectPlanningById = `select count(*) counts from planning where application_no=?`;
 
 // 검토 중, 반려, 승인 지원계획서 불러오기
-const selectPlanningReviewById = `select *, rank() over (order by planning_date) ranking from planning p join member m on p.planning_id = m.member_id where application_no =?`;
+// const selectPlanningReviewById = `
+// select *, rank() over (order by planning_date) ranking
+// from planning p
+// join member m
+// on p.planning_id = m.member_id
+// where application_no =?
+// `;
+const selectPlanningReviewById = `
+SELECT
+  p.*,
+  RANK() OVER (ORDER BY p.planning_date) AS ranking,
+  m.member_name  AS writer_name,              
+  mr.member_name AS planning_rejecter_name    
+FROM planning p
+JOIN member m
+  ON p.planning_id = m.member_id
+LEFT JOIN member mr
+  ON p.planning_rejecter = mr.member_id
+WHERE p.application_no = ?
+`;
 
 // 지원계획서 승인요청(담당자)
 const insertPlannginInfo = `insert into planning(application_no,

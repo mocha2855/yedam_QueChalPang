@@ -1,26 +1,14 @@
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
 import { useApprovalStore } from '@/stores/approval'
-
 import { ref, reactive, onBeforeMount, computed } from 'vue'
 import ArgonInput from '@/components/ArgonInput.vue'
-import ArgonAlert from '@/components/ArgonAlert.vue'
 import axios from 'axios'
+import Swal from 'sweetalert2'
+
 const router = useRouter()
 const route = useRoute()
 const store = useApprovalStore()
-
-// 알림 관련
-const msg = ref('')
-const argonAlert = ref(false)
-
-const showAlert = (message) => {
-  msg.value = message
-  argonAlert.value = true
-  setTimeout(() => {
-    argonAlert.value = false
-  }, 1500)
-}
 
 // 회원 정보
 const memberInfo = reactive({
@@ -34,6 +22,9 @@ const memberInfo = reactive({
   authority: '',
 })
 
+// 원본 데이터 저장 (변경 감지용)
+const originalData = ref(null)
+
 // 비밀번호 관련
 const password = reactive({
   new: '',
@@ -45,6 +36,22 @@ const isPasswordMatch = computed(() => {
   if (password.new === '' && password.confirm === '') return null
   return password.new === password.confirm
 })
+
+// 변경사항 감지 함수
+const hasChanges = () => {
+  if (!originalData.value) return false
+
+  // 비밀번호가 입력되었으면 변경사항으로 간주
+  if (password.new !== '' || password.confirm !== '') return true
+
+  // 기본 정보 비교
+  return (
+    memberInfo.name !== originalData.value.name ||
+    memberInfo.email !== originalData.value.email ||
+    memberInfo.phone !== originalData.value.phone ||
+    memberInfo.address !== originalData.value.address
+  )
+}
 
 // ID 가져오기
 const getMemberId = () => {
@@ -67,33 +74,84 @@ onBeforeMount(async () => {
     memberInfo.center = member.center_no
     memberInfo.centerName = member.center_name
     memberInfo.authority = member.member_authority
+
+    // 원본 데이터 저장
+    originalData.value = {
+      name: member.member_name,
+      email: member.member_email,
+      phone: member.member_phone,
+      address: member.member_address,
+    }
   }
 })
 
 // 수정 처리
 const updateMemberInfo = async () => {
+  // 변경사항 확인
+  if (!hasChanges()) {
+    await Swal.fire({
+      icon: 'info',
+      title: '수정할 내용이 없습니다',
+      text: '변경된 내용이 없습니다.',
+      confirmButtonText: '확인',
+      confirmButtonColor: '#5a67d8',
+    })
+    return
+  }
+
   // 비밀번호 입력했으면 일치 확인
   if (password.new !== '' || password.confirm !== '') {
     if (!isPasswordMatch.value) {
-      showAlert('비밀번호가 일치하지 않습니다.')
+      await Swal.fire({
+        icon: 'warning',
+        title: '비밀번호 불일치',
+        text: '비밀번호가 일치하지 않습니다.',
+        confirmButtonText: '확인',
+        confirmButtonColor: '#5a67d8',
+      })
       return
     }
   }
 
+  // 필수 필드 검증
   if (memberInfo.name === '') {
-    showAlert('이름을 입력해주세요.')
+    await Swal.fire({
+      icon: 'warning',
+      title: '이름 입력 필요',
+      text: '이름을 입력해주세요.',
+      confirmButtonText: '확인',
+      confirmButtonColor: '#5a67d8',
+    })
     return
   }
   if (memberInfo.center === '') {
-    showAlert('기관명을 입력해주세요.')
+    await Swal.fire({
+      icon: 'warning',
+      title: '기관명 입력 필요',
+      text: '기관명을 입력해주세요.',
+      confirmButtonText: '확인',
+      confirmButtonColor: '#5a67d8',
+    })
     return
   }
   if (memberInfo.email === '') {
-    showAlert('이메일을 입력해주세요.')
+    await Swal.fire({
+      icon: 'warning',
+      title: '이메일 입력 필요',
+      text: '이메일을 입력해주세요.',
+      confirmButtonText: '확인',
+      confirmButtonColor: '#5a67d8',
+    })
     return
   }
   if (memberInfo.phone === '') {
-    showAlert('연락처를 입력해주세요.')
+    await Swal.fire({
+      icon: 'warning',
+      title: '연락처 입력 필요',
+      text: '연락처를 입력해주세요.',
+      confirmButtonText: '확인',
+      confirmButtonColor: '#5a67d8',
+    })
     return
   }
 
@@ -109,14 +167,27 @@ const updateMemberInfo = async () => {
     }
 
     await axios.put(`/api/member/${memberInfo.id}`, data)
-    showAlert('수정되었습니다.')
+
+    await Swal.fire({
+      icon: 'success',
+      title: '수정 완료!',
+      text: '관리자 정보가 성공적으로 수정되었습니다.',
+      showConfirmButton: false,
+      timer: 1500,
+    })
 
     setTimeout(() => {
       router.push({ name: 'ApprovalAdminList' })
     }, 1500)
   } catch (error) {
     console.error('수정 실패:', error)
-    showAlert('수정에 실패했습니다.')
+    await Swal.fire({
+      icon: 'error',
+      title: '수정 실패',
+      text: error.response?.data?.message || '수정에 실패했습니다. 다시 시도해주세요.',
+      confirmButtonText: '확인',
+      confirmButtonColor: '#5a67d8',
+    })
   }
 }
 
@@ -127,20 +198,6 @@ const goBack = () => {
 </script>
 
 <template>
-  <div class="fixed-top d-flex justify-content-end p-3 mt-6">
-    <div class="col-4">
-      <ArgonAlert
-        v-show="argonAlert"
-        color="warning"
-        icon="ni ni-bell-55"
-        dismissible
-        @close="argonAlert = false"
-      >
-        {{ msg }}
-      </ArgonAlert>
-    </div>
-  </div>
-
   <div class="py-4 container" style="max-width: 900px">
     <div class="row">
       <div class="col-12">
