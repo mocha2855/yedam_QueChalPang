@@ -131,6 +131,8 @@ LEFT JOIN member ma
   ON ma.member_id = a.member_id
 
 WHERE d.manager_main = ?
+     OR d.manager_main IS NULL
+
 ORDER BY q.qna_date DESC
 `;
 

@@ -68,6 +68,9 @@ const submitAnswer = async () => {
 
 <template>
   <div class="qna-detail" v-if="qna">
+    <div>
+      <button class="back-btn btn-warning btn-sm fs-6" @click="$router.back()">← 뒤로가기</button>
+    </div>
     <div class="qna-card">
       <div class="qna-title">{{ qna.qna_title }}</div>
 

@@ -29,9 +29,10 @@ const findByNo = async (no) => {
 };
 // survey 단건 등록(새로운 버전 업그레이드)
 //질문추가 &  항목 추가시 기존 버전 비활성 -> 새버전 활성화
+// survey 단건 등록(새로운 버전 업그레이드)
 const addSurvey = async (data) => {
-  const survey_start = new Date(); //날짜 자동화
-  const survey_end = new Date("9999-12-31"); // 끝나는 시간은 무기한 연장(새버전 등장 시 자동 마무리 시간 계산)
+  const survey_start = new Date();
+  const survey_end = new Date("9999-12-31");
 
   //insert 시 버전 자동 증가
   let versionResult = await mysql.squery("selectMaxVersionAll");
@@ -49,34 +50,45 @@ const addSurvey = async (data) => {
   ]);
   let survey_no = insertResult.insertId;
 
+  // data.title → data.survey_title 수정
   let titleResult = await mysql.squery("insertSurveyTitle", [
     survey_no,
-    data.title,
+    data.survey_title,
   ]);
   let survey_title_no = titleResult.insertId;
 
   for (const subtitleData of data.subtitles) {
-    // 세부항목 저장
+    // 세부항목 저장 - 필드명 수정
     let subtitleResult = await mysql.squery("insertSurveySubtitle", [
       survey_title_no,
-      subtitleData.subtitle,
-      subtitleData.subtitleDetail,
+      subtitleData.survey_subtitle,
+      subtitleData.survey_subtitle_detail,
     ]);
     let survey_subtitle_no = subtitleResult.insertId;
 
-    //질문 저장
-    for (const question of subtitleData.questions) {
+    //질문 저장 - questions → questionList, 필드명 수정
+    for (const question of subtitleData.questionList) {
       await mysql.squery("insertSurveyQitem", [
         survey_subtitle_no,
-        question.text,
-        question.type,
+        question.survey_qitem_question,
+        question.survey_qitem_type,
         question.need_detail || false,
       ]);
     }
   }
-  return survey_no;
-};
 
+  // 수정이력 저장 추가
+  if (data.person && data.reason) {
+    await mysql.squery("insertSurveyHistory", [
+      null,
+      survey_no,
+      data.person,
+      data.reason,
+    ]);
+  }
+
+  return { survey_no };
+};
 //survey 수정
 const modifySurvey = async (no, data) => {
   const {

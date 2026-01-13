@@ -1,7 +1,7 @@
 <!-- src/components/ReservationCright.vue -->
 <!-- 자식 -->
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import RejectReasonModal from '../modals/RejectReasonModal.vue'
@@ -35,12 +35,35 @@ const timeText = (start_at) => {
 }
 
 //예약상태 변환하고 클래스주기
+// const statusMap = {
+//   f1: { label: '확인중', class: 'status-wait' },
+//   f2: { label: '예약확정', class: 'status-confirm' },
+//   f3: { label: '상담완료', class: 'status-done' },
+//   f4: { label: '상담취소', class: 'status-cancel' },
+// }
 const statusMap = {
-  f1: { label: '확인중', class: 'status-wait' },
-  f2: { label: '예약확정', class: 'status-confirm' },
-  f3: { label: '상담완료', class: 'status-done' },
-  f4: { label: '상담취소', class: 'status-cancel' },
+  f1: { label: '확인중', btnClass: 'status-wait' },
+  f2: { label: '예약확정', btnClass: 'status-confirm' },
+  f3: { label: '상담완료', btnClass: 'status-done' },
+  f4: { label: '상담취소', btnClass: 'status-cancel' },
 }
+
+// 날짜 지나면 f2 → f3 자동변경 (중요: statusInfo는 "표시용"으로만)
+const normalizeStatus = async (r) => {
+  const today = new Date()
+  if (today > new Date(r.resv_day) && r.status === 'f2') {
+    await axios.put('/api/updateRstatus', {
+      resvId: r.resv_id,
+      managerId: r.manager_id,
+      resvStatus: 'f3',
+      rejectReason: null,
+    })
+    r.status = 'f3'
+  }
+}
+
+const statusInfo = (r) =>
+  statusMap[r.status] ?? { label: r.status ?? '', btnClass: 'status-default' }
 
 const showCancelModal = ref(false)
 const cancelTarget = ref(null)
@@ -71,21 +94,32 @@ const onCancelConfirm = async (reason) => {
 
 // 현재 날짜 기점으로 상태 변화 -0108
 // 날짜 변경
-const statusInfo = (r) => {
-  console.log(r)
+// const statusInfo = (r) => {
+//   console.log(r)
 
-  let today = new Date()
-  console.log(today > new Date(r.resv_day) && r.status == 'f2')
-  if (today > new Date(r.resv_day) && r.status == 'f2') {
-    axios.put('/api/updateRstatus/', {
-      resvId: r.resv_id,
-      managerId: r.manager_id,
-      resvStatus: 'f3',
-      rejectReason: null,
+//   let today = new Date()
+//   console.log(today > new Date(r.resv_day) && r.status == 'f2')
+//   if (today > new Date(r.resv_day) && r.status == 'f2') {
+//     axios.put('/api/updateRstatus/', {
+//       resvId: r.resv_id,
+//       managerId: r.manager_id,
+//       resvStatus: 'f3',
+//       rejectReason: null,
+//     })
+//   }
+//   return statusMap[r.status] ?? { label: r.status ?? '', class: 'status-default' }
+// }
+
+watch(
+  () => props.reservations,
+  (list) => {
+    if (!list) return
+    list.forEach((r) => {
+      normalizeStatus(r)
     })
-  }
-  return statusMap[r.status] ?? { label: r.status ?? '', class: 'status-default' }
-}
+  },
+  { immediate: true },
+)
 
 // 상담내역 작성하러가기 - 0108
 const writingMeeting = (data) => {
@@ -145,24 +179,39 @@ const writingMeeting = (data) => {
                 </span>
               </td>
               <td class="align-middle text-center">
-                <button
-                  class="btn btn-outline-danger btn-sm text-xs"
-                  :disabled="r.status !== 'f2'"
-                  @click="openCancelModal(r)"
-                >
-                  취소
-                </button>
+                <div class="cell-center">
+                  <button
+                    class="btn btn-outline-danger btn-sm text-xs"
+                    :disabled="r.status !== 'f2'"
+                    @click="openCancelModal(r)"
+                  >
+                    취소
+                  </button>
+                </div>
               </td>
+
               <td class="align-middle text-center">
-                <span class="status-badge" :class="statusInfo(r).class">
-                  {{ statusInfo(r).label }}
-                </span>
+                <div class="cell-center">
+                  <button
+                    type="button"
+                    class="btn btn-sm text-xs status-btn"
+                    :class="statusInfo(r).btnClass"
+                    disabled
+                  >
+                    {{ statusInfo(r).label }}
+                  </button>
+                </div>
               </td>
-              <!-- 0108 상담내역 작성하기 추가 -->
+
               <td class="align-middle text-center">
-                <button class="btn btn-primary text-xs" @click="writingMeeting(r.application_no)">
-                  작성하기
-                </button>
+                <div class="cell-center">
+                  <button
+                    class="btn btn-primary btn-sm text-xs"
+                    @click="writingMeeting(r.application_no)"
+                  >
+                    작성하기
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -179,35 +228,47 @@ const writingMeeting = (data) => {
   </div>
 </template>
 <style>
-.status-badge {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #fff;
-  text-align: center;
-  min-width: 72px;
+.cell-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+/* 상태버튼 공통 */
+.status-btn {
+  min-width: 88px;
+  font-weight: 700;
+  border: 0 !important;
+  background: transparent;
+}
+
+.status-btn:disabled {
+  opacity: 1;
 }
 
 .status-wait {
-  background-color: #a2d1ff;
-  color: rgb(0, 78, 194);
+  background-color: #a2d1ff !important;
+  color: rgb(0, 78, 194) !important;
 }
 
 .status-confirm {
-  background-color: #198754;
+  background-color: #198754 !important;
+  color: #fff !important;
 }
 
 .status-done {
-  background-color: #212529;
+  background-color: #212529 !important;
+  color: #fff !important;
 }
 
 .status-cancel {
-  background-color: #dc3545;
+  background-color: #dc3545 !important;
+  color: #fff !important;
 }
 
 .status-default {
-  background-color: #ebebeb;
+  background-color: #ebebeb !important;
+  color: #333 !important;
 }
 </style>

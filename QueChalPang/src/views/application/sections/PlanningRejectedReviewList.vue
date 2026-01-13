@@ -68,11 +68,14 @@
           </div>
 
           <div class="d-flex justify-content-between">
-            <div class="row g-3 mb-2 align-items-center">
-              <div class="col-6"><label class="col-form-label">결재자</label></div>
-              <div class="col-6">
-                <input type="text" v-model="plan.planning_rejecter" class="form-control" readonly />
-              </div>
+            <div class="col-2"><label class="col-form-label">결재자</label></div>
+            <div class="col-4">
+              <input
+                type="text"
+                class="form-control"
+                :value="plan.planning_rejecter_name ?? plan.planning_rejecter ?? '-'"
+                readonly
+              />
             </div>
             <div class="row g-3 mb-2 align-items-center">
               <div class="col-6"><label class="col-form-label">반려일</label></div>

@@ -139,9 +139,9 @@ const navbarColor = computed(() => {
 
   // 로그인 안 했거나 일반회원이면 베이지
   if (!authority || authority === 'a1') {
-    return '#f6f2eb' // 베이지
+    return '#ffffff' // 하얀
   }
-  return '#7a9fba' // 담당자/관리자/시스템는 파랑
+  return '#ffffff' // 담당자/관리자/시스템는 파랑
 })
 
 // 버튼 색깔 동적 설정
@@ -162,7 +162,7 @@ const textColor = computed(() => {
   if (!authority || authority === 'a1') {
     return '#000000'
   }
-  return '#ffffff'
+  return '#000000'
 })
 // navbar 타입 (a1인지 아닌지)
 const navbarType = computed(() => {
@@ -171,7 +171,7 @@ const navbarType = computed(() => {
   if (!authority || authority === 'a1') {
     return 'navbar-a1'
   }
-  return 'navbar-staff'
+  return 'navbar-a1'
 })
 
 //onMounted, onUnmounted 추가
@@ -302,22 +302,27 @@ onUnmounted(() => {
               <i class="ni ni-building me-2"></i>센터관리
             </router-link>
           </li>
+          <!-- 관리자(a4) 회원관리 -->
           <li v-if="isLogIn.info.member_authority === 'a4'" class="nav-item">
             <router-link
               to="/ApprovalUserList"
               class="nav-link"
               :style="{ color: textColor }"
-              :class="getRoute() === 'surveys' ? 'font-weight-bold opacity-10' : 'opacity-9'"
+              :class="
+                getRoute() === 'ApprovalUserList' ? 'font-weight-bold opacity-10' : 'opacity-9'
+              "
             >
               <i class="ni ni-circle-08 me-2"></i>회원관리
             </router-link>
           </li>
+
+          <!-- 관리자(a3) 회원관리 -->
           <li v-if="isLogIn.info.member_authority === 'a3'" class="nav-item">
             <router-link
               to="/UserList"
               class="nav-link"
               :style="{ color: textColor }"
-              :class="getRoute() === 'surveys' ? 'font-weight-bold opacity-10' : 'opacity-9'"
+              :class="getRoute() === 'UserList' ? 'font-weight-bold opacity-10' : 'opacity-9'"
             >
               <i class="ni ni-circle-08 me-2"></i>회원관리
             </router-link>
@@ -444,35 +449,39 @@ onUnmounted(() => {
 <style scoped>
 /* 메인 메뉴 - 기본 스타일 */
 .navbar-nav.me-auto .nav-link {
-  transition: color 0.2s ease;
   display: flex;
   align-items: center;
   font-size: 16px !important;
   font-weight: 500 !important;
   padding: 8px 16px !important;
+  padding-bottom: 6px !important;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.2s ease;
 }
 
-/* a1일 때: 검정 -> 화이트 호버 */
-.navbar-a1 .navbar-nav.me-auto .nav-link:hover {
-  color: #5c3706 !important;
+/* 호버 효과 제거 */
+.navbar-nav.me-auto .nav-link:hover {
+  color: inherit !important;
 }
 
-/* a2/a3/a4일 때: 화이트 -> 블랙 호버 */
-.navbar-staff .navbar-nav.me-auto .nav-link:hover {
-  color: #000000 !important;
+/* 활성화된 메뉴에만 검은색 밑줄 (왼쪽 메뉴만) */
+.navbar-nav.me-auto .nav-link.font-weight-bold {
+  border-bottom: 2px solid #000000;
 }
 
-/* 오른쪽 메뉴 - 호버 효과 없음 */
+/* 오른쪽 메뉴 - 밑줄 없음 */
 .navbar-nav.justify-content-end .nav-link {
   display: flex;
   align-items: center;
   font-size: 16px !important;
   font-weight: 500 !important;
   padding: 8px 16px !important;
+  border-bottom: none !important;
 }
 
 .navbar-nav.justify-content-end .nav-link:hover {
   opacity: 1 !important;
+  color: inherit !important;
 }
 
 /* a1용 베이지 버튼 */
@@ -551,7 +560,7 @@ onUnmounted(() => {
 
 /* navbar 높이 고정 */
 .custom-navbar {
-  height: 70px; /* navbar 높이 고정 */
+  height: 70px;
   min-height: 70px;
 }
 
@@ -573,7 +582,7 @@ onUnmounted(() => {
 }
 
 .navbar-logo {
-  height: 180px; /* navbar보다 크게! */
+  height: 180px;
   width: auto;
   object-fit: contain;
   margin-top: -25px;
@@ -583,7 +592,7 @@ onUnmounted(() => {
 .navbar-nav.me-auto {
   margin-left: -20px;
 }
-/* 👇 이것만 맨 아래 추가 */
+
 .notification-badge {
   position: absolute;
   top: -5px;
