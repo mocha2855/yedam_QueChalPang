@@ -143,6 +143,9 @@ const updateFirstSaveInfo = `update planning set ? where application_no = ? and 
 // 지원계획서 임시저장 삭제(담당자) 0111
 const deleteFirstSaveInfo = `delete from planning where application_no = ? and planning_status = 'i0'`;
 
+// 임시저장 취소 시 첨부파일 삭제 0113
+const deleteAttatchmentInfo = `delete from attachment where attachment_group = ? `;
+
 // 지원계획서 승인 및 재승인
 const sucessPlanningUpdateInfo = `update planning 
 set ?
@@ -585,4 +588,5 @@ module.exports = {
   insertAttachment,
   getAttachmentList,
   getAttachment,
+  deleteAttatchmentInfo, // 임시저장 취소시 첨부파일 삭제 0113
 };

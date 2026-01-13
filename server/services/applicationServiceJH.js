@@ -2,13 +2,13 @@ const mysql = require("../database/mapper");
 const path = require("path");
 
 // 지원자 정보
-const dependantFindById = async (no) => {
+const dependantFindById = async no => {
   let post = mysql.bquery("dependantSelectById", no);
   return post;
 };
 
 //해당 지원자와 똑같은 센터의 담당자 조회
-const findManagerByDependant = async (deptNo) => {
+const findManagerByDependant = async deptNo => {
   const result = await mysql.bquery("selectManagerByDependant", deptNo);
   return result;
 };
@@ -24,7 +24,7 @@ const assignManagerInfo = async (applicationNo, data) => {
 };
 
 // 대기단계 선택시 상태확인
-const findById = async (no) => {
+const findById = async no => {
   let post = await mysql.bquery("selectById", no);
   return post;
 };
@@ -59,13 +59,13 @@ const applicationRejectInfo = async (no, data) => {
 };
 
 // 지원계획서 갯수 조회(계획서 추가시 숫자 파악 위해)
-const findPlanningById = async (no) => {
+const findPlanningById = async no => {
   let post = await mysql.bquery("selectPlanningById", no);
   return post;
 };
 
 // 검토 중, 반려, 승인 지원계획서 불러오기
-const findplanningReviewById = async (no) => {
+const findplanningReviewById = async no => {
   let post = await mysql.bquery("selectPlanningReviewById", no);
   return post;
 };
@@ -76,6 +76,20 @@ const addPlanningInfo = async (data, files) => {
   if (files && files.length > 0) {
     const [rows] = await mysql.bquery("getMaxGroupId");
     newGroupId = rows.newGroupId; // 예: 100
+
+    const fileValues = files.map(file => {
+      return [
+        newGroupId, // 1. attachment_group (INT)
+        file.originalname, // 2. attachment_orginal
+        file.path, // 3. attachment_path
+        new Date(), // 4. attachment_date
+        path.extname(file.originalname), // 5. attachment_filetype
+        String(file.size), // 6. attachment_size
+      ];
+    });
+
+    // 배열을 한 번 더 감싸서 전달 (Bulk Insert)
+    await mysql.bquery("insertAttachment", [fileValues]);
   }
   const {
     application_no,
@@ -96,8 +110,18 @@ const addPlanningInfo = async (data, files) => {
     planning_content,
     newGroupId,
   ]);
+  return post;
+};
+
+// 지원계획서 임시저장 0111
+const addPlanSaveInfo = async (data, files) => {
+  let newGroupId = null;
   if (files && files.length > 0) {
-    const fileValues = files.map((file) => {
+    const [rows] = await mysql.bquery("getMaxGroupId");
+    console.log(rows.newGroupId);
+    newGroupId = rows.newGroupId; // 예: 100
+
+    const fileValues = files.map(file => {
       return [
         newGroupId, // 1. attachment_group (INT)
         file.originalname, // 2. attachment_orginal
@@ -110,17 +134,6 @@ const addPlanningInfo = async (data, files) => {
 
     // 배열을 한 번 더 감싸서 전달 (Bulk Insert)
     await mysql.bquery("insertAttachment", [fileValues]);
-  }
-  return post;
-};
-
-// 지원계획서 임시저장 0111
-const addPlanSaveInfo = async (data, files) => {
-  let newGroupId = null;
-  if (files && files.length > 0) {
-    const [rows] = await mysql.bquery("getMaxGroupId");
-    console.log(rows.newGroupId);
-    newGroupId = rows.newGroupId; // 예: 100
   }
   const {
     application_no,
@@ -141,21 +154,7 @@ const addPlanSaveInfo = async (data, files) => {
     planning_content,
     newGroupId,
   ]);
-  if (files && files.length > 0) {
-    const fileValues = files.map((file) => {
-      return [
-        newGroupId, // 1. attachment_group (INT)
-        file.originalname, // 2. attachment_orginal
-        file.path, // 3. attachment_path
-        new Date(), // 4. attachment_date
-        path.extname(file.originalname), // 5. attachment_filetype
-        String(file.size), // 6. attachment_size
-      ];
-    });
 
-    // 배열을 한 번 더 감싸서 전달 (Bulk Insert)
-    await mysql.bquery("insertAttachment", [fileValues]);
-  }
   return post;
 };
 
@@ -166,8 +165,14 @@ const modifyFirstSaveInfo = async (application_no, data) => {
 };
 
 // 지원계획서 임시저장 삭제 0111
-const removeFirstSaveInfo = async (application_no) => {
+const removeFirstSaveInfo = async application_no => {
   let post = await mysql.bquery("deleteFirstSaveInfo", application_no);
+  return post;
+};
+
+// 임시저장 취소시 첨부파일 삭제 0113
+const removeAttachment = async attachment_no => {
+  let post = await mysql.bquery("deleteAttatchmentInfo", attachment_no);
   return post;
 };
 
@@ -279,7 +284,7 @@ const insertAppById = async (input, id, authority) => {
     id,
   ]);
   let appNo = appResult.insertId;
-  const bulkData = answerList.map((item) => {
+  const bulkData = answerList.map(item => {
     return [
       item.survey_qitem_no,
       appNo,
@@ -294,13 +299,13 @@ const insertAppById = async (input, id, authority) => {
 };
 
 // 지원신청서 조회
-const findAppByNo = async (no) => {
+const findAppByNo = async no => {
   let result = await mysql.bquery("selectAppByNo", no);
   return result;
 };
 // 지원신청서 수정
-const updateApp = async (updateList) => {
-  const bulkData = updateList.map((item) => [
+const updateApp = async updateList => {
+  const bulkData = updateList.map(item => [
     item.app_answer_no, // 1
     item.survey_qitem_no, // 2 (필수값)
     item.application_no, // 3 (필수값)
@@ -312,7 +317,7 @@ const updateApp = async (updateList) => {
   return result;
 };
 // 검토 중, 반려, 승인 지원계획서 불러오기
-const findResultReviewById = async (no) => {
+const findResultReviewById = async no => {
   let post = await mysql.bquery("selectResultReviewById", no);
   return post;
 };
@@ -327,6 +332,20 @@ const addResultInfo = async (data, files) => {
     if (files && files.length > 0) {
       const [rows] = await mysql.bquery("getMaxGroupId");
       newGroupId = rows.newGroupId; // 예: 100
+
+      const fileValues = files.map(file => {
+        return [
+          newGroupId, // 1. attachment_group (INT)
+          file.originalname, // 2. attachment_orginal
+          file.path, // 3. attachment_path
+          new Date(), // 4. attachment_date
+          path.extname(file.originalname), // 5. attachment_filetype
+          String(file.size), // 6. attachment_size
+        ];
+      });
+
+      // 배열을 한 번 더 감싸서 전달 (Bulk Insert)
+      await mysql.bquery("insertAttachment", [fileValues]);
     }
 
     // ---------------------------------------------------------
@@ -356,21 +375,6 @@ const addResultInfo = async (data, files) => {
     // ---------------------------------------------------------
     // [STEP 3] 첨부파일 저장 (파일이 있을 경우)
     // ---------------------------------------------------------
-    if (files && files.length > 0) {
-      const fileValues = files.map((file) => {
-        return [
-          newGroupId, // 1. attachment_group (INT)
-          file.originalname, // 2. attachment_orginal
-          file.path, // 3. attachment_path
-          new Date(), // 4. attachment_date
-          path.extname(file.originalname), // 5. attachment_filetype
-          String(file.size), // 6. attachment_size
-        ];
-      });
-
-      // 배열을 한 번 더 감싸서 전달 (Bulk Insert)
-      await mysql.bquery("insertAttachment", [fileValues]);
-    }
 
     return { groupId: newGroupId, insertResult: result.data };
   } catch (err) {
@@ -397,7 +401,7 @@ const updateChangingResultInfo = async (result_no, data) => {
 };
 
 // 수정사유 등록
-const addAppHistory = async (input) => {
+const addAppHistory = async input => {
   let { appNo, id, reason } = input;
   let result = await mysql.bquery("insertAppHistory", [appNo, id, reason]);
 };
@@ -412,6 +416,20 @@ const addFirstResultInfo = async (data, files) => {
     if (files && files.length > 0) {
       const [rows] = await mysql.bquery("getMaxGroupId");
       newGroupId = rows.newGroupId; // 예: 100
+
+      const fileValues = files.map(file => {
+        return [
+          newGroupId, // 1. attachment_group (INT)
+          file.originalname, // 2. attachment_orginal
+          file.path, // 3. attachment_path
+          new Date(), // 4. attachment_date
+          path.extname(file.originalname), // 5. attachment_filetype
+          String(file.size), // 6. attachment_size
+        ];
+      });
+
+      // 배열을 한 번 더 감싸서 전달 (Bulk Insert)
+      await mysql.bquery("insertAttachment", [fileValues]);
     }
 
     // ---------------------------------------------------------
@@ -441,21 +459,6 @@ const addFirstResultInfo = async (data, files) => {
     // ---------------------------------------------------------
     // [STEP 3] 첨부파일 저장 (파일이 있을 경우)
     // ---------------------------------------------------------
-    if (files && files.length > 0) {
-      const fileValues = files.map((file) => {
-        return [
-          newGroupId, // 1. attachment_group (INT)
-          file.originalname, // 2. attachment_orginal
-          file.path, // 3. attachment_path
-          new Date(), // 4. attachment_date
-          path.extname(file.originalname), // 5. attachment_filetype
-          String(file.size), // 6. attachment_size
-        ];
-      });
-
-      // 배열을 한 번 더 감싸서 전달 (Bulk Insert)
-      await mysql.bquery("insertAttachment", [fileValues]);
-    }
 
     return { groupId: newGroupId, insertResult: result.data };
   } catch (err) {
@@ -478,13 +481,13 @@ const modifyResultFirstSaveInfo = async (serviceData, no) => {
 };
 
 // 지원결과서 임시저장 삭제 0111
-const removeResultFirstSaveInfo = async (planning_no) => {
+const removeResultFirstSaveInfo = async planning_no => {
   let post = await mysql.bquery("deleteResultFirstSaveInfo", planning_no);
   return post;
 };
 
 // 파일 목록 조회
-const getAttachmentList = async (groupId) => {
+const getAttachmentList = async groupId => {
   try {
     // [수정] 대괄호 제거 (mapper.js 특성 반영)
     const rows = await mysql.bquery("getAttachmentList", [groupId]);
@@ -495,7 +498,7 @@ const getAttachmentList = async (groupId) => {
   }
 };
 // 단일 파일 정보 조회 (다운로드용)
-const getAttachmentFile = async (attachmentNo) => {
+const getAttachmentFile = async attachmentNo => {
   try {
     const rows = await mysql.bquery("getAttachment", [attachmentNo]);
     console.log("file", rows);
@@ -536,4 +539,5 @@ module.exports = {
   removeResultFirstSaveInfo, // 0111 결과서 임시저장 삭제
   getAttachmentList,
   getAttachmentFile,
+  removeAttachment, // 임시저장 취소시 첨부파일 삭제 0113
 };

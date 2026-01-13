@@ -103,6 +103,11 @@ onBeforeMount(async () => {
   await application.countRealReview(route.params.id)
 
   await application.fetchFilesForPlans(application.planningFistSave)
+  await application.fetchFilesForPlans(application.planningSuccess)
+  await application.fetchFilesForPlans(application.planningRejected)
+  await application.fetchFilesForPlans(application.planningChanging)
+  await application.fetchFilesForPlans(application.planningChangingReview)
+  await application.fetchFilesForPlans(application.PlanningRejectedReviewList)
 })
 
 const onRequestAdd = () => {
@@ -131,6 +136,13 @@ const onSubmitSave = async (payload) => {
       confirmButtonText: '확인',
     })
     await refresh()
+    await application.fetchFilesForPlans(application.planningFistSave)
+    await application.fetchFilesForPlans(application.planningSuccess)
+    await application.fetchFilesForPlans(application.planningRejected)
+    await application.fetchFilesForPlans(application.planningChanging)
+    await application.fetchFilesForPlans(application.planningChangingReview)
+    await application.fetchFilesForPlans(application.PlanningRejectedReviewList)
+
     // 기존 동작 맞추기: 카운트/폼 상태 리셋
     realCount.value = application.planned + 1
     addCount.value = 0
@@ -176,6 +188,11 @@ const onSubmitSave = async (payload) => {
   })
   await refresh()
   await application.fetchFilesForPlans(application.planningFistSave)
+  await application.fetchFilesForPlans(application.planningSuccess)
+  await application.fetchFilesForPlans(application.planningRejected)
+  await application.fetchFilesForPlans(application.planningChanging)
+  await application.fetchFilesForPlans(application.planningChangingReview)
+  await application.fetchFilesForPlans(application.PlanningRejectedReviewList)
 
   // 기존 동작 맞추기: 카운트/폼 상태 리셋
   realCount.value = application.planned + 1
@@ -187,12 +204,22 @@ const onSubmitSave = async (payload) => {
 // 임시저장 불러오기 중 취소시 삭제 0111
 const onDeleteSave = async () => {
   await axios //
-    .put('/api/delFirstSave/' + route.params.id)
+    .delete('/api/delFirstSave/' + route.params.id)
     .then((res) => {
       console.log(res)
+      if (application.planningFistSave[0].fileList != undefined) {
+        application.planningFistSave.forEach(async (data) => {
+          await axios //
+            .delete(`/api/delAttachment/` + data.attachment_no)
+            .then((res) => {
+              console.log(res)
+            })
+        })
+      }
     })
 
   application.planningFistSave = []
+
   // 기존 동작 맞추기: 카운트/폼 상태 리셋
   realCount.value = application.planned + 1
   application.planningState = 0
@@ -217,6 +244,12 @@ const onSubmitCreate = async (payload) => {
       confirmButtonText: '확인',
     })
     await refresh()
+    await application.fetchFilesForPlans(application.planningFistSave)
+    await application.fetchFilesForPlans(application.planningSuccess)
+    await application.fetchFilesForPlans(application.planningRejected)
+    await application.fetchFilesForPlans(application.planningChanging)
+    await application.fetchFilesForPlans(application.planningChangingReview)
+    await application.fetchFilesForPlans(application.PlanningRejectedReviewList)
 
     // 기존 동작 맞추기: 카운트/폼 상태 리셋
     realCount.value = application.planned + 1
@@ -232,7 +265,7 @@ const onSubmitCreate = async (payload) => {
   finalForm.append('planning_end', payload.planning_end)
   finalForm.append('planning_title', payload.planning_title)
   finalForm.append('planning_content', payload.planning_content)
-  if (application.attachmentFiles.value.length > 0) {
+  if (application.attachmentFiles.value != null) {
     application.attachmentFiles.value.forEach((file) => {
       finalForm.append('files', file)
     })
@@ -242,14 +275,19 @@ const onSubmitCreate = async (payload) => {
       'Content-Type': 'multipart/form-data',
     },
   })
-
+  application.attachmentFiles.value = []
   await Swal.fire({
     icon: 'success',
     text: '승인요청 완료',
     confirmButtonText: '확인',
   })
-
   await refresh()
+  await application.fetchFilesForPlans(application.planningFistSave)
+  await application.fetchFilesForPlans(application.planningSuccess)
+  await application.fetchFilesForPlans(application.planningRejected)
+  await application.fetchFilesForPlans(application.planningChanging)
+  await application.fetchFilesForPlans(application.planningChangingReview)
+  await application.fetchFilesForPlans(application.PlanningRejectedReviewList)
 
   // 기존 동작 맞추기: 카운트/폼 상태 리셋
   realCount.value = application.planned + 2
@@ -285,6 +323,12 @@ const onSubmitChanging = async (plan) => {
 
   application.planningState = 0 // 수정 모드 종료
   await refresh()
+  await application.fetchFilesForPlans(application.planningFistSave)
+  await application.fetchFilesForPlans(application.planningSuccess)
+  await application.fetchFilesForPlans(application.planningRejected)
+  await application.fetchFilesForPlans(application.planningChanging)
+  await application.fetchFilesForPlans(application.planningChangingReview)
+  await application.fetchFilesForPlans(application.PlanningRejectedReviewList)
 }
 
 // 반려 수정 취소(담당자)
@@ -294,6 +338,12 @@ const onCancelChanging = async (planningNo) => {
   })
   application.planningState = 0
   await refresh()
+  await application.fetchFilesForPlans(application.planningFistSave)
+  await application.fetchFilesForPlans(application.planningSuccess)
+  await application.fetchFilesForPlans(application.planningRejected)
+  await application.fetchFilesForPlans(application.planningChanging)
+  await application.fetchFilesForPlans(application.planningChangingReview)
+  await application.fetchFilesForPlans(application.PlanningRejectedReviewList)
 }
 
 // 관리자 승인(검토중/반려검토중 공용)
@@ -308,6 +358,12 @@ const approvePlan = async (planningNo) => {
   })
 
   await refresh()
+  await application.fetchFilesForPlans(application.planningFistSave)
+  await application.fetchFilesForPlans(application.planningSuccess)
+  await application.fetchFilesForPlans(application.planningRejected)
+  await application.fetchFilesForPlans(application.planningChanging)
+  await application.fetchFilesForPlans(application.planningChangingReview)
+  await application.fetchFilesForPlans(application.PlanningRejectedReviewList)
 }
 
 // 관리자 반려(반려사유는 modal store에서 가져오는 기존 방식 유지)
@@ -338,6 +394,12 @@ const rejectPlan = async (planningNo) => {
   })
   modal.rejectReason = undefined
   await refresh()
+  await application.fetchFilesForPlans(application.planningFistSave)
+  await application.fetchFilesForPlans(application.planningSuccess)
+  await application.fetchFilesForPlans(application.planningRejected)
+  await application.fetchFilesForPlans(application.planningChanging)
+  await application.fetchFilesForPlans(application.planningChangingReview)
+  await application.fetchFilesForPlans(application.PlanningRejectedReviewList)
 }
 
 // 검토중 계획서 노출 조건(기존 조건)

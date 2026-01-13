@@ -215,6 +215,7 @@ const addPlanningForm = async () => {
 const delForm = () => {
   emit('update:addCount', 0)
   formData.value = {}
+
   emit('deleted')
 }
 
@@ -237,6 +238,8 @@ const openConfirm = async () => {
 }
 
 const closeConfirm = () => {
+  checked.value = false
+
   saveChecked.value = false
 }
 
