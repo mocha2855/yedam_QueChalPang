@@ -1,5 +1,6 @@
 // stores / application.js
 import { defineStore } from 'pinia'
+import { ref } from 'vue'
 import axios from 'axios'
 import { useCounterStore } from '@/stores/member'
 
@@ -27,7 +28,7 @@ export const useApplicationStore = defineStore('application', {
     resultChangingReview: [],
     resultfirstSave: [],
 
-    attachmentFiles: [],
+    attachmentFiles: ref([]),
   }),
 
   actions: {

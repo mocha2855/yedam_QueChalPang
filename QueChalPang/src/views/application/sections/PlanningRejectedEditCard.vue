@@ -27,7 +27,7 @@
             </div>
             <div class="col-2"><label class="col-form-label">작성자</label></div>
             <div class="col-2">
-              <input type="text" :value="writerName" class="form-control" readonly />
+              <input type="text" :value="localPlan.member_name" class="form-control" readonly />
             </div>
           </div>
 
@@ -41,13 +41,29 @@
           <div class="row g-3 mb-2 align-items-center">
             <div class="col-2"><label class="col-form-label">내용</label></div>
             <div class="col-10">
-              <textarea v-model="localPlan.planning_content" class="form-control" rows="8"/>
+              <textarea v-model="localPlan.planning_content" class="form-control" rows="8" />
             </div>
           </div>
 
           <div class="row g-3 mb-2 align-items-center">
             <div class="col-2"><label class="col-form-label">첨부파일</label></div>
-            <div class="col-10"><input type="file" class="form-control" /></div>
+            <div v-if="localPlan.fileList && localPlan.fileList.length > 0" class="col-10">
+              <div v-for="file in localPlan.fileList" :key="file.attachment_no" class="mb-1">
+                <a
+                  href="#"
+                  @click.prevent="application.downloadFile(file.attachment_no)"
+                  class="text-decoration-none text-primary fw-bold"
+                >
+                  💾 {{ file.attachment_orginal }}
+                </a>
+                <span class="text-muted ms-2" style="font-size: 0.8em">
+                  ({{ (file.attachment_size / 1024).toFixed(1) }} KB)
+                </span>
+              </div>
+            </div>
+            <div v-else class="col-10">
+              <input type="text" class="form-control" value="첨부파일 없음" readonly />
+            </div>
           </div>
 
           <div class="d-flex justify-content-between">
@@ -120,8 +136,10 @@
 </template>
 
 <script setup>
-import { reactive, watch, ref, computed } from 'vue'
+import { reactive, watch, ref } from 'vue'
 import ConfirmModal from '../modals/ConfirmModal.vue'
+import { useApplicationStore } from '@/stores/application'
+const application = useApplicationStore()
 
 const props = defineProps({
   plan: { type: Object, required: true },
@@ -132,7 +150,6 @@ const emit = defineEmits(['update:plan', 'submitChanging', 'cancel'])
 
 const localPlan = reactive({})
 const changingChecked = ref(false)
-const writerName = computed(() => '최강희') // 필요하면 store에서 가져와도 됨
 
 // props.plan 이 바뀔 때마다 localPlan으로 복사
 watch(

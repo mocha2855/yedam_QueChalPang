@@ -49,8 +49,8 @@
 
             <div class="row g-3 mb-2 align-items-center">
               <div class="col-2"><label class="col-form-label">첨부파일</label></div>
-              <div v-if="plan.fileList && plan.fileList.length > 0" class="col-10">
-                <div v-for="file in plan.fileList" :key="file.attachment_no" class="mb-1">
+              <div v-if="plan[0].fileList && plan[0].fileList.length > 0" class="col-10">
+                <div v-for="file in an.fileList" :key="file.attachment_no" class="mb-1">
                   <a
                     href="#"
                     @click.prevent="application.downloadFile(file.attachment_no)"

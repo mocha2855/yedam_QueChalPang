@@ -28,7 +28,7 @@
             </div>
             <div class="col-2"><label class="col-form-label">작성자</label></div>
             <div class="col-2">
-              <input type="text" :value="writerName" class="form-control" readonly />
+              <input type="text" v-model="plan.member_name" class="form-control" readonly />
             </div>
           </div>
 
@@ -48,7 +48,23 @@
 
           <div class="row g-3 mb-2 align-items-center">
             <div class="col-2"><label class="col-form-label">첨부파일</label></div>
-            <div class="col-10"><input type="text" class="form-control" readonly /></div>
+            <div v-if="plan.fileList && plan.fileList.length > 0" class="col-10">
+              <div v-for="file in plan.fileList" :key="file.attachment_no" class="mb-1">
+                <a
+                  href="#"
+                  @click.prevent="application.downloadFile(file.attachment_no)"
+                  class="text-decoration-none text-primary fw-bold"
+                >
+                  💾 {{ file.attachment_orginal }}
+                </a>
+                <span class="text-muted ms-2" style="font-size: 0.8em">
+                  ({{ (file.attachment_size / 1024).toFixed(1) }} KB)
+                </span>
+              </div>
+            </div>
+            <div v-else class="col-10">
+              <input type="text" class="form-control" value="첨부파일 없음" readonly />
+            </div>
           </div>
 
           <div class="d-flex justify-content-between">
@@ -130,6 +146,9 @@
 import { computed, ref } from 'vue'
 import ConfirmModal from '../modals/ConfirmModal.vue'
 import RejectConfirmModal from '../modals/RejectConfirmModal.vue'
+import { useApplicationStore } from '@/stores/application'
+
+const application = useApplicationStore()
 
 const props = defineProps({
   memAuthority: { type: String, required: true },
@@ -139,8 +158,6 @@ const props = defineProps({
 const isReadOnlyViewer = computed(() => props.memAuthority === 'a1')
 
 const emit = defineEmits(['approve', 'reject'])
-
-const writerName = computed(() => '최강희')
 
 // UI 상태는 서버데이터에 섞지 말고 Set으로 관리
 const approveOpenSet = ref(new Set())
