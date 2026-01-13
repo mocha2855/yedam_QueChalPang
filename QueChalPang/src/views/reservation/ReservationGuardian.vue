@@ -10,7 +10,6 @@ import { useCounterStore } from '@/stores/member'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 
-// ✅ 탭에서 내역 컴포넌트로 보여줄 거라 import 필요
 import ReservationGuardianHistory from './ReservationGuardianHistory.vue'
 
 // 피니아 로그인정보
@@ -20,31 +19,7 @@ const { isLogIn } = storeToRefs(counterStore)
 // 라우터(다음 페이지로 이동은 유지)
 const router = useRouter()
 
-// ✅ 탭 상태
 const activeTab = ref('reserve') // 'reserve' | 'history'
-
-// 다음 버튼 누르면서 정보 같이 넘겨야함
-// const goNext = () => {
-//   router.push({
-//     name: 'ReservationGuardianConfirm',
-//     query: {
-//       date: toYmd.value,
-//       time: selectedTime.value,
-//       applicationNo: selectedApplicationNo.value,
-
-//       // DB저장
-//       resv_day: toYmdDash.value,
-//       guardianId: guardianId.value,
-//       managerId: managerId.value,
-//       dependantNo: dependantNo.value,
-
-//       // front
-//       name: isLogIn.value?.info?.member_name ?? '',
-//       dependant: selectDependantName.value,
-//       manager: managerName.value,
-//     },
-//   })
-// }
 
 // 보호자의 지원자정보 가져옴(지원자이름 드롭다운)
 const selectDependantName = computed(() => {
@@ -72,9 +47,7 @@ const blockedTimes = ref(new Set())
 const lunchTime = ref('')
 const selectedTime = ref('')
 
-// ========================
 // 날짜 범위 (내일부터 2주)
-// ========================
 let date = new Date()
 const today = new Date(`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate() + 1}`)
 today.setHours(0, 0, 0, 0)
@@ -90,9 +63,7 @@ const disabledDates = computed(() => [
   { start: new Date(maxDate.getTime()), end: null },
 ])
 
-// ========================
 // 날짜 포맷
-// ========================
 const toYmd = computed(() => {
   const d = selectedDate.value
   if (!d) return ''
@@ -160,7 +131,6 @@ const openConfirm = async () => {
 }
 
 const submitReservation = async () => {
-  // 필수 값 체크
   if (
     !toYmdDash.value ||
     !selectedTime.value ||
@@ -177,7 +147,6 @@ const submitReservation = async () => {
     return
   }
 
-  // start_at / end_at 계산
   const start_at = `${toYmdDash.value} ${selectedTime.value}:00`
 
   const startDate = new Date(`${toYmdDash.value}T${selectedTime.value}:00`)
@@ -232,9 +201,7 @@ const submitReservation = async () => {
   }
 }
 
-// ========================
 // API 호출
-// ========================
 const fetchManagerName = async () => {
   if (!dependantNo.value) return
   const mname = await axios.get(`/api/getManagerName/${dependantNo.value}`)
@@ -269,45 +236,42 @@ const calendarAttrs = computed(() => [
 
 const lastSelectedDate = ref(selectedDate.value)
 
+const refreshForDependant = async () => {
+  if (!dependantNo.value) return
+
+  await fetchManagerName()
+
+  const appRes = await axios.get(`/api/applicationList/${dependantNo.value}`)
+  applicationNo.value = appRes.data ?? []
+  selectedApplicationNo.value = applicationNo.value[0]?.application_no ?? null
+
+  await fetchAvailability()
+  selectedTime.value = ''
+}
+
+// 1) 로그인(guardianId) 들어오면 dependant 목록 가져오기
 watch(
-  selectedDate,
+  guardianId,
   async (v) => {
-    if (v === null) {
+    if (!v) return
+    await fetchMyDependants()
+    // dependantNo가 세팅되면 아래 watch(둘째)가 자동으로 refresh 돌림
+  },
+  { immediate: true },
+)
+
+// 2) dependantNo 또는 selectedDate 바뀌면 한 번에 갱신
+watch(
+  [dependantNo, selectedDate],
+  async ([dno, d]) => {
+    if (d === null) {
       selectedDate.value = lastSelectedDate.value
       return
     }
-    lastSelectedDate.value = v
-    selectedTime.value = ''
-    await fetchAvailability()
-  },
-  { immediate: true },
-)
+    lastSelectedDate.value = d
 
-watch(
-  guardianId,
-  async () => {
-    await fetchMyDependants()
-    selectedTime.value = ''
-    await fetchAvailability()
-  },
-  { immediate: true },
-)
-
-watch(
-  dependantNo,
-  async () => {
-    await fetchManagerName()
-  },
-  { immediate: true },
-)
-
-watch(
-  dependantNo,
-  async (ano) => {
-    if (!ano) return
-    const res = await axios.get(`/api/applicationList/${ano}`)
-    applicationNo.value = res.data ?? []
-    selectedApplicationNo.value = applicationNo.value[0]?.application_no ?? null
+    if (!dno || !d) return
+    await refreshForDependant()
   },
   { immediate: true },
 )
@@ -316,16 +280,16 @@ watch(
 <template>
   <div class="reserv-page">
     <div class="container-fluid py-4">
-      <!-- 1) 상단 이미지 -->
+      <!-- 상단 이미지 -->
       <div class="row justify-content-center">
         <div class="col-12 col-md-10 col-lg-8 col-xl-7">
           <div class="hero-wrap">
-            <img class="hero-img" src="/resv_guardian1.png" alt="reservation hero" />
+            <img class="hero-img" src="/resvFinal.png" alt="reservation hero" />
           </div>
         </div>
       </div>
 
-      <!-- ✅ 탭바 (대상자선택 위에 위치시키고 싶으면 여기 그대로) -->
+      <!--탭바 -->
       <div class="row justify-content-center mt-3">
         <div class="col-12 col-md-10 col-lg-8 col-xl-7">
           <div class="tabbar">
@@ -347,11 +311,9 @@ watch(
         </div>
       </div>
 
-      <!-- ========================= -->
       <!-- 예약하기 탭 -->
-      <!-- ========================= -->
       <div v-if="activeTab === 'reserve'">
-        <!-- 2) 대상자 / 신청서 선택 -->
+        <!-- 대상자 / 신청서 선택 -->
         <div class="row justify-content-center mt-3">
           <div class="col-12 col-md-10 col-lg-8 col-xl-7">
             <div class="select-card">
@@ -406,7 +368,7 @@ watch(
           </div>
         </div>
 
-        <!-- 3) 선택된 날짜 / 시간 + 다음 버튼 -->
+        <!--  날짜 시간 선택, 다음 버튼 -->
         <div class="row justify-content-center mt-3">
           <div class="col-12 col-md-10 col-lg-8 col-xl-7">
             <div class="picked-bar">
@@ -429,7 +391,7 @@ watch(
           </div>
         </div>
 
-        <!-- 4) 달력 + 시간슬롯 -->
+        <!-- 달력 시간슬롯 -->
         <div class="row justify-content-center mt-3">
           <div class="col-12 col-md-10 col-lg-8 col-xl-7">
             <div class="grid-2">
@@ -505,7 +467,7 @@ watch(
   display: flex;
   gap: 28px;
   padding: 0 6px;
-  border-bottom: 1px solid #e5e7eb; /* 얇은 회색 라인 */
+  border-bottom: 1px solid #e5e7eb;
   background: transparent;
 }
 
@@ -516,12 +478,12 @@ watch(
   background: transparent;
   padding: 12px 2px;
   font-weight: 700;
-  color: #6b7280; /* 기본 회색 */
+  color: #6b7280;
   cursor: pointer;
 }
 
 .tab.active {
-  color: #2f55ff; /* 포인트 컬러 */
+  color: #2f55ff;
   font-weight: 900;
 }
 
@@ -529,7 +491,7 @@ watch(
   content: '';
   position: absolute;
   left: 0;
-  bottom: -1px; /* border-bottom 위에 딱 붙게 */
+  bottom: -1px;
   width: 100%;
   height: 3px;
   background: #2f55ff;
@@ -578,7 +540,6 @@ watch(
   background: #cbd5e0;
 }
 
-/* 선택 바 */
 .picked-bar {
   background: #9fb6ae;
   border-radius: 12px;
@@ -609,7 +570,6 @@ watch(
   border-radius: 10px;
 }
 
-/* 다음 버튼 */
 .btn-next-white {
   background: #fff;
   border: none;
@@ -625,7 +585,6 @@ watch(
   cursor: not-allowed;
 }
 
-/* 달력 / 시간 */
 .grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -645,7 +604,6 @@ watch(
   margin-bottom: 12px;
 }
 
-/* 시간 버튼 */
 .time-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -672,7 +630,6 @@ watch(
   cursor: not-allowed;
 }
 
-/* 반응형 */
 @media (max-width: 992px) {
   .grid-2 {
     grid-template-columns: 1fr;
