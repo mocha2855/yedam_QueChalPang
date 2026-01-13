@@ -156,11 +156,15 @@ router.put("/submitChangingPlanningInfo/:no", async (req, res) => {
 });
 
 // 지원계획서 임시 저장(담당자) 0111
-router.post("/firstPlanSave/:no", async (req, res) => {
+router.post("/firstPlanSave/:no", upload.array("files"), async (req, res) => {
   let data = req.body;
-  console.log(data);
-  let no = req.params.no;
-  let post = await applicationService.addPlanSaveInfo(no, data);
+  console.log("data: ", data);
+  const serviceData = {
+    application_no: req.params.no,
+    ...req.body,
+  };
+  console.log("serviceData: ", serviceData);
+  let post = await applicationService.addPlanSaveInfo(serviceData, req.files);
   res.send(post);
 });
 

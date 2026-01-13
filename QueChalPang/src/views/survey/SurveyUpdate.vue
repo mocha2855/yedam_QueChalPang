@@ -300,6 +300,14 @@ const openModifyModal = () => {
 
 //조사지 수정 저장
 const updateSurvey = async (reason) => {
+  if (!reason || reason.trim() === '') {
+    await Swal.fire({
+      icon: 'warning',
+      title: '수정사유를 입력해주세요.',
+      confirmButtonText: '확인',
+    })
+    return
+  }
   const personName = member.isLogIn.info.member_name // 시스템관지라 권한부여
 
   const result = await axios.put(`/api/surveys/${surveyInfo.no}`, {

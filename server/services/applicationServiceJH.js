@@ -115,9 +115,47 @@ const addPlanningInfo = async (data, files) => {
 };
 
 // 지원계획서 임시저장 0111
-const addPlanSaveInfo = async (application_no, data) => {
-  let param = { application_no, ...data };
-  let post = await mysql.bquery("insertPlanSaveInfo", param);
+const addPlanSaveInfo = async (data, files) => {
+  let newGroupId = null;
+  if (files && files.length > 0) {
+    const [rows] = await mysql.bquery("getMaxGroupId");
+    console.log(rows.newGroupId);
+    newGroupId = rows.newGroupId; // 예: 100
+  }
+  const {
+    application_no,
+    planning_id,
+    planning_rejecter,
+    planning_start,
+    planning_end,
+    planning_title,
+    planning_content,
+  } = data;
+  let post = await mysql.bquery("insertPlanSaveInfo", [
+    application_no,
+    planning_id,
+    planning_rejecter,
+    planning_start,
+    planning_end,
+    planning_title,
+    planning_content,
+    newGroupId,
+  ]);
+  if (files && files.length > 0) {
+    const fileValues = files.map((file) => {
+      return [
+        newGroupId, // 1. attachment_group (INT)
+        file.originalname, // 2. attachment_orginal
+        file.path, // 3. attachment_path
+        new Date(), // 4. attachment_date
+        path.extname(file.originalname), // 5. attachment_filetype
+        String(file.size), // 6. attachment_size
+      ];
+    });
+
+    // 배열을 한 번 더 감싸서 전달 (Bulk Insert)
+    await mysql.bquery("insertAttachment", [fileValues]);
+  }
   return post;
 };
 

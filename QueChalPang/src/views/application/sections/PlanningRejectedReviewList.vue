@@ -42,7 +42,7 @@
           <div class="row g-3 mb-2 align-items-center">
             <div class="col-2"><label class="col-form-label">내용</label></div>
             <div class="col-10">
-              <input type="text" v-model="plan.planning_content" class="form-control" readonly />
+              <textarea v-model="plan.planning_content" class="form-control" rows="8" readonly />
             </div>
           </div>
 
@@ -90,10 +90,9 @@
           <div class="row g-3 mb-2 align-items-center">
             <div class="col-2"><label class="col-form-label">반려사유</label></div>
             <div class="col-10">
-              <input type="text" v-model="plan.planning_reject" class="form-control" readonly />
+              <textarea v-model="plan.planning_reject" class="form-control" readonly />
             </div>
-            <input
-              type="text"
+            <textarea
               v-model="plan.planning_reject"
               class="form-control"
               :readonly="isReadOnlyViewer"

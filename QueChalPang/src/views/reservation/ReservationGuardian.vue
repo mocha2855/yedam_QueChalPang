@@ -73,7 +73,8 @@ const selectedTime = ref('')
 // ========================
 // 날짜 범위 (내일부터 2주)
 // ========================
-const today = new Date()
+let date = new Date()
+const today = new Date(`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate() + 1}`)
 today.setHours(0, 0, 0, 0)
 
 const maxDate = new Date(today)
