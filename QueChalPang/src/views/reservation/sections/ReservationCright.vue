@@ -85,24 +85,6 @@ const onCancelConfirm = async (reason) => {
   closeCancelModal()
 }
 
-// 현재 날짜 기점으로 상태 변화 -0108
-// 날짜 변경
-// const statusInfo = (r) => {
-//   console.log(r)
-
-//   let today = new Date()
-//   console.log(today > new Date(r.resv_day) && r.status == 'f2')
-//   if (today > new Date(r.resv_day) && r.status == 'f2') {
-//     axios.put('/api/updateRstatus/', {
-//       resvId: r.resv_id,
-//       managerId: r.manager_id,
-//       resvStatus: 'f3',
-//       rejectReason: null,
-//     })
-//   }
-//   return statusMap[r.status] ?? { label: r.status ?? '', class: 'status-default' }
-// }
-
 watch(
   () => props.reservations,
   (list) => {
@@ -178,7 +160,7 @@ const writingMeeting = (data) => {
                     :disabled="r.status !== 'f2'"
                     @click="openCancelModal(r)"
                   >
-                    취소
+                    취소하기
                   </button>
                 </div>
               </td>
@@ -221,11 +203,20 @@ const writingMeeting = (data) => {
   </div>
 </template>
 <style>
+.table .btn-outline-danger.btn-sm {
+  padding: 6px 8px !important; /* 좌우 padding 줄이기 */
+  min-width: auto !important; /* Bootstrap 기본 min-width 제거 */
+  width: auto !important; /* 글자 길이만큼만 */
+}
 .cell-center {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100%;
+}
+
+.btn-primary {
+  padding: 6px 15px !important;
 }
 
 /* 상태버튼 공통 */
@@ -234,6 +225,7 @@ const writingMeeting = (data) => {
   font-weight: 700;
   border: 0 !important;
   background: transparent;
+  padding: 6px 8px !important;
 }
 
 .status-btn:disabled {
@@ -263,5 +255,80 @@ const writingMeeting = (data) => {
 .status-default {
   background-color: #ebebeb !important;
   color: #333 !important;
+}
+/* ===== 액션 버튼 통일 ===== */
+
+/* 취소하기 → 메인컬러 아웃라인 */
+.table .btn-outline-danger.btn-sm {
+  border: 1px solid #4e93cb !important;
+  color: #4e93cb !important;
+  background: transparent !important;
+  padding: 5px 10px !important;
+  border-radius: 4px !important;
+  font-weight: 700;
+}
+
+.table .btn-outline-danger.btn-sm:hover {
+  background: rgba(78, 147, 203, 0.08) !important;
+}
+
+/* 작성하기 → 메인컬러 채움 */
+.table .btn-primary.btn-sm {
+  background: #4e93cb !important;
+  border: 1px solid #4e93cb !important;
+  color: #fff !important;
+  padding: 5px 12px !important;
+  border-radius: 4px !important;
+  font-weight: 800;
+}
+
+.table .btn-primary.btn-sm:hover {
+  filter: brightness(0.95);
+}
+
+/* ===== 상태 배지 ===== */
+
+.status-btn {
+  min-width: auto !important;
+  padding: 5px 10px !important;
+  border-radius: 999px !important;
+  font-weight: 800 !important;
+  font-size: 0.75rem !important;
+}
+
+/* 확인중 (대기) */
+.status-wait {
+  background: #e8f4ff !important;
+  color: #2b6cb0 !important;
+  border: 1px solid #cfe8ff;
+}
+
+/* 예약확정 */
+.status-confirm {
+  background: #ecfdf5 !important;
+  color: #065f46 !important;
+  border: 1px solid #a7f3d0;
+}
+
+/* 상담완료 */
+.status-done {
+  background: #f3f4f6 !important;
+  color: #374151 !important;
+  border: 1px solid #e5e7eb;
+}
+
+/* 상담취소 */
+.status-cancel {
+  background: #fef2f2 !important;
+  color: #991b1b !important;
+  border: 1px solid #fecaca;
+}
+
+.table .btn-outline-danger.btn-sm:disabled {
+  border: 1px solid #cbd5e1 !important;
+  color: #94a3b8 !important;
+  background: #f8fafc !important;
+  cursor: not-allowed !important;
+  opacity: 1 !important; /* 흐리기 대신 명확한 비활성톤 */
 }
 </style>

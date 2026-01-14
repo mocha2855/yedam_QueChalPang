@@ -349,14 +349,12 @@ const changeResultStatus = async (data) => {
     })
     return
   }
-  console.log(data)
   await axios
     .put('/api/successResultInfo/' + data, {
       result_status: 'i1',
     })
     .then((res) => {
       console.log(res)
-
       application.planningState = 2
     })
   await application.countRealResult(route.params.id)

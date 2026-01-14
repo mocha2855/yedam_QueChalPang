@@ -255,11 +255,9 @@ import ArgonInput from '@/components/ArgonInput.vue'
 onBeforeMount(async () => {
   // 담당자 정보
   await myPage.searchManagerInfo(route.params.id)
-  console.log('managerInfo', myPage.managerInfo)
 
   // 지원자 정보
   await myPage.searchDependantInfo(route.params.id)
-  console.log('dependantInfo', myPage.dependantInfo)
 })
 
 // 수정시 disabled 해제

@@ -93,7 +93,6 @@ const fetchAvailabilityByManager = async () => {
     reservedTimes.value = new Set((res.data.reservedTimes ?? []).map((t) => String(t).slice(0, 5)))
     blockedTimes.value = new Set((res.data.blockedTimes ?? []).map((t) => String(t).slice(0, 5)))
   } catch (e) {
-    console.log('fetchAvailabilityByManager error:', e)
     // 실패해도 화면이 깨지지 않게 초기화
     lunchTime.value = ''
     reservedTimes.value = new Set()
@@ -144,7 +143,6 @@ const toggleBlock = async (slot) => {
 
     await fetchAvailabilityByManager()
   } catch (e) {
-    console.log('toggleBlock error:', e)
     alert('차단 변경에 실패했습니다.')
   }
 }
@@ -162,7 +160,6 @@ const clearDayBlocks = async () => {
 
     await fetchAvailabilityByManager()
   } catch (e) {
-    console.log('clearDayBlocks error:', e)
     alert('전체 해제에 실패했습니다.')
   }
 }
@@ -176,7 +173,7 @@ const calendarAttrs = computed(() => [
   <div class="py-4 container-fluid block-wrapper">
     <div class="row g-4">
       <div>
-        <button class="btn btn-warning btn-lg fs-6" @click="$router.back()">← 뒤로가기</button>
+        <button class="btn btn-back btn-lg fs-6" @click="$router.back()">뒤로가기</button>
       </div>
       <!-- 좌: 달력 -->
       <div class="col-12 col-lg-5">
@@ -212,7 +209,7 @@ const calendarAttrs = computed(() => [
 
             <div class="d-flex align-items-center gap-2">
               <button
-                class="btn btn-outline-danger btn-sm"
+                class="btn btn-clear btn-sm"
                 :disabled="blockedList.length === 0"
                 @click="clearDayBlocks"
               >
@@ -280,11 +277,91 @@ const calendarAttrs = computed(() => [
 </template>
 
 <style scoped>
-  .block-wrapper {
+/* ===== theme ===== */
+:root {
+  --main: #4e93cb;
+  --main-weak: rgba(78, 147, 203, 0.12);
+  --line: #e5e7eb;
+  --text: #0f172a;
+  --muted: #64748b;
+  --bg: #ffffff;
+}
+
+.block-wrapper {
+  --main: #4e93cb;
+  --main-weak: rgba(78, 147, 203, 0.12);
+  --line: #e5e7eb;
+  --text: #0f172a;
+  --muted: #64748b;
+
   max-width: 1300px;
   margin: 0 auto;
 }
+/* ===== 카드: 좌/우 높이 맞추기 ===== */
+.row.g-4 {
+  align-items: stretch; /* 핵심: 같은 row 내 카드 높이 맞춤 */
+}
 
+.card {
+  height: 100%; /* col 높이 꽉 */
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+  background: var(--bg);
+}
+
+/* ===== 버튼 통일 (radius 2px) ===== */
+.btn {
+  border-radius: 2px !important;
+  box-shadow: none !important;
+}
+
+.btn-back {
+  background: var(--main) !important;
+  border: 1px solid var(--main) !important;
+  color: #fff !important;
+  padding: 10px 14px !important;
+  font-weight: 800;
+}
+.btn-back:hover {
+  filter: brightness(0.95);
+}
+
+.btn-clear {
+  background: transparent !important;
+  border: 1px solid var(--main) !important;
+  color: var(--main) !important;
+  font-weight: 800;
+  padding: 6px 10px !important;
+}
+.btn-clear:hover {
+  background: var(--main-weak) !important;
+}
+.btn-clear:disabled {
+  border-color: #cbd5e1 !important;
+  color: #94a3b8 !important;
+  background: #f8fafc !important;
+  cursor: not-allowed !important;
+  opacity: 1 !important;
+}
+
+/* ===== v-calendar 톤 통일 ===== */
+:deep(.vc-container) {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+/* 선택 날짜 highlight */
+:deep(.vc-highlight) {
+  background-color: var(--main) !important;
+}
+
+/* 오늘/포커스 링 */
+:deep(.vc-day-content:focus) {
+  box-shadow: 0 0 0 3px rgba(78, 147, 203, 0.18) !important;
+}
+
+/* ===== legend ===== */
 .legend {
   display: flex;
   flex-wrap: wrap;
@@ -295,29 +372,31 @@ const calendarAttrs = computed(() => [
   align-items: center;
   gap: 6px;
   font-size: 0.9rem;
-  color: #666;
+  color: var(--muted);
 }
 .legend-dot {
   width: 10px;
   height: 10px;
-  border-radius: 99px;
+  border-radius: 999px;
   display: inline-block;
-}
-.dot-open {
-  background: #e9ecef;
-  border: 1px solid #cfd4da;
-}
-.dot-blocked {
-  background: #dc3545;
-}
-.dot-reserved {
-  background: #6c757d;
-}
-.dot-lunch {
-  background: #adb5bd;
+  border: 1px solid transparent;
 }
 
-/* 슬롯 */
+.dot-open {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+.dot-blocked {
+  background: var(--main);
+}
+.dot-reserved {
+  background: #94a3b8;
+}
+.dot-lunch {
+  background: #cbd5e1;
+}
+
+/* ===== 슬롯 ===== */
 .slot-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -325,14 +404,14 @@ const calendarAttrs = computed(() => [
 }
 
 .slot-btn {
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
+  border: 1px solid var(--line);
+  border-radius: 2px; /* 요청! */
   padding: 12px 10px;
   background: #fff;
   text-align: center;
   transition:
-    transform 0.05s ease,
-    box-shadow 0.12s ease;
+    box-shadow 0.12s ease,
+    transform 0.05s ease;
   min-height: 64px;
 }
 
@@ -341,46 +420,57 @@ const calendarAttrs = computed(() => [
 }
 .slot-btn:disabled {
   cursor: not-allowed;
-  opacity: 0.75;
+  opacity: 0.65;
 }
 
-/* 상태별 스타일 */
+/* 상태별: 색 통일 */
 .is-open {
-  background: #f8f9fa;
+  background: #f8fafc;
 }
 .is-open:hover {
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
 }
 
+/* 차단 = 메인 컬러 */
 .is-blocked {
-  background: #dc3545;
+  background: var(--main);
   color: #fff;
-  border-color: #dc3545;
+  border-color: var(--main);
 }
 .is-blocked:hover {
-  box-shadow: 0 2px 14px rgba(220, 53, 69, 0.25);
+  box-shadow: 0 2px 14px rgba(78, 147, 203, 0.28);
 }
 
+/* 예약/점심 = muted */
 .is-reserved {
-  background: #6c757d;
+  background: #94a3b8;
   color: #fff;
-  border-color: #6c757d;
+  border-color: #94a3b8;
 }
 
 .is-lunch {
-  background: #adb5bd;
-  color: #fff;
-  border-color: #adb5bd;
+  background: #cbd5e1;
+  color: #334155;
+  border-color: #cbd5e1;
 }
 
+/* 텍스트 */
 .slot-time {
-  font-weight: 800;
+  font-weight: 900;
   font-size: 1.02rem;
 }
 .slot-hint {
   font-size: 0.82rem;
-  opacity: 0.9;
+  opacity: 0.95;
   margin-top: 2px;
 }
 
+/* ===== 선택 날짜 차단 목록 배지 통일 (기존 bg-danger-subtle 대체) ===== */
+.badge.bg-danger-subtle {
+  background: rgba(78, 147, 203, 0.12) !important;
+  color: var(--main) !important;
+  border: 1px solid rgba(78, 147, 203, 0.35) !important;
+  border-radius: 2px !important;
+  font-weight: 800;
+}
 </style>

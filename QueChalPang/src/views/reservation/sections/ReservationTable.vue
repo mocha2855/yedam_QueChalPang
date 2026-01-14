@@ -132,7 +132,15 @@ const closeModal = () => {
   />
 </template>
 <style scoped>
-/* ReservationTable.vue (or ReservationTable component) */
+.btn-success {
+  border-radius: 2px !important;
+  background-color: #4e93cb !important;
+}
+
+.btn-danger {
+  border-radius: 2px !important;
+  background-color: #e87b86 !important;
+}
 
 .card-header h6 {
   font-size: 0.95rem;
@@ -143,10 +151,10 @@ const closeModal = () => {
 
 /* 테이블 헤더 */
 .table thead th {
-  font-size: 0.75rem; /* 헤더 글씨 작게 */
+  font-size: 0.75rem;
   font-weight: 600;
-  color: #8392ab; /* Argon 회색 톤 */
-  text-transform: none; /* 대문자 변형 방지 */
+  color: #8392ab;
+  text-transform: none;
   letter-spacing: -0.2px;
   padding: 0.9rem 1rem;
   white-space: nowrap;
@@ -207,7 +215,7 @@ const closeModal = () => {
   font-size: 0.78rem;
   font-weight: 700;
   padding: 0.45rem 0.9rem;
-  border-radius: 0.6rem;
+  /* border-radius: 0.6rem; */
   box-shadow: none;
 }
 

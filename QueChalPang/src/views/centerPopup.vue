@@ -28,7 +28,6 @@ const key = ref('center_name')
 const centerList = ref([])
 const getCenterList = async () => {
   let result = await axios.get(`/api/centers?key=${key.value}&value=${value.value}`)
-  console.log(result)
   centerList.value = result.data
 }
 </script>

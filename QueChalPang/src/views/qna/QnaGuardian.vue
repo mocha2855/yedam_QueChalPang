@@ -31,8 +31,6 @@ const qnaWrite = () => {
 }
 
 const goDetail = (no) => {
-  console.log('클릭된 번호:', no) // 여기서 undefined가 나오면 위 1번(Store) 문제임
-
   if (no) {
     router.push({ name: 'qnaGuardianDetail', params: { qnaNo: no } })
   }

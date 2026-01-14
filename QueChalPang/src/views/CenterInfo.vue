@@ -24,7 +24,6 @@ const center = reactive({
 })
 
 onBeforeMount(async () => {
-  console.log(route)
   await store.getInfo(getNo())
   center.name = store.centerInfo.center_name
   center.address = store.centerInfo.center_address.replaceAll('|', ' ')
@@ -37,7 +36,6 @@ onBeforeMount(async () => {
       ? '운영이 종료되지 않았습니다.'
       : chageDate(store.centerInfo.center_end)
   center.status = getStatus(store.centerInfo.center_status)
-  console.log(center)
 })
 const getNo = () => {
   const routeArr = route.path.split('/')
@@ -46,11 +44,8 @@ const getNo = () => {
 const getStatus = (status) => {
   return status == 'b1' ? '운영중' : '운영종료'
 }
-console.log(getNo())
 const chageDate = (input) => {
-  console.log(input)
   let date = new Date(input)
-  console.log(date)
   return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 `
 }
 const toUpdate = () => {

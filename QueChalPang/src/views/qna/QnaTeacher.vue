@@ -26,7 +26,6 @@ watch(managerId, (v) => {
 })
 
 const goDetail = (no) => {
-  console.log('클릭된 번호:', no)
   if (no) {
     // 담당자 상세 라우트로 갈 거면 이름 바꿔주면 됨
     router.push({ name: 'qnaTeacherDetail', params: { qnaNo: no } })

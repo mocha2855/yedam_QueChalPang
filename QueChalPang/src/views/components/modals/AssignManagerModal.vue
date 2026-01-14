@@ -9,8 +9,6 @@ import Swal from 'sweetalert2'
 const modal = useModalStore()
 const applicationStore = useApplicationStore()
 
-console.log('[AssignManagerModal] component created')
-
 // modal.open('assignManager', { ... }) 로 넘어온 데이터
 const payload = computed(() => modal.payload || {})
 
@@ -34,7 +32,6 @@ const closeModal = () => {
 // 담당자 목록 불러오기
 const fetchManagers = async () => {
   const dependantNo = payload.value.dependantNo
-  console.log('[AssignManagerModal] dependantNo:', dependantNo)
 
   if (!dependantNo) {
     errorMsg.value = '지원자 번호가 없습니다.'
@@ -48,10 +45,8 @@ const fetchManagers = async () => {
 
   try {
     const url = `/api/dependants/${dependantNo}/managers`
-    console.log('[AssignManagerModal] GET', url)
 
     const res = await axios.get(url)
-    console.log('[AssignManagerModal] response data:', res.data)
 
     if (Array.isArray(res.data)) {
       managerList.value = res.data
@@ -60,8 +55,6 @@ const fetchManagers = async () => {
     } else {
       managerList.value = []
     }
-
-    console.log('[AssignManagerModal] managerList:', managerList.value)
   } catch (e) {
     console.error('[AssignManagerModal] fetchManagers error:', e)
     errorMsg.value = '담당자 목록을 불러오는 중 오류가 발생했습니다.'
@@ -119,12 +112,10 @@ const confirmAssign = async () => {
   }
 }
 
-
 // 모달이 열릴 때마다 담당자 목록 새로 로딩
 watch(
   () => modal.visible && modal.type === 'assignManager',
   (isOpen) => {
-    console.log('[AssignManagerModal] watch isOpen:', isOpen)
     if (isOpen) {
       managerId.value = ''
       fetchManagers()

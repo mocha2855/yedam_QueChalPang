@@ -17,7 +17,6 @@ import AssignManagerModal from './AssignManagerModal.vue'
 import QnaAddModal from '@/views/qna/modals/QnaAddModal.vue'
 
 const modal = useModalStore()
-// console.log(modal)
 </script>
 
 <style scoped>
