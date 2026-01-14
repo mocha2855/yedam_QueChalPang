@@ -3,21 +3,14 @@
     <!-- 히어로 섹션 -->
     <div class="hero-section">
       <div class="hero-content">
-        <!-- 상단 영역 - FOR MY FAMILY + 온라인 통합 신청 -->
-        <div class="top-section">
+        <div class="title-section">
           <h1 class="massive-title top-title">FOR MY FAMILY</h1>
-          <div class="image-card-top">
-            <span>쉽고 빠른 온라인 신청</span>
-          </div>
+          <div class="underline underline-dark"></div>
         </div>
 
-        <!-- 하단 영역 - 통합 지원 플랫폼 + FOR OUR LIFE -->
-        <div class="bottom-section">
-          <div class="subtitle-card">
-            <h2>발달장애 지원,<br />이제 온라인으로</h2>
-            <p>등록부터 승인까지<br />한 곳에서 간편하게</p>
-          </div>
+        <div class="title-section">
           <h1 class="massive-title bottom-title">FOR OUR LIFE</h1>
+          <div class="underline underline-light"></div>
         </div>
       </div>
     </div>
@@ -44,12 +37,10 @@
   width: 100%;
   min-height: 100vh;
   background: linear-gradient(to bottom, #f5efe7 0%, #f5efe7 80%, #fcf9f4 80%, #fcf9f4 100%);
-  padding: 80px 40px 50px 40px;
+  padding: 120px 40px 80px 40px;
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
-  overflow: hidden;
-  position: relative;
 }
 
 .hero-content {
@@ -58,77 +49,29 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 50px;
+  gap: 80px;
 }
 
-/* 상단 섹션 */
-.top-section {
+.title-section {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 30px;
-  position: relative;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.top-title {
-  flex: 1;
+/* 밑줄 */
+.underline {
+  height: 3px;
+  width: 100%;
+  max-width: 500px;
 }
 
-.image-card-top {
-  width: 520px;
-  height: 200px;
-  background: white;
-  border-radius: 30px;
-  overflow: hidden;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.underline-dark {
+  background-color: #4a3829;
 }
 
-.image-card-top span {
-  font-size: 26px;
-  color: #4a3829;
-  font-weight: 700;
-}
-
-/* 하단 섹션 */
-.bottom-section {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 30px;
-  position: relative;
-}
-
-.subtitle-card {
-  background: white;
-  border-radius: 30px;
-  padding: 45px 55px;
-  width: 520px;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
-  flex-shrink: 0;
-}
-
-.subtitle-card h2 {
-  font-size: 40px;
-  font-weight: 700;
-  color: #4a3829;
-  margin: 0 0 20px 0;
-  line-height: 1.3;
-}
-
-.subtitle-card p {
-  font-size: 18px;
-  color: #7a6856;
-  line-height: 1.6;
-  margin: 0;
-}
-
-.bottom-title {
-  flex: 1;
-  text-align: right;
+.underline-light {
+  background-color: #c5aa8e;
+  margin-left: auto;
 }
 
 /* 거대한 타이틀 */
@@ -139,15 +82,16 @@
   margin: 0;
   letter-spacing: -5px;
   text-transform: uppercase;
-  white-space: nowrap;
 }
 
 .top-title {
   color: #4a3829;
+  text-align: left;
 }
 
 .bottom-title {
   color: #c5aa8e;
+  text-align: right;
 }
 
 /* 반응형 */
@@ -157,28 +101,18 @@
     letter-spacing: -4px;
   }
 
-  .image-card-top {
-    width: 460px;
-    height: 180px;
+  .hero-content {
+    gap: 70px;
   }
 
-  .subtitle-card {
-    width: 460px;
-    padding: 40px 50px;
-  }
-
-  .subtitle-card h2 {
-    font-size: 36px;
-  }
-
-  .subtitle-card p {
-    font-size: 17px;
+  .underline {
+    max-width: 450px;
   }
 }
 
 @media (max-width: 1024px) {
   .hero-section {
-    padding: 60px 30px 40px 30px;
+    padding: 100px 30px 60px 30px;
   }
 
   .massive-title {
@@ -186,31 +120,18 @@
     letter-spacing: -3px;
   }
 
-  .top-section,
-  .bottom-section {
-    flex-direction: column;
-    align-items: flex-start;
+  .hero-content {
+    gap: 60px;
   }
 
-  .image-card-top {
-    width: 100%;
-    max-width: 600px;
-    height: 160px;
-  }
-
-  .subtitle-card {
-    width: 100%;
-    max-width: 600px;
-  }
-
-  .bottom-title {
-    text-align: left;
+  .underline {
+    max-width: 400px;
   }
 }
 
 @media (max-width: 768px) {
   .hero-section {
-    padding: 40px 20px 30px 20px;
+    padding: 80px 20px 40px 20px;
   }
 
   .massive-title {
@@ -219,50 +140,44 @@
   }
 
   .hero-content {
-    gap: 35px;
+    gap: 50px;
   }
 
-  .subtitle-card {
-    padding: 35px 40px;
+  .top-title,
+  .bottom-title {
+    text-align: left;
   }
 
-  .subtitle-card h2 {
-    font-size: 32px;
+  .title-section {
+    gap: 15px;
   }
 
-  .subtitle-card p {
-    font-size: 16px;
+  .underline {
+    max-width: 300px;
   }
 
-  .image-card-top {
-    height: 140px;
-  }
-
-  .image-card-top span {
-    font-size: 20px;
+  .underline-light {
+    margin-left: 0;
   }
 }
 
 @media (max-width: 480px) {
+  .hero-section {
+    padding: 60px 20px 30px 20px;
+  }
+
   .massive-title {
     font-size: 48px;
     letter-spacing: -1.5px;
   }
 
-  .subtitle-card {
-    padding: 28px 32px;
+  .hero-content {
+    gap: 40px;
   }
 
-  .subtitle-card h2 {
-    font-size: 26px;
-  }
-
-  .subtitle-card p {
-    font-size: 15px;
-  }
-
-  .image-card-top span {
-    font-size: 18px;
+  .underline {
+    max-width: 200px;
+    height: 2px;
   }
 }
 </style>
