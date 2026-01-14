@@ -23,131 +23,255 @@ onMounted(fetchDetail)
 
 <template>
   <div class="qna-detail" v-if="qna">
-    <div>
-      <button class="back-btn btn-warning btn-sm fs-6" @click="$router.back()">← 뒤로가기</button>
-    </div>
-    <!-- <div class="topbar">
-      <RouterLink :to="{ name: 'qnaGuardian' }" class="back-link"> ← 목록으로 돌아가기 </RouterLink>
-    </div> -->
-    <div class="qna-card">
-      <div class="qna-title">
-        {{ qna.qna_title }}
-      </div>
+    <section class="content-wrap">
+      <!-- 상단 헤더 -->
+      <header class="page-header">
+        <button class="btn-back" @click="$router.back()">목록으로</button>
 
-      <div class="qna-meta">
-        작성자 {{ qna.writer_name }} | 담당자 {{ qna.manager_name ?? '담당자 미배정' }} | 작성일
-        {{ String(qna.qna_date).slice(0, 10) }}
-      </div>
-
-      <div class="qna-content">
-        {{ qna.qna_content }}
-      </div>
-
-      <!-- 답변 있을 때 -->
-      <div class="answer" v-if="qna.qanswer_no">
-        <div class="answer-title">답변</div>
-        <div class="answer-meta">
-          답변자 {{ qna.answerer_name }} | 답변일 {{ String(qna.qanswer_date).slice(0, 10) }}
+        <div class="header-right">
+          <span class="status-chip" :class="qna.qanswer_no ? 'done' : 'wait'">
+            {{ qna.qanswer_no ? '답변완료' : '답변대기' }}
+          </span>
         </div>
-        <div class="answer-content">
-          {{ qna.qanswer_content }}
-        </div>
-      </div>
+      </header>
 
-      <!-- 답변 없을 때 -->
-      <div v-else class="no-answer">아직 답변이 등록되지 않았습니다.</div>
-    </div>
+      <!-- 본문 카드 -->
+      <article class="card">
+        <h1 class="title">{{ qna.qna_title }}</h1>
+
+        <div class="meta">
+          <div class="meta-row">
+            <span class="meta-label">작성자</span>
+            <span class="meta-value">{{ qna.writer_name }}</span>
+          </div>
+
+          <div class="meta-row">
+            <span class="meta-label">담당자</span>
+            <span class="meta-value">{{ qna.manager_name ?? '담당자 미배정' }}</span>
+          </div>
+
+          <div class="meta-row">
+            <span class="meta-label">작성일</span>
+            <span class="meta-value">{{ String(qna.qna_date).slice(0, 10) }}</span>
+          </div>
+        </div>
+
+        <div class="content">
+          {{ qna.qna_content }}
+        </div>
+
+        <!-- 답변 -->
+        <section class="answer" v-if="qna.qanswer_no">
+          <div class="answer-head">
+            <h2 class="answer-title">답변</h2>
+            <span class="answer-date">{{ String(qna.qanswer_date).slice(0, 10) }}</span>
+          </div>
+
+          <div class="answer-meta">
+            <span class="meta-label">답변자</span>
+            <span class="meta-value">{{ qna.answerer_name }}</span>
+          </div>
+
+          <div class="answer-content">
+            {{ qna.qanswer_content }}
+          </div>
+        </section>
+
+        <!-- 답변 없음 -->
+        <div v-else class="empty-answer">아직 답변이 등록되지 않았습니다.</div>
+      </article>
+
+      <p class="footnote">
+        * 문의 내용과 답변은 저장되며, 수정/삭제는 운영 정책에 따라 제한될 수 있어요.
+      </p>
+    </section>
   </div>
 </template>
+
 <style scoped>
 .qna-detail {
-  max-width: 900px;
+  padding: 24px 16px;
+}
+
+.content-wrap {
+  max-width: 980px;
   margin: 0 auto;
-  padding: 20px;
+  width: 100%;
 }
 
-/* 전체 카드 */
-.qna-card {
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 6px 0 14px;
+}
+
+.btn-back {
+  border: 1px solid #e5e7eb;
   background: #fff;
-  border: 1px solid #e5e5e5;
-  border-radius: 10px;
-  padding: 20px 22px;
+  color: #111827;
+  padding: 9px 12px;
+  border-radius: 12px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.15s;
 }
 
-/* 제목 */
-.qna-title {
-  font-size: 20px;
-  font-weight: 800;
-  margin-bottom: 12px;
-  color: #222;
+.btn-back:hover {
+  background: #f8fafc;
+  transform: translateY(-1px);
 }
 
-/* 메타 (작성자, 담당자, 날짜) */
-.qna-meta {
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.status-chip.done {
+  background: #0b4bb3;
+  color: #fff;
+}
+
+.status-chip.wait {
+  background: #fff;
+  color: #0b4bb3;
+  border-color: #0b4bb3;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 14px;
+  padding: 22px 22px;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.06);
+}
+
+.title {
+  margin: 0 0 12px;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.4px;
+  color: #111827;
+}
+
+.meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border: 1px solid #eef2f7;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.meta-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.meta-label {
+  font-size: 12px;
+  font-weight: 900;
+  color: #6b7280;
+}
+
+.meta-value {
   font-size: 13px;
-  color: #666;
-  margin-bottom: 18px;
+  font-weight: 800;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* 본문 */
-.qna-content {
+.content {
   font-size: 14px;
-  line-height: 1.7;
-  color: #222;
+  line-height: 1.8;
+  color: #111827;
   white-space: pre-wrap;
-  padding-bottom: 18px;
-  border-bottom: 1px solid #eee;
+  padding: 14px 2px 6px;
+  border-bottom: 1px solid #f1f5f9;
 }
 
-/* 답변 영역 */
 .answer {
-  margin-top: 18px;
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  background: #fbfdff;
+}
+
+.answer-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .answer-title {
-  font-size: 14px;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: -0.2px;
+  color: #111827;
+}
+
+.answer-date {
+  font-size: 12px;
+  color: #6b7280;
   font-weight: 800;
-  color: #222;
-  margin-bottom: 6px;
 }
 
 .answer-meta {
-  font-size: 12px;
-  color: #777;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin-bottom: 10px;
 }
 
 .answer-content {
   font-size: 14px;
-  line-height: 1.7;
-  color: #222;
+  line-height: 1.8;
+  color: #111827;
   white-space: pre-wrap;
 }
 
-/* 답변 없을 때 */
-.no-answer {
-  margin-top: 18px;
+.empty-answer {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px dashed #d1d5db;
+  color: #6b7280;
   font-size: 13px;
-  color: #999;
-  font-style: italic;
+  font-weight: 800;
 }
 
-/* .topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+.footnote {
+  margin: 10px 2px 0;
+  font-size: 12px;
+  color: #6b7280;
 }
 
-.back-link {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #ffa229;
-  text-decoration: none;
-}
+@media (max-width: 768px) {
+  .meta {
+    grid-template-columns: 1fr;
+  }
 
-.back-link:hover {
-  color: #ff863b;
-  text-decoration: underline;
-} */
+  .card {
+    padding: 18px 16px;
+  }
+}
 </style>
