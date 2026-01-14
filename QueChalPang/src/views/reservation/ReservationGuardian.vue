@@ -421,10 +421,6 @@ watch(
                     {{ slot.time }}
                   </button>
                 </div>
-
-                <div class="mt-2 small text-muted">
-                  * 오늘 기준 2주(14일) 이내만 예약 가능합니다.
-                </div>
               </div>
             </div>
           </div>

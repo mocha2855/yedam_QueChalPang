@@ -191,6 +191,7 @@ const addPlanningForm = async () => {
     }
     if (props.firstSave.length > 0) {
       callFirstSave.value = !callFirstSave.value
+      planNum.value = props.realCount
       emit('update:addCount', 1)
       emit('requestAdd')
       return
@@ -267,12 +268,13 @@ const callSaveInfo = () => {
   callFirstSave.value = false
 
   formData.value = props.firstSave[0]
-  planNum.value = props.realCount - 1
+  planNum.value = props.realCount
   writeSave.value = true
 }
 
 const closeCallSaveInfo = () => {
   callFirstSave.value = false
+  planNum.value = props.realCount
   writeSave.value = false
   formData.value = []
   emit('update:addCount', 1)

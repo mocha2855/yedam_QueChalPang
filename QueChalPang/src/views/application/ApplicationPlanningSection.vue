@@ -207,6 +207,8 @@ const onDeleteSave = async () => {
     .delete('/api/delFirstSave/' + route.params.id)
     .then((res) => {
       console.log(res)
+      application.attachmentFiles.value = []
+
       if (application.planningFistSave[0].fileList != undefined) {
         application.planningFistSave.forEach(async (data) => {
           await axios //
@@ -255,6 +257,7 @@ const onSubmitCreate = async (payload) => {
     realCount.value = application.planned + 1
     addCount.value = 0
     application.planningState = 0
+    application.attachmentFiles.value = []
 
     return
   }

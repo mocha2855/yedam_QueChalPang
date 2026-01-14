@@ -29,7 +29,7 @@
               </div>
               <div class="col-2"><label class="col-form-label">작성자</label></div>
               <div class="col-2">
-                <input type="text" :value="writerName" class="form-control" readonly />
+                <input type="text" v-model="plan.writer_name" class="form-control" readonly />
               </div>
             </div>
 
@@ -49,8 +49,8 @@
 
             <div class="row g-3 mb-2 align-items-center">
               <div class="col-2"><label class="col-form-label">첨부파일</label></div>
-              <div v-if="plan[0].fileList && plan[0].fileList.length > 0" class="col-10">
-                <div v-for="file in an.fileList" :key="file.attachment_no" class="mb-1">
+              <div v-if="plan.attachment_no != null" class="col-10">
+                <div v-for="file in plan.fileList" :key="file.attachment_no" class="mb-1">
                   <a
                     href="#"
                     @click.prevent="application.downloadFile(file.attachment_no)"
@@ -110,8 +110,8 @@
 import { computed, ref, watch } from 'vue'
 import ConfirmModal from '../modals/ConfirmModal.vue'
 import RejectConfirmModal from '../modals/RejectConfirmModal.vue'
-import { useApplicationStore } from '@/stores/application'
 //import { useModalStore } from '@/stores/modal'
+import { useApplicationStore } from '@/stores/application'
 const application = useApplicationStore()
 
 //const modal = useModalStore()
@@ -123,8 +123,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['approve', 'reject'])
-
-const writerName = computed(() => '최강희')
 
 const approveOpenSet = ref(new Set())
 const rejectOpenSet = ref(new Set())
@@ -152,7 +150,6 @@ const planGroupIds = computed(() => {
   return props.plans.map((p) => p.attachment_group)
 })
 
-// 2. 그룹 번호 목록이 변할 때만(데이터가 로드됐을 때만) 실행합니다.
 watch(
   planGroupIds,
   async (newIds) => {
@@ -163,5 +160,5 @@ watch(
     }
   },
   { immediate: true },
-) // deep 옵션은 필요 없습니다.
+)
 </script>

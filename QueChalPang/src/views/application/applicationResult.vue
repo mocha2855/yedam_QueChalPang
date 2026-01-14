@@ -147,34 +147,43 @@
                     <label for="attachmentFile" class="col-form-label">첨부파일</label>
                   </div>
                   <div class="col-10">
+                    <div v-if="application.resultfirstSave == ''" class="col-12">
+                      <input type="file" class="form-control" multiple @change="getFile" />
+                    </div>
                     <div
-                      v-if="
+                      v-else-if="
                         application.resultfirstSave.length > 0 &&
-                        application.resultfirstSave[0].fileList &&
-                        application.resultfirstSave[0].fileList.length > 0
+                        application.resultfirstSave[0].attachment_no
                       "
-                      class="mb-2"
+                      class="card card-body p-2"
                     >
-                      <h6>기존 첨부파일:</h6>
                       <div
                         v-for="file in application.resultfirstSave[0].fileList"
                         :key="file.attachment_no"
+                        class="mb-1"
                       >
-                        <a href="#" @click.prevent="downloadFile(file.attachment_no)">
-                          {{ file.attachment_orginal }}
+                        <a
+                          href="#"
+                          @click.prevent="downloadFile(file.attachment_no)"
+                          class="text-decoration-none text-primary fw-bold"
+                        >
+                          💾 {{ file.attachment_orginal }}
                         </a>
+                        <span class="text-muted ms-2" style="font-size: 0.8em">
+                          ({{ (file.attachment_size / 1024).toFixed(1) }} KB)
+                        </span>
                       </div>
                     </div>
                     <input
-                      v-if="!(application.resultfirstSave.length > 0)"
-                      type="file"
+                      v-else-if="
+                        application.resultfirstSave.length > 0 &&
+                        application.resultfirstSave[0].attachment_no == null
+                      "
+                      type="text"
                       class="form-control"
-                      multiple
-                      @change="getFile"
+                      value="첨부파일 없음"
+                      readonly
                     />
-                    <p class="text-muted" style="font-size: 12px">
-                      * 파일을 새로 선택하면 기존 파일에 추가됩니다.
-                    </p>
                   </div>
                 </div>
               </form>
@@ -1470,7 +1479,7 @@ const getFile = (e) => {
 // 다운로드
 const downloadFile = (attachmentNo) => {
   // 백엔드 다운로드 API 주소를 호출하여 브라우저가 다운로드하게 함
-  window.location.href = `http://localhost:3000/api/download/${attachmentNo}`
+  window.location.href = `/api/download/${attachmentNo}`
   // 포트번호(3000)나 도메인은 환경에 맞게 수정하세요.
   // 프록시가 설정되어 있다면 '/api/download/...' 만 써도 됩니다.
 }
