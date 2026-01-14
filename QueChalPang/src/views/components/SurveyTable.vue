@@ -279,29 +279,22 @@ const goToMeetingLog = (applicationNo) => {
   padding: 0 !important;
 }
 
-/* =========================
-   Table Wrapper
-========================= */
 .table-responsive {
   overflow-x: auto;
 }
 
-/* =========================
-   Table: 세로선 포함 "그리드" 형태로 통일
-========================= */
 .table {
   width: 100%;
   min-width: 1100px;
   table-layout: fixed;
 
-  border-collapse: collapse !important; /* 핵심 */
+  border-collapse: collapse !important;
   border-spacing: 0 !important;
 
-  border: 1px solid #e5e7eb; /* 바깥 테두리 */
+  border: 1px solid #e5e7eb;
   background: #fff;
 }
 
-/* 모든 칸: 세로/가로 선 + 중앙정렬 */
 .table thead th,
 .table tbody td {
   border: 1px solid #e5e7eb !important;
@@ -320,7 +313,7 @@ const goToMeetingLog = (applicationNo) => {
   top: 0;
   z-index: 1;
 
-  background: #f7fbff; /* 검색 카드와 톤 맞춘 연한 하늘 */
+  background: #f7fbff;
   font-size: 0.85rem !important;
   font-weight: 800 !important;
   color: #0f172a !important;
@@ -340,7 +333,6 @@ const goToMeetingLog = (applicationNo) => {
   background: #f9fafb;
 }
 
-/* Argon의 p/span 기본 스타일 때문에 위로 뜨는 느낌 방지 */
 .table tbody p,
 .table tbody span {
   margin: 0 !important;
@@ -371,7 +363,6 @@ const goToMeetingLog = (applicationNo) => {
   transform: none !important;
 }
 
-/* 기존 btn-success를 메인 컬러 버튼으로 덮어쓰기 */
 .table .btn.btn-success.btn-sm {
   background: #4e93cb !important;
   border: 1px solid #4e93cb !important;
@@ -382,7 +373,6 @@ const goToMeetingLog = (applicationNo) => {
   filter: brightness(0.95);
 }
 
-/* 상단 등록 버튼: 120% 크게 + 동일 컬러로 통일 */
 .btn.btn-primary.btn-lg {
   background: #4e93cb !important;
   border: 1px solid #4e93cb !important;
@@ -391,7 +381,7 @@ const goToMeetingLog = (applicationNo) => {
   font-size: 1.02rem !important; /* 약 120% */
   font-weight: 900 !important;
   padding: 10px 18px !important;
-  border-radius: 12px !important;
+  border-radius: 4px !important;
 
   display: inline-flex;
   align-items: center;
