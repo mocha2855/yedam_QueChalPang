@@ -47,7 +47,7 @@
               href="javascript:void(0)"
               role="tab"
             >
-              세부항목 {{ sIndex + 1 }}
+              {{ subtitle.survey_subtitle }}
             </a>
           </li>
         </ul>
@@ -178,102 +178,170 @@ const goTosurveyUpdate = () => {
 </script>
 
 <style scoped>
-/* 컨테이너 상단 여백 - margin-top 제거 */
+/* 라운드 제거 - 모든 요소 각지게 */
+* {
+  border-radius: 0 !important;
+}
+
+/* 컨테이너 상단 여백 */
 .container {
-  padding-top: 0.5rem;
+  padding: 0.3rem 1rem !important;
 }
 
 /* 네비와 헤더 간격 축소 */
 .d-flex.justify-content-between.align-items-center {
-  margin-bottom: 0.75rem !important;
+  margin-bottom: 0.5rem !important;
 }
 
 /* 헤더 크기 */
 h4 {
-  font-size: 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
   margin-bottom: 0 !important;
 }
 
 h6 {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #333;
   margin-bottom: 0 !important;
 }
 
 /* 카드 여백 축소 */
 .card {
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-  margin-bottom: 0.75rem !important;
+  border: 1px solid #dee2e6;
+  margin-bottom: 0.5rem !important;
 }
 
 .card-header {
-  padding: 0.5rem 0.75rem !important;
+  padding: 0.4rem 0.6rem !important;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
 }
 
 .card-body {
-  padding: 0.75rem !important;
+  padding: 0.5rem !important;
 }
 
 /* 탭 스타일 */
 .nav-tabs {
   margin-bottom: 0 !important;
+  border-bottom: 1px solid #dee2e6;
 }
 
 .nav-tabs .nav-link {
   cursor: pointer;
-  padding: 0.4rem 0.8rem;
-  font-size: 0.85rem;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  border: 1px solid transparent;
+  color: #555;
 }
 
 .nav-tabs .nav-link.active {
   font-weight: 600;
+  background-color: white;
+  border-color: #dee2e6 #dee2e6 white;
+  color: #333;
+}
+
+.nav-tabs .nav-link:hover {
+  border-color: transparent !important;
+  background-color: transparent !important;
 }
 
 /* 폼 레이블 */
 .form-label {
-  margin-bottom: 0.25rem !important;
-  font-size: 0.85rem;
+  margin-bottom: 0.2rem !important;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #555;
 }
 
 /* 폼 컨트롤 */
 .form-control {
-  padding: 0.4rem 0.6rem !important;
-  font-size: 0.85rem !important;
-  height: calc(1.5em + 0.8rem + 2px) !important;
+  padding: 0.3rem 0.5rem !important;
+  font-size: 0.75rem !important;
+  height: calc(1.5em + 0.6rem + 2px) !important;
+  border: 1px solid #dee2e6;
 }
 
 .form-control:read-only {
   background-color: #f8f9fa;
 }
 
+.form-control:focus {
+  box-shadow: none !important;
+  border-color: #dee2e6 !important;
+}
+
 /* textarea */
 textarea.form-control {
   height: auto !important;
-  min-height: 60px !important;
+  min-height: 50px !important;
 }
 
-/* 버튼 크기 */
+/* 버튼 크기 및 색상 */
 .btn-sm {
-  padding: 0.35rem 0.65rem;
-  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background-color: #5b9bd5 !important;
+  border-color: #5b9bd5 !important;
+  color: white !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+  background-color: #5b9bd5 !important;
+  border-color: #5b9bd5 !important;
+  color: white !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.btn-secondary {
+  background-color: #e0e0e0 !important;
+  border-color: #d0d0d0 !important;
+  color: #333 !important;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus,
+.btn-secondary:active {
+  background-color: #e0e0e0 !important;
+  border-color: #d0d0d0 !important;
+  color: #333 !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 
 /* 배지 */
 .badge {
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.4rem;
+}
+
+.bg-primary {
+  background-color: #5b9bd5 !important;
 }
 
 /* 마진 축소 */
 .mb-4 {
-  margin-bottom: 0.75rem !important;
-}
-
-.mb-3 {
   margin-bottom: 0.5rem !important;
 }
 
+.mb-3 {
+  margin-bottom: 0.4rem !important;
+}
+
 .mb-2 {
-  margin-bottom: 0.35rem !important;
+  margin-bottom: 0.3rem !important;
 }
 
 .mb-1 {
@@ -282,49 +350,70 @@ textarea.form-control {
 
 /* 패딩 축소 */
 .py-4 {
-  padding-top: 0.75rem !important;
-  padding-bottom: 0.75rem !important;
-}
-
-.py-3 {
   padding-top: 0.5rem !important;
   padding-bottom: 0.5rem !important;
 }
 
+.py-3 {
+  padding-top: 0.4rem !important;
+  padding-bottom: 0.4rem !important;
+}
+
 .py-2 {
-  padding-top: 0.35rem !important;
-  padding-bottom: 0.35rem !important;
+  padding-top: 0.3rem !important;
+  padding-bottom: 0.3rem !important;
 }
 
 /* hr 여백 축소 */
 hr {
-  margin: 0.75rem 0 !important;
+  margin: 0.5rem 0 !important;
+  border-color: #dee2e6;
 }
 
 /* alert 크기 */
 .alert {
-  padding: 0.5rem 0.75rem !important;
-  font-size: 0.8rem !important;
+  padding: 0.4rem 0.6rem !important;
+  font-size: 0.75rem !important;
+  border: 1px solid #bee5eb;
+}
+
+.alert-info {
+  background-color: #d1ecf1;
+  color: #0c5460;
 }
 
 .alert small {
-  font-size: 0.75rem !important;
+  font-size: 0.7rem !important;
 }
 
 /* row 간격 */
 .row {
-  margin-left: -0.5rem !important;
-  margin-right: -0.5rem !important;
+  margin-left: -0.4rem !important;
+  margin-right: -0.4rem !important;
 }
 
 .row > * {
-  padding-left: 0.5rem !important;
-  padding-right: 0.5rem !important;
+  padding-left: 0.4rem !important;
+  padding-right: 0.4rem !important;
 }
 
 /* 빈 상태 메시지 */
 .text-center.text-muted {
-  font-size: 0.85rem;
-  padding: 0.75rem 0 !important;
+  font-size: 0.75rem;
+  padding: 0.5rem 0 !important;
+  color: #999;
+}
+
+/* 탭 콘텐츠 */
+.tab-content {
+  padding-top: 0.5rem;
+}
+
+.tab-pane {
+  display: none;
+}
+
+.tab-pane.active.show {
+  display: block;
 }
 </style>

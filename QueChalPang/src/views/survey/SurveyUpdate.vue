@@ -47,7 +47,7 @@
               href="javascript:void(0)"
               role="tab"
             >
-              세부항목 {{ sIndex + 1 }}
+              {{ subtitle.survey_subtitle || `세부항목 ${sIndex + 1}` }}
             </a>
           </li>
         </ul>
@@ -66,7 +66,7 @@
             <div class="text-end mb-4">
               <button
                 @click="deleteSubtitle(subtitle.survey_subtitle_no)"
-                class="btn btn-sm btn-outline-danger"
+                class="btn btn-sm btn-danger"
                 type="button"
               >
                 <i class="fas fa-trash"></i> 세부항목 삭제
@@ -92,7 +92,7 @@
               <h6 class="mb-0">질문 목록</h6>
               <button
                 @click="addQuestion(subtitle.survey_subtitle_no)"
-                class="btn btn-sm btn-outline-primary"
+                class="btn btn-sm btn-info"
                 type="button"
               >
                 <i class="fas fa-plus"></i> 질문 추가
@@ -109,7 +109,7 @@
                 <span class="badge bg-primary">질문 {{ qIndex + 1 }}</span>
                 <button
                   @click="deleteQuestion(subtitle.survey_subtitle_no, question.survey_qitem_no)"
-                  class="btn btn-sm btn-outline-danger"
+                  class="btn btn-sm btn-danger"
                   type="button"
                 >
                   <i class="fas fa-trash"></i>
@@ -128,8 +128,6 @@
                   <label class="form-label">질문 타입</label>
                   <select class="form-control" v-model="question.survey_qitem_type">
                     <option>예/아니요</option>
-                    <option>객관식</option>
-                    <option>주관식</option>
                   </select>
                 </div>
 
@@ -143,7 +141,7 @@
                       :id="'detail-' + question.survey_qitem_no"
                     />
                     <label class="form-check-label" :for="'detail-' + question.survey_qitem_no">
-                      "예" 선택 시 추가 입력 받기
+                      체크박스 선택 시 구체적 사유와 날짜 입력 받기
                     </label>
                   </div>
                   <!-- 체크박스 선택하면 안내 메시지 -->
@@ -316,9 +314,9 @@ const openModifyModal = async () => {
   })
 
   if (reason) {
-    // 세부항목 개수 비교
-    if (surveyInfo.subtitles.length > originalSubtitleCount.value) {
-      // 세부항목이 추가됨 → 새 버전 생성
+    // 세부항목 개수 변경 확인 (추가 또는 삭제)
+    if (surveyInfo.subtitles.length !== originalSubtitleCount.value) {
+      // 세부항목이 추가되거나 삭제됨 → 새 버전 생성
       await createNewVersion(reason)
     } else {
       // 글자만 수정됨 → 기존 버전 업데이트
@@ -397,132 +395,228 @@ const goBack = () => {
 }
 </script>
 <style scoped>
-/* 컨테이너 상단 여백 축소 */
+/* 라운드 제거 - 모든 요소 각지게 */
+* {
+  border-radius: 0 !important;
+}
+
+/* 컨테이너 상단 여백 */
 .container {
-  padding-top: 8px;
+  padding: 0.3rem 1rem !important;
 }
 
 /* 네비와 헤더 간격 축소 */
 .d-flex.justify-content-between.align-items-center {
-  margin-bottom: 12px !important;
+  margin-bottom: 0.5rem !important;
 }
 
 /* 헤더 크기 */
 h4 {
-  font-size: 18px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
   margin-bottom: 0 !important;
 }
 
 h6 {
-  font-size: 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #333;
   margin-bottom: 0 !important;
 }
 
 /* 카드 여백 축소 */
 .card {
-  box-shadow: none;
-  border: 1px solid #e9ecef;
-  margin-bottom: 12px !important;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border: 1px solid #dee2e6;
+  margin-bottom: 0.5rem !important;
 }
 
 .card-header {
-  padding: 8px 12px !important;
+  padding: 0.4rem 0.6rem !important;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
 }
 
 .card-body {
-  padding: 12px !important;
+  padding: 0.5rem !important;
 }
 
 /* 탭 스타일 */
 .nav-tabs {
   margin-bottom: 0 !important;
+  border-bottom: 1px solid #dee2e6;
 }
 
 .nav-tabs .nav-link {
   cursor: pointer;
-  padding: 6px 13px;
-  font-size: 14px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.75rem;
+  border: 1px solid transparent;
+  color: #555;
 }
 
 .nav-tabs .nav-link.active {
   font-weight: 600;
+  background-color: white;
+  border-color: #dee2e6 #dee2e6 white;
+  color: #333;
+}
+
+.nav-tabs .nav-link:hover {
+  border-color: transparent !important;
+  background-color: transparent !important;
 }
 
 /* 폼 레이블 */
 .form-label {
-  margin-bottom: 4px !important;
-  font-size: 14px;
+  margin-bottom: 0.2rem !important;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #555;
 }
 
 /* 폼 컨트롤 */
 .form-control {
-  padding: 6px 10px !important;
-  font-size: 14px !important;
-  height: calc(1.5em + 12px + 2px) !important;
+  padding: 0.3rem 0.5rem !important;
+  font-size: 0.75rem !important;
+  height: calc(1.5em + 0.6rem + 2px) !important;
+  border: 1px solid #dee2e6;
+}
+
+.form-control:read-only {
+  background-color: #f8f9fa;
+}
+
+.form-control:focus {
+  box-shadow: none !important;
+  border-color: #dee2e6 !important;
 }
 
 /* textarea */
 textarea.form-control {
   height: auto !important;
-  min-height: 60px !important;
+  min-height: 50px !important;
 }
 
 /* select */
 select.form-control {
-  height: calc(1.5em + 12px + 2px) !important;
+  height: calc(1.5em + 0.6rem + 2px) !important;
 }
 
-/* 버튼 크기 */
+/* 버튼 크기 및 색상 */
 .btn-sm {
-  padding: 6px 10px;
-  font-size: 13px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 500;
 }
 
-.btn-outline-danger,
-.btn-outline-primary {
-  border-width: 1px;
-  padding: 5px 10px;
-  font-size: 12px;
+.btn-primary {
+  background-color: #5b9bd5 !important;
+  border-color: #5b9bd5 !important;
+  color: white !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+  background-color: #5b9bd5 !important;
+  border-color: #5b9bd5 !important;
+  color: white !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.btn-secondary {
+  background-color: #e0e0e0 !important;
+  border-color: #d0d0d0 !important;
+  color: #333 !important;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus,
+.btn-secondary:active {
+  background-color: #e0e0e0 !important;
+  border-color: #d0d0d0 !important;
+  color: #333 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.btn-info {
+  background-color: #5b9bd5 !important;
+  border-color: #5b9bd5 !important;
+  color: white !important;
+}
+
+.btn-info:hover,
+.btn-info:focus,
+.btn-info:active {
+  background-color: #5b9bd5 !important;
+  border-color: #5b9bd5 !important;
+  color: white !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.btn-danger {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: white !important;
+}
+
+.btn-danger:hover,
+.btn-danger:focus,
+.btn-danger:active {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: white !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 
 /* 배지 */
 .badge {
-  font-size: 12px;
-  padding: 4px 8px;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.4rem;
+}
+
+.bg-primary {
+  background-color: #5b9bd5 !important;
 }
 
 /* 질문 카드 */
 .question-card {
   border: 1px solid #dee2e6;
-  border-radius: 8px;
   overflow: hidden;
-  margin-bottom: 8px !important;
+  margin-bottom: 0.4rem !important;
 }
 
 .question-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 12px;
+  padding: 0.4rem 0.5rem;
   background-color: #f8f9fa;
   border-bottom: 1px solid #dee2e6;
 }
 
 .question-body {
-  padding: 12px;
+  padding: 0.6rem;
+  overflow: visible;
 }
 
 /* 마진 축소 */
 .mb-4 {
-  margin-bottom: 12px !important;
+  margin-bottom: 0.5rem !important;
 }
 
 .mb-3 {
-  margin-bottom: 8px !important;
+  margin-bottom: 0.4rem !important;
 }
 
 .mb-2 {
-  margin-bottom: 6px !important;
+  margin-bottom: 0.3rem !important;
 }
 
 .mb-0 {
@@ -530,82 +624,121 @@ select.form-control {
 }
 
 .mt-2 {
-  margin-top: 6px !important;
+  margin-top: 0.3rem !important;
 }
 
 .mt-4 {
-  margin-top: 12px !important;
+  margin-top: 0.5rem !important;
 }
 
 /* 패딩 축소 */
 .py-4 {
-  padding-top: 12px !important;
-  padding-bottom: 12px !important;
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
 }
 
 .py-5 {
-  padding-top: 16px !important;
-  padding-bottom: 16px !important;
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
 }
 
 /* hr 여백 축소 */
 hr {
-  margin: 12px 0 !important;
+  margin: 0.5rem 0 !important;
+  border-color: #dee2e6;
 }
 
 /* alert 크기 */
 .alert {
-  padding: 8px 12px !important;
-  font-size: 13px !important;
+  padding: 0.4rem 0.6rem !important;
+  font-size: 0.75rem !important;
+  border: 1px solid #bee5eb;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.alert-info {
+  background-color: #d1ecf1;
+  color: #0c5460;
 }
 
 .alert small {
-  font-size: 12px !important;
+  font-size: 0.7rem !important;
+  display: block;
+  word-break: keep-all;
 }
 
 /* form-check */
 .form-check {
-  padding-left: 24px;
-  margin-bottom: 8px;
+  padding-left: 0;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
 }
 
 .form-check-input {
-  margin-top: 4px;
+  margin: 0 !important;
+  cursor: pointer;
+  width: 1rem !important;
+  height: 1rem !important;
+  accent-color: #5b9bd5;
+  flex-shrink: 0;
+  display: inline-block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 .form-check-label {
-  font-size: 14px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  margin-left: 0.4rem;
+  display: inline-block;
 }
 
 /* row 간격 */
 .row {
-  margin-left: -8px !important;
-  margin-right: -8px !important;
+  margin-left: -0.4rem !important;
+  margin-right: -0.4rem !important;
 }
 
 .row > * {
-  padding-left: 8px !important;
-  padding-right: 8px !important;
+  padding-left: 0.4rem !important;
+  padding-right: 0.4rem !important;
 }
 
 /* 빈 상태 메시지 */
 .text-center.text-muted {
-  font-size: 14px;
+  font-size: 0.75rem;
+  padding: 0.5rem 0 !important;
+  color: #999;
 }
 
 /* gap 축소 */
 .gap-2 {
-  gap: 6px !important;
+  gap: 0.3rem !important;
 }
 
 /* 하단 버튼 */
 .btn-primary,
 .btn-secondary {
-  padding: 6px 13px !important;
-  font-size: 14px !important;
+  padding: 0.25rem 0.5rem !important;
+  font-size: 0.75rem !important;
 }
 
 .text-end {
   text-align: right !important;
+}
+
+/* 탭 콘텐츠 */
+.tab-content {
+  padding-top: 0.5rem;
+}
+
+.tab-pane {
+  display: none;
+}
+
+.tab-pane.active.show {
+  display: block;
 }
 </style>
