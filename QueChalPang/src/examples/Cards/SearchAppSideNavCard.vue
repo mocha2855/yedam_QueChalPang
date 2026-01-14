@@ -61,22 +61,27 @@ watch(
     <div class="card-body p-3 search-card__body">
       <div class="badge-grid" @click="checkControll()">
         <span class="chip" :class="{ 'is-active': badges.all }" @click="checkAll()">전체</span>
-        <span class="chip" :class="{ 'is-active': badges.e1 }" @click="badges.e1 = !badges.e1">대기</span>
-        <span class="chip" :class="{ 'is-active': badges.e2 }" @click="badges.e2 = !badges.e2">검토중</span>
-        <span class="chip" :class="{ 'is-active': badges.e3 }" @click="badges.e3 = !badges.e3">계획</span>
-        <span class="chip" :class="{ 'is-active': badges.e4 }" @click="badges.e4 = !badges.e4">중점</span>
-        <span class="chip" :class="{ 'is-active': badges.e5 }" @click="badges.e5 = !badges.e5">긴급</span>
+        <span class="chip" :class="{ 'is-active': badges.e1 }" @click="badges.e1 = !badges.e1"
+          >대기</span
+        >
+        <span class="chip" :class="{ 'is-active': badges.e2 }" @click="badges.e2 = !badges.e2"
+          >검토중</span
+        >
+        <span class="chip" :class="{ 'is-active': badges.e3 }" @click="badges.e3 = !badges.e3"
+          >계획</span
+        >
+        <span class="chip" :class="{ 'is-active': badges.e4 }" @click="badges.e4 = !badges.e4"
+          >중점</span
+        >
+        <span class="chip" :class="{ 'is-active': badges.e5 }" @click="badges.e5 = !badges.e5"
+          >긴급</span
+        >
       </div>
 
       <div class="field">
         <label class="field__label" for="option">검색조건</label>
         <div class="select-wrap">
-          <select
-            class="select"
-            name="option"
-            id="option"
-            v-model="selectedOption"
-          >
+          <select class="select" name="option" id="option" v-model="selectedOption">
             <option value="dependant_name">지원자명</option>
             <option value="a.application_no">신청서 번호</option>
             <option value="t.member_name">담당자</option>
@@ -92,17 +97,13 @@ watch(
           name="value"
           id="value"
           maxlength="30"
-          placeholder="예) 홍길동"
+          placeholder="검색"
           v-model="searchText"
           @keypress.enter="store.getApplicationList(store.member)"
         />
       </div>
 
-      <button
-        type="button"
-        class="btn-search"
-        @click="store.getApplicationList(store.member)"
-      >
+      <button type="button" class="btn-search" @click="store.getApplicationList(store.member)">
         검색
       </button>
     </div>
@@ -110,7 +111,7 @@ watch(
 </template>
 
 <style scoped>
-  /* ====== 전체 톤 ====== */
+/* ====== 전체 톤 ====== */
 .search-card {
   border: 1px solid #eef2f7;
   border-radius: 16px;
@@ -160,10 +161,14 @@ watch(
   font-weight: 700;
   letter-spacing: -0.1px;
 
-  color: #334155;                 /* slate-700 */
-  background: #f8fafc;            /* slate-50 */
-  border: 1px solid #e5e7eb;      /* gray-200 */
-  transition: transform 0.08s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+  color: #334155; /* slate-700 */
+  background: #f8fafc; /* slate-50 */
+  border: 1px solid #e5e7eb; /* gray-200 */
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .chip:hover {
@@ -178,8 +183,8 @@ watch(
 
 /* ✅ 선택된 상태 (초록 대신 "인디고/블루" 계열) */
 .chip.is-active {
-  color: #1e293b;                 /* slate-800 */
-  border-color: rgba(99, 102, 241, 0.45);  /* indigo-500 */
+  color: #1e293b; /* slate-800 */
+  border-color: rgba(99, 102, 241, 0.45); /* indigo-500 */
   background: rgba(99, 102, 241, 0.12);
   box-shadow: 0 10px 18px rgba(99, 102, 241, 0.12);
 }
@@ -210,7 +215,9 @@ watch(
   color: #0f172a;
 
   outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .input::placeholder {
@@ -242,7 +249,9 @@ watch(
 
   outline: none;
   appearance: none; /* 기본 화살표 제거 */
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .select:focus {
@@ -252,7 +261,7 @@ watch(
 
 /* select 화살표 */
 .select-wrap::after {
-  content: "";
+  content: '';
   position: absolute;
   right: 12px;
   top: 50%;
@@ -279,7 +288,10 @@ watch(
   color: #ffffff;
   background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
   box-shadow: 0 12px 24px rgba(79, 70, 229, 0.22);
-  transition: transform 0.08s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.15s ease,
+    filter 0.15s ease;
 }
 
 .btn-search:hover {
@@ -291,5 +303,4 @@ watch(
   transform: translateY(1px);
   box-shadow: 0 10px 20px rgba(79, 70, 229, 0.18);
 }
-
 </style>

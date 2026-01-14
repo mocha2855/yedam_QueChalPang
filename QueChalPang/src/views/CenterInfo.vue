@@ -93,7 +93,11 @@ const endCenter = () => {
         })
         return
       } else {
-        Swal.fire('센터 운영이 종료되었습니다.', 'success').then(window.location.reload())
+        Swal.fire('센터 운영이 종료되었습니다.').then((result) => {
+          if (result.isConfirmed) {
+            window.location.reload()
+          }
+        })
       }
     }
   })

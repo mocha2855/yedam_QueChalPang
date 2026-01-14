@@ -22,7 +22,8 @@ const isAuthPage = computed(() => {
     route.path.indexOf('application') > 0 ||
     route.path === '/centerPopup' ||
     route.path === '/notConfirmed' ||
-    route.path.indexOf('Id') > 0
+    route.path.indexOf('Id') > 0 ||
+    route.path === '/resetPassword'
   )
 })
 

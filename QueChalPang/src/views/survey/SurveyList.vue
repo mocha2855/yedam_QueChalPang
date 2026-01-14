@@ -41,9 +41,9 @@ const goTosurveyAdd = () => {
           <!-- 헤더 -->
           <div class="card-header d-flex justify-content-between align-items-center pb-2">
             <h6 class="mb-0 compact-title">지원서 목록</h6>
-            <button class="btn btn-primary btn-sm compact-btn" @click="goTosurveyAdd">
+            <!-- <button class="btn btn-primary btn-sm compact-btn" @click="goTosurveyAdd">
               <i class="fas fa-plus"></i> 항목추가
-            </button>
+            </button> -->
           </div>
 
           <!-- 테이블 -->

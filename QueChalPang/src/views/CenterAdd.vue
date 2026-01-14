@@ -72,7 +72,7 @@ const centerInfo = reactive({
 })
 const checked = ref(false)
 const checkCenterName = async () => {
-  let result = await axios.get(`api/center/name/${centerInfo.name}`)
+  let result = await axios.get(`/api/center/name/${centerInfo.name}`)
   if (result.data.count > 0) {
     Toast.fire({
       icon: 'error',
@@ -138,9 +138,10 @@ const emit = defineEmits(['success'])
                         aria-label="Name"
                         v-model="centerInfo.name"
                         :disabled="checked"
+                        class="mb-0"
                       />
-                      <label class="m-0" v-if="checked" for="email"
-                        >이메일 중복확인이 완료되었습니다.</label
+                      <label class="m-0 z-index" v-if="checked" for="email"
+                        >센터명 중복확인 완료</label
                       >
                     </div>
                     <div class="col-3">
