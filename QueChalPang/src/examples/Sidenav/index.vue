@@ -5,15 +5,15 @@ import { useStore } from 'vuex'
 import SidenavList from './SidenavList.vue'
 import ApprovalSidenavList from './AprrovalSidenav' //승인관리 사이드바 추가
 import MypageSidenav from './MypageSidenav.vue' //마이페이지 사이드바관리
-import logo from '@/assets/img/logo-ct-dark.png'
-import logoWhite from '@/assets/img/logo-ct.png'
+//import logo from '@/assets/img/logo-ct-dark.png'
+//import logoWhite from '@/assets/img/logo-ct.png'
 
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const store = useStore()
 const layout = computed(() => store.state.layout)
-const sidebarType = computed(() => store.state.sidebarType)
+//const sidebarType = computed(() => store.state.sidebarType)
 const darkMode = computed(() => store.state.darkMode)
 
 // 이 부분 추가
@@ -71,7 +71,7 @@ const isMyPage = computed(() => {
     class="sidenav navbar navbar-vertical navbar-expand-xs border-radius-xl"
     id="sidenav-main"
   >
-    <div class="sidenav-header">
+    <!-- <div class="sidenav-header">
       <i
         class="top-0 p-3 cursor-pointer fas fa-times text-secondary opacity-5 position-absolute end-0 d-none d-xl-none"
         aria-hidden="true"
@@ -87,9 +87,9 @@ const isMyPage = computed(() => {
 
         <span class="ms-2 font-weight-bold me-2">발달장애인 프로그램</span>
       </router-link>
-    </div>
+    </div> -->
 
-    <hr class="mt-0 horizontal dark" />
+    <!-- <hr class="mt-0 horizontal dark" /> -->
 
     <!-- 승인 관리면 ApprovalSidenavList -->
     <ApprovalSidenavList v-if="isApprovalPage" />
@@ -110,5 +110,6 @@ const isMyPage = computed(() => {
   height: calc(100vh - 56px) !important;
   overflow-y: auto;
   z-index: 900;
+   padding-top: 60px;
 }
 </style>

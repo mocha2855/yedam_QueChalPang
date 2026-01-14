@@ -34,13 +34,6 @@ const timeText = (start_at) => {
   })
 }
 
-//예약상태 변환하고 클래스주기
-// const statusMap = {
-//   f1: { label: '확인중', class: 'status-wait' },
-//   f2: { label: '예약확정', class: 'status-confirm' },
-//   f3: { label: '상담완료', class: 'status-done' },
-//   f4: { label: '상담취소', class: 'status-cancel' },
-// }
 const statusMap = {
   f1: { label: '확인중', btnClass: 'status-wait' },
   f2: { label: '예약확정', btnClass: 'status-confirm' },
