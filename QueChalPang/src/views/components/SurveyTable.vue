@@ -254,123 +254,181 @@ const goToMeetingLog = (applicationNo) => {
 
 <style scoped>
 .card {
-  border: 1px solid #eef1f5;
-  border-radius: 14px;
-  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.06);
-  overflow: hidden;
-  background: #fff;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
 }
 
-/* ===== Header ===== */
+/* Header */
 .card-header {
-  padding: 14px 18px;
-  border-bottom: 1px solid #eef1f5;
-  background: #fff;
+  background: transparent !important;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 14px 0 !important;
 }
 
 .card-header h6 {
   font-size: 1.05rem;
-  font-weight: 600; /* 과한 bold 제거 */
-  color: #111827;
+  font-weight: 800;
+  color: #0f172a;
   letter-spacing: -0.2px;
 }
 
-/* ===== Table Layout ===== */
+.card-body {
+  padding: 0 !important;
+}
+
 .table-responsive {
   overflow-x: auto;
 }
 
 .table {
-  border-collapse: separate;
-  border-spacing: 0;
+  width: 100%;
   min-width: 1100px;
+  table-layout: fixed;
+
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+
+  border: 1px solid #e5e7eb;
+  background: #fff;
 }
 
+.table thead th,
+.table tbody td {
+  border: 1px solid #e5e7eb !important;
+  text-align: center !important;
+  vertical-align: middle !important;
+
+  padding: 12px 10px !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 헤더 */
 .table thead th {
   position: sticky;
   top: 0;
   z-index: 1;
-  background: #fff;
-  border-bottom: 1px solid #e5e7eb;
 
-  padding: 13px 14px;
+  background: #f7fbff;
   font-size: 0.85rem !important;
-  font-weight: 600;
-  color: #000000 !important;
+  font-weight: 800 !important;
+  color: #0f172a !important;
+
   text-transform: none !important;
   letter-spacing: -0.15px;
-  white-space: nowrap;
 }
 
+/* 바디 */
 .table tbody td {
-  padding: 13px 14px;
-  border-bottom: 1px solid #f3f4f6;
-  vertical-align: middle;
-  font-size: 0.95rem;
-  font-weight: 400;
+  font-size: 0.92rem;
   color: #111827;
-}
-
-.table tbody tr {
   background: #fff;
-  transition: background 0.12s ease;
 }
 
 .table tbody tr:hover {
   background: #f9fafb;
 }
 
-.table tbody p {
-  margin: 0;
-  font-size: 0.95rem !important;
-  font-weight: 400 !important;
-  color: #111827;
-  line-height: 1.4;
+.table tbody p,
+.table tbody span {
+  margin: 0 !important;
+  line-height: 1.2 !important;
+  display: inline-block;
 }
 
-.table tbody .text-secondary {
-  font-size: 0.93rem !important;
-  font-weight: 400 !important;
-  color: #6b7280 !important;
-}
-
-.table tbody td:nth-child(9) p {
-  font-size: 0.9rem !important;
-  color: #4b5563 !important;
+.table thead th:nth-child(1),
+.table tbody td:nth-child(1) {
+  width: 55px;
+  min-width: 55px;
+  font-weight: 900;
+  background: #f7fbff;
 }
 
 .table .btn.btn-sm {
-  font-size: 0.88rem;
-  font-weight: 500;
-  padding: 7px 13px;
-  border-radius: 10px;
-  box-shadow: none;
-  border: 1px solid rgba(17, 24, 39, 0.08);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+
+  font-size: 0.85rem;
+  font-weight: 900;
+  padding: 7px 14px;
+  border-radius: 4px;
+
+  box-shadow: none !important;
+  transform: none !important;
 }
 
 .table .btn.btn-success.btn-sm {
-  background: #16a34a;
-  border-color: rgba(22, 163, 74, 0.25);
+  background: #4e93cb !important;
+  border: 1px solid #4e93cb !important;
+  color: #ffffff !important;
 }
 
-.table .btn.btn-primary.btn-sm {
-  background: #2563eb;
-  border-color: rgba(37, 99, 235, 0.25);
+.table .btn.btn-success.btn-sm:hover {
+  filter: brightness(0.95);
 }
 
+.btn.btn-primary.btn-lg {
+  background: #4e93cb !important;
+  border: 1px solid #4e93cb !important;
+  color: #ffffff !important;
+
+  font-size: 1.02rem !important; /* 약 120% */
+  font-weight: 900 !important;
+  padding: 10px 18px !important;
+  border-radius: 4px !important;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+
+  box-shadow: 0 12px 24px rgba(78, 147, 203, 0.22) !important;
+}
+
+.btn.btn-primary.btn-lg:hover {
+  filter: brightness(0.95);
+}
+
+/* hover lift(촌스러운 튀는 모션 제거) */
 .table .btn:hover {
-  filter: brightness(0.97);
-  transform: translateY(-1px);
-  transition: transform 0.12s ease;
+  transform: none !important;
 }
 
-.empty-text {
-  color: #9ca3af;
-  font-size: 0.92rem;
-  font-weight: 400;
+/* =========================
+   '없음' 배지: 통일 톤
+========================= */
+.badge.bg-secondary,
+.badge.badge-sm.bg-secondary {
+  background: #f3f4f6 !important;
+  color: #6b7280 !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 999px;
+  padding: 6px 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
+/* 텍스트 유틸 */
 .text-center {
   white-space: nowrap;
+}
+
+/* 9번째 컬럼(계획/결과 진행 상황)만 줄바꿈 허용 */
+.table thead th:nth-child(9),
+.table tbody td:nth-child(9) {
+  white-space: normal !important;
+}
+
+/* 내부 p는 블록으로 유지해서 줄바꿈 확실히 */
+.table tbody td:nth-child(9) p {
+  display: block !important;
+  margin: 4px 0 !important;
 }
 </style>
