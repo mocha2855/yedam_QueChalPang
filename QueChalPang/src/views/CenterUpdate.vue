@@ -6,10 +6,19 @@ import ArgonButton from '@/components/ArgonButton.vue'
 import ArgonInput from '@/components/ArgonInput.vue'
 import { onBeforeMount, reactive } from 'vue'
 import axios from 'axios'
-import ArgonAlert from '@/components/ArgonAlert.vue'
-
 const router = useRouter()
-
+import Swal from 'sweetalert2'
+const Toast = Swal.mixin({
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  didOpen: (toast) => {
+    toast.addEventListener('mouseenter', Swal.stopTimer)
+    toast.addEventListener('mouseleave', Swal.resumeTimer)
+  },
+})
 //주소api에서 쓰는 ref
 const address = ref('')
 const detailAddress = ref('')
@@ -84,25 +93,21 @@ const getNo = () => {
 }
 console.log(getNo())
 // 알림전용변수
-const msg = ref('')
 const checked = ref(false)
-const argonAlert = ref(false)
 // 알림작동 시키는 함수
-const showAlert = (message) => {
-  msg.value = message
-  argonAlert.value = true
-  setTimeout(() => {
-    argonAlert.value = false
-  }, 1500)
-}
 const checkCenterName = async () => {
+  console.log(detailAddress.value)
   if (centerInfo.name == store.centerInfo.center_name) {
     checked.value = true
     return
   }
-  let result = await axios.get(`api/center/name/${centerInfo.name}`)
+  let result = await axios.get(`/api/center/name/${centerInfo.name}`)
+
   if (result.data.count > 0) {
-    showAlert('이미 존재하는 센터명입니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '이미 존재하는 센터명입니다.',
+    })
   } else {
     checked.value = true
   }
@@ -121,18 +126,33 @@ const updateCenterInfo = async () => {
     centerInfo.address == store.centerInfo.center_address &&
     `${centerInfo.lunch}:00` == store.centerInfo.center_lunch
   ) {
-    showAlert('아무것도 변경하지 않으셨습니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '아무것도 변경하지 않으셨습니다.',
+    })
     return
   }
   if (!checked.value) {
-    showAlert('센터명 중복확인을 하지 않으셨습니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '센터명 중복확인을 하지 않으셨습니다.',
+    })
     return
   } else if (centerInfo.email == '') {
-    showAlert('이메일이 입력되지 않았습니다.')
+    Toast.fire({
+      icon: 'error',
+      title: '이메일이 입력되지 않았습니다.',
+    })
     return
-  } else if (address.value == '' || detailAddress.value == '') {
-    showAlert('주소가 입력되지 않았습니다.')
+  } else if (address.value == '') {
+    Toast.fire({
+      icon: 'error',
+      title: '주소가 입력되지 않았습니다.',
+    })
     return
+  }
+  if (detailAddress.value == undefined) {
+    detailAddress.value = ''
   }
 
   let result = await axios.put(`/api/center/${getNo()}`, centerInfo)
@@ -142,24 +162,12 @@ const updateCenterInfo = async () => {
 </script>
 
 <template>
-  <div class="fixed-top d-flex justify-content-end p-3 mt-6">
-    <div class="col-4">
-      <ArgonAlert
-        v-show="argonAlert"
-        color="warning"
-        icon="ni ni-bell-55"
-        dismissible
-        @close="argonAlert = false"
-        >{{ msg }}</ArgonAlert
-      >
-    </div>
-  </div>
   <div class="py-4 container-fluid">
     <div class="row">
       <div class="col-12">
         <div class="card">
           <div class="card-header pb-0">
-            <h6>센터 등록</h6>
+            <h6>센터 수정</h6>
           </div>
           <div class="card-body px-0 pt-0 pb-2">
             <div class="position-relative">
