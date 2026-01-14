@@ -143,12 +143,6 @@ const goTimeBlock = () => {
     name: 'ReservationBlock',
   })
 }
-
-//콘솔확인용_나중에지우기
-console.log('counterStore:', counterStore)
-console.log('isLogIn:', isLogIn)
-console.log('isLogIn.value:', isLogIn.value)
-console.log('login info:', isLogIn.value?.value?.info ?? isLogIn.value?.info)
 </script>
 
 <template>
@@ -187,8 +181,12 @@ console.log('login info:', isLogIn.value?.value?.info ?? isLogIn.value?.info)
   </div>
 </template>
 <style scoped>
-  .resrv-wrapper {
+.resrv-wrapper {
   max-width: 1300px;
   margin: 0 auto;
+}
+
+.btn-primary {
+  border-radius: 3px !important;
 }
 </style>

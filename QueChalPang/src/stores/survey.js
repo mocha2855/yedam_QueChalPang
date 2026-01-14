@@ -27,7 +27,6 @@ export const useSurveyStore = defineStore('surveys', {
         )
         this.err = ''
       } catch (err) {
-        console.log(err)
         this.err = '조사지 목록을 가져오는데 실패 했습니다.'
       }
     },
@@ -41,7 +40,6 @@ export const useSurveyStore = defineStore('surveys', {
         this.surveyDetail = response.data
         this.err = ''
       } catch (err) {
-        console.log(err)
         this.err = '조사지 상세를 가져오는데 실패 했습니다.'
       }
     },

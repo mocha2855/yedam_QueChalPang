@@ -52,7 +52,6 @@ const openPostcode = () => {
 
       address.value = addr // 기본 주소
       centerInfo.address = address.value
-      console.log(centerInfo)
       // 상세주소로 포커스 이동은 ref를 사용하거나 직접 접근
       document.getElementById('detail_input').focus()
     },

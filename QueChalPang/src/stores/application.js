@@ -302,9 +302,7 @@ export const useApplicationStore = defineStore('application', {
       }
     },
     async getFile(e) {
-      console.log(e.target.files)
       this.attachmentFiles.value = Array.from(e.target.files)
-      console.log('선택된 파일들:', this.attachmentFiles.value)
     },
     async downloadFile(attachmentNo) {
       // 백엔드 다운로드 API 주소를 호출하여 브라우저가 다운로드하게 함
@@ -315,7 +313,6 @@ export const useApplicationStore = defineStore('application', {
     async fetchFilesForPlans(plans) {
       // 리스트가 비어있으면 종료
       if (!plans || plans.length === 0) return
-      console.log(plans)
       // 리스트 하나하나(plan)를 꺼내서 확인
       for (const plan of plans) {
         // 1. 그룹 ID가 있는지 확인 (파일이 있는 결과서인지)
@@ -327,9 +324,6 @@ export const useApplicationStore = defineStore('application', {
             // 3. 가져온 파일 목록을 해당 plan 객체 안에 'fileList'라는 이름으로 심어줌
             // 이렇게 해야 템플릿(HTML)에서 v-for="file in plan.fileList"로 보여줄 수 있음
             plan.fileList = res.data
-            console.log('plan: ', this.planningFistSave)
-
-            console.log(`파일 로드 완료 (그룹 ${plan.attachment_no}):`, plan.fileList)
           } catch (err) {
             console.error(`파일 목록 조회 실패 (Group: ${plan.attachment_no})`, err)
           }

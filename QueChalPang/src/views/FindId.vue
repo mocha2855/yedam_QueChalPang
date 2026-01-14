@@ -69,7 +69,6 @@ const matchName = async () => {
     timer.value = 180
     //타이머 작동
     loseTime = setInterval(losingTime, 1000)
-    console.log(res)
   } else {
     msg.value = '입력하신 번호와 성함이 일치하는 계정이 존재하지 않습니다.'
     openModal()
