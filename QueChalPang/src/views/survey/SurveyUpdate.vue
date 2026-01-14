@@ -674,6 +674,7 @@ hr {
   margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
+  line-height: 1;
 }
 
 .form-check-input {
@@ -686,6 +687,7 @@ hr {
   display: inline-block !important;
   opacity: 1 !important;
   visibility: visible !important;
+  vertical-align: baseline;
 }
 
 .form-check-label {
@@ -693,6 +695,7 @@ hr {
   cursor: pointer;
   margin-left: 0.4rem;
   display: inline-block;
+  line-height: 1rem;
 }
 
 /* row 간격 */
