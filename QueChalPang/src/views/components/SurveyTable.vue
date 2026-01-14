@@ -128,6 +128,7 @@ const goToMeetingLog = (applicationNo) => {
               <th
                 v-if="member.member_authority != 'a1'"
                 class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                style="display: none"
               >
                 상담내역
               </th>
@@ -210,7 +211,11 @@ const goToMeetingLog = (applicationNo) => {
                   <span class="badge badge-sm bg-secondary">없음</span>
                 </template>
               </td>
-              <td v-if="member.member_authority != 'a1'" class="align-middle text-center text-sm">
+              <td
+                v-if="member.member_authority != 'a1'"
+                class="align-middle text-center text-sm"
+                style="display: none"
+              >
                 <template v-if="row?.application_no && Number(row.meetingCount ?? 0) > 0">
                   <button
                     class="btn btn-success btn-sm mb-0"
