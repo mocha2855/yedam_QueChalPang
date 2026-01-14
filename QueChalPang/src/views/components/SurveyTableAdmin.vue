@@ -7,14 +7,15 @@ import { useSearchStore } from '@/stores/search'
 import { storeToRefs } from 'pinia'
 import axios from 'axios'
 import router from '@/router'
-import { useModalStore } from '@/stores/modal'
+import Swal from 'sweetalert2'
+import { useApplicationStore } from '@/stores/application'
 
 const search = useSearchStore()
 const member = useCounterStore().isLogIn.info
 search.member = member
 
 const { applicationList } = storeToRefs(search)
-const modal = useModalStore()
+const applicationStore = useApplicationStore()
 
 // 시스템 관리자용
 const centerList = ref([])
@@ -30,14 +31,10 @@ const getAdminCenterList = async () => {
         badge: '',
         _t: Date.now(),
       },
-      headers: {
-        'Cache-Control': 'no-cache',
-      },
+      headers: { 'Cache-Control': 'no-cache' },
     })
-    console.log(result.data)
 
     centerList.value = result.data
-    console.log(centerList.value)
 
     if (centerList.value.length > 0) {
       selectedCenter.value = centerList.value[0].center_no
@@ -47,6 +44,7 @@ const getAdminCenterList = async () => {
     }
   }
 }
+
 // 센터 변경 시
 const onCenterChange = () => {
   const memberData = { ...member, member_id: selectedCenter.value }
@@ -54,82 +52,150 @@ const onCenterChange = () => {
   search.getApplicationList(memberData)
 }
 
+// 상태 텍스트
 const returnStatus = (stat, statStatus) => {
-  if (statStatus !== 'i2') {
-    return '대기'
-  }
-
+  if (statStatus !== 'i2') return '대기'
   if (stat === 'e3') return '계획'
   if (stat === 'e4') return '중점'
   if (stat === 'e5') return '긴급'
-
   if (stat === 'e1') return '대기'
   if (stat === 'e2') return '검토중'
-
   return stat ?? ''
 }
 
 const changeDateFormat = (input) => {
-  let date = new Date(input)
-  let result = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`
-  return result
+  const date = new Date(input)
+  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`
 }
 
-// const addApp = () => {
-//   router.push({ name: 'AddApplication' })
-// }
-
-//해당 지원자의 지원신청서 페이지로 이동
+// 페이지 이동
 const goToApplication = (appNo) => {
   router.push({ name: 'applicationWait', params: { id: appNo } })
 }
-
-//담당자 배정
-const openAssignManagerModal = (row) => {
-  modal.open('assignManager', {
-    applicationNo: row.application_no,
-    dependantNo: row.dependant_no,
-    dependantName: row.dependant_name,
-    guardianName: row.guardian_name,
-    onComplete: () => location.reload(),
-  })
-  console.log('해당데이터값', row)
-}
-
-//지원계획서
 const goToPlanning = (applicationNo) => {
   router.push({ name: 'applicationPlanning', params: { id: applicationNo } })
 }
-
-//지원결과서
 const goToResult = (applicationNo) => {
   router.push({ name: 'applicationResult', params: { id: applicationNo } })
 }
-
-//상담내역
 const goToMeetingLog = (applicationNo) => {
   router.push({ name: 'meetingLog', params: { id: applicationNo } })
 }
+
+
+//SweetAlert 담당자 배정
+const openAssignManagerModal = async (row) => {
+  try {
+    // 1. 담당자 목록 조회
+    const { data } = await axios.get(`/api/dependants/${row.dependant_no}/managers`)
+    const list = Array.isArray(data) ? data : (data.rows ?? [])
+
+    if (!list.length) {
+      await Swal.fire({
+        icon: 'info',
+        title: '배정 가능한 담당자가 없습니다',
+        confirmButtonColor: '#3b82f6',
+      })
+      return
+    }
+
+    // 2. option HTML 생성
+    const optionsHtml = list
+      .map(
+        (m) =>
+          `<option value="${m.member_id}">${m.member_name} (${m.member_id})</option>`
+      )
+      .join('')
+
+    // 3. Swal select 모달
+    const { value: selectedId } = await Swal.fire({
+      title: '담당자 배정',
+
+      width: 650,
+
+      padding: '20px 24px 24px 24px',
+      // buttonsStyling: true, 
+      buttonsStyling: false, 
+      customClass: {
+        popup: 'assign-manager-popup',
+        title: 'assign-manager-title',
+        htmlContainer: 'assign-manager-html',
+        confirmButton: 'btn btn-success px-4 py-2 m-1', 
+        cancelButton: 'btn btn-danger px-4 py-2 m-1' // 오렌지색 계열이 보통 danger나 warning
+      },
+      html: `
+        <div style="text-align:left; font-size:20px; margin-bottom:12px;">
+          <div><b>${row.guardian_name}</b> 보호자의 <b>${row.dependant_name}</b> 지원자</div>
+          <div style="color:#64748b; font-size:20ppx; margin-top:4px;">
+            신청서 번호 : ${row.application_no}
+          </div>
+        </div>
+
+        <select id="swal-manager" class="swal2-select"
+          style="width:80%; padding:10px 12px; border-radius:10px;">
+          <option value="">담당자 선택</option>
+          ${optionsHtml}
+        </select>
+      `,
+  
+      showCancelButton: true,
+  
+      confirmButtonText: '배정하기',
+      cancelButtonText: '취소',
+      focusConfirm: false,
+      preConfirm: () => {
+        const v = document.getElementById('swal-manager').value
+        if (!v) {
+          Swal.showValidationMessage('담당자를 선택해주세요')
+        }
+        return v
+      },
+    })
+
+    if (!selectedId) return
+
+    // 4. 배정 API 호출 (store 그대로 사용)
+    await applicationStore.assignManager(row.application_no, selectedId)
+
+    // 5. 완료 알림
+    await Swal.fire({
+      icon: 'success',
+      title: '담당자 배정 완료',
+      confirmButtonColor: '#3b82f6',
+    })
+
+    // 6. 목록 새로고침
+    search.getApplicationList(search.member)
+
+  } catch (err) {
+    console.error(err)
+    await Swal.fire({
+      icon: 'error',
+      title: '담당자 배정 실패',
+      text: '담당자 배정 중 오류가 발생했습니다.',
+      confirmButtonColor: '#3b82f6',
+    })
+  }
+}
+
+
 onBeforeMount(() => {
   if (member.member_authority === 'a4') {
-    setTimeout(() => {
-      getAdminCenterList() // 시스템 관리자는 센터 목록 먼저
-    }, 10)
+    setTimeout(getAdminCenterList, 10)
   } else {
-    setTimeout(() => {
-      search.getApplicationList(member)
-    }, 10)
-    // 나머지는 바로 조회
+    setTimeout(() => search.getApplicationList(member), 10)
   }
 })
 </script>
+
 
 <template>
   <div class="card">
     <div class="card-header pb-0">
       <div class="d-flex justify-content-between align-items-center">
         <h6 class="mb-0">지원신청 현황</h6>
-        <!--시스템 관리자 센터 선택-->
+
+        <!-- 시스템 관리자 센터 선택 -->
         <div v-if="member.member_authority === 'a4'">
           <select
             v-model="selectedCenter"
@@ -142,199 +208,103 @@ onBeforeMount(() => {
             </option>
           </select>
         </div>
-        <!-- <button
-          v-else
-          class="btn btn-primary btn-lg text-sm p-1 mb-0"          
-          type="button"
-          @click="addApp()"
-        >
-          지원신청서 등록
-        </button> -->
       </div>
     </div>
+
     <div class="card-body px-0 pt-0 pb-2">
       <div class="table-responsive p-0">
         <table class="table align-items-center mb-0">
           <thead>
             <tr>
-              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                번호
-              </th>
-              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                지원자명
-              </th>
-              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
-                보호자명
-              </th>
-              <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                신청서번호
-              </th>
-              <th
-                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-              >
-                지원신청일
-              </th>
-              <th
-                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-              >
-                지원신청서
-              </th>
-              <th
-                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-              >
-                담당자
-              </th>
-              <th
-                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-              >
-                대기단계
-              </th>
-              <th
-                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-              >
-                계획/결과 진행 상황
-              </th>
-              <th
-                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-              >
-                지원계획
-              </th>
-              <th
-                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-              >
-                상담내역
-              </th>
-              <th
-                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
-              >
-                지원결과
-              </th>
+              <th>번호</th>
+              <th>지원자명</th>
+              <th>보호자명</th>
+              <th>신청서번호</th>
+              <th class="text-center">지원신청일</th>
+              <th class="text-center">지원신청서</th>
+              <th class="text-center">담당자</th>
+              <th class="text-center">대기단계</th>
+              <th class="text-center">계획/결과 진행</th>
+              <th class="text-center">지원계획</th>
+              <th class="text-center">상담내역</th>
+              <th class="text-center">지원결과</th>
             </tr>
           </thead>
+
           <tbody>
-            <tr
-              v-for="(row, index) in applicationList"
-              :key="row.application_no ?? `d-${row.dependant_no}`"
-            >
-              <td class="align-middle text-center text-sm">
-                <p class="text-xs font-weight-bold mb-0">{{ index + 1 }}</p>
+            <tr v-for="(row, index) in applicationList" :key="row.application_no">
+              <td class="text-center">{{ index + 1 }}</td>
+              <td>{{ row.dependant_name }}</td>
+              <td>{{ row.guardian_name }}</td>
+              <td class="text-center">{{ row.application_no }}</td>
+              <td class="text-center">{{ changeDateFormat(row.application_date) }}</td>
+
+              <td class="text-center">
+                <button class="btn btn-success btn-sm"
+                  @click="goToApplication(row.application_no)">
+                  보기
+                </button>
               </td>
-              <td>
-                <p class="text-xs font-weight-bold mb-0">{{ row.dependant_name }}</p>
-              </td>
-              <td>
-                <p class="text-xs font-weight-bold mb-0">{{ row.guardian_name }}</p>
-              </td>
-              <td class="align-middle text-center text-sm">
-                <p class="text-xs font-weight-bold mb-0">
-                  {{ row.application_no }}
-                </p>
-              </td>
-              <!-- 지원신청서 제출날짜 -->
-              <td class="align-middle text-center text-sm">
-                <span class="text-secondary text-xs font-weight-bold">
-                  {{ changeDateFormat(row.application_date) }}
-                </span>
-              </td>
-              <!-- 지원신청서 번호 -->
-              <td class="align-middle text-center">
-                <template v-if="row.application_no">
-                  <button
-                    class="btn btn-success btn-sm mb-0"
-                    type="button"
-                    @click="goToApplication(row.application_no)"
-                  >
-                    보기
-                  </button>
-                </template>
-                <template v-else>
-                  <span class="badge badge-sm bg-secondary">없음</span>
-                </template>
-              </td>
-              <!-- 담당자이름 -->
-              <td class="align-middle text-center text-sm">
+
+              <!-- 담당자 -->
+              <td class="text-center">
                 <template v-if="row.manager_name">
-                  <span class="text-secondary text-xs font-weight-bold">{{
-                    row.manager_name
-                  }}</span>
+                  {{ row.manager_name }}
                 </template>
                 <template v-else>
-                  <button
-                    class="btn btn-success btn-sm mb-0"
-                    type="button"
-                    @click="openAssignManagerModal(row)"
-                  >
-                    담당자배정
+                  <button class="btn btn-success btn-sm"
+                    @click="openAssignManagerModal(row)">
+                    담당자 배정
                   </button>
-                </template>
-              </td>
-              <!-- 대기단계 -->
-              <td class="align-middle text-center text-sm">
-                <span class="text-secondary text-xs font-weight-bold">
-                  {{ returnStatus(row.status, row.status_status) }}
-                </span>
-              </td>
-              <td class="align-middle text-center text-sm pt-1 pb-1">
-                <p class="text-secondary text-xs mt-1 mb-1 font-weight-bold">
-                  검토 : {{ row.counts.i1 }}
-                </p>
-                <p class="text-secondary text-xs mt-1 mb-1 font-weight-bold">
-                  승인 : {{ row.counts.i2 }}
-                </p>
-                <p class="text-secondary text-xs mt-1 mb-1 font-weight-bold">
-                  반려 : {{ row.counts.i3 }}
-                </p>
-              </td>
-              <td class="align-middle text-center text-sm">
-                <template v-if="row?.application_no && row.planningCount > 0">
-                  <button
-                    class="btn btn-success btn-sm mb-0"
-                    type="button"
-                    @click="goToPlanning(row.application_no)"
-                  >
-                    보기
-                  </button>
-                </template>
-                <template v-else>
-                  <span class="badge badge-sm bg-secondary">없음</span>
-                </template>
-              </td>
-              <td class="align-middle text-center text-sm">
-                <template v-if="row?.application_no && Number(row.meetingCount ?? 0) > 0">
-                  <button
-                    class="btn btn-success btn-sm mb-0"
-                    type="button"
-                    @click="goToMeetingLog(row.application_no)"
-                  >
-                    보기
-                  </button>
-                </template>
-                <template v-else>
-                  <span class="badge badge-sm bg-secondary">없음</span>
                 </template>
               </td>
 
-              <td class="align-middle text-center text-sm">
-                <template v-if="row?.application_no && row.resultCount > 0">
-                  <button
-                    class="btn btn-success btn-sm mb-0"
-                    type="button"
-                    @click="goToResult(row.application_no)"
-                  >
-                    보기
-                  </button>
-                </template>
-                <template v-else>
-                  <span class="badge badge-sm bg-secondary">없음</span>
-                </template>
+              <td class="text-center">
+                {{ returnStatus(row.status, row.status_status) }}
+              </td>
+
+              <td class="text-center text-xs">
+                검토 {{ row.counts.i1 }}<br />
+                승인 {{ row.counts.i2 }}<br />
+                반려 {{ row.counts.i3 }}
+              </td>
+
+              <td class="text-center">
+                <button v-if="row.planningCount > 0"
+                  class="btn btn-success btn-sm"
+                  @click="goToPlanning(row.application_no)">
+                  보기
+                </button>
+                <span v-else class="badge bg-secondary">없음</span>
+              </td>
+
+              <td class="text-center">
+                <button v-if="row.meetingCount > 0"
+                  class="btn btn-success btn-sm"
+                  @click="goToMeetingLog(row.application_no)">
+                  보기
+                </button>
+                <span v-else class="badge bg-secondary">없음</span>
+              </td>
+
+              <td class="text-center">
+                <button v-if="row.resultCount > 0"
+                  class="btn btn-success btn-sm"
+                  @click="goToResult(row.application_no)">
+                  보기
+                </button>
+                <span v-else class="badge bg-secondary">없음</span>
               </td>
             </tr>
           </tbody>
+
         </table>
       </div>
     </div>
   </div>
 </template>
+
+
 <style scoped>
 .card {
   border: 1px solid #eef1f5;
@@ -455,5 +425,38 @@ onBeforeMount(() => {
 
 .text-center {
   white-space: nowrap;
+}
+
+/* style 섹션에 추가 */
+:deep(.swal2-cancel) {
+  background-color: #ed4d02 !important;
+  color: white !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 호버 시 색상 변화도 주고 싶다면 */
+:deep(.swal2-cancel:hover) {
+  background-color: #d14302 !important;
+}
+
+/* SweetAlert2 버튼 스타일 강제 오버라이드 */
+body :deep(.swal2-container .swal2-actions .swal2-cancel) {
+  background-color: #ed4d02 !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
+  display: inline-block !important; /* 가끔 display:none 되는 경우 방지 */
+}
+
+body :deep(.swal2-container .swal2-actions .swal2-cancel:hover) {
+  background-color: #d14302 !important;
+}
+
+/* 확인 버튼도 통일감을 주려면 */
+body :deep(.swal2-container .swal2-actions .swal2-confirm) {
+  background-color: #16A34A !important;
+  box-shadow: none !important;
 }
 </style>
