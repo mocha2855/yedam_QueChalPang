@@ -145,7 +145,7 @@ watch(
                         type="text"
                         name="writer"
                         id="writer"
-                        v-model="plan.member_name"
+                        v-model="plan.writer_name"
                         class="form-control"
                         readonly
                       />
@@ -306,7 +306,7 @@ watch(
                         type="text"
                         name="writer"
                         id="writer"
-                        v-model="plan.member_name"
+                        v-model="plan.writer_name"
                         class="form-control"
                         readonly
                       />

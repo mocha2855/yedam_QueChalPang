@@ -27,7 +27,7 @@
             </div>
             <div class="col-2"><label class="col-form-label">작성자</label></div>
             <div class="col-2">
-              <input type="text" :value="localPlan.member_name" class="form-control" readonly />
+              <input type="text" v-model="localPlan.writer_name" class="form-control" readonly />
             </div>
           </div>
 
