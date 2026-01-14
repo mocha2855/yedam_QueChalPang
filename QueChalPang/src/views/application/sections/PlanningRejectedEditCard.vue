@@ -140,7 +140,6 @@ import { reactive, watch, ref } from 'vue'
 import ConfirmModal from '../modals/ConfirmModal.vue'
 import { useApplicationStore } from '@/stores/application'
 const application = useApplicationStore()
-
 const props = defineProps({
   plan: { type: Object, required: true },
   show: { type: Boolean, default: true },

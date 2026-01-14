@@ -143,7 +143,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import ConfirmModal from '../modals/ConfirmModal.vue'
 import RejectConfirmModal from '../modals/RejectConfirmModal.vue'
 import { useApplicationStore } from '@/stores/application'
@@ -180,4 +180,19 @@ const closeAll = (id) => {
   approveOpenSet.value.delete(id)
   rejectOpenSet.value.delete(id)
 }
+const planGroupIds = computed(() => {
+  return props.plans.map((p) => p.attachment_group)
+})
+
+watch(
+  planGroupIds,
+  async (newIds) => {
+    // 데이터가 있고, ID가 하나라도 존재하면 실행
+    if (newIds && newIds.length > 0) {
+      // console.log('파일 목록 조회 시작 (그룹 ID 변경 감지)')
+      await application.fetchFilesForPlans(props.plans)
+    }
+  },
+  { immediate: true },
+)
 </script>

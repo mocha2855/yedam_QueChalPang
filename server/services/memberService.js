@@ -20,9 +20,9 @@ const findByMemberId = async (id) => {
 
 // 회원 로그인
 const memberLogIn = async (input) => {
-  let isExist = await mysql.memberQuery("selectByMemberId", input.id);
   let retInfo = { isCorrect: false, msg: "", member: {} };
-  if (isExist) {
+  let isExist = await mysql.memberQuery("countByMemberId", input.id);
+  if (isExist[0].count > 0) {
     let isCorrect = await mysql.memberQuery("countByMemberPass", [
       input.id,
       input.pass,

@@ -110,8 +110,8 @@
 import { computed, ref, watch } from 'vue'
 import ConfirmModal from '../modals/ConfirmModal.vue'
 import RejectConfirmModal from '../modals/RejectConfirmModal.vue'
-import { useApplicationStore } from '@/stores/application'
 //import { useModalStore } from '@/stores/modal'
+import { useApplicationStore } from '@/stores/application'
 const application = useApplicationStore()
 
 //const modal = useModalStore()
@@ -152,7 +152,6 @@ const planGroupIds = computed(() => {
   return props.plans.map((p) => p.attachment_group)
 })
 
-// 2. 그룹 번호 목록이 변할 때만(데이터가 로드됐을 때만) 실행합니다.
 watch(
   planGroupIds,
   async (newIds) => {
@@ -163,5 +162,5 @@ watch(
     }
   },
   { immediate: true },
-) // deep 옵션은 필요 없습니다.
+)
 </script>
