@@ -111,18 +111,17 @@ watch(
 </template>
 
 <style scoped>
-/* ====== 전체 톤 ====== */
 .search-card {
-  border: 1px solid #eef2f7;
+  border: 1px solid #e6edf5;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 10px 30px rgba(78, 147, 203, 0.12);
   background: #fff;
 }
 
 .search-card__header {
-  background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
-  border-bottom: 1px solid #eef2f7;
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+  border-bottom: 1px solid #e6edf5;
   padding: 14px 16px;
 }
 
@@ -131,7 +130,7 @@ watch(
   font-weight: 800;
   letter-spacing: -0.2px;
   margin: 0;
-  color: #0f172a; /* slate-900 */
+  color: #0f172a;
 }
 
 .search-card__body {
@@ -147,7 +146,7 @@ watch(
   margin-top: 2px;
 }
 
-/* ====== Chip(뱃지) 스타일 ====== */
+/* ====== Chip(뱃지) ====== */
 .chip {
   height: 38px;
   display: inline-flex;
@@ -158,35 +157,36 @@ watch(
   user-select: none;
 
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: -0.1px;
 
-  color: #334155; /* slate-700 */
-  background: #f8fafc; /* slate-50 */
-  border: 1px solid #e5e7eb; /* gray-200 */
+  color: #334155;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+
   transition:
     transform 0.08s ease,
     box-shadow 0.15s ease,
     background 0.15s ease,
-    border-color 0.15s ease;
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .chip:hover {
-  background: #f1f5f9;
-  border-color: #dbe2ea;
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+  background: #f1f7fd;
+  border-color: #cfe1f0;
+  box-shadow: 0 8px 18px rgba(78, 147, 203, 0.14);
 }
 
 .chip:active {
   transform: translateY(1px);
 }
 
-/* ✅ 선택된 상태 (초록 대신 "인디고/블루" 계열) */
 .chip.is-active {
-  color: #1e293b; /* slate-800 */
-  border-color: rgba(99, 102, 241, 0.45); /* indigo-500 */
-  background: rgba(99, 102, 241, 0.12);
-  box-shadow: 0 10px 18px rgba(99, 102, 241, 0.12);
+  color: #0b2a3d; /* 진한 네이비 톤 */
+  background: rgba(78, 147, 203, 0.14);
+  border-color: rgba(78, 147, 203, 0.55);
+  box-shadow: 0 10px 18px rgba(78, 147, 203, 0.18);
 }
 
 /* ====== 폼 필드 ====== */
@@ -197,8 +197,8 @@ watch(
 
 .field__label {
   font-size: 12px;
-  font-weight: 700;
-  color: #64748b; /* slate-500 */
+  font-weight: 800;
+  color: #64748b;
   margin: 0;
 }
 
@@ -211,7 +211,7 @@ watch(
   padding: 0 12px;
 
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   color: #0f172a;
 
   outline: none;
@@ -221,13 +221,13 @@ watch(
 }
 
 .input::placeholder {
-  color: #94a3b8; /* slate-400 */
-  font-weight: 600;
+  color: #94a3b8;
+  font-weight: 700;
 }
 
 .input:focus {
-  border-color: rgba(99, 102, 241, 0.6);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.16);
+  border-color: rgba(78, 147, 203, 0.75);
+  box-shadow: 0 0 0 4px rgba(78, 147, 203, 0.18);
 }
 
 /* ====== select 커스텀 ====== */
@@ -244,19 +244,19 @@ watch(
   padding: 0 36px 0 12px;
 
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
   color: #0f172a;
 
   outline: none;
-  appearance: none; /* 기본 화살표 제거 */
+  appearance: none;
   transition:
     border-color 0.15s ease,
     box-shadow 0.15s ease;
 }
 
 .select:focus {
-  border-color: rgba(99, 102, 241, 0.6);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.16);
+  border-color: rgba(78, 147, 203, 0.75);
+  box-shadow: 0 0 0 4px rgba(78, 147, 203, 0.18);
 }
 
 /* select 화살표 */
@@ -268,26 +268,27 @@ watch(
   width: 10px;
   height: 10px;
   transform: translateY(-55%) rotate(45deg);
-  border-right: 2px solid #94a3b8;
-  border-bottom: 2px solid #94a3b8;
+  border-right: 2px solid rgba(78, 147, 203, 0.9);
+  border-bottom: 2px solid rgba(78, 147, 203, 0.9);
   pointer-events: none;
 }
 
 /* ====== 검색 버튼 ====== */
 .btn-search {
-  height: 44px;
+  height: 46px;
   width: 100%;
   border: 0;
   border-radius: 14px;
   cursor: pointer;
 
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: -0.1px;
 
   color: #ffffff;
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-  box-shadow: 0 12px 24px rgba(79, 70, 229, 0.22);
+  background: linear-gradient(135deg, #4e93cb 0%, #3f86c2 100%);
+  box-shadow: 0 14px 28px rgba(78, 147, 203, 0.28);
+
   transition:
     transform 0.08s ease,
     box-shadow 0.15s ease,
@@ -296,11 +297,11 @@ watch(
 
 .btn-search:hover {
   filter: brightness(1.03);
-  box-shadow: 0 14px 28px rgba(79, 70, 229, 0.26);
+  box-shadow: 0 16px 32px rgba(78, 147, 203, 0.32);
 }
 
 .btn-search:active {
   transform: translateY(1px);
-  box-shadow: 0 10px 20px rgba(79, 70, 229, 0.18);
+  box-shadow: 0 12px 24px rgba(78, 147, 203, 0.24);
 }
 </style>
