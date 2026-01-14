@@ -97,19 +97,12 @@ watch(
 )
 
 // 상담내역 작성하러가기 - 0108
-const writingMeeting = (data) => {
-  // meetingLog.fetchByAppNo(route.params.id)
-  // meetingLog.logs.forEach((data) => {
-  //   if (data.resv_no == id) {
-  //     if (data.has_meeting_log === 1) {
-  //       meetingLog.fetchDetailByResvId(data.resv_id)
-  //     } else {
-  //       meetingLog.startWrite(data)
-  //     }
-  //   }
-  // })
-
-  router.push({ name: 'meetingLog', params: { id: data } })
+const writingMeeting = (row) => {
+  router.push({
+    name: 'meetingLog',
+    params: { id: row.application_no }, // 기존 그대로 (리스트 불러오려면 필요)
+    query: { resvId: row.resv_id, mode: 'write' }, // ✅ 어떤 예약을 바로 쓸지
+  })
 }
 </script>
 
@@ -182,7 +175,9 @@ const writingMeeting = (data) => {
                 <div class="cell-center">
                   <button
                     class="btn btn-primary btn-sm text-xs"
-                    @click="writingMeeting(r.application_no)"
+                    :disabled="r.status === 'f4'"
+                    :class="r.status === 'f4' ? 'btn-outline-secondary disabled' : ''"
+                    @click="r.status !== 'f4' && writingMeeting(r)"
                   >
                     작성하기
                   </button>
@@ -260,8 +255,8 @@ const writingMeeting = (data) => {
 
 /* 취소하기 → 메인컬러 아웃라인 */
 .table .btn-outline-danger.btn-sm {
-  border: 1px solid #4e93cb !important;
-  color: #4e93cb !important;
+  border: 1px solid #cb4e4e !important;
+  color: #cb4e4e !important;
   background: transparent !important;
   padding: 5px 10px !important;
   border-radius: 4px !important;
@@ -312,8 +307,8 @@ const writingMeeting = (data) => {
 
 /* 상담완료 */
 .status-done {
-  background: #f3f4f6 !important;
-  color: #374151 !important;
+  background: #444444 !important;
+  color: #ffffff !important;
   border: 1px solid #e5e7eb;
 }
 
