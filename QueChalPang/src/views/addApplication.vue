@@ -370,7 +370,9 @@ const supportRoute = computed(() => {
     <div class="card-header pb-0 pt-3" style="border-top: 2px solid #e9ecef">
       <div class="d-flex justify-content-between align-items-center">
         <h6 class="mb-0">지원 신청서</h6>
-        <button class="btn btn-primary p-1" @click="checkAllYes()">전체 예 체크</button>
+        <button class="btn btn-primary p-1" style="display: none" @click="checkAllYes()">
+          전체 예 체크
+        </button>
       </div>
     </div>
 

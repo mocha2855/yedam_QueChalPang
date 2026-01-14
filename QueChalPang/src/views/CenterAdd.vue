@@ -72,7 +72,7 @@ const centerInfo = reactive({
 })
 const checked = ref(false)
 const checkCenterName = async () => {
-  let result = await axios.get(`api/center/name/${centerInfo.name}`)
+  let result = await axios.get(`/api/center/name/${centerInfo.name}`)
   if (result.data.count > 0) {
     Toast.fire({
       icon: 'error',
