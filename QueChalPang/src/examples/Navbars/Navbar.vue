@@ -204,7 +204,7 @@ onUnmounted(() => {
         to="/"
         class="navbar-brand p-0"
       >
-        <img src="/네비사진.jpg" alt="발달장애인 지원프로그램 로고" class="navbar-logo" />
+        <img src="/네비바사진.jpg" alt="발달장애인 지원프로그램 로고" class="navbar-logo" />
       </router-link>
 
       <div class="mt-2 collapse navbar-collapse mt-sm-0 me-md-0 me-sm-4" id="navbar">
@@ -585,8 +585,8 @@ onUnmounted(() => {
   height: 180px;
   width: auto;
   object-fit: contain;
-  margin-top: -25px;
-  margin-bottom: -10px;
+  margin-top: -28px;
+  /* margin-bottom: -10px; */
 }
 
 .navbar-nav.me-auto {
