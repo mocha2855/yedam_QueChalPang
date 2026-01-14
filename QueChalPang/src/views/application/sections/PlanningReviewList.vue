@@ -29,7 +29,7 @@
               </div>
               <div class="col-2"><label class="col-form-label">작성자</label></div>
               <div class="col-2">
-                <input type="text" :value="writerName" class="form-control" readonly />
+                <input type="text" v-model="plan.writer_name" class="form-control" readonly />
               </div>
             </div>
 
@@ -49,8 +49,8 @@
 
             <div class="row g-3 mb-2 align-items-center">
               <div class="col-2"><label class="col-form-label">첨부파일</label></div>
-              <div v-if="plan[0].fileList && plan[0].fileList.length > 0" class="col-10">
-                <div v-for="file in an.fileList" :key="file.attachment_no" class="mb-1">
+              <div v-if="plan.attachment_no != null" class="col-10">
+                <div v-for="file in plan.fileList" :key="file.attachment_no" class="mb-1">
                   <a
                     href="#"
                     @click.prevent="application.downloadFile(file.attachment_no)"
@@ -123,8 +123,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['approve', 'reject'])
-
-const writerName = computed(() => '최강희')
 
 const approveOpenSet = ref(new Set())
 const rejectOpenSet = ref(new Set())

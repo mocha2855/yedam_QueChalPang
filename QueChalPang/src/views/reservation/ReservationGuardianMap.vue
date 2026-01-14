@@ -27,11 +27,6 @@ const goHome = () => router.push('/tables')
 
 //카카오지도
 onMounted(async () => {
-  console.log('kakao exists?', !!window.kakao)
-  console.log('kakao.maps exists?', !!window.kakao?.maps)
-  console.log('kakao.maps.load exists?', typeof window.kakao?.maps?.load)
-  console.log('kakao.maps.services exists?', !!window.kakao?.maps?.services)
-
   if (!window.kakao?.maps) return
 
   const res = await axios.get(`/api/centerAddrByResvId/${resvId.value}`)

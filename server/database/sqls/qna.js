@@ -19,6 +19,7 @@ SELECT
   mm.member_name AS manager_name,
   mm.member_phone AS manager_phone,
   mm.member_email AS manager_email,
+  ma.member_name AS respondent_name,
 
   q.qna_status AS status
 FROM qna q
@@ -34,6 +35,9 @@ LEFT JOIN member am
 
 LEFT JOIN member mm
   ON mm.member_id = d.manager_main
+
+LEFT JOIN member ma
+  ON ma.member_id = a.member_id
 
 WHERE q.member_id = ?
 ORDER BY q.qna_date DESC
@@ -57,38 +61,42 @@ ORDER BY dependant_no DESC
 
 //[3] 보호자 - 질문 단건 상세조회 (답변 포함)
 const selectQnaDetail = `
-  SELECT 
-    q.qna_no,
-    q.member_id       AS writer_id,
-    mw.member_name    AS writer_name,
+SELECT 
+  q.qna_no,
+  q.member_id       AS writer_id,
+  mw.member_name    AS writer_name,
 
-    q.qna_title, 
-    q.qna_content,
-    q.qna_date,
-    q.qna_category,
-    q.qna_status,
-    q.qna_manager_id,
-    mm.member_name    AS manager_name,
+  q.qna_title, 
+  q.qna_content,
+  q.qna_date,
+  q.qna_category,
+  q.qna_status,
 
-    a.qanswer_no,
-    a.member_id       AS answerer_id,
-    ma.member_name    AS answerer_name,
-    a.qanswer_content,
-    a.qanswer_date
-  FROM qna q
-  JOIN member mw
-    ON mw.member_id = q.member_id
+  d.manager_main    AS manager_id,
+  mm.member_name    AS manager_name,
 
-  LEFT JOIN member mm
-    ON mm.member_id = q.qna_manager_id
+  a.qanswer_no,
+  a.member_id       AS answerer_id,
+  ma.member_name    AS answerer_name,
+  a.qanswer_content,
+  a.qanswer_date
+FROM qna q
+JOIN member mw
+  ON mw.member_id = q.member_id
 
-  LEFT JOIN qna_answer a
-    ON a.qna_no = q.qna_no
+JOIN dependant d
+  ON d.dependant_no = q.dependant_no
 
-  LEFT JOIN member ma
-    ON ma.member_id = a.member_id
+LEFT JOIN member mm
+  ON mm.member_id = d.manager_main
 
-  WHERE q.qna_no = ?
+LEFT JOIN qna_answer a
+  ON a.qna_no = q.qna_no
+
+LEFT JOIN member ma
+  ON ma.member_id = a.member_id
+
+WHERE q.qna_no = ?
 `;
 
 //[4] 담당자 - 본인이 담당하는 사람들의 질문 전체조회

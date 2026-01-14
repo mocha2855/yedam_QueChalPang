@@ -123,10 +123,10 @@ const submit = async () => {
       <b>{{ dependantName }}</b> 님의 대기단계 승인 요청이 <b>반려</b>되었습니다.
     </p>
 
-    <p class="reject-reason" v-if="rejectReason">
+    <h2 class="reject-reason" v-if="rejectReason" style="font-size: 20px">
       반려 사유: <br />
-      <span>{{ rejectReason }}</span>
-    </p>
+      {{ rejectReason }}
+    </h2>
 
     <p class="wait-title" style="margin-top: 12px">다시 대기단계를 선택하여 승인요청을 해주세요.</p>
 
