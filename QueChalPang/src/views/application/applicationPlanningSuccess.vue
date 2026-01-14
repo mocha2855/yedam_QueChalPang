@@ -5,6 +5,7 @@ import { useCounterStore } from '@/stores/member'
 import { useApplicationStore } from '@/stores/application'
 import { useRoute } from 'vue-router'
 import axios from 'axios'
+import { watch, computed } from 'vue'
 import Swal from 'sweetalert2'
 
 const counters = useCounterStore()
@@ -55,6 +56,37 @@ const changePlanningStatus = async (data) => {
       await application.fetchFilesForPlans(application.PlanningRejectedReviewList)
     })
 }
+// 1. 반려된 계획서(planningRejected)들의 파일 그룹 번호만 추출
+const rejectedGroupIds = computed(() => {
+  return application.planningRejected.map((p) => p.attachment_group)
+})
+
+// 2. 승인된 계획서(planningSuccess)들의 파일 그룹 번호만 추출
+const successGroupIds = computed(() => {
+  return application.planningSuccess.map((p) => p.attachment_group)
+})
+
+// 3. 반려 계획서 파일 조회 (그룹 ID 변경 감지)
+watch(
+  rejectedGroupIds,
+  async (newIds) => {
+    if (newIds && newIds.length > 0) {
+      await application.fetchFilesForPlans(application.planningRejected)
+    }
+  },
+  { immediate: true },
+)
+
+// 4. 승인 계획서 파일 조회 (그룹 ID 변경 감지)
+watch(
+  successGroupIds,
+  async (newIds) => {
+    if (newIds && newIds.length > 0) {
+      await application.fetchFilesForPlans(application.planningSuccess)
+    }
+  },
+  { immediate: true },
+)
 </script>
 <template>
   <div>
@@ -113,7 +145,7 @@ const changePlanningStatus = async (data) => {
                         type="text"
                         name="writer"
                         id="writer"
-                        v-model="plan.member_name"
+                        v-model="plan.writer_name"
                         class="form-control"
                         readonly
                       />
@@ -274,7 +306,7 @@ const changePlanningStatus = async (data) => {
                         type="text"
                         name="writer"
                         id="writer"
-                        v-model="plan.member_name"
+                        v-model="plan.writer_name"
                         class="form-control"
                         readonly
                       />

@@ -126,7 +126,9 @@ const goToMeetingLog = (applicationNo) => {
                 지원계획
               </th>
               <th
+                v-if="member.member_authority != 'a1'"
                 class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+                style="display: none"
               >
                 상담내역
               </th>
@@ -209,7 +211,11 @@ const goToMeetingLog = (applicationNo) => {
                   <span class="badge badge-sm bg-secondary">없음</span>
                 </template>
               </td>
-              <td class="align-middle text-center text-sm">
+              <td
+                v-if="member.member_authority != 'a1'"
+                class="align-middle text-center text-sm"
+                style="display: none"
+              >
                 <template v-if="row?.application_no && Number(row.meetingCount ?? 0) > 0">
                   <button
                     class="btn btn-success btn-sm mb-0"
@@ -264,7 +270,7 @@ const goToMeetingLog = (applicationNo) => {
 
 .card-header h6 {
   font-size: 1.05rem;
-  font-weight: 600;       /* 과한 bold 제거 */
+  font-weight: 600; /* 과한 bold 제거 */
   color: #111827;
   letter-spacing: -0.2px;
 }
@@ -288,9 +294,9 @@ const goToMeetingLog = (applicationNo) => {
   border-bottom: 1px solid #e5e7eb;
 
   padding: 13px 14px;
-  font-size: 0.85rem !important;     
-  font-weight: 600;        
-  color: #000000 !important;     
+  font-size: 0.85rem !important;
+  font-weight: 600;
+  color: #000000 !important;
   text-transform: none !important;
   letter-spacing: -0.15px;
   white-space: nowrap;
@@ -367,5 +373,4 @@ const goToMeetingLog = (applicationNo) => {
 .text-center {
   white-space: nowrap;
 }
-
 </style>

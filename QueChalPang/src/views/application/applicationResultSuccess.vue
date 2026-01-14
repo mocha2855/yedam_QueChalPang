@@ -319,6 +319,7 @@
 import { useCounterStore } from '@/stores/member'
 import { useApplicationStore } from '@/stores/application'
 import { useRoute } from 'vue-router'
+import { watch, computed } from 'vue'
 import axios from 'axios'
 import Swal from 'sweetalert2'
 
@@ -366,5 +367,33 @@ const changeResultStatus = async (data) => {
   await application.fetchFilesForPlans(application.resultChanging)
   await application.fetchFilesForPlans(application.resultChangingReview)
 }
+const rejectedGroupIds = computed(() => {
+  return application.resultSuccess.map((p) => p.attachment_group)
+})
+
+const successGroupIds = computed(() => {
+  return application.resultRejected.map((p) => p.attachment_group)
+})
+
+watch(
+  rejectedGroupIds,
+  async (newIds) => {
+    if (newIds && newIds.length > 0) {
+      await application.fetchFilesForPlans(application.resultRejected)
+    }
+  },
+  { immediate: true },
+)
+
+// 4. 승인 계획서 파일 조회 (그룹 ID 변경 감지)
+watch(
+  successGroupIds,
+  async (newIds) => {
+    if (newIds && newIds.length > 0) {
+      await application.fetchFilesForPlans(application.resultSuccess)
+    }
+  },
+  { immediate: true },
+)
 </script>
 <style scoped></style>
