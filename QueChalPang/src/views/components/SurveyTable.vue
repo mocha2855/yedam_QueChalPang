@@ -64,7 +64,17 @@ const goToResult = (applicationNo) => {
 const goToMeetingLog = (applicationNo) => {
   router.push({ name: 'meetingLog', params: { id: applicationNo } })
 }
-// 검색
+
+const statusBadgeClass = (stat, statStatus) => {
+  const label = returnStatus(stat, statStatus)
+
+  if (label === '계획') return 'is-plan'
+  if (label === '중점') return 'is-focus'
+  if (label === '긴급') return 'is-urgent'
+
+  // '대기', '검토중', 그 외는 기본 회색
+  return 'is-wait'
+}
 </script>
 
 <template>
@@ -182,7 +192,7 @@ const goToMeetingLog = (applicationNo) => {
                 <span class="text-secondary text-xs font-weight-bold">{{ row.manager_name }}</span>
               </td>
               <td class="align-middle text-center text-sm">
-                <span class="text-secondary text-xs font-weight-bold">
+                <span :class="['status-badge', statusBadgeClass(row.status, row.status_status)]">
                   {{ returnStatus(row.status, row.status_status) }}
                 </span>
               </td>
@@ -430,5 +440,45 @@ const goToMeetingLog = (applicationNo) => {
 .table tbody td:nth-child(9) p {
   display: block !important;
   margin: 4px 0 !important;
+}
+/* ===== status badge (관리자 화면과 동일) ===== */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 64px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  border: 1px solid transparent;
+}
+
+/* 대기/기본: 회색 */
+.status-badge.is-wait {
+  background: #f3f4f6;
+  color: #374151;
+  border-color: #e5e7eb;
+}
+
+/* 계획: 연초록 */
+.status-badge.is-plan {
+  background: #ecfdf5;
+  color: #065f46;
+  border-color: #a7f3d0;
+}
+
+/* 중점: 연노랑 */
+.status-badge.is-focus {
+  background: #fffbeb;
+  color: #92400e;
+  border-color: #fcd34d;
+}
+
+/* 긴급: 빨강 */
+.status-badge.is-urgent {
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
 }
 </style>
