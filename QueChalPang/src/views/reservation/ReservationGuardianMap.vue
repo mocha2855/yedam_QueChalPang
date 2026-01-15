@@ -24,7 +24,6 @@ const mapError = ref('')
 // 확인버튼 누르면 홈으로
 const goHome = () => router.push('/tables')
 
-// ✅ 지오코딩용 주소 정리: | 제거 + 공백 정리
 const cleanForGeocode = (addr) =>
   (addr ?? '')
     .replace(/\|/g, ' ')   // 핵심: 파이프 제거
@@ -58,10 +57,8 @@ onMounted(async () => {
 
       const geocoder = new window.kakao.maps.services.Geocoder()
 
-      // ✅ 여기서 정리된 주소로 지오코딩
       const geocodeAddr = cleanForGeocode(centerAddr.value)
 
-      // ✅ 모호하면 센터명까지 붙여서 더 정확하게 시도(권장)
       const query = `${centerName.value} ${geocodeAddr}`.trim()
 
       geocoder.addressSearch(query, (result, status) => {
@@ -131,7 +128,6 @@ const renderMarker = (map, firstResult, name) => {
 
             <div class="mt-2 text-muted">
               <div><b>{{ centerName }}</b></div>
-              <!-- ✅ 화면 표시용은 원본 그대로 -->
               <div>{{ centerAddr }}</div>
             </div>
 
