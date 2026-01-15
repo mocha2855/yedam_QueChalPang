@@ -55,10 +55,9 @@ const createdText = computed(() => (detail.value?.log_date ? String(detail.value
 
 <style scoped>
 .log-view {
-  color: #111827; /* 전체 기본 글자색: 검정톤 */
+  color: #111827; 
 }
 
-/* 카드 */
 .log-card {
   border: 1px solid #eef1f5;
   border-radius: 14px;
@@ -67,7 +66,6 @@ const createdText = computed(() => (detail.value?.log_date ? String(detail.value
   padding: 16px;
 }
 
-/* 상단 */
 .log-head {
   display: flex;
   justify-content: space-between;
@@ -100,20 +98,17 @@ const createdText = computed(() => (detail.value?.log_date ? String(detail.value
   color: #111827;
 }
 
-/* 구분선 */
 .divider {
   height: 1px;
   background: #eef1f5;
   margin: 12px 0;
 }
 
-/* 안내문(회색 말고 살짝만 톤다운) */
 .hint {
   color: #374151;
   font-size: 0.95rem;
 }
 
-/* 메타 */
 .meta {
   display: grid;
   gap: 6px;
@@ -127,7 +122,6 @@ const createdText = computed(() => (detail.value?.log_date ? String(detail.value
   align-items: center;
 }
 
-/* 본문 */
 .content {
   padding: 14px;
   border-radius: 12px;

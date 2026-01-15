@@ -57,7 +57,7 @@ const submitAnswer = async () => {
 
     showAnswerForm.value = false
     answerText.value = ''
-    await fetchDetail() // ✅ 답변/상태 갱신
+    await fetchDetail() 
   } catch (e) {
     errorText.value = '답변 등록에 실패했습니다.'
   } finally {

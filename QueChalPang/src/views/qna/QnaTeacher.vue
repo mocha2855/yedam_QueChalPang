@@ -125,14 +125,12 @@ const goDetail = (no) => {
   padding: 14px 16px;
   border-radius: 14px;
 
-  /* 깔끔한 카드 느낌 */
   background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
   border: 1px solid #e5e7eb;
   box-shadow: 0 10px 28px rgba(17, 24, 39, 0.06);
   letter-spacing: -0.2px;
 }
 
-/* ===== Card ===== */
 .list-card {
   background: #fff;
   border: 1px solid #e5e7eb;
@@ -228,7 +226,6 @@ const goDetail = (no) => {
   font-weight: 800;
   color: #111827;
 
-  /* 제목 길면 줄임표 */
   max-width: 340px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -273,7 +270,6 @@ const goDetail = (no) => {
   white-space: nowrap;
 }
 
-/* ===== Center Align cells readability ===== */
 .text-center {
   color: #374151;
   white-space: nowrap;

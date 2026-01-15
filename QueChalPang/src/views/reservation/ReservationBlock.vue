@@ -356,7 +356,6 @@ const calendarAttrs = computed(() => [
   background-color: var(--main) !important;
 }
 
-/* 오늘/포커스 링 */
 :deep(.vc-day-content:focus) {
   box-shadow: 0 0 0 3px rgba(78, 147, 203, 0.18) !important;
 }
@@ -466,7 +465,6 @@ const calendarAttrs = computed(() => [
   margin-top: 2px;
 }
 
-/* ===== 선택 날짜 차단 목록 배지 통일 (기존 bg-danger-subtle 대체) ===== */
 .badge.bg-danger-subtle {
   background: rgba(78, 147, 203, 0.12) !important;
   color: var(--main) !important;
