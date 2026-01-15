@@ -14,11 +14,11 @@ const member = useCounterStore()
 
 const { adminList, adminPendingList } = storeToRefs(store)
 const router = useRouter()
-const checkedIds = ref([]) // 선택 체크
+const checkedIds = ref([])
 
 // 페이지네이션 추가
-const currentPage = ref(1) // 현재 페이지 번호 (처음엔 1페이지)
-const itemsPerPage = 10 // 한 페이지에 보여줄 개수
+const currentPage = ref(1)
+const itemsPerPage = 10
 
 // 총 페이지 수
 const totalPages = computed(() => {
@@ -27,16 +27,15 @@ const totalPages = computed(() => {
 
 // 현재 페이지에 표시할 데이터
 const paginatedList = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage // 시작 인덱스
-  const end = start + itemsPerPage // 끝 인덱스
-  return adminList.value.slice(start, end) // 해당 범위만 잘라내기
+  const start = (currentPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return adminList.value.slice(start, end)
 })
 // 페이지 변경
 const goToPage = (page) => {
   if (page >= 1 && page <= totalPages.value) {
-    // 유효한 페이지인지 확인
-    currentPage.value = page // 페이지 변경
-    checkedIds.value = [] // 페이지 변경시 체크 초기화
+    currentPage.value = page
+    checkedIds.value = []
   }
 }
 
