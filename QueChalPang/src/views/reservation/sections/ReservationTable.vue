@@ -219,18 +219,15 @@ const closeModal = () => {
   box-shadow: none;
 }
 
-/* 버튼 간격 */
 .table tbody .btn + .btn {
   margin-left: 0.5rem;
 }
 
-/* hover 시 살짝 강조 */
 .table tbody .btn:hover {
   transform: translateY(-1px);
   transition: transform 0.12s ease;
 }
 
-/* 모바일에서 테이블 최소 폭 확보(깨짐 방지) */
 .table-responsive {
   overflow-x: auto;
 }

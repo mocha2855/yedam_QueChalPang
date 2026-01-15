@@ -7,8 +7,6 @@ import axios from 'axios'
 import RejectReasonModal from '../modals/RejectReasonModal.vue'
 
 const router = useRouter()
-// const route = useRoute() // 0108
-// const meetingLog = useMeetingLogStore()
 
 const props = defineProps({
   selectedDate: { type: Date, required: true }, //부모가 무조건 selectedDate를 내려줘야 함
@@ -101,7 +99,7 @@ const writingMeeting = (row) => {
   router.push({
     name: 'meetingLog',
     params: { id: row.application_no }, // 기존 그대로 (리스트 불러오려면 필요)
-    query: { resvId: row.resv_id, mode: 'write' }, // ✅ 어떤 예약을 바로 쓸지
+    query: { resvId: row.resv_id, mode: 'write' }, 
   })
 }
 </script>
@@ -251,7 +249,6 @@ const writingMeeting = (row) => {
   background-color: #ebebeb !important;
   color: #333 !important;
 }
-/* ===== 액션 버튼 통일 ===== */
 
 /* 취소하기 → 메인컬러 아웃라인 */
 .table .btn-outline-danger.btn-sm {
@@ -282,7 +279,6 @@ const writingMeeting = (row) => {
 }
 
 /* ===== 상태 배지 ===== */
-
 .status-btn {
   min-width: auto !important;
   padding: 5px 10px !important;
@@ -324,6 +320,6 @@ const writingMeeting = (row) => {
   color: #94a3b8 !important;
   background: #f8fafc !important;
   cursor: not-allowed !important;
-  opacity: 1 !important; /* 흐리기 대신 명확한 비활성톤 */
+  opacity: 1 !important;
 }
 </style>
