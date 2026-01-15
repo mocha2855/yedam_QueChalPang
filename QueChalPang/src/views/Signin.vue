@@ -208,6 +208,13 @@ const Toast = Swal.mixin({
                     </router-link>
                   </p>
                 </div>
+                <span
+                  >일반 계정 : user01 <br />
+                  담당자 계정 : teacher01<br />
+                  관리자 계정 : admin01<br />
+                  시스템관리자 계정 : masater01<br />
+                  비밀번호는 모두 password 로 동일합니다.</span
+                >
               </div>
             </div>
             <div
