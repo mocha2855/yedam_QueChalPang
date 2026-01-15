@@ -139,105 +139,114 @@ const submitAnswer = async () => {
 
 <style scoped>
 .qna-detail {
-  max-width: 900px;
+  max-width: 980px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 26px 16px;
+  color: #111827;
 }
 
+/* ===== Back Button ===== */
+.back-btn {
+  border: 1px solid #e5e7eb;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  color: #111827;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.12s ease;
+  box-shadow: 0 8px 18px rgba(17, 24, 39, 0.06);
+}
+
+.back-btn:hover {
+  background: #f8fafc;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(17, 24, 39, 0.08);
+}
+
+/* ===== Card ===== */
 .qna-card {
+  margin-top: 14px;
   background: #fff;
-  border: 1px solid #e5e5e5;
-  border-radius: 10px;
-  padding: 20px 22px;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 22px 22px;
+  box-shadow: 0 14px 30px rgba(17, 24, 39, 0.06);
 }
 
+/* ===== Title ===== */
 .qna-title {
-  font-size: 20px;
-  font-weight: 800;
-  margin-bottom: 12px;
-  color: #222;
+  font-size: 22px;
+  font-weight: 900;
+  margin-bottom: 10px;
+  color: #111827;
+  letter-spacing: -0.4px;
 }
 
+/* ===== Meta ===== */
 .qna-meta {
   font-size: 13px;
-  color: #666;
-  margin-bottom: 18px;
+  font-weight: 800;
+  color: #6b7280;
+  margin-bottom: 16px;
 }
 
+/* ===== Content ===== */
 .qna-content {
   font-size: 14px;
-  line-height: 1.7;
-  color: #222;
+  line-height: 1.9;
+  color: #111827;
   white-space: pre-wrap;
-  padding-bottom: 18px;
-  border-bottom: 1px solid #eee;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #eef2f7;
 }
 
+/* ===== Answer Section ===== */
 .answer {
   margin-top: 18px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #fbfdff 0%, #ffffff 100%);
 }
 
 .answer-title {
-  font-size: 14px;
-  font-weight: 800;
-  color: #222;
+  font-size: 15px;
+  font-weight: 900;
   margin-bottom: 6px;
+  color: #111827;
 }
 
 .answer-meta {
   font-size: 12px;
-  color: #777;
+  font-weight: 800;
+  color: #6b7280;
   margin-bottom: 10px;
 }
 
 .answer-content {
   font-size: 14px;
-  line-height: 1.7;
-  color: #222;
+  line-height: 1.9;
+  color: #111827;
   white-space: pre-wrap;
 }
 
+/* ===== No Answer ===== */
 .no-answer {
   margin-top: 18px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  color: #6b7280;
   font-size: 13px;
-  color: #999;
-  font-style: italic;
-}
-.btn-row {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 16px;
-}
-
-.btn {
-  border: 1px solid #d9d9d9;
-  background: #fff;
-  border-radius: 8px;
-  padding: 10px 14px;
   font-weight: 800;
-  font-size: 13px;
-  cursor: pointer;
 }
 
-.btn.primary {
-  background: #0b4bb3;
-  border-color: #0b4bb3;
-  color: #fff;
-}
-
-.btn.gray {
-  background: #f2f2f2;
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
+/* ===== Form ===== */
 .answer-form {
-  margin-top: 16px;
-  border-top: 1px solid #eee;
+  margin-top: 18px;
+  border-top: 1px solid #eef2f7;
   padding-top: 16px;
 }
 
@@ -249,34 +258,119 @@ const submitAnswer = async () => {
 
 .field .label {
   font-size: 12px;
-  font-weight: 800;
-  color: #444;
+  font-weight: 900;
+  color: #6b7280;
   margin-bottom: 6px;
 }
 
 .input,
 .textarea {
   width: 100%;
-  border: 1px solid #d9d9d9;
-  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
   padding: 10px 12px;
   outline: none;
   font-size: 13px;
+  font-weight: 700;
+  background: #fff;
+  color: #111827;
+  transition:
+    border 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.input:focus,
+.textarea:focus {
+  border-color: #4e93cb;
+  box-shadow: 0 0 0 3px rgba(78, 147, 203, 0.15);
 }
 
 .textarea {
   resize: none;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .mt {
   margin-top: 12px;
 }
 
+/* ===== Buttons ===== */
+.btn-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.btn {
+  border-radius: 3px !important;
+  padding: 9px 14px;
+  font-weight: 900;
+  font-size: 13px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: 0.12s ease;
+}
+
+/* Primary */
+.btn.primary {
+  background: #4e93cb;
+  border-color: #4e93cb;
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(78, 147, 203, 0.35);
+}
+
+.btn.primary:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+/* Gray */
+.btn.gray {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  color: #6b7280;
+}
+
+.btn.gray:hover {
+  background: #f1f5f9;
+}
+
+/* Disabled */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* ===== Error ===== */
 .error {
   margin-top: 10px;
-  color: #d11;
-  font-weight: 800;
+  color: #dc2626;
+  font-weight: 900;
   font-size: 12px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .qna-card {
+    padding: 18px 16px;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.back-btn {
+  background: #4e93cb;
+  border-color: #4e93cb;
+  color: #fff;
+  border-radius: 3px !important;
+}
+
+.back-btn:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
 }
 </style>

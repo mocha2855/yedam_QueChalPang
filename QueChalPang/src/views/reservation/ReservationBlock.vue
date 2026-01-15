@@ -433,12 +433,13 @@ const calendarAttrs = computed(() => [
 
 /* 차단 = 메인 컬러 */
 .is-blocked {
-  background: var(--main);
-  color: #fff;
-  border-color: var(--main);
+  background: #dc3545 !important; /* Bootstrap danger red */
+  border-color: #dc3545 !important;
+  color: #fff !important;
 }
+
 .is-blocked:hover {
-  box-shadow: 0 2px 14px rgba(78, 147, 203, 0.28);
+  box-shadow: 0 2px 14px rgba(220, 53, 69, 0.35);
 }
 
 /* 예약/점심 = muted */

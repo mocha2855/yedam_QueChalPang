@@ -1,6 +1,6 @@
 <!-- views/components/meetingLog/meetingLogList.vue -->
 <script setup>
-import { onMounted, watch } from 'vue'
+import { onMounted, watch, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useMeetingLogStore } from '@/stores/meetingLog'
@@ -9,14 +9,38 @@ const route = useRoute()
 const store = useMeetingLogStore()
 const { logs, selectedResvId, detailLoading } = storeToRefs(store)
 
-onMounted(() => {
-  store.fetchByAppNo(route.params.id)
+const openByQuery = async () => {
+  const resvId = route.query.resvId
+  const mode = route.query.mode
+
+  if (!resvId) return
+
+  const row = logs.value.find((x) => String(x.resv_id) === String(resvId))
+  if (!row) return
+
+  if (row.has_meeting_log === 1) {
+    await store.fetchDetailByResvId(row.resv_id) // mode를 view로 바꾸고 detail 로드
+    return
+  }
+
+  if (mode === 'write') {
+    store.startWrite(row)
+  }
+}
+
+onMounted(async () => {
+  await store.fetchByAppNo(route.params.id)
+  await nextTick()
+  await openByQuery()
 })
 
 watch(
   () => route.params.id,
-  (newId) => {
-    if (newId) store.fetchByAppNo(newId)
+  async (newId) => {
+    if (!newId) return
+    await store.fetchByAppNo(newId)
+    await nextTick()
+    await openByQuery()
   },
 )
 
@@ -28,8 +52,6 @@ const pick = (row) => {
 const timeText = (start_at) => {
   if (!start_at) return ''
   const d = new Date(start_at)
-
-  //toLocaleTimeString : 지역규칙 이용해 시간문자열 만듦
   return d.toLocaleTimeString('ko-KR', {
     hour: '2-digit',
     minute: '2-digit',
@@ -44,9 +66,7 @@ const statusMap = {
   f4: { label: '상담취소', class: 'status-cancel' },
 }
 
-const statusInfo = (s) => {
-  return statusMap[s] ?? { label: s ?? '', class: 'status-default' }
-}
+const statusInfo = (s) => statusMap[s] ?? { label: s ?? '', class: 'status-default' }
 
 const viewLog = async (row) => {
   await store.fetchDetailByResvId(row.resv_id)
@@ -85,13 +105,17 @@ const writeLog = (row) => {
           <td>
             <span class="round-badge">{{ logs.length - idx }}회차</span>
           </td>
-          <td>{{ row.resv_day.slice(0, 10) }}</td>
+
+          <td>{{ row.resv_day?.slice(0, 10) }}</td>
+
           <td>{{ timeText(row.start_at) }}</td>
+
           <td>
             <span class="status-badge" :class="statusInfo(row.resv_status).class">
               {{ statusInfo(row.resv_status).label }}
             </span>
           </td>
+
           <td>
             <button
               v-if="row.has_meeting_log === 1"
@@ -102,22 +126,21 @@ const writeLog = (row) => {
             </button>
 
             <button
-            v-else
-            class="btn btn-sm"
-            :class="row.resv_status === 'f4'
-              ? 'btn-outline-secondary disabled'
-              : 'btn-outline-primary'"
-            :disabled="row.resv_status === 'f4'"
-            @click.stop="row.resv_status !== 'f4' && writeLog(row)"
-          >
-            작성하기
-          </button>
-
+              v-else
+              class="btn btn-sm"
+              :class="
+                row.resv_status === 'f4' ? 'btn-outline-secondary disabled' : 'btn-outline-primary'
+              "
+              :disabled="row.resv_status === 'f4'"
+              @click.stop="row.resv_status !== 'f4' && writeLog(row)"
+            >
+              작성하기
+            </button>
           </td>
         </tr>
 
         <tr v-if="logs.length === 0">
-          <td colspan="4" class="text-center text-secondary py-4">상담내역이 없습니다.</td>
+          <td colspan="5" class="text-center text-secondary py-4">상담내역이 없습니다.</td>
         </tr>
       </tbody>
     </table>
@@ -132,7 +155,7 @@ const writeLog = (row) => {
   font-size: 0.75rem;
   font-weight: 700;
   color: #344767;
-  background: rgba(94, 114, 228, 0.12); /* soft indigo */
+  background: rgba(94, 114, 228, 0.12);
 }
 
 .status-badge {
@@ -144,7 +167,6 @@ const writeLog = (row) => {
   white-space: nowrap;
 }
 
-/* 상태별 */
 .status-wait {
   background: rgba(255, 193, 7, 0.15);
   color: #b45309;
@@ -168,27 +190,6 @@ const writeLog = (row) => {
 .status-default {
   background: rgba(107, 114, 128, 0.15);
   color: #374151;
-}
-
-.meeting-log {
-  width: 100%;
-}
-
-.row-click {
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.row-click:hover {
-  background: rgba(94, 114, 228, 0.06);
-}
-
-.row-click.active {
-  background: rgba(94, 114, 228, 0.12);
-}
-
-.hint {
-  font-size: 0.85rem;
 }
 
 tbody tr {
