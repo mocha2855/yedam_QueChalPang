@@ -54,7 +54,6 @@ const openPostcode = () => {
 
       address.value = addr // 기본 주소
       centerInfo.address = address.value
-      console.log(centerInfo)
       // 상세주소로 포커스 이동은 ref를 사용하거나 직접 접근
       document.getElementById('detail_input').focus()
     },
@@ -91,12 +90,10 @@ const getNo = () => {
   const routeArr = route.path.split('/')
   return routeArr[2]
 }
-console.log(getNo())
 // 알림전용변수
 const checked = ref(false)
 // 알림작동 시키는 함수
 const checkCenterName = async () => {
-  console.log(detailAddress.value)
   if (centerInfo.name == store.centerInfo.center_name) {
     checked.value = true
     return
@@ -117,7 +114,6 @@ const centerList = () => {
 }
 const updateCenterInfo = async () => {
   centerInfo.address = `${address.value}|${extraAddress.value}|${detailAddress.value}`
-  console.log(centerInfo)
   console.log(store.centerInfo)
   if (
     centerInfo.name == store.centerInfo.center_name &&

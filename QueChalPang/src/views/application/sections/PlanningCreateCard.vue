@@ -257,7 +257,6 @@ const saveForm = () => {
 }
 
 const saveSubmit = () => {
-  console.log({ ...formData.value })
   emit('saved', { ...formData.value })
   saveChecked.value = false
 }

@@ -5,7 +5,6 @@ import { useRoute } from 'vue-router'
 import axios from 'axios'
 
 const route = useRoute()
-console.log('route.params.qnaNo =', route.params.qnaNo)
 
 const qnaNo = route.params.qnaNo
 
@@ -13,7 +12,6 @@ const qna = ref(null)
 
 const fetchDetail = async () => {
   const res = await axios.get(`/api/qnaDetailByGuardian/${qnaNo}`)
-  console.log('GET URL =', `/api/qnaDetailByGuardian/${qnaNo}`)
 
   qna.value = res.data
 }

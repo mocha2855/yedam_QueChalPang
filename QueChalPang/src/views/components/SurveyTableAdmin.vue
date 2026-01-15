@@ -82,13 +82,12 @@ const goToMeetingLog = (applicationNo) => {
   router.push({ name: 'meetingLog', params: { id: applicationNo } })
 }
 
-
 //SweetAlert 담당자 배정
 const openAssignManagerModal = async (row) => {
   try {
     // 1. 담당자 목록 조회
     const { data } = await axios.get(`/api/dependants/${row.dependant_no}/managers`)
-    const list = Array.isArray(data) ? data : (data.rows ?? [])
+    const list = Array.isArray(data) ? data : data.rows ?? []
 
     if (!list.length) {
       await Swal.fire({
@@ -101,10 +100,7 @@ const openAssignManagerModal = async (row) => {
 
     // 2. option HTML 생성
     const optionsHtml = list
-      .map(
-        (m) =>
-          `<option value="${m.member_id}">${m.member_name} (${m.member_id})</option>`
-      )
+      .map((m) => `<option value="${m.member_id}">${m.member_name} (${m.member_id})</option>`)
       .join('')
 
     // 3. Swal select 모달
@@ -114,14 +110,14 @@ const openAssignManagerModal = async (row) => {
       width: 650,
 
       padding: '20px 24px 24px 24px',
-      // buttonsStyling: true, 
-      buttonsStyling: false, 
+      // buttonsStyling: true,
+      buttonsStyling: false,
       customClass: {
         popup: 'assign-manager-popup',
         title: 'assign-manager-title',
         htmlContainer: 'assign-manager-html',
-        confirmButton: 'btn btn-success px-4 py-2 m-1', 
-        cancelButton: 'btn btn-danger px-4 py-2 m-1' // 오렌지색 계열이 보통 danger나 warning
+        confirmButton: 'btn btn-success px-4 py-2 m-1',
+        cancelButton: 'btn btn-danger px-4 py-2 m-1', // 오렌지색 계열이 보통 danger나 warning
       },
       html: `
         <div style="text-align:left; font-size:20px; margin-bottom:12px;">
@@ -137,9 +133,9 @@ const openAssignManagerModal = async (row) => {
           ${optionsHtml}
         </select>
       `,
-  
+
       showCancelButton: true,
-  
+
       confirmButtonText: '배정하기',
       cancelButtonText: '취소',
       focusConfirm: false,
@@ -166,7 +162,6 @@ const openAssignManagerModal = async (row) => {
 
     // 6. 목록 새로고침
     search.getApplicationList(search.member)
-
   } catch (err) {
     console.error(err)
     await Swal.fire({
@@ -178,7 +173,6 @@ const openAssignManagerModal = async (row) => {
   }
 }
 
-
 onBeforeMount(() => {
   if (member.member_authority === 'a4') {
     setTimeout(getAdminCenterList, 10)
@@ -186,8 +180,17 @@ onBeforeMount(() => {
     setTimeout(() => search.getApplicationList(member), 10)
   }
 })
-</script>
 
+const statusBadgeClass = (stat, statStatus) => {
+  const label = returnStatus(stat, statStatus)
+
+  if (label === '계획') return 'is-plan'
+  if (label === '중점') return 'is-focus'
+  if (label === '긴급') return 'is-urgent'
+  // 대기(=기본)
+  return 'is-wait'
+}
+</script>
 
 <template>
   <div class="card">
@@ -240,8 +243,7 @@ onBeforeMount(() => {
               <td class="text-center">{{ changeDateFormat(row.application_date) }}</td>
 
               <td class="text-center">
-                <button class="btn btn-success btn-sm"
-                  @click="goToApplication(row.application_no)">
+                <button class="btn btn-sm btn-main" @click="goToApplication(row.application_no)">
                   보기
                 </button>
               </td>
@@ -252,15 +254,16 @@ onBeforeMount(() => {
                   {{ row.manager_name }}
                 </template>
                 <template v-else>
-                  <button class="btn btn-success btn-sm"
-                    @click="openAssignManagerModal(row)">
+                  <button class="btn btn-sm btn-main" @click="openAssignManagerModal(row)">
                     담당자 배정
                   </button>
                 </template>
               </td>
 
               <td class="text-center">
-                {{ returnStatus(row.status, row.status_status) }}
+                <span :class="['status-badge', statusBadgeClass(row.status, row.status_status)]">
+                  {{ returnStatus(row.status, row.status_status) }}
+                </span>
               </td>
 
               <td class="text-center text-xs">
@@ -270,57 +273,126 @@ onBeforeMount(() => {
               </td>
 
               <td class="text-center">
-                <button v-if="row.planningCount > 0"
-                  class="btn btn-success btn-sm"
-                  @click="goToPlanning(row.application_no)">
+                <button
+                  v-if="row.planningCount > 0"
+                  class="btn btn-sm btn-main"
+                  @click="goToPlanning(row.application_no)"
+                >
                   보기
                 </button>
                 <span v-else class="badge bg-secondary">없음</span>
               </td>
 
               <td class="text-center">
-                <button v-if="row.meetingCount > 0"
-                  class="btn btn-success btn-sm"
-                  @click="goToMeetingLog(row.application_no)">
+                <button
+                  v-if="row.meetingCount > 0"
+                  class="btn btn-sm btn-main"
+                  @click="goToMeetingLog(row.application_no)"
+                >
                   보기
                 </button>
                 <span v-else class="badge bg-secondary">없음</span>
               </td>
 
               <td class="text-center">
-                <button v-if="row.resultCount > 0"
-                  class="btn btn-success btn-sm"
-                  @click="goToResult(row.application_no)">
+                <button
+                  v-if="row.resultCount > 0"
+                  class="btn btn-sm btn-main"
+                  @click="goToResult(row.application_no)"
+                >
                   보기
                 </button>
                 <span v-else class="badge bg-secondary">없음</span>
               </td>
             </tr>
           </tbody>
-
         </table>
       </div>
     </div>
   </div>
 </template>
 
-
 <style scoped>
+/* 1번째 컬럼 = 번호 */
+.table thead th:nth-child(1),
+.table tbody td:nth-child(1) {
+  width: 55px; /* 원하는 만큼 조절 (50~60px 적당) */
+  min-width: 55px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.table {
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  width: 100%;
+  table-layout: fixed;
+}
+
+/* 바깥 테두리까지 확실히 */
+.table {
+  border: 1px solid #e5e7eb;
+}
+
+/* 모든 칸(세로줄 포함) 강제 */
+.table thead th,
+.table tbody td {
+  border: 1px solid #e5e7eb !important;
+}
+
 .card {
-  border: 1px solid #eef1f5;
-  border-radius: 14px;
-  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.06);
-  overflow: hidden;
-  background: #fff;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+.btn-main {
+  background: #4e93cb !important; /* 메인 원색 */
+  color: #ffffff !important;
+  border: 1px solid #4e93cb !important;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 7px 14px;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+}
+
+.btn-main:hover {
+  filter: brightness(0.95);
+}
+.table .btn-assign {
+  background: #f5f3ff;
+  color: #5b21b6;
+  border: 1px solid #ddd6fe;
+}
+.table .btn-assign:hover {
+  background: #ede9fe;
+}
+.badge.bg-secondary {
+  background: #f3f4f6 !important;
+  color: #6b7280 !important;
+  border: 1px solid #e5e7eb;
 }
 
 /* ===== Header ===== */
 .card-header {
-  padding: 14px 18px;
+  /* padding: 14px 18px;
   border-bottom: 1px solid #eef1f5;
-  background: #fff;
+  background: #fff; */
+  background: transparent !important;
+  border-bottom: 1px solid #e5e7eb; /* 헤더 구분선만 남기고 싶으면 */
+  padding: 14px 0; /* 좌우 padding 필요하면 조절 */
 }
-
+.card-body {
+  padding: 0 !important;
+}
 .card-header h6 {
   font-size: 1.05rem;
   font-weight: 600;
@@ -456,7 +528,106 @@ body :deep(.swal2-container .swal2-actions .swal2-cancel:hover) {
 
 /* 확인 버튼도 통일감을 주려면 */
 body :deep(.swal2-container .swal2-actions .swal2-confirm) {
-  background-color: #16A34A !important;
+  background-color: #16a34a !important;
   box-shadow: none !important;
+}
+
+/* ===== Table Layout (grid 느낌) ===== */
+.table {
+  border-collapse: collapse; /* 표 느낌 핵심 */
+  width: 100%;
+  min-width: 1100px;
+  table-layout: fixed; /* 컬럼 흔들림 줄임 */
+}
+
+/* 헤더/바디 공통: 세로줄 포함 */
+.table thead th,
+.table tbody td {
+  border: 1px solid #e5e7eb; /* 세로줄+가로줄 */
+  text-align: center; /* 가로 중앙 */
+  vertical-align: middle; /* 세로 중앙 */
+  white-space: nowrap;
+}
+
+/* 헤더 */
+.table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f9fafb; /* 헤더 살짝 톤 */
+  padding: 12px 10px;
+  font-size: 0.85rem !important;
+  font-weight: 700;
+  color: #111827 !important;
+}
+
+/* 바디 */
+.table tbody td {
+  padding: 12px 10px;
+  font-size: 0.92rem;
+  color: #111827;
+}
+
+/* hover */
+.table tbody tr:hover {
+  background: #f9fafb;
+}
+
+/* 버튼도 중앙에서 예쁘게 */
+.table .btn.btn-sm {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 10px;
+}
+
+/* '없음' 배지도 중앙정렬 유지 */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
+/* ===== status badge ===== */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 64px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  border: 1px solid transparent;
+}
+
+/* 대기: 회색 */
+.status-badge.is-wait {
+  background: #f3f4f6;
+  color: #374151;
+  border-color: #e5e7eb;
+}
+
+/* 계획: 연초록 */
+.status-badge.is-plan {
+  background: #ecfdf5;
+  color: #065f46;
+  border-color: #a7f3d0;
+}
+
+/* 중점: 연노랑 */
+.status-badge.is-focus {
+  background: #fffbeb;
+  color: #92400e;
+  border-color: #fcd34d;
+}
+
+/* 긴급: 빨강 */
+.status-badge.is-urgent {
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
 }
 </style>

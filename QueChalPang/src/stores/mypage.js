@@ -23,13 +23,11 @@ export const useMyPageStore = defineStore('myPage', {
       }
       this.managerInfo.center_start = changeDateType(this.managerInfo.center_start)
       this.managerInfo.member_date = changeDateType(this.managerInfo.member_date)
-      console.log('담당자: ', this.managerInfo)
       return this.managerInfo
     },
 
     // 지원자 정보
     async searchDependantInfo(id) {
-      console.log('id:', id)
       this.dependantInfo = (await axios.get('/api/dependantInfoList/' + id)).data
 
       // 날짜 형식 변경 함수
@@ -69,7 +67,6 @@ export const useMyPageStore = defineStore('myPage', {
         }
       })
 
-      console.log('지원자: ', this.dependantInfo)
       return this.dependantInfo
     },
 
