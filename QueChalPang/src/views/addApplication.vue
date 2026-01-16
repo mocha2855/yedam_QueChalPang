@@ -367,12 +367,10 @@ const supportRoute = computed(() => {
     </div>
 
     <!-- 지원 신청서를 같은 카드 안에 포함 -->
-    <div class="card-header pb-0 pt-3" style="border-top: 2px solid #e9ecef">
+    <div class="card-header pb-0 pt-3" style="border-top: 2px solid #e9ecef; display: none">
       <div class="d-flex justify-content-between align-items-center">
         <h6 class="mb-0">지원 신청서</h6>
-        <button class="btn btn-primary p-1" @click="checkAllYes()">
-          전체 예 체크
-        </button>
+        <button class="btn btn-primary p-1" @click="checkAllYes()">전체 예 체크</button>
       </div>
     </div>
 
