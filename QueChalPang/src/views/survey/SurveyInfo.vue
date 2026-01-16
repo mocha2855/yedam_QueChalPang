@@ -1,15 +1,23 @@
 <template>
   <div class="container">
     <!-- 헤더 -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="header-section">
       <h4 class="mb-0">지원서 상세</h4>
-      <button class="btn btn-sm btn-secondary" @click="goBack">
-        <i class="fas fa-list"></i> 목록으로
-      </button>
+      <div class="header-actions">
+        <button class="btn btn-sm btn-primary" @click="goTosurveyUpdate(surveyInfo.no)">
+          <i class="fas fa-edit"></i> 수정
+        </button>
+        <button class="btn btn-sm btn-outline-secondary" @click="goBack">
+          <i class="fas fa-list"></i> 목록
+        </button>
+      </div>
     </div>
 
     <!-- 기본 정보 카드 -->
     <div class="card mb-4">
+      <div class="card-header">
+        <h6 class="mb-0"><i class="fas fa-file-alt"></i> 기본 정보</h6>
+      </div>
       <div class="card-body">
         <div class="row">
           <div class="col-md-2">
@@ -28,10 +36,7 @@
     <div class="card">
       <div class="card-header pb-0">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h6 class="mb-0">세부항목</h6>
-          <button class="btn btn-sm btn-primary" @click="goTosurveyUpdate(surveyInfo.no)">
-            <i class="fas fa-edit"></i> 수정
-          </button>
+          <h6 class="mb-0"><i class="fas fa-folder-open"></i> 세부항목</h6>
         </div>
         <!-- Nav Tabs -->
         <ul class="nav nav-tabs" role="tablist">
@@ -47,6 +52,7 @@
               href="javascript:void(0)"
               role="tab"
             >
+              <i class="fas fa-folder"></i>
               {{ subtitle.survey_subtitle }}
             </a>
           </li>
@@ -62,67 +68,84 @@
             class="tab-pane"
             :class="{ active: activeTab === sIndex, show: activeTab === sIndex }"
           >
-            <!-- 세부항목 내용 -->
-            <div class="mb-4">
-              <label class="form-label fw-bold">세부항목 내용</label>
-              <textarea
-                class="form-control"
-                v-model="subtitle.survey_subtitle"
-                readonly
-                rows="3"
-              ></textarea>
-            </div>
+            <!-- 세부항목 정보 섹션 -->
+            <div class="subtitle-section">
+              <div class="section-header">
+                <h6><i class="fas fa-info-circle"></i> 세부항목 정보</h6>
+              </div>
 
-            <!-- 세부항목 설명 -->
-            <div class="mb-4">
-              <label class="form-label fw-bold">세부항목 설명</label>
-              <input class="form-control" v-model="subtitle.survey_subtitle_detail" readonly />
-            </div>
+              <!-- 세부항목 내용 -->
+              <div class="mb-3">
+                <label class="form-label fw-bold">
+                  <i class="fas fa-heading"></i> 세부항목 제목
+                </label>
+                <textarea
+                  class="form-control"
+                  v-model="subtitle.survey_subtitle"
+                  readonly
+                  rows="2"
+                ></textarea>
+              </div>
 
-            <hr />
-
-            <!-- 질문 목록 -->
-            <h6 class="mb-3">질문 목록</h6>
-            <div
-              v-for="(question, qIndex) in subtitle.questionList"
-              :key="question.survey_qitem_no"
-              class="card mb-3"
-            >
-              <div class="card-body">
-                <div class="d-flex align-items-center mb-3">
-                  <span class="badge bg-primary">질문 {{ qIndex + 1 }}</span>
-                </div>
-
-                <!-- 질문 내용 -->
-                <div class="mb-3">
-                  <label class="form-label fw-bold">질문 내용</label>
-                  <input class="form-control" v-model="question.survey_qitem_question" readonly />
-                </div>
-
-                <!-- 질문 타입 -->
-                <div class="mb-3">
-                  <label class="form-label fw-bold">질문 타입</label>
-                  <input class="form-control" v-model="question.survey_qitem_type" readonly />
-                </div>
-
-                <!-- 예/아니요일 때 추가 입력 정보 표시 -->
-                <div v-if="question.survey_qitem_type === '예/아니요' && question.need_detail">
-                  <div class="alert alert-info mb-0">
-                    <small
-                      ><i class="fas fa-info-circle"></i> 사용자가 "예"를 선택하면 구체적 사유와
-                      날짜를 입력받습니다.</small
-                    >
-                  </div>
-                </div>
+              <!-- 세부항목 설명 -->
+              <div class="mb-4">
+                <label class="form-label fw-bold">
+                  <i class="fas fa-align-left"></i> 세부항목 설명
+                </label>
+                <input class="form-control" v-model="subtitle.survey_subtitle_detail" readonly />
               </div>
             </div>
 
-            <!-- 질문이 없을 때 -->
-            <div
-              v-if="!subtitle.questionList || subtitle.questionList.length === 0"
-              class="text-center text-muted py-4"
-            >
-              등록된 질문이 없습니다.
+            <!-- 구분선 -->
+            <div class="divider"></div>
+
+            <!-- 질문 목록 섹션 -->
+            <div class="questions-section">
+              <div class="section-header">
+                <h6><i class="fas fa-question-circle"></i> 질문 목록</h6>
+              </div>
+
+              <!-- 질문 카드 -->
+              <div
+                v-for="(question, qIndex) in subtitle.questionList"
+                :key="question.survey_qitem_no"
+                class="question-card mb-3"
+              >
+                <div class="question-header">
+                  <span class="badge bg-primary"> <i></i> 질문 {{ qIndex + 1 }} </span>
+                </div>
+
+                <div class="question-body">
+                  <!-- 질문 내용 -->
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">질문 내용</label>
+                    <input class="form-control" v-model="question.survey_qitem_question" readonly />
+                  </div>
+
+                  <!-- 질문 타입 -->
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">질문 타입</label>
+                    <input class="form-control" v-model="question.survey_qitem_type" readonly />
+                  </div>
+
+                  <!-- 예/아니요일 때 추가 입력 정보 표시 -->
+                  <div v-if="question.survey_qitem_type === '예/아니요' && question.need_detail">
+                    <div class="alert alert-info mb-0">
+                      <i class="fas fa-info-circle"></i>
+                      사용자가 "예"를 선택하면 구체적 사유와 날짜를 입력받습니다.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 질문이 없을 때 -->
+              <div
+                v-if="!subtitle.questionList || subtitle.questionList.length === 0"
+                class="empty-state"
+              >
+                <i class="fas fa-inbox"></i>
+                <p>등록된 질문이 없습니다.</p>
+              </div>
             </div>
           </div>
         </div>
@@ -130,6 +153,7 @@
     </div>
   </div>
 </template>
+
 <script setup>
 import { onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -178,115 +202,165 @@ const goTosurveyUpdate = () => {
 </script>
 
 <style scoped>
-/* 라운드 제거 - 모든 요소 각지게 */
-* {
-  border-radius: 0 !important;
-}
-
-/* 컨테이너 상단 여백 */
+/* 컨테이너 */
 .container {
-  padding: 0.3rem 1rem !important;
+  padding: 1rem !important;
+  max-width: 1200px;
 }
 
-/* 네비와 헤더 간격 축소 */
-.d-flex.justify-content-between.align-items-center {
-  margin-bottom: 0.5rem !important;
+/* 헤더 섹션 */
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.5rem;
 }
 
 /* 헤더 크기 */
 h4 {
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 1.1rem;
+  font-weight: 700;
   color: #333;
   margin-bottom: 0 !important;
 }
 
 h6 {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: #333;
   margin-bottom: 0 !important;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
-/* 카드 여백 축소 */
+h6 i {
+  font-size: 0.9rem;
+  color: #5b9bd5;
+}
+
+/* 카드 */
 .card {
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   border: 1px solid #dee2e6;
-  margin-bottom: 0.5rem !important;
+  margin-bottom: 1rem !important;
+  border-radius: 2px;
 }
 
 .card-header {
-  padding: 0.4rem 0.6rem !important;
-  background-color: #f8f9fa;
+  padding: 0.75rem 1rem !important;
+  background: linear-gradient(to right, #f8f9fa 0%, #ffffff 100%);
   border-bottom: 1px solid #dee2e6;
+  border-radius: 2px 2px 0 0 !important;
 }
 
 .card-body {
-  padding: 0.5rem !important;
+  padding: 1rem !important;
+}
+
+/* 섹션 구분 */
+.subtitle-section,
+.questions-section {
+  margin-bottom: 1.5rem;
+}
+
+.section-header {
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, #dee2e6, transparent);
+  margin: 1.5rem 0;
 }
 
 /* 탭 스타일 */
 .nav-tabs {
   margin-bottom: 0 !important;
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 2px solid #dee2e6;
 }
 
 .nav-tabs .nav-link {
   cursor: pointer;
-  padding: 0.3rem 0.6rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  border: none;
+  color: #666;
+  border-radius: 2px 2px 0 0 !important;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.nav-tabs .nav-link i {
   font-size: 0.75rem;
-  border: 1px solid transparent;
-  color: #555;
 }
 
 .nav-tabs .nav-link.active {
   font-weight: 600;
   background-color: white;
-  border-color: #dee2e6 #dee2e6 white;
-  color: #333;
+  border-bottom: 2px solid #5b9bd5;
+  color: #5b9bd5;
 }
 
-.nav-tabs .nav-link:hover {
-  border-color: transparent !important;
-  background-color: transparent !important;
+.nav-tabs .nav-link:hover:not(.active) {
+  background-color: #f8f9fa;
 }
 
 /* 폼 레이블 */
 .form-label {
-  margin-bottom: 0.2rem !important;
-  font-size: 0.75rem;
+  margin-bottom: 0.4rem !important;
+  font-size: 0.8rem;
   font-weight: 600;
   color: #555;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.form-label i {
+  font-size: 0.75rem;
+  color: #5b9bd5;
 }
 
 /* 폼 컨트롤 */
 .form-control {
-  padding: 0.3rem 0.5rem !important;
-  font-size: 0.75rem !important;
-  height: calc(1.5em + 0.6rem + 2px) !important;
-  border: 1px solid #dee2e6;
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.85rem !important;
+  border: 1px solid #ced4da;
+  border-radius: 2px !important;
 }
 
 .form-control:read-only {
   background-color: #f8f9fa;
+  cursor: default;
 }
 
-.form-control:focus {
-  box-shadow: none !important;
-  border-color: #dee2e6 !important;
-}
-
-/* textarea */
 textarea.form-control {
-  height: auto !important;
-  min-height: 50px !important;
+  min-height: 60px !important;
+  resize: vertical;
 }
 
-/* 버튼 크기 및 색상 */
-.btn-sm {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.7rem;
+/* 버튼 - 라운드 2px 적용 */
+.btn {
+  border-radius: 2px !important;
+  transition: all 0.2s;
   font-weight: 500;
+}
+
+.btn-sm {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
 }
 
 .btn-primary {
@@ -295,86 +369,83 @@ textarea.form-control {
   color: white !important;
 }
 
-.btn-primary:hover,
-.btn-primary:focus,
-.btn-primary:active {
-  background-color: #5b9bd5 !important;
-  border-color: #5b9bd5 !important;
-  color: white !important;
-  box-shadow: none !important;
-  outline: none !important;
+.btn-primary:hover {
+  background-color: #4a8bc2 !important;
+  border-color: #4a8bc2 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(91, 155, 213, 0.3);
 }
 
 .btn-secondary {
-  background-color: #e0e0e0 !important;
-  border-color: #d0d0d0 !important;
-  color: #333 !important;
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+  color: white !important;
 }
 
-.btn-secondary:hover,
-.btn-secondary:focus,
-.btn-secondary:active {
-  background-color: #e0e0e0 !important;
-  border-color: #d0d0d0 !important;
-  color: #333 !important;
-  box-shadow: none !important;
-  outline: none !important;
+.btn-secondary:hover {
+  background-color: #5a6268 !important;
+  border-color: #545b62 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+}
+
+.btn-outline-secondary {
+  background-color: white !important;
+  border-color: #ced4da !important;
+  color: #6c757d !important;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #f8f9fa !important;
+  border-color: #adb5bd !important;
+  color: #495057 !important;
 }
 
 /* 배지 */
 .badge {
-  font-size: 0.7rem;
-  padding: 0.2rem 0.4rem;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.6rem;
+  font-weight: 600;
+  border-radius: 2px !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 .bg-primary {
   background-color: #5b9bd5 !important;
 }
 
-/* 마진 축소 */
-.mb-4 {
-  margin-bottom: 0.5rem !important;
+/* 질문 카드 */
+.question-card {
+  border: 1px solid #dee2e6;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 0.75rem !important;
 }
 
-.mb-3 {
-  margin-bottom: 0.4rem !important;
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.75rem;
+  background: linear-gradient(to right, #f8f9fa 0%, #ffffff 100%);
+  border-bottom: 1px solid #dee2e6;
 }
 
-.mb-2 {
-  margin-bottom: 0.3rem !important;
+.question-body {
+  padding: 1rem;
 }
 
-.mb-1 {
-  margin-bottom: 0.2rem !important;
-}
-
-/* 패딩 축소 */
-.py-4 {
-  padding-top: 0.5rem !important;
-  padding-bottom: 0.5rem !important;
-}
-
-.py-3 {
-  padding-top: 0.4rem !important;
-  padding-bottom: 0.4rem !important;
-}
-
-.py-2 {
-  padding-top: 0.3rem !important;
-  padding-bottom: 0.3rem !important;
-}
-
-/* hr 여백 축소 */
-hr {
-  margin: 0.5rem 0 !important;
-  border-color: #dee2e6;
-}
-
-/* alert 크기 */
+/* alert */
 .alert {
-  padding: 0.4rem 0.6rem !important;
-  font-size: 0.75rem !important;
-  border: 1px solid #bee5eb;
+  padding: 0.6rem 0.75rem !important;
+  font-size: 0.8rem !important;
+  border: 1px solid #b8daff;
+  border-radius: 2px !important;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .alert-info {
@@ -382,31 +453,46 @@ hr {
   color: #0c5460;
 }
 
-.alert small {
-  font-size: 0.7rem !important;
-}
-
-/* row 간격 */
-.row {
-  margin-left: -0.4rem !important;
-  margin-right: -0.4rem !important;
-}
-
-.row > * {
-  padding-left: 0.4rem !important;
-  padding-right: 0.4rem !important;
+.alert i {
+  font-size: 0.9rem;
 }
 
 /* 빈 상태 메시지 */
-.text-center.text-muted {
-  font-size: 0.75rem;
-  padding: 0.5rem 0 !important;
-  color: #999;
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #6c757d;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 2px;
+  border: 2px dashed #dee2e6;
+}
+
+.empty-state i {
+  font-size: 2.5rem;
+  color: #adb5bd;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+/* 간격 조정 */
+.mb-3 {
+  margin-bottom: 0.75rem !important;
+}
+
+.mb-4 {
+  margin-bottom: 1rem !important;
 }
 
 /* 탭 콘텐츠 */
 .tab-content {
-  padding-top: 0.5rem;
+  padding-top: 1rem;
 }
 
 .tab-pane {
@@ -415,5 +501,26 @@ hr {
 
 .tab-pane.active.show {
   display: block;
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* row 간격 */
+.row {
+  margin-left: -0.5rem !important;
+  margin-right: -0.5rem !important;
+}
+
+.row > * {
+  padding-left: 0.5rem !important;
+  padding-right: 0.5rem !important;
 }
 </style>
