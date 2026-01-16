@@ -1,15 +1,35 @@
 <template>
   <div class="container">
     <!-- 헤더 -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="header-section">
       <h4 class="mb-0">지원서 수정</h4>
-      <button class="btn btn-sm btn-secondary" @click="goBack">
-        <i class="fas fa-list"></i> 목록으로
-      </button>
+      <div class="header-actions">
+        <button class="btn btn-sm btn-secondary" @click="goBack">
+          <i class="fas fa-times"></i> 취소
+        </button>
+        <button class="btn btn-sm btn-primary" @click="openModifyModal">
+          <i class="fas fa-save"></i> 저장
+        </button>
+        <button class="btn btn-sm btn-outline-secondary" @click="goBack">
+          <i class="fas fa-list"></i> 목록
+        </button>
+      </div>
+    </div>
+
+    <!-- 사용 안내 -->
+    <div class="usage-guide">
+      <i class="fas fa-info-circle"></i>
+      <span
+        >세부항목과 질문을 추가하여 지원서를 구성하세요. 세부항목 개수가 변경되면 새 버전이
+        생성됩니다.</span
+      >
     </div>
 
     <!-- 기본 정보 카드 -->
     <div class="card mb-4">
+      <div class="card-header">
+        <h6 class="mb-0"><i class="fas fa-file-alt"></i> 기본 정보</h6>
+      </div>
       <div class="card-body">
         <div class="row">
           <div class="col-md-2">
@@ -28,7 +48,7 @@
     <div class="card">
       <div class="card-header pb-0">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <h6 class="mb-0">세부항목</h6>
+          <h6 class="mb-0"><i class="fas fa-folder-open"></i> 세부항목</h6>
           <button @click="addSubtitle" class="btn btn-sm btn-primary" type="button">
             <i class="fas fa-plus"></i> 세부항목 추가
           </button>
@@ -47,6 +67,7 @@
               href="javascript:void(0)"
               role="tab"
             >
+              <i class="fas fa-folder"></i>
               {{ subtitle.survey_subtitle || `세부항목 ${sIndex + 1}` }}
             </a>
           </li>
@@ -62,105 +83,129 @@
             class="tab-pane"
             :class="{ active: activeTab === sIndex, show: activeTab === sIndex }"
           >
-            <!-- 세부항목 삭제 버튼 -->
-            <div class="text-end mb-4">
-              <button
-                @click="deleteSubtitle(subtitle.survey_subtitle_no)"
-                class="btn btn-sm btn-danger"
-                type="button"
-              >
-                <i class="fas fa-trash"></i> 세부항목 삭제
-              </button>
-            </div>
-
-            <!-- 세부항목 내용 -->
-            <div class="mb-4">
-              <label class="form-label fw-bold">세부항목 내용</label>
-              <textarea class="form-control" v-model="subtitle.survey_subtitle" rows="3"></textarea>
-            </div>
-
-            <!-- 세부항목 설명 -->
-            <div class="mb-4">
-              <label class="form-label fw-bold">세부항목 설명</label>
-              <input class="form-control" v-model="subtitle.survey_subtitle_detail" />
-            </div>
-
-            <hr />
-
-            <!-- 질문 목록 헤더 -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <h6 class="mb-0">질문 목록</h6>
-              <button
-                @click="addQuestion(subtitle.survey_subtitle_no)"
-                class="btn btn-sm btn-info"
-                type="button"
-              >
-                <i class="fas fa-plus"></i> 질문 추가
-              </button>
-            </div>
-
-            <!-- 질문 카드 -->
-            <div
-              v-for="(question, qIndex) in subtitle.questionList"
-              :key="question.survey_qitem_no"
-              class="question-card mb-3"
-            >
-              <div class="question-header">
-                <span class="badge bg-primary">질문 {{ qIndex + 1 }}</span>
+            <!-- 세부항목 편집 섹션 -->
+            <div class="subtitle-section">
+              <div class="section-header">
+                <h6><i class="fas fa-edit"></i> 세부항목 편집</h6>
                 <button
-                  @click="deleteQuestion(subtitle.survey_subtitle_no, question.survey_qitem_no)"
+                  @click="deleteSubtitle(subtitle.survey_subtitle_no)"
                   class="btn btn-sm btn-danger"
                   type="button"
                 >
-                  <i class="fas fa-trash"></i>
+                  <i class="fas fa-trash"></i> 세부항목 삭제
                 </button>
               </div>
 
-              <div class="question-body">
-                <!-- 질문 내용 -->
-                <div class="mb-3">
-                  <label class="form-label">질문 내용</label>
-                  <input class="form-control" v-model="question.survey_qitem_question" />
-                </div>
+              <!-- 세부항목 내용 -->
+              <div class="mb-3">
+                <label class="form-label fw-bold">
+                  <i class="fas fa-heading"></i> 세부항목 제목
+                </label>
+                <input
+                  class="form-control"
+                  v-model="subtitle.survey_subtitle"
+                  placeholder="예: 건강 지원 필요"
+                />
+              </div>
 
-                <!-- 질문 타입 -->
-                <div class="mb-3">
-                  <label class="form-label">질문 타입</label>
-                  <select class="form-control" v-model="question.survey_qitem_type">
-                    <option>예/아니요</option>
-                  </select>
-                </div>
-
-                <!-- 예/아니오일 때만 보임 -->
-                <div v-if="question.survey_qitem_type === '예/아니요'">
-                  <div class="form-check">
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      v-model="question.need_detail"
-                      :id="'detail-' + question.survey_qitem_no"
-                    />
-                    <label class="form-check-label" :for="'detail-' + question.survey_qitem_no">
-                      체크박스 선택 시 구체적 사유와 날짜 입력 받기
-                    </label>
-                  </div>
-                  <!-- 체크박스 선택하면 안내 메시지 -->
-                  <div v-if="question.need_detail" class="alert alert-info mt-2 mb-0">
-                    <small
-                      ><i class="fas fa-info-circle"></i> 사용자가 "예"를 선택하면 구체적 사유와
-                      날짜를 입력받습니다.</small
-                    >
-                  </div>
-                </div>
+              <!-- 세부항목 설명 -->
+              <div class="mb-4">
+                <label class="form-label fw-bold">
+                  <i class="fas fa-align-left"></i> 세부항목 설명
+                </label>
+                <textarea
+                  class="form-control"
+                  v-model="subtitle.survey_subtitle_detail"
+                  rows="2"
+                  placeholder="예: 건강 관련 지원이 필요한 항목을 체크해주세요"
+                ></textarea>
               </div>
             </div>
 
-            <!-- 질문이 없을 때 -->
-            <div
-              v-if="!subtitle.questionList || subtitle.questionList.length === 0"
-              class="text-center text-muted py-4"
-            >
-              등록된 질문이 없습니다. "질문 추가" 버튼을 눌러 질문을 추가하세요.
+            <!-- 구분선 -->
+            <div class="divider"></div>
+
+            <!-- 질문 목록 섹션 -->
+            <div class="questions-section">
+              <div class="section-header">
+                <h6><i class="fas fa-question-circle"></i> 질문 목록</h6>
+                <button
+                  @click="addQuestion(subtitle.survey_subtitle_no)"
+                  class="btn btn-sm btn-success"
+                  type="button"
+                >
+                  <i class="fas fa-plus"></i> 질문 추가
+                </button>
+              </div>
+
+              <!-- 질문 카드 -->
+              <div
+                v-for="(question, qIndex) in subtitle.questionList"
+                :key="question.survey_qitem_no"
+                class="question-card mb-3"
+              >
+                <div class="question-header">
+                  <span class="badge bg-primary"> <i></i> 질문 {{ qIndex + 1 }} </span>
+                  <button
+                    @click="deleteQuestion(subtitle.survey_subtitle_no, question.survey_qitem_no)"
+                    class="btn btn-sm btn-danger"
+                    type="button"
+                  >
+                    <i class="fas fa-trash"></i> 삭제
+                  </button>
+                </div>
+
+                <div class="question-body">
+                  <!-- 질문 내용 -->
+                  <div class="mb-3">
+                    <label class="form-label">질문 내용</label>
+                    <input
+                      class="form-control"
+                      v-model="question.survey_qitem_question"
+                      placeholder="예: 정기적인 병원 치료가 필요하신가요?"
+                    />
+                  </div>
+
+                  <!-- 질문 타입 -->
+                  <div class="mb-3">
+                    <label class="form-label">질문 타입</label>
+                    <select class="form-control" v-model="question.survey_qitem_type">
+                      <option>예/아니요</option>
+                    </select>
+                  </div>
+
+                  <!-- 예/아니오일 때만 보임 -->
+                  <div v-if="question.survey_qitem_type === '예/아니요'">
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        v-model="question.need_detail"
+                        :id="'detail-' + question.survey_qitem_no"
+                      />
+                      <label class="form-check-label" :for="'detail-' + question.survey_qitem_no">
+                        <i class="fas fa-pencil-alt"></i>
+                        "예" 선택 시 상세 정보 입력받기 (구체적 사유 및 날짜)
+                      </label>
+                    </div>
+                    <!-- 체크박스 선택하면 안내 메시지 -->
+                    <div v-if="question.need_detail" class="alert alert-info mt-2 mb-0">
+                      <i class="fas fa-info-circle"></i>
+                      사용자가 "예"를 선택하면 구체적 사유와 날짜를 입력받습니다.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 질문이 없을 때 -->
+              <div
+                v-if="!subtitle.questionList || subtitle.questionList.length === 0"
+                class="empty-state"
+              >
+                <i class="fas fa-inbox"></i>
+                <p>등록된 질문이 없습니다.</p>
+                <small>"질문 추가" 버튼을 눌러 질문을 추가하세요.</small>
+              </div>
             </div>
           </div>
         </div>
@@ -168,19 +213,13 @@
         <!-- 세부항목이 없을 때 -->
         <div
           v-if="!surveyInfo.subtitles || surveyInfo.subtitles.length === 0"
-          class="text-center text-muted py-5"
+          class="empty-state large"
         >
-          등록된 세부항목이 없습니다. "세부항목 추가" 버튼을 눌러 세부항목을 추가하세요.
+          <i class="fas fa-folder-plus"></i>
+          <p>등록된 세부항목이 없습니다.</p>
+          <small>"세부항목 추가" 버튼을 눌러 세부항목을 추가하세요.</small>
         </div>
       </div>
-    </div>
-
-    <!-- 하단 버튼 -->
-    <div class="mt-4 d-flex justify-content-end gap-2">
-      <button class="btn btn-secondary" @click="goBack">취소</button>
-      <button class="btn btn-primary" @click="openModifyModal">
-        <i class="fas fa-save"></i> 저장
-      </button>
     </div>
   </div>
 </template>
@@ -208,10 +247,10 @@ const surveyInfo = reactive({
   title_no: '',
   survey_version: '',
   title: '',
-  subtitles: [], //여기 배열에 질문,세부항목,설명 다들어감
+  subtitles: [],
 })
 
-// 세부항목 추가 (화면에만 추가)
+// 세부항목 추가
 const addSubtitle = () => {
   const newSubtitleId = Date.now()
 
@@ -234,12 +273,25 @@ const addSubtitle = () => {
 
 // 세부항목 삭제
 const deleteSubtitle = (subtitleNo) => {
-  surveyInfo.subtitles = surveyInfo.subtitles.filter((s) => s.survey_subtitle_no !== subtitleNo)
+  Swal.fire({
+    title: '세부항목을 삭제하시겠습니까?',
+    text: '이 작업은 되돌릴 수 없습니다.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#dc3545',
+    cancelButtonColor: '#6c757d',
+    confirmButtonText: '삭제',
+    cancelButtonText: '취소',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      surveyInfo.subtitles = surveyInfo.subtitles.filter((s) => s.survey_subtitle_no !== subtitleNo)
 
-  // 삭제 후 첫 번째 탭으로 이동
-  if (activeTab.value >= surveyInfo.subtitles.length) {
-    activeTab.value = Math.max(0, surveyInfo.subtitles.length - 1)
-  }
+      // 삭제 후 첫 번째 탭으로 이동
+      if (activeTab.value >= surveyInfo.subtitles.length) {
+        activeTab.value = Math.max(0, surveyInfo.subtitles.length - 1)
+      }
+    }
+  })
 }
 
 // 질문 추가
@@ -255,10 +307,23 @@ const addQuestion = (subtitleNo) => {
 
 // 질문 삭제
 const deleteQuestion = (subtitleNo, questionNo) => {
-  //해당 세부항목 찾기
-  const subtitle = surveyInfo.subtitles.find((s) => s.survey_subtitle_no === subtitleNo)
-  //세부항목에서 질문 삭제
-  subtitle.questionList = subtitle.questionList.filter((q) => q.survey_qitem_no !== questionNo)
+  Swal.fire({
+    title: '질문을 삭제하시겠습니까?',
+    text: '이 작업은 되돌릴 수 없습니다.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#dc3545',
+    cancelButtonColor: '#6c757d',
+    confirmButtonText: '삭제',
+    cancelButtonText: '취소',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      //해당 세부항목 찾기
+      const subtitle = surveyInfo.subtitles.find((s) => s.survey_subtitle_no === subtitleNo)
+      //세부항목에서 질문 삭제
+      subtitle.questionList = subtitle.questionList.filter((q) => q.survey_qitem_no !== questionNo)
+    }
+  })
 }
 
 onMounted(async () => {
@@ -304,8 +369,8 @@ const openModifyModal = async () => {
     showCancelButton: true,
     confirmButtonText: '저장',
     cancelButtonText: '취소',
-    confirmButtonColor: '#2196f3',
-    cancelButtonColor: '#f44336',
+    confirmButtonColor: '#5b9bd5',
+    cancelButtonColor: '#6c757d',
     inputValidator: (value) => {
       if (!value || value.trim() === '') {
         return '수정 사유를 입력해주세요!'
@@ -394,94 +459,175 @@ const goBack = () => {
   router.push({ name: 'SurveyList' })
 }
 </script>
+
 <style scoped>
-/* 라운드 제거 - 모든 요소 각지게 */
-* {
-  border-radius: 0 !important;
-}
-
-/* 컨테이너 상단 여백 */
+/* 컨테이너 */
 .container {
-  padding: 0.3rem 1rem !important;
+  padding: 1rem !important;
+  max-width: 1200px;
 }
 
-/* 네비와 헤더 간격 축소 */
-.d-flex.justify-content-between.align-items-center {
-  margin-bottom: 0.5rem !important;
+/* 헤더 섹션 */
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* 사용 안내 */
+.usage-guide {
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+  border-left: 3px solid #5b9bd5;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: 2px;
+  font-size: 0.8rem;
+  color: #444;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.usage-guide i {
+  color: #5b9bd5;
+  font-size: 1rem;
 }
 
 /* 헤더 크기 */
 h4 {
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 1.1rem;
+  font-weight: 700;
   color: #333;
   margin-bottom: 0 !important;
 }
 
 h6 {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: #333;
   margin-bottom: 0 !important;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
-/* 카드 여백 축소 */
+h6 i {
+  font-size: 0.9rem;
+  color: #5b9bd5;
+}
+
+/* 카드 */
 .card {
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   border: 1px solid #dee2e6;
-  margin-bottom: 0.5rem !important;
+  margin-bottom: 1rem !important;
+  border-radius: 2px;
 }
 
 .card-header {
-  padding: 0.4rem 0.6rem !important;
-  background-color: #f8f9fa;
+  padding: 0.75rem 1rem !important;
+  background: linear-gradient(to right, #f8f9fa 0%, #ffffff 100%);
   border-bottom: 1px solid #dee2e6;
+  border-radius: 2px 2px 0 0 !important;
 }
 
 .card-body {
-  padding: 0.5rem !important;
+  padding: 1rem !important;
+}
+
+/* 섹션 구분 */
+.subtitle-section,
+.questions-section {
+  margin-bottom: 1.5rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, #dee2e6, transparent);
+  margin: 1.5rem 0;
 }
 
 /* 탭 스타일 */
 .nav-tabs {
   margin-bottom: 0 !important;
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 2px solid #dee2e6;
 }
 
 .nav-tabs .nav-link {
   cursor: pointer;
-  padding: 0.3rem 0.6rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  border: none;
+  color: #666;
+  border-radius: 2px 2px 0 0 !important;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.nav-tabs .nav-link i {
   font-size: 0.75rem;
-  border: 1px solid transparent;
-  color: #555;
 }
 
 .nav-tabs .nav-link.active {
   font-weight: 600;
   background-color: white;
-  border-color: #dee2e6 #dee2e6 white;
-  color: #333;
+  border-bottom: 2px solid #5b9bd5;
+  color: #5b9bd5;
 }
 
-.nav-tabs .nav-link:hover {
-  border-color: transparent !important;
-  background-color: transparent !important;
+.nav-tabs .nav-link:hover:not(.active) {
+  background-color: #f8f9fa;
 }
 
 /* 폼 레이블 */
 .form-label {
-  margin-bottom: 0.2rem !important;
-  font-size: 0.75rem;
+  margin-bottom: 0.4rem !important;
+  font-size: 0.8rem;
   font-weight: 600;
   color: #555;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.form-label i {
+  font-size: 0.75rem;
+  color: #5b9bd5;
 }
 
 /* 폼 컨트롤 */
 .form-control {
-  padding: 0.3rem 0.5rem !important;
-  font-size: 0.75rem !important;
-  height: calc(1.5em + 0.6rem + 2px) !important;
-  border: 1px solid #dee2e6;
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.85rem !important;
+  border: 1px solid #ced4da;
+  border-radius: 2px !important;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.form-control::placeholder {
+  color: #adb5bd;
+  font-size: 0.8rem;
 }
 
 .form-control:read-only {
@@ -489,26 +635,29 @@ h6 {
 }
 
 .form-control:focus {
-  box-shadow: none !important;
-  border-color: #dee2e6 !important;
+  box-shadow: 0 0 0 0.2rem rgba(91, 155, 213, 0.15) !important;
+  border-color: #5b9bd5 !important;
 }
 
-/* textarea */
 textarea.form-control {
-  height: auto !important;
-  min-height: 50px !important;
+  min-height: 60px !important;
+  resize: vertical;
 }
 
-/* select */
 select.form-control {
-  height: calc(1.5em + 0.6rem + 2px) !important;
+  height: auto !important;
 }
 
-/* 버튼 크기 및 색상 */
-.btn-sm {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.7rem;
+/* 버튼 - 라운드 2px 적용 */
+.btn {
+  border-radius: 2px !important;
+  transition: all 0.2s;
   font-weight: 500;
+}
+
+.btn-sm {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
 }
 
 .btn-primary {
@@ -517,46 +666,49 @@ select.form-control {
   color: white !important;
 }
 
-.btn-primary:hover,
-.btn-primary:focus,
-.btn-primary:active {
-  background-color: #5b9bd5 !important;
-  border-color: #5b9bd5 !important;
-  color: white !important;
-  box-shadow: none !important;
-  outline: none !important;
+.btn-primary:hover {
+  background-color: #4a8bc2 !important;
+  border-color: #4a8bc2 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(91, 155, 213, 0.3);
 }
 
 .btn-secondary {
-  background-color: #e0e0e0 !important;
-  border-color: #d0d0d0 !important;
-  color: #333 !important;
-}
-
-.btn-secondary:hover,
-.btn-secondary:focus,
-.btn-secondary:active {
-  background-color: #e0e0e0 !important;
-  border-color: #d0d0d0 !important;
-  color: #333 !important;
-  box-shadow: none !important;
-  outline: none !important;
-}
-
-.btn-info {
-  background-color: #5b9bd5 !important;
-  border-color: #5b9bd5 !important;
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
   color: white !important;
 }
 
-.btn-info:hover,
-.btn-info:focus,
-.btn-info:active {
-  background-color: #5b9bd5 !important;
-  border-color: #5b9bd5 !important;
+.btn-secondary:hover {
+  background-color: #5a6268 !important;
+  border-color: #545b62 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+}
+
+.btn-outline-secondary {
+  background-color: white !important;
+  border-color: #ced4da !important;
+  color: #6c757d !important;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #f8f9fa !important;
+  border-color: #adb5bd !important;
+  color: #495057 !important;
+}
+
+.btn-success {
+  background-color: #28a745 !important;
+  border-color: #28a745 !important;
   color: white !important;
-  box-shadow: none !important;
-  outline: none !important;
+}
+
+.btn-success:hover {
+  background-color: #218838 !important;
+  border-color: #1e7e34 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
 }
 
 .btn-danger {
@@ -565,20 +717,22 @@ select.form-control {
   color: white !important;
 }
 
-.btn-danger:hover,
-.btn-danger:focus,
-.btn-danger:active {
-  background-color: #dc3545 !important;
-  border-color: #dc3545 !important;
-  color: white !important;
-  box-shadow: none !important;
-  outline: none !important;
+.btn-danger:hover {
+  background-color: #c82333 !important;
+  border-color: #bd2130 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
 }
 
 /* 배지 */
 .badge {
-  font-size: 0.7rem;
-  padding: 0.2rem 0.4rem;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.6rem;
+  font-weight: 600;
+  border-radius: 2px !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
 }
 
 .bg-primary {
@@ -588,73 +742,74 @@ select.form-control {
 /* 질문 카드 */
 .question-card {
   border: 1px solid #dee2e6;
+  border-radius: 2px;
   overflow: hidden;
-  margin-bottom: 0.4rem !important;
+  margin-bottom: 0.75rem !important;
+  transition: box-shadow 0.2s;
+}
+
+.question-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .question-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.4rem 0.5rem;
-  background-color: #f8f9fa;
+  padding: 0.6rem 0.75rem;
+  background: linear-gradient(to right, #f8f9fa 0%, #ffffff 100%);
   border-bottom: 1px solid #dee2e6;
 }
 
 .question-body {
-  padding: 0.6rem;
-  overflow: visible;
+  padding: 1rem;
 }
 
-/* 마진 축소 */
-.mb-4 {
-  margin-bottom: 0.5rem !important;
+/* form-check */
+.form-check {
+  padding: 0.6rem 0.75rem;
+  margin-bottom: 0.5rem;
+  background-color: #f8f9fa;
+  border-radius: 2px;
+  border: 1px solid #e9ecef;
+  display: flex;
+  align-items: center;
 }
 
-.mb-3 {
-  margin-bottom: 0.4rem !important;
+.form-check-input {
+  margin: 0 !important;
+  cursor: pointer;
+  width: 1.1rem !important;
+  height: 1.1rem !important;
+  accent-color: #5b9bd5;
+  flex-shrink: 0;
+  border-radius: 2px !important;
 }
 
-.mb-2 {
-  margin-bottom: 0.3rem !important;
+.form-check-label {
+  font-size: 0.8rem;
+  cursor: pointer;
+  margin-left: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  line-height: 1.4;
 }
 
-.mb-0 {
-  margin-bottom: 0 !important;
+.form-check-label i {
+  font-size: 0.75rem;
+  color: #5b9bd5;
 }
 
-.mt-2 {
-  margin-top: 0.3rem !important;
-}
-
-.mt-4 {
-  margin-top: 0.5rem !important;
-}
-
-/* 패딩 축소 */
-.py-4 {
-  padding-top: 0.5rem !important;
-  padding-bottom: 0.5rem !important;
-}
-
-.py-5 {
-  padding-top: 0.75rem !important;
-  padding-bottom: 0.75rem !important;
-}
-
-/* hr 여백 축소 */
-hr {
-  margin: 0.5rem 0 !important;
-  border-color: #dee2e6;
-}
-
-/* alert 크기 */
+/* alert */
 .alert {
-  padding: 0.4rem 0.6rem !important;
-  font-size: 0.75rem !important;
-  border: 1px solid #bee5eb;
-  width: 100%;
-  box-sizing: border-box;
+  padding: 0.6rem 0.75rem !important;
+  font-size: 0.8rem !important;
+  border: 1px solid #b8daff;
+  border-radius: 2px !important;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .alert-info {
@@ -662,79 +817,59 @@ hr {
   color: #0c5460;
 }
 
-.alert small {
-  font-size: 0.7rem !important;
-  display: block;
-  word-break: keep-all;
-}
-
-/* form-check */
-.form-check {
-  padding-left: 0;
-  margin-bottom: 0.5rem;
-  display: flex;
-  align-items: center;
-  line-height: 1;
-}
-
-.form-check-input {
-  margin: 0 !important;
-  cursor: pointer;
-  width: 1rem !important;
-  height: 1rem !important;
-  accent-color: #5b9bd5;
-  flex-shrink: 0;
-  display: inline-block !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-  vertical-align: baseline;
-}
-
-.form-check-label {
-  font-size: 0.75rem;
-  cursor: pointer;
-  margin-left: 0.4rem;
-  display: inline-block;
-  line-height: 1rem;
-}
-
-/* row 간격 */
-.row {
-  margin-left: -0.4rem !important;
-  margin-right: -0.4rem !important;
-}
-
-.row > * {
-  padding-left: 0.4rem !important;
-  padding-right: 0.4rem !important;
+.alert i {
+  font-size: 0.9rem;
 }
 
 /* 빈 상태 메시지 */
-.text-center.text-muted {
-  font-size: 0.75rem;
-  padding: 0.5rem 0 !important;
-  color: #999;
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #6c757d;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 2px;
+  border: 2px dashed #dee2e6;
 }
 
-/* gap 축소 */
+.empty-state.large {
+  padding: 3rem 1rem;
+}
+
+.empty-state i {
+  font-size: 2.5rem;
+  color: #adb5bd;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.empty-state p {
+  margin: 0.5rem 0 0.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+.empty-state small {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+/* 간격 조정 */
+.mb-3 {
+  margin-bottom: 0.75rem !important;
+}
+
+.mb-4 {
+  margin-bottom: 1rem !important;
+}
+
 .gap-2 {
-  gap: 0.3rem !important;
-}
-
-/* 하단 버튼 */
-.btn-primary,
-.btn-secondary {
-  padding: 0.25rem 0.5rem !important;
-  font-size: 0.75rem !important;
-}
-
-.text-end {
-  text-align: right !important;
+  gap: 0.5rem !important;
 }
 
 /* 탭 콘텐츠 */
 .tab-content {
-  padding-top: 0.5rem;
+  padding-top: 1rem;
 }
 
 .tab-pane {
@@ -743,5 +878,26 @@ hr {
 
 .tab-pane.active.show {
   display: block;
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* row 간격 */
+.row {
+  margin-left: -0.5rem !important;
+  margin-right: -0.5rem !important;
+}
+
+.row > * {
+  padding-left: 0.5rem !important;
+  padding-right: 0.5rem !important;
 }
 </style>
